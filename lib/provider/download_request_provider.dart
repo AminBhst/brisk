@@ -146,7 +146,7 @@ class DownloadRequestProvider with ChangeNotifier {
     handlerIsolates[id] = null;
   }
 
-  /// Updates the download request based on the incomming progress from handler isolate every 6 seconds
+  /// Updates the download request based on the incoming progress from handler isolate every 6 seconds
   void _updateDownloadRequest(DownloadProgress progress, DownloadItem item) {
     final status = progress.status;
     if (_previousUpdateTime + 6000 < _nowMillis ||
