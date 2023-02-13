@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   system_tray
   url_launcher_linux
   window_manager
+  window_size
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

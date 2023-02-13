@@ -15,11 +15,13 @@ import 'package:window_manager/window_manager.dart';
 import './util/file_util.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:window_size/window_size.dart';
 
 import 'util/settings_cache.dart';
 
 void main() {
   tz.initializeTimeZones();
+  setWindowTitle("Brisk");
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<DownloadRequestProvider>(
