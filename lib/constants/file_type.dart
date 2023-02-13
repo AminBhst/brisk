@@ -1,0 +1,1 @@
+enum DLFileType { music, compressed, video, program, documents, other }

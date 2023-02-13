@@ -1,0 +1,373 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:isolate';
+
+import 'package:brisk/constants/download_status.dart';
+import 'package:brisk/downloader/single_connection_isolation_handler.dart';
+import 'package:brisk/model/download_item.dart';
+import 'package:brisk/model/download_progress.dart';
+import 'package:brisk/model/isolate/download_isolator_args.dart';
+import 'package:brisk/model/isolate/isolate_method_args.dart';
+import 'package:stream_channel/isolate_channel.dart';
+import 'package:stream_channel/stream_channel.dart';
+import 'package:path/path.dart';
+
+import '../constants/download_command.dart';
+import '../util/file_util.dart';
+import '../util/readability_util.dart';
+
+class MultiConnectionIsolationHandler {
+  /// Keeps a map of all stream channels related to the running download requests
+  static final Map<int, Map<int, StreamChannel>> _connectionChannels = {};
+
+  static final Map<int, Map<int, DownloadProgress>> _connectionProgresses = {};
+
+  static final Map<int, Map<int, Isolate>> _connectionIsolates = {};
+
+  /// Keeps a map of the current progress of download requests for each connection
+  /// Used in order to keep track of the last time which a response from a connection was received.
+  /// The map definition is as below :
+  /// Map<downloadId, Map<segmentId, timeOfResponseInMillis>>
+  static Map<int, Map<int, int>> latestConnectionResponses = {};
+  static Map<int, Map<int, int>> connectionRetryCount = {};
+
+  static Map<int, String> completionEstimations = {};
+
+
+  static Timer? timer;
+
+  /// Settings
+  static int maxConnectionRetryCount = -1;
+  static int connectionResetWindowMillis = 10000;
+  static late Directory baseSaveDir;
+
+  /// TODO if some segments have been downloaded except one, that one segment will continue and all the others will be stuck at connecting status
+  /// TODO and the total progress only indicates that one connection which is receiving data
+  static void handleMultiConnectionRequest(SendPort sendPort) async {
+    final handlerChannel = IsolateChannel.connectSend(sendPort);
+    runTimerBasedConnectionReset();
+    handlerChannel.stream.listen((data) async {
+      if (data is SegmentedDownloadIsolateArgs) {
+        final downloadItem = data.downloadItem;
+        final id = downloadItem.id;
+        final isListened = _connectionChannels[id] != null;
+        _setSettings(data);
+        _connectionChannels[id] ??= {};
+        for (int i = 1; i <= data.totalConnections; i++) {
+          if (_connectionChannels[id]![i] == null) {
+            await _spawnDownloadRequestIsolate(data, i, data.totalConnections);
+          } else {
+            _connectionChannels[id]![i]!.sink.add(data);
+          }
+        }
+        if (isListened) return;
+        _connectionChannels[id]!.forEach((_, channel) {
+          channel.stream.listen((progress) {
+            if (progress is DownloadProgress) {
+              final segmentNumber = progress.segmentNumber;
+              _connectionProgresses[id] ??= {};
+              _connectionProgresses[id]![segmentNumber] = progress;
+              _updateLatestConnectionResponse(progress);
+              double totalByteTransferRate =
+                  _calculateTotalConnectionsTransferRate(id);
+              final isTempWriteDone = checkTempWriteCompletion(id);
+              final totalProgress = _calculateTotalDownloadProgress(id);
+              final transferRate =
+                  convertByteTransferRateToReadableStr(totalByteTransferRate);
+              _calculateEstimatedRemaining(id, totalByteTransferRate);
+              final downloadProgress = DownloadProgress(
+                downloadItem: progress.downloadItem,
+                downloadProgress: totalProgress,
+                transferRate: transferRate,
+              );
+              _setEstimation(id, downloadProgress, totalProgress);
+              _setButtonAvailability(
+                id,
+                downloadProgress,
+                data.totalConnections,
+                totalProgress,
+              );
+              _setStatus(id, downloadProgress);
+              if (isTempWriteDone) {
+                downloadProgress.status = DownloadStatus.assembling;
+                handlerChannel.sink.add(downloadProgress);
+                final success = assembleFile(
+                  downloadItem,
+                  progress.baseTempDir,
+                  data.baseSaveDir,
+                );
+                if (success) {
+                  _setCompletionStatuses(downloadProgress);
+                } else {
+                  downloadProgress.status = DownloadStatus.assembleFailed;
+                }
+                handlerChannel.sink.add(downloadProgress);
+              }
+              _setConnectionProgresses(downloadProgress);
+              handlerChannel.sink.add(downloadProgress);
+            }
+          });
+        });
+      }
+    });
+  }
+
+  static void _clearConnections(int id) {
+    _connectionProgresses[id]?.clear();
+    _connectionChannels[id]?.clear();
+    _connectionIsolates[id]?.forEach((_, isolate) => isolate.kill());
+    _connectionIsolates[id]?.clear();
+    latestConnectionResponses[id]?.clear();
+  }
+
+  /// Writes all the file parts inside the temp folder into one file therefore
+  /// creating the final downloaded file.
+  static bool assembleFile(
+      DownloadItem downloadItem, Directory baseTempDir, Directory baseSaveDir) {
+    final tempPath = join(baseTempDir.path, downloadItem.uid);
+    final tempDir = Directory(tempPath);
+    final segmentDirs = tempDir.listSync().map((o) => o as Directory).toList();
+    segmentDirs.sort(FileUtil.sortByFileName);
+    File fileToWrite = File(downloadItem.filePath);
+    if (fileToWrite.existsSync()) {
+      final newFilePath = FileUtil.getFilePath(
+        downloadItem.fileName,
+        baseSaveDir: baseSaveDir,
+      );
+      fileToWrite = File(newFilePath);
+    }
+    fileToWrite.createSync(recursive: true);
+    for (var dir in segmentDirs) {
+      final segmentFiles = dir.listSync().map((o) => o as File).toList();
+      segmentFiles.sort(FileUtil.sortByFileName);
+      for (var file in segmentFiles) {
+        final bytes = file.readAsBytesSync();
+        fileToWrite.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
+      }
+    }
+    final assembleSuccessful =
+        fileToWrite.lengthSync() == downloadItem.contentLength;
+    if (assembleSuccessful) {
+      for (var isolate in _connectionIsolates[downloadItem.id]!.values) {
+        isolate.kill();
+      }
+      tempDir.delete(recursive: true);
+    }
+    return assembleSuccessful;
+  }
+
+  static void _setConnectionProgresses(DownloadProgress progress) {
+    final id = progress.downloadItem.id;
+    _connectionProgresses[id] ??= {};
+    progress.connectionProgresses = _connectionProgresses[id]!.values.toList();
+  }
+
+  static void _setCompletionStatuses(DownloadProgress downloadProgress) {
+    downloadProgress.assembleProgress = 1;
+    downloadProgress.status = DownloadStatus.complete;
+    downloadProgress.downloadItem.status = DownloadStatus.complete;
+    downloadProgress.transferRate = "";
+    downloadProgress.downloadItem.finishDate = DateTime.now();
+  }
+
+  static void _setEstimation(
+      int id, DownloadProgress downloadProgress, double totalProgress) {
+    if (completionEstimations[id] == null) return;
+    downloadProgress.estimatedRemaining =
+        totalProgress >= 1 ? "" : completionEstimations[id]!;
+  }
+
+  static int _tempTime = _nowMillis;
+
+  /// TODO : floor or ceil transfer rate value in order to get more consistent estimation
+  static void _calculateEstimatedRemaining(int id, double bytesTransferRate) {
+    final progresses = _connectionProgresses[id];
+    final nowMillis = _nowMillis;
+    if (progresses == null ||
+        _tempTime + 1000 > nowMillis ||
+        bytesTransferRate == 0) return;
+    int totalBytes = 0;
+    final contentLength = progresses.values.first.downloadItem.contentLength;
+    for (var element in progresses.values) {
+      totalBytes += element.totalReceivedBytes;
+    }
+    final remainingSec = (contentLength - totalBytes) / bytesTransferRate;
+    String estimatedRemaining;
+    final days = ((remainingSec % 31536000) / 86400).floor();
+    final hours = (((remainingSec % 31536000) % 86400) / 3600).floor();
+    final minutes = ((((remainingSec % 31536000) % 86400) % 3600) / 60).floor();
+    final seconds = ((((remainingSec % 31536000) % 86400) % 3600) % 60).floor();
+    if (days >= 1) {
+      estimatedRemaining =
+          '$days Days, $hours Hours, $minutes Minutes, $seconds Seconds';
+    } else if (hours >= 1) {
+      estimatedRemaining = '$hours Hours, $minutes Minutes, $seconds Seconds';
+    } else if (minutes >= 1) {
+      estimatedRemaining = '$minutes Minutes, $seconds Seconds';
+    } else if (remainingSec == 0) {
+      estimatedRemaining = "";
+    } else {
+      estimatedRemaining = '${remainingSec.toStringAsFixed(0)} Seconds';
+    }
+    _tempTime = _nowMillis;
+    completionEstimations.addAll({id: estimatedRemaining});
+  }
+
+  static void _setStatus(int id, DownloadProgress downloadProgress) {
+    if (_connectionProgresses[id] == null) return;
+    final firstProgress = _connectionProgresses[id]!.values.first;
+    String status = firstProgress.status;
+    final totalProgress = _calculateTotalDownloadProgress(id);
+    final allConnecting = _connectionProgresses[id]!
+        .values
+        .every((p) => p.detailsStatus == DownloadStatus.connecting);
+    if (allConnecting) {
+      status = DownloadStatus.connecting;
+    }
+    if (totalProgress >= 1) {
+      status = DownloadStatus.complete;
+      if (downloadProgress.assembleProgress < 1) {
+        status = DownloadStatus.assembling;
+      }
+    }
+    downloadProgress.status = status;
+    downloadProgress.downloadItem.status = status;
+  }
+
+  /// Sets the availability for start and pause buttons based on all the
+  /// status of all active connections
+  static void _setButtonAvailability(int id, DownloadProgress progress,
+      int totalSegments, double totalProgress) {
+    if (_connectionProgresses[id] == null ||
+        _connectionProgresses[id]!.length != totalSegments) return;
+    final progresses = _connectionProgresses[id]!.values;
+    if (totalProgress >= 1) {
+      progress.pauseButtonEnabled = false;
+      progress.startButtonEnabled = false;
+    } else {
+      progress.pauseButtonEnabled =
+          progresses.every((c) => c.pauseButtonEnabled);
+      progress.startButtonEnabled =
+          progresses.every((c) => c.startButtonEnabled);
+    }
+  }
+
+  static double _calculateTotalDownloadProgress(int id) {
+    double totalProgress = 0;
+    _connectionProgresses[id]!.forEach((_, value) {
+      totalProgress += value.totalDownloadProgress;
+    });
+    return totalProgress;
+  }
+
+  static bool checkTempWriteCompletion(int id) {
+    final progresses = _connectionProgresses[id]!.values;
+    final totalSegments = progresses.first.totalSegments;
+    return progresses.every((progress) => progress.writeProgress == 1) &&
+        progresses.length == totalSegments;
+  }
+
+  /// Updates the [latestConnectionResponses] map with the current time for the given connection
+  static void _updateLatestConnectionResponse(DownloadProgress segmentData) {
+    final downloadId = segmentData.downloadItem.id;
+    final segmentNumber = segmentData.segmentNumber;
+    latestConnectionResponses[downloadId] ??= {};
+    latestConnectionResponses[downloadId]![segmentNumber] = _nowMillis;
+  }
+
+  /// Resets the connections which have not been active for the amount of time
+  /// specified in [connectionResetWindowMillis]
+  static void runTimerBasedConnectionReset() async {
+    if (timer != null) return;
+    timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      latestConnectionResponses.forEach((id, connectionTimes) {
+        connectionTimes.forEach((segmentNumber, lastActive) {
+          if (lastActive + connectionResetWindowMillis < _nowMillis &&
+              !_connectionProgresses[id]![segmentNumber]!.paused) {
+            _resetConnection(id, segmentNumber);
+          }
+        });
+      });
+    });
+  }
+
+  static void _resetConnection(int downloadId, int connectionId) {
+    connectionRetryCount[downloadId] ??= {};
+    int? lastCount = connectionRetryCount[downloadId]?[connectionId];
+    if (lastCount == null ||
+        lastCount < maxConnectionRetryCount &&
+        maxConnectionRetryCount != -1) {
+      final channel = _connectionChannels[downloadId]![connectionId]!;
+      final arg = _createDownloadIsolateArgs(
+          downloadId, connectionId, DownloadCommand.resetConnection);
+      lastCount ??= 0;
+      connectionRetryCount[downloadId]?[connectionId] = lastCount + 1;
+      channel.sink.add(arg);
+    } else {
+      for (var channel in _connectionChannels[downloadId]!.values) {
+        final args = _createDownloadIsolateArgs(
+          downloadId,
+          connectionId,
+          DownloadCommand.forceCancel,
+        );
+        channel.sink.add(args);
+      }
+    }
+  }
+
+  static SegmentedDownloadIsolateArgs _createDownloadIsolateArgs(
+      int downloadId, int connectionId, DownloadCommand command) {
+    final progresses = _connectionProgresses[downloadId]!;
+    final progress = progresses[connectionId]!;
+    return SegmentedDownloadIsolateArgs(
+      baseSaveDir: baseSaveDir,
+      command: command,
+      downloadItem: progress.downloadItem,
+      baseTempDir: progress.baseTempDir,
+      segmentNumber: connectionId,
+      totalConnections: progresses.length,
+    );
+  }
+
+  static double _calculateTotalConnectionsTransferRate(int id) {
+    double sum = 0;
+    _connectionProgresses[id]!.forEach((key, value) {
+      sum += _connectionProgresses[id]![key]!.bytesTransferRate;
+    });
+    return sum;
+  }
+
+  /// Spawns an isolate responsible for each download connection.
+  /// [errorsAreFatal] is set to false to prevent isolate from closing when a
+  /// connection exception occurs. Otherwise, we wouldn't be able to reset the
+  /// connection because the isolate would already be dead.
+  static Future<void> _spawnDownloadRequestIsolate(
+      SegmentedDownloadIsolateArgs args,
+      int segmentNumber,
+      int totalSegments) async {
+    final rPort = ReceivePort();
+    final channel = IsolateChannel.connectReceive(rPort);
+    channel.sink.add(args);
+    final downloadId = args.downloadItem.id;
+    final isolateArgs = HandleSingleConnectionArgs(
+      totalSegments: totalSegments,
+      segmentNumber: segmentNumber,
+      sendPort: rPort.sendPort,
+    );
+    final isolate = await Isolate.spawn<HandleSingleConnectionArgs>(
+        SingleConnectionIsolationHandler.handleSingleConnection, isolateArgs,
+        errorsAreFatal: false);
+    _connectionIsolates[downloadId] ??= {};
+    _connectionIsolates[downloadId]![segmentNumber] = isolate;
+    _connectionChannels[downloadId] ??= {};
+    _connectionChannels[downloadId]![segmentNumber] = channel;
+  }
+
+  static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
+
+  static void _setSettings(SegmentedDownloadIsolateArgs data) {
+    maxConnectionRetryCount = data.connectionRetryCount;
+    connectionResetWindowMillis = data.connectionRetryTimeout * 1000;
+    baseSaveDir = data.baseSaveDir;
+  }
+}

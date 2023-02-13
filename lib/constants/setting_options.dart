@@ -1,0 +1,18 @@
+enum SettingOptions {
+    notificationOnDownloadCompletion,
+    notificationOnDownloadFailure,
+    launchOnStartUp,
+    minimizeToTrayOnClose,
+    openDownloadProgressWindow,
+    temporaryPath,
+    savePath,
+    videoFormats,
+    musicFormats,
+    compressedFormats,
+    documentFormats,
+    programFormats,
+    fileDuplicationBehaviour,
+    connectionsNumber,
+    connectionRetryCount,
+    connectionRetryTimeout,
+}
