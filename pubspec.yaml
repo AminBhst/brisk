@@ -48,13 +48,7 @@ dependencies:
   uuid: ^3.0.7
   windows_notification: ^0.0.3
   url_launcher: ^6.1.9
-  # system_tray: ^2.0.2
   window_manager: ^0.3.0
-  window_size:
-    git:
-      url: https://github.com/google/flutter-desktop-embedding.git
-      path: plugins/window_size
-      ref: 5c51870ced62a00e809ba4b81a846a052d241c9f
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -64,17 +58,17 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # flutter_launcher_icons: "^0.11.0"
+  # flutter_launcher_icons: "^0.11.0R
 
 
-flutter_icons:
-  windows:
-    generate: true
-    image_path: "assets/icons/logo.png"
-    icon_size: 48
-  macos:
-    generate: true
-    image_path: "assets/icons/logo.png"
+#flutter_icons:
+#  windows:
+#    generate: true
+#    image_path: "assets/icons/logo.png"
+#    icon_size: 48
+#  macos:
+#    generate: true
+#    image_path: "assets/icons/logo.png"
 
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -109,7 +103,7 @@ flutter:
     - assets/icons/image.svg
     - assets/icons/logo.svg
     - assets/icons/github.svg
-    - assets/icons/logo.png
+#    - assets/icons/logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

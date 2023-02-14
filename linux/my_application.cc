@@ -48,9 +48,14 @@ static void my_application_activate(GApplication* application) {
   }
 
   gtk_window_set_default_size(window, 1280, 720);
-  gtk_widget_realize(GTK_WIDGET(window));
+  gtk_widget_show(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
+   g_autoptr(GError) error = nullptr;
+    gtk_window_set_icon_from_file(window, g_strconcat(fl_dart_project_get_assets_path(project), "/assets/logo.svg", NULL), &error);
+    if (error != nullptr) {
+       g_warning("Failed to set icon: %s", error->message);
+    }
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
 
   FlView* view = fl_view_new(project);
