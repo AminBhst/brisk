@@ -48,7 +48,7 @@ dependencies:
   uuid: ^3.0.7
   windows_notification: ^0.0.3
   url_launcher: ^6.1.9
-  system_tray: ^2.0.2
+  # system_tray: ^2.0.2
   window_manager: ^0.3.0
   window_size:
     git:
@@ -64,7 +64,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: "^0.11.0"
+  # flutter_launcher_icons: "^0.11.0"
 
 
 flutter_icons:
