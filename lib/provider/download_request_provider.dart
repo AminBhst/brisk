@@ -58,8 +58,8 @@ class DownloadRequestProvider with ChangeNotifier {
       baseTempDir: SettingsCache.temporaryDir,
       baseSaveDir: SettingsCache.saveDir,
       totalConnections: totalConnections,
-      connectionRetryTimeout: SettingsCache.connectionRetryTimeout,
-      connectionRetryCount: SettingsCache.connectionRetryCount,
+      connectionRetryTimeout: SettingsCache.connectionRetryTimeout * 1000,
+      maxConnectionRetryCount: SettingsCache.connectionRetryCount,
     );
     if (channel == null) {
       channel = await _spawnHandlerIsolate(id);

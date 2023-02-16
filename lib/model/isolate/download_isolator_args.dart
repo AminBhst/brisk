@@ -18,7 +18,7 @@ class DownloadIsolatorArgs {
 class SegmentedDownloadIsolateArgs extends DownloadIsolatorArgs {
   int totalConnections;
   int? segmentNumber;
-  final int connectionRetryCount;
+  final int maxConnectionRetryCount;
   final int connectionRetryTimeout;
   final Directory baseSaveDir;
 
@@ -29,7 +29,7 @@ class SegmentedDownloadIsolateArgs extends DownloadIsolatorArgs {
     required this.totalConnections,
     required this.baseSaveDir,
     this.connectionRetryTimeout = 10,
-    this.connectionRetryCount = -1,
+    this.maxConnectionRetryCount = -1,
     this.segmentNumber,
   });
 }

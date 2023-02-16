@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk/model/download_progress.dart';
@@ -90,6 +91,17 @@ class MultiConnectionHttpDownloadRequest {
 
   final int totalSegments;
 
+  /// Connection retry
+  int lastResponseTimeMillis = DateTime.now().millisecondsSinceEpoch;
+
+  Timer? connectionResetTimer;
+
+  int _retryCount = 0;
+
+  int maxConnectionRetryCount;
+  
+  int connectionRetryTimeoutMillis;
+
   MultiConnectionHttpDownloadRequest({
     required this.downloadItem,
     required this.baseTempDir,
@@ -97,6 +109,8 @@ class MultiConnectionHttpDownloadRequest {
     required this.startByte,
     required this.endByte,
     required this.totalSegments,
+    this.connectionRetryTimeoutMillis = 10000,
+    this.maxConnectionRetryCount = -1,
   });
 
   /// Starts the download request.
@@ -106,6 +120,7 @@ class MultiConnectionHttpDownloadRequest {
   void start(DownloadProgressCallback progressCallback,
       {bool connectionReset = false}) {
     if (!connectionReset && startNotAllowed) return;
+    _runTimerBasedConnectionReset();
 
     detailsStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
@@ -140,6 +155,16 @@ class MultiConnectionHttpDownloadRequest {
     } catch (e) {
       _notifyChange();
     }
+  }
+
+  void _runTimerBasedConnectionReset() {
+    if (connectionResetTimer != null) return;
+    connectionResetTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (connectionRetryAllowed) {
+        resetConnection();
+        _retryCount++;
+      }
+    });
   }
 
   void _setChunkCount() {
@@ -196,6 +221,7 @@ class MultiConnectionHttpDownloadRequest {
   /// finished. The buffer will be emptied after each flush to be
   void _processChunk(List<int> chunk) {
     _updateStatus(DownloadStatus.downloading);
+    lastResponseTimeMillis = _nowMillis;
     pauseButtonEnabled = downloadItem.supportsPause;
     detailsStatus = transferRate;
     _notifyChange();
@@ -339,7 +365,8 @@ class MultiConnectionHttpDownloadRequest {
       (paused && !isWritePartCaughtUp) ||
       (!paused && downloadProgress > 0) ||
       downloadItem.status == DownloadStatus.complete ||
-      status == DownloadStatus.complete;
+      status == DownloadStatus.complete ||
+      detailsStatus == DownloadStatus.complete;
 
   int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
@@ -355,6 +382,13 @@ class MultiConnectionHttpDownloadRequest {
   int get segmentLength => endByte == downloadItem.contentLength
       ? endByte - startByte
       : endByte - startByte + 1;
+
+  bool get connectionRetryAllowed =>
+      lastResponseTimeMillis + connectionRetryTimeoutMillis < _nowMillis &&
+      status != DownloadStatus.paused &&
+      status != DownloadStatus.complete &&
+      detailsStatus != DownloadStatus.complete &&
+      (_retryCount < maxConnectionRetryCount || maxConnectionRetryCount == -1);
 
   /// In order for download's play/pause functionality to work, the total received
   /// bytes must be calculated and be used for the resume request header. Therefore,

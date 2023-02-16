@@ -32,6 +32,8 @@ class SingleConnectionIsolationHandler {
             startByte: startEndByte[0],
             endByte: startEndByte[1],
             totalSegments: args.totalSegments,
+            connectionRetryTimeoutMillis: args.connectionRetryTimeout,
+            maxConnectionRetryCount: args.maxConnectionRetryCount,
           );
           _connections[id]![segmentNumber] = request;
         }
