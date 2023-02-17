@@ -2,7 +2,7 @@
 
 # Brisk
 
-Fast, multi-thread, cross-platform download manager
+Fast, multi-threaded, cross-platform download manager
 
 ## Demo
 <img align="center" src="https://i.im.ge/2023/02/13/aZxEkc.brisk-demo.gif">
