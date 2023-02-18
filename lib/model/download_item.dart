@@ -8,7 +8,7 @@ class DownloadItem {
   String uid;
   String fileName;
   String filePath;
-  final String downloadUrl;
+  String downloadUrl;
   final DateTime startDate;
   int contentLength;
   DateTime? finishDate;

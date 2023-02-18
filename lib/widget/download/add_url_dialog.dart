@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:brisk/constants/file_duplication_behaviour.dart';
+import 'package:brisk/dao/download_item_dao.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/http_util.dart';
-import 'package:brisk/util/notification_util.dart';
+import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
@@ -22,6 +23,11 @@ import 'ask_duplication_action.dart';
 import 'download_info_dialog.dart';
 
 class AddUrlDialog extends StatefulWidget {
+  final bool updateDialog;
+  final int? downloadId;
+
+  const AddUrlDialog({super.key, this.updateDialog = false, this.downloadId});
+
   @override
   State<AddUrlDialog> createState() => _AddUrlDialogState();
 }
@@ -40,8 +46,9 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
       child: AlertDialog(
         insetPadding: const EdgeInsets.all(10),
         backgroundColor: const Color.fromRGBO(25, 25, 25, 1),
-        title: const Text('Add a Download URL',
-            style: TextStyle(color: Colors.white)),
+        title: Text(
+            widget.updateDialog ? "Update Download URL" : "Add a Download URL",
+            style: const TextStyle(color: Colors.white)),
         content: SizedBox(
           width: 400,
           height: 100,
@@ -72,12 +79,14 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
         actions: <Widget>[
           RoundedOutlinedButton(
             text: "Cancel",
+            width: 80,
             borderColor: Colors.red,
             textColor: Colors.red,
             onPressed: () => _onCancelPressed(context),
           ),
           RoundedOutlinedButton(
-            text: "  Add  ",
+            text: widget.updateDialog ? "Update" : "Add",
+            width: 80,
             borderColor: Colors.green,
             textColor: Colors.green,
             onPressed: () => _onAddPressed(context),
@@ -105,22 +114,10 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
         context.loaderOverlay.show();
         retrieveFileInfo(rPort).then((fileInfo) {
           context.loaderOverlay.hide();
-          item.supportsPause = fileInfo.supportsPause;
-          item.contentLength = fileInfo.contentLength;
-          item.fileName = fileInfo.fileName;
-          item.fileType = FileUtil.detectFileType(fileInfo.fileName);
-          final fileExists = FileUtil.checkFileDuplication(item.fileName);
-          final dlDuplication = checkDownloadDuplication(item.fileName);
-          if (dlDuplication || fileExists) {
-            final behaviour = SettingsCache.fileDuplicationBehaviour;
-            if (behaviour == FileDuplicationBehaviour.ask) {
-              showAskDuplicationActionDialog(fileExists, item);
-            } else if (behaviour == FileDuplicationBehaviour.skip) {
-              Navigator.of(context).pop();
-              showDownloadExistsSnackBar();
-            }
+          if (widget.updateDialog) {
+            handleUpdateDownloadUrl(fileInfo, context, url);
           } else {
-            showDownloadInfoDialog(item, false);
+            addDownload(item, fileInfo, context);
           }
         }).onError(
           (_, __) {
@@ -135,6 +132,57 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
         );
       });
     }
+  }
+
+  void addDownload(DownloadItem item, FileInfo fileInfo, BuildContext context) {
+    item.supportsPause = fileInfo.supportsPause;
+    item.contentLength = fileInfo.contentLength;
+    item.fileName = fileInfo.fileName;
+    item.fileType = FileUtil.detectFileType(fileInfo.fileName);
+    final fileExists = FileUtil.checkFileDuplication(item.fileName);
+    final dlDuplication = checkDownloadDuplication(item.fileName);
+    if (dlDuplication || fileExists) {
+      final behaviour = SettingsCache.fileDuplicationBehaviour;
+      if (behaviour == FileDuplicationBehaviour.ask) {
+        showAskDuplicationActionDialog(fileExists, item);
+      } else if (behaviour == FileDuplicationBehaviour.skip) {
+        Navigator.of(context).pop();
+        showDownloadExistsSnackBar();
+      }
+    } else {
+      showDownloadInfoDialog(item, false);
+    }
+  }
+
+  void handleUpdateDownloadUrl(
+      FileInfo fileInfo, BuildContext context, String url) {
+    DownloadItemDao.instance.getById(widget.downloadId!).then((dl) {
+      if (dl.contentLength != fileInfo.contentLength) {
+        showDialog(
+            context: context,
+            builder: (context) => const ErrorDialog(
+                  width: 400,
+                  text: "The given URL does not refer to the same file",
+                ));
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) => ConfirmationDialog(
+                  onConfirmPressed: () => updateUrl(context, url, dl),
+                  title: "Are you sure you want to update the URL?",
+                ));
+      }
+    });
+  }
+
+  void updateUrl(BuildContext context, String url, DownloadItem dl) {
+    final downloadProgress =
+        Provider.of<DownloadRequestProvider>(context, listen: false)
+            .downloads[widget.downloadId];
+    downloadProgress?.downloadItem.downloadUrl = url;
+    dl.downloadUrl = url;
+    DownloadItemDao.instance.update(dl);
+    Navigator.of(context).pop();
   }
 
   Future<ReceivePort> _spawnFileInfoRetrieverIsolate(DownloadItem item) async {

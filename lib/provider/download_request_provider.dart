@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:brisk/constants/download_command.dart';
@@ -15,8 +16,8 @@ import 'package:flutter/foundation.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
+import 'package:path/path.dart';
 
-import '../util/file_util.dart';
 import '../util/readability_util.dart';
 import '../util/settings_cache.dart';
 
@@ -47,19 +48,21 @@ class DownloadRequestProvider with ChangeNotifier {
   void executeDownloadCommand(int id, DownloadCommand command) async {
     DownloadProgress? downloadProgress = downloads[id];
     downloadProgress ??= await _addDownloadProgress(id);
-
+    final downloadItem = downloadProgress.downloadItem;
     StreamChannel? channel = handlerChannels[id];
     final totalConnections = downloadProgress.downloadItem.supportsPause
         ? SettingsCache.connectionsNumber
         : 1;
+
+    final connectionCount = getExistingConnectionCount(downloadItem) ?? totalConnections;
     final isolatorArgs = SegmentedDownloadIsolateArgs(
       command: command,
       downloadItem: downloadProgress.downloadItem,
       baseTempDir: SettingsCache.temporaryDir,
       baseSaveDir: SettingsCache.saveDir,
-      totalConnections: totalConnections,
-      connectionRetryTimeout: SettingsCache.connectionRetryTimeout,
-      connectionRetryCount: SettingsCache.connectionRetryCount,
+      totalConnections: connectionCount,
+      connectionRetryTimeout: SettingsCache.connectionRetryTimeout * 1000,
+      maxConnectionRetryCount: SettingsCache.connectionRetryCount,
     );
     if (channel == null) {
       channel = await _spawnHandlerIsolate(id);
@@ -67,6 +70,12 @@ class DownloadRequestProvider with ChangeNotifier {
       channel.stream.listen((prog) => _listenToHandlerChannel(prog, id));
     }
     channel.sink.add(isolatorArgs);
+  }
+
+  int? getExistingConnectionCount(DownloadItem downloadItem) {
+    final tempPath = join(SettingsCache.temporaryDir.path, downloadItem.uid);
+    final tempDir = Directory(tempPath);
+    return tempDir.existsSync() ? tempDir.listSync().length : null;
   }
 
   Future<StreamChannel> _spawnHandlerIsolate(int id) async {
@@ -150,14 +159,14 @@ class DownloadRequestProvider with ChangeNotifier {
   void _updateDownloadRequest(DownloadProgress progress, DownloadItem item) {
     final status = progress.status;
     if (_previousUpdateTime + 6000 < _nowMillis ||
-        status == DownloadStatus.complete ||
+        status == DownloadStatus.assembleComplete ||
         status == DownloadStatus.paused) {
-      if (status == DownloadStatus.complete) {
-        item.status = DownloadStatus.complete;
+      item.progress = progress.downloadProgress;
+      item.status = status;
+      if (status == DownloadStatus.assembleComplete) {
         item.finishDate = DateTime.now();
         // _updateDownloadCompletionNumbers(item.id);
       }
-      item.progress = progress.downloadProgress;
       DownloadItemDao.instance.update(item);
       _previousUpdateTime = _nowMillis;
     }
@@ -196,7 +205,7 @@ class DownloadRequestProvider with ChangeNotifier {
           ),
           "status": PlutoCell(
             value: e.status == ""
-                ? (e.downloadItem.status == DownloadStatus.complete ||
+                ? (e.downloadItem.status == DownloadStatus.assembleComplete ||
                         e.downloadItem.status == DownloadStatus.paused)
                     ? e.downloadItem.status
                     : ""

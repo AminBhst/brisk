@@ -1,5 +1,5 @@
 String convertPercentageNumberToReadableStr(double percentage) {
-  return percentage == 100
+  return percentage >= 99.99
       ? "${percentage.toStringAsFixed(0)}%"
       : "${percentage.toStringAsFixed(2)}%";
 }

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class ErrorDialog extends StatelessWidget {
   final String text;
+  final double width;
 
-  const ErrorDialog({super.key, required this.text});
+  const ErrorDialog({super.key, required this.text, this.width = 300});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class ErrorDialog extends StatelessWidget {
       insetPadding: const EdgeInsets.all(10),
       backgroundColor: Colors.black,
       content: SizedBox(
-        width: 300,
+        width: width,
         height: 30,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,

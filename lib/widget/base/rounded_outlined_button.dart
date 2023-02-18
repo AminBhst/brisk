@@ -6,6 +6,7 @@ class RoundedOutlinedButton extends StatelessWidget {
   final Color textColor;
   final String text;
   final Color backgroundColor;
+  final double? width;
 
   const RoundedOutlinedButton({
     Key? key,
@@ -14,23 +15,27 @@ class RoundedOutlinedButton extends StatelessWidget {
     required this.textColor,
     required this.text,
     this.backgroundColor = Colors.black38,
+    this.width,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: ButtonStyle(
-        backgroundColor: MaterialStatePropertyAll(backgroundColor),
-        shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
-        side: MaterialStateProperty.all(BorderSide(
-          color: borderColor,
-        )),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(color: textColor),
+    return SizedBox(
+      width: width,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: ButtonStyle(
+          backgroundColor: MaterialStatePropertyAll(backgroundColor),
+          shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
+          side: MaterialStateProperty.all(BorderSide(
+            color: borderColor,
+          )),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(color: textColor),
+        ),
       ),
     );
   }
