@@ -16,9 +16,11 @@ import '../../model/download_item.dart';
 import 'download_progress_window.dart';
 
 class DownloadInfoDialog extends StatefulWidget {
-  DownloadItem downloadItem;
+  final DownloadItem downloadItem;
+  final bool showActionButtons;
 
-  DownloadInfoDialog(this.downloadItem);
+  const DownloadInfoDialog(this.downloadItem,
+      {super.key, this.showActionButtons = true});
 
   @override
   State<DownloadInfoDialog> createState() => _DownloadInfoDialogState();
@@ -105,7 +107,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
                     ),
                     const SizedBox(height: 10),
                     Padding(
-                      padding: const EdgeInsets.only(left: 55),
+                      padding: EdgeInsets.only(left: widget.showActionButtons ? 55 : 16),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -118,14 +120,19 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
                           SizedBox(
                             width: 300,
                             height: 50,
-                            child: OutLinedTextField(controller: txtController),
+                            child: OutLinedTextField(
+                                readOnly: !widget.showActionButtons,
+                                controller: txtController),
                           ),
                           const SizedBox(width: 10),
-                          IconButton(
-                            onPressed: pickNewSaveLocation,
-                            icon: const Icon(
-                              Icons.open_in_new_rounded,
-                              color: Colors.white,
+                          Visibility(
+                            visible: widget.showActionButtons,
+                            child: IconButton(
+                              onPressed: pickNewSaveLocation,
+                              icon: const Icon(
+                                Icons.open_in_new_rounded,
+                                color: Colors.white,
+                              ),
                             ),
                           )
                         ],
@@ -173,35 +180,37 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
         ),
       ),
       actions: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(bottom: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              RoundedOutlinedButton(
-                text: "Cancel",
-                onPressed: () => Navigator.of(context).pop(),
-                borderColor: Colors.red,
-                textColor: Colors.red,
-              ),
-              const SizedBox(width: 40),
-              RoundedOutlinedButton(
-                text: "Download",
-                onPressed: () => _onDownloadPressed(context),
-                borderColor: Colors.green,
-                textColor: Colors.green,
-              ),
-              const SizedBox(width: 40),
-              RoundedOutlinedButton(
-                text: "Add to list",
-                onPressed: addToList,
-                borderColor: Colors.grey,
-                textColor: Colors.grey,
-              ),
-            ],
-          ),
-        )
+        widget.showActionButtons
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    RoundedOutlinedButton(
+                      text: "Cancel",
+                      onPressed: () => Navigator.of(context).pop(),
+                      borderColor: Colors.red,
+                      textColor: Colors.red,
+                    ),
+                    const SizedBox(width: 40),
+                    RoundedOutlinedButton(
+                      text: "Download",
+                      onPressed: () => _onDownloadPressed(context),
+                      borderColor: Colors.green,
+                      textColor: Colors.green,
+                    ),
+                    const SizedBox(width: 40),
+                    RoundedOutlinedButton(
+                      text: "Add to list",
+                      onPressed: addToList,
+                      borderColor: Colors.grey,
+                      textColor: Colors.grey,
+                    ),
+                  ],
+                ),
+              )
+            : Container()
       ],
     );
   }
