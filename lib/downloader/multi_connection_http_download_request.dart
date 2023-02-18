@@ -159,7 +159,7 @@ class MultiConnectionHttpDownloadRequest {
 
   void _runTimerBasedConnectionReset() {
     if (connectionResetTimer != null) return;
-    connectionResetTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+    connectionResetTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (connectionRetryAllowed) {
         resetConnection();
         _retryCount++;
@@ -387,7 +387,9 @@ class MultiConnectionHttpDownloadRequest {
       lastResponseTimeMillis + connectionRetryTimeoutMillis < _nowMillis &&
       status != DownloadStatus.paused &&
       status != DownloadStatus.complete &&
+      detailsStatus != DownloadStatus.canceled &&
       detailsStatus != DownloadStatus.complete &&
+      isWritePartCaughtUp &&
       (_retryCount < maxConnectionRetryCount || maxConnectionRetryCount == -1);
 
   /// In order for download's play/pause functionality to work, the total received
