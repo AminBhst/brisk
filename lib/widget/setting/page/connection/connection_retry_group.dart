@@ -41,7 +41,7 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
             value,
             (parsedValue) => SettingsCache.connectionRetryTimeout = parsedValue,
           ),
-          width: 71,
+          width: 75,
           textWidth: size.width * 0.6 * 0.32,
           text: "Connection retry timeout",
           icon: const Text("seconds", style: TextStyle(color: Colors.white),),
