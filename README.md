@@ -18,7 +18,6 @@ Fast, multi-threaded, cross-platform download manager
 - Browser extension for seamless downloads
 - Download speed limiter
 - System tray
-- Opening the file location inside the download manager
 
 If you have a feature request please open an issue and explain it in details.
 <p>Please refrain from requesting features which are already mentioned in the section above. </p>
