@@ -25,7 +25,7 @@ class SideMenu extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left : 10, top: 30),
+              padding: const EdgeInsets.only(left: 10, top: 30),
               child: SvgPicture.asset(
                 "assets/icons/logo.svg",
                 height: 25,
@@ -71,7 +71,7 @@ class SideMenu extends StatelessWidget {
                   icon: SvgPicture.asset(
                     'assets/icons/program.svg',
                     // color: Color.fromRGBO(65, 21, 48, 1),
-                    color : const Color.fromRGBO(245, 139, 84, 1),
+                    color: const Color.fromRGBO(245, 139, 84, 1),
                   ),
                   size: 30,
                   onTap: () => setGridFileTypeFilter(DLFileType.program),
@@ -132,7 +132,7 @@ class SideMenu extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(50),
               child: IconButton(
-                iconSize: 30,
+                  iconSize: 30,
                   onPressed: () => onSettingPressed(context),
                   icon: const Icon(
                     Icons.settings,
@@ -159,12 +159,14 @@ class SideMenu extends StatelessWidget {
   }
 
   void setUnfinishedGridFilter() {
-    PlutoGridStateManagerProvider.setFilter("status", DownloadStatus.complete,
+    PlutoGridStateManagerProvider.setFilter(
+        "status", DownloadStatus.assembleComplete,
         negate: true);
   }
 
   void setFinishedFilter() {
-    PlutoGridStateManagerProvider.setFilter("status", DownloadStatus.complete);
+    PlutoGridStateManagerProvider.setFilter(
+        "status", DownloadStatus.assembleComplete);
   }
 
   bool minimizedSideMenu(Size size) => size.width < 1300;
