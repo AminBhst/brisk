@@ -3,6 +3,5 @@ enum DownloadCommand {
   pause,
   cancel,
   forceCancel,
-  resetConnection,
   clearConnections
 }

@@ -27,9 +27,6 @@ class DownloadRequestProvider with ChangeNotifier {
   Map<int, StreamChannel?> handlerChannels = {};
   Map<int, Isolate?> handlerIsolates = {};
 
-  // int numberOfCompletedDownloads = 0;
-  // int numberOfUnfinishedDownloads = 0;
-
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
   void addRequest(DownloadItem item) {
@@ -37,7 +34,6 @@ class DownloadRequestProvider with ChangeNotifier {
     downloads.addAll({item.id: progress});
     insertRows([DownloadProgress(downloadItem: item)]);
     PlutoGridStateManagerProvider.plutoStateManager?.notifyListeners();
-    // numberOfUnfinishedDownloads++;
     notifyListeners();
   }
 
@@ -67,7 +63,7 @@ class DownloadRequestProvider with ChangeNotifier {
     if (channel == null) {
       channel = await _spawnHandlerIsolate(id);
       if (command == DownloadCommand.cancel) return;
-      channel.stream.listen((prog) => _listenToHandlerChannel(prog, id));
+      channel.stream.listen((progress) => _listenToHandlerChannel(progress, id));
     }
     channel.sink.add(isolatorArgs);
   }
@@ -90,28 +86,6 @@ class DownloadRequestProvider with ChangeNotifier {
     return channel;
   }
 
-  // void setNumberOfCompletedDownloads() {
-  //   numberOfCompletedDownloads =
-  //       PlutoGridStateManagerProvider.getFilteredRowCount(
-  //     "status",
-  //     DownloadStatus.complete,
-  //   );
-  //   notifyListeners();
-  // }
-
-  // void incrementNumberOfUnFinishedDownloads() {
-  //   numberOfUnfinishedDownloads++;
-  // }
-
-  // void setNumberOfUnfinishedDownloads() {
-  //   numberOfUnfinishedDownloads =
-  //       PlutoGridStateManagerProvider.getFilteredRowCount(
-  //     "status",
-  //     DownloadStatus.complete,
-  //     negate: true,
-  //   );
-  //   notifyListeners();
-  // }
 
   void _listenToHandlerChannel(dynamic progress, int id) {
     if (progress is DownloadProgress) {
@@ -178,15 +152,6 @@ class DownloadRequestProvider with ChangeNotifier {
     final lastIndex = rows!.isNotEmpty ? rows.last.sortIdx : -1;
     stateManager?.insertRows(lastIndex + 1, buildRows(progressData));
   }
-
-  // void _updateDownloadCompletionNumbers(int id) {
-  //   print(incrementions[id]);
-  //   if (incrementions[id] != null) return;
-  //   incrementions.addAll({id: true});
-  //   numberOfCompletedDownloads++;
-  //   numberOfUnfinishedDownloads--;
-  //   notifyListeners();
-  // }
 
   List<PlutoRow> buildRows(List<DownloadProgress> progressData) {
     return progressData.map((e) {

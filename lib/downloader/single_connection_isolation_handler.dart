@@ -45,9 +45,6 @@ class SingleConnectionIsolationHandler {
           case DownloadCommand.pause:
             request.pause(channel.sink.add);
             break;
-          case DownloadCommand.resetConnection:
-            request.resetConnection();
-            break;
           case DownloadCommand.clearConnections:
             _connections[id]?.clear();
             break;
