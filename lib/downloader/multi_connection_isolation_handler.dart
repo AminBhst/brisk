@@ -28,8 +28,6 @@ class MultiConnectionIsolationHandler {
   /// Settings
   static late Directory baseSaveDir;
 
-  /// TODO if some segments have been downloaded except one, that one segment will continue and all the others will be stuck at connecting status
-  /// TODO and the total progress only indicates that one connection which is receiving data
   static void handleMultiConnectionRequest(SendPort sendPort) async {
     final handlerChannel = IsolateChannel.connectSend(sendPort);
     handlerChannel.stream.listen((data) async {
@@ -38,6 +36,11 @@ class MultiConnectionIsolationHandler {
         final id = downloadItem.id;
         final isListened = _connectionChannels[id] != null;
         _setSettings(data);
+        if (isAssembledFileInvalid(downloadItem)) {
+          final progress = reassembleFile(downloadItem, data.baseTempDir);
+          handlerChannel.sink.add(progress);
+          return;
+        }
         _connectionChannels[id] ??= {};
         for (int i = 1; i <= data.totalConnections; i++) {
           if (_connectionChannels[id]![i] == null) {
@@ -127,9 +130,9 @@ class MultiConnectionIsolationHandler {
     final assembleSuccessful =
         fileToWrite.lengthSync() == downloadItem.contentLength;
     if (assembleSuccessful) {
-      for (var isolate in _connectionIsolates[downloadItem.id]!.values) {
+      _connectionIsolates[downloadItem.id]?.values.forEach((isolate) {
         isolate.kill();
-      }
+      });
       tempDir.delete(recursive: true);
     }
     return assembleSuccessful;
@@ -288,5 +291,28 @@ class MultiConnectionIsolationHandler {
 
   static void _setSettings(SegmentedDownloadIsolateArgs data) {
     baseSaveDir = data.baseSaveDir;
+  }
+
+  static bool isAssembledFileInvalid(DownloadItem downloadItem) {
+    final assembledFile = File(downloadItem.filePath);
+    return assembledFile.existsSync() &&
+        assembledFile.lengthSync() != downloadItem.contentLength;
+  }
+
+  static DownloadProgress reassembleFile(
+      DownloadItem downloadItem, Directory baseTempDir) {
+    File(downloadItem.filePath).deleteSync();
+
+    final success = assembleFile(downloadItem, baseTempDir, baseSaveDir);
+    final status = success
+        ? DownloadStatus.assembleComplete
+        : DownloadStatus.assembleFailed;
+    downloadItem.status = status;
+    final progress = DownloadProgress(
+      downloadItem: downloadItem,
+      status: status,
+      downloadProgress: 1,
+    );
+    return progress;
   }
 }
