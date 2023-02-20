@@ -214,7 +214,7 @@ class MultiConnectionIsolationHandler {
   }
 
   /// Sets the availability for start and pause buttons based on all the
-  /// status of all active connections
+  /// statuses of active connections
   static void _setButtonAvailability(int id, DownloadProgress progress,
       int totalSegments, double totalProgress) {
     if (_connectionProgresses[id] == null ||
@@ -224,10 +224,12 @@ class MultiConnectionIsolationHandler {
       progress.pauseButtonEnabled = false;
       progress.startButtonEnabled = false;
     } else {
+      final unfinishedConnections = progresses
+          .where((element) => element.detailsStatus != DownloadStatus.complete);
       progress.pauseButtonEnabled =
-          progresses.every((c) => c.pauseButtonEnabled);
+          unfinishedConnections.every((c) => c.pauseButtonEnabled);
       progress.startButtonEnabled =
-          progresses.every((c) => c.startButtonEnabled);
+          unfinishedConnections.every((c) => c.startButtonEnabled);
     }
   }
 
