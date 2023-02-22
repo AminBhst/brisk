@@ -23,7 +23,6 @@ import '../util/settings_cache.dart';
 
 class DownloadRequestProvider with ChangeNotifier {
   Map<int, DownloadProgress> downloads = {};
-  Map<int, bool> incrementions = {};
   Map<int, StreamChannel?> handlerChannels = {};
   Map<int, Isolate?> handlerIsolates = {};
 
@@ -31,7 +30,7 @@ class DownloadRequestProvider with ChangeNotifier {
 
   void addRequest(DownloadItem item) {
     final progress = DownloadProgress(downloadItem: item);
-    downloads.addAll({item.id: progress});
+    downloads.addAll({item.id!: progress});
     insertRows([DownloadProgress(downloadItem: item)]);
     PlutoGridStateManagerProvider.plutoStateManager?.notifyListeners();
     notifyListeners();
@@ -139,7 +138,6 @@ class DownloadRequestProvider with ChangeNotifier {
       item.status = status;
       if (status == DownloadStatus.assembleComplete) {
         item.finishDate = DateTime.now();
-        // _updateDownloadCompletionNumbers(item.id);
       }
       DownloadItemDao.instance.update(item);
       _previousUpdateTime = _nowMillis;

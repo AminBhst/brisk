@@ -53,12 +53,4 @@ class DownloadItemDao extends AbstractBaseDao<DownloadItem> {
     };
   }
 
-  @override
-  Future<int> save(DownloadItem entity) async {
-    final newId = await getNewId();
-    final values = entityToMap(entity);
-    values.update("id", (_) => newId);
-    entity.id = newId;
-    return (await database).insert(tableName, values);
-  }
 }

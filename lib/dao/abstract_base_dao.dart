@@ -15,7 +15,7 @@ abstract class AbstractBaseDao<E> {
   /// [map] contains key value pairs of each column in the row
   /// e.g. for DownloadItem objects, the map will look like this :
   /// {
-  ///   'id': entity.id,
+  ///       'id': entity.id,
   ///       'file_name': 'File.zip',
   ///       'download_url': 'a download link',
   ///       'start_date': '2022-05-31 05:41:42',
@@ -47,9 +47,8 @@ abstract class AbstractBaseDao<E> {
 
   Future<int> save(E entity) async {
     final db = await database;
-    final newId = await getNewId();
     var values = entityToMap(entity);
-    values.update("id", (_) => newId);
+    values.remove("id");
     return db.insert(tableName, values);
   }
 
