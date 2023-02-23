@@ -44,12 +44,14 @@ class DownloadRequestProvider with ChangeNotifier {
     DownloadProgress? downloadProgress = downloads[id];
     downloadProgress ??= await _addDownloadProgress(id);
     final downloadItem = downloadProgress.downloadItem;
+    if (downloadItem.status == DownloadStatus.assembleComplete) return;
     StreamChannel? channel = handlerChannels[id];
     final totalConnections = downloadProgress.downloadItem.supportsPause
         ? SettingsCache.connectionsNumber
         : 1;
 
-    final connectionCount = getExistingConnectionCount(downloadItem) ?? totalConnections;
+    final connectionCount =
+        getExistingConnectionCount(downloadItem) ?? totalConnections;
     final isolatorArgs = SegmentedDownloadIsolateArgs(
       command: command,
       downloadItem: downloadProgress.downloadItem,
@@ -62,7 +64,8 @@ class DownloadRequestProvider with ChangeNotifier {
     if (channel == null) {
       channel = await _spawnHandlerIsolate(id);
       if (command == DownloadCommand.cancel) return;
-      channel.stream.listen((progress) => _listenToHandlerChannel(progress, id));
+      channel.stream
+          .listen((progress) => _listenToHandlerChannel(progress, id));
     }
     channel.sink.add(isolatorArgs);
   }
@@ -84,7 +87,6 @@ class DownloadRequestProvider with ChangeNotifier {
     handlerChannels[id] = channel;
     return channel;
   }
-
 
   void _listenToHandlerChannel(dynamic progress, int id) {
     if (progress is DownloadProgress) {
