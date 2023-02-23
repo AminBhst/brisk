@@ -90,6 +90,7 @@ class MultiConnectionIsolationHandler {
                   _setCompletionStatuses(downloadProgress);
                 } else {
                   downloadProgress.status = DownloadStatus.assembleFailed;
+                  downloadProgress.downloadItem.status = DownloadStatus.assembleFailed;
                 }
                 handlerChannel.sink.add(downloadProgress);
               }
@@ -161,7 +162,7 @@ class MultiConnectionIsolationHandler {
 
   static int _tempTime = _nowMillis;
 
-  /// TODO : floor or ceil transfer rate value in order to get more consistent estimation
+
   static void _calculateEstimatedRemaining(int id, double bytesTransferRate) {
     final progresses = _connectionProgresses[id];
     final nowMillis = _nowMillis;
