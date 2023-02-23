@@ -30,7 +30,7 @@ class DownloadRequestProvider with ChangeNotifier {
 
   void addRequest(DownloadItem item) {
     final progress = DownloadProgress(downloadItem: item);
-    downloads.addAll({item.id!: progress});
+    downloads.addAll({item.id: progress});
     insertRows([DownloadProgress(downloadItem: item)]);
     PlutoGridStateManagerProvider.plutoStateManager?.notifyListeners();
     notifyListeners();
