@@ -9,7 +9,7 @@ Fast, multi-threaded, cross-platform download manager
 Installation files for Windows and Linux(rpm,deb,tar.gz) are available at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 
 ## Demo
-<img align="center" src="https://i.im.ge/2023/02/13/aZxEkc.brisk-demo.gif">
+<img align="center" src="https://i.im.ge/2023/02/25/7d6R9J.Brisk-Demo.gif">
 
 
 
