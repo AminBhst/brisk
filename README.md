@@ -19,7 +19,7 @@ Installation files for Windows and Linux(rpm,deb,tar.gz) are available at [Githu
 - Launch on startup and minimize to tray options are unavailable in settings
 - Some linux distros might face problems regarding notifications
 
-## Features which will be implemented
+## Features to come
 - Download queues
 - Browser extension for seamless downloads
 - Download speed limiter
