@@ -2,7 +2,8 @@
 
 # Brisk
 
-Fast, multi-threaded, cross-platform download manager
+Brisk is a fast, multi-threaded, cross-platform download manager. <p>
+The core download functionalities solely depend on dart's [http package](https://pub.dev/packages/http)
 
 
 ## Download
