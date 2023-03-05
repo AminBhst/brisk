@@ -27,4 +27,3 @@ Installation files for Windows and Linux(rpm,deb,tar.gz) are available at [Githu
 - System tray
 
 If you have a feature request please open an issue and explain it in details.
-<p>Please refrain from requesting features which are already mentioned in the section above. </p>
