@@ -26,4 +26,4 @@ Installation files for Windows and Linux(rpm,deb,tar.gz) are available at [Githu
 - Download speed limiter
 - System tray
 
-If you have a feature request please open an issue and explain it in details.
+If you have a feature request, please open an issue and explain it in details.
