@@ -140,32 +140,32 @@ class FileUtil {
     args.sendPort.send(calculateReceivedBytesSync(args.obj));
   }
 
-  static String resolveFileTypeIconPath(DLFileType fileType) {
-    if (fileType == DLFileType.music) {
+  static String resolveFileTypeIconPath(String fileType) {
+    if (fileType == DLFileType.music.name) {
       return 'assets/icons/music.svg';
-    } else if (fileType == DLFileType.video) {
+    } else if (fileType == DLFileType.video.name) {
       return 'assets/icons/video_2.svg';
-    } else if (fileType == DLFileType.compressed) {
+    } else if (fileType == DLFileType.compressed.name) {
       return 'assets/icons/archive.svg';
-    } else if (fileType == DLFileType.documents) {
+    } else if (fileType == DLFileType.documents.name) {
       return 'assets/icons/document.svg';
-    } else if (fileType == DLFileType.program) {
+    } else if (fileType == DLFileType.program.name) {
       return 'assets/icons/program.svg';
     } else {
       return 'assets/icons/file.svg';
     }
   }
 
-  static Color resolveFileTypeIconColor(DLFileType fileType) {
-    if (fileType == DLFileType.music) {
+  static Color resolveFileTypeIconColor(String fileType) {
+    if (fileType == DLFileType.music.name) {
       return Colors.cyanAccent;
-    } else if (fileType == DLFileType.video) {
+    } else if (fileType == DLFileType.video.name) {
       return Colors.pinkAccent;
-    } else if (fileType == DLFileType.compressed) {
+    } else if (fileType == DLFileType.compressed.name) {
       return Colors.blue;
-    } else if (fileType == DLFileType.documents) {
+    } else if (fileType == DLFileType.documents.name) {
       return Colors.orangeAccent;
-    } else if (fileType == DLFileType.program) {
+    } else if (fileType == DLFileType.program.name) {
       return const Color.fromRGBO(163, 74, 40, 1);
     } else {
       return Colors.grey;

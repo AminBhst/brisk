@@ -15,23 +15,23 @@ class DBQueries {
       "status TEXT"
       ");";
 
-  // static const createDownloadQueue =
-  //     "CREATE TABLE IF NOT EXISTS download_queue ("
-  //     "id INTEGER PRIMARY KEY,"
-  //     "queue_name TEXT NOT NULL"
-  //     ");";
+  static const createDownloadQueue =
+      "CREATE TABLE IF NOT EXISTS download_queue ("
+      "id INTEGER PRIMARY KEY,"
+      "queue_name TEXT NOT NULL UNIQUE"
+      ");";
 
-  // static const createDownloadItemQueue =
-  //     "CREATE TABLE IF NOT EXISTS download_item_queue ("
-  //     "download_item_id INTEGER NOT NULL,"
-  //     "download_queue_id INTEGER NOT NULL,"
-  //     "FOREIGN KEY (download_item_id) REFERENCES download_item(id)"
-  //     " ON DELETE CASCADE "
-  //     "ON UPDATE NO ACTION,"
-  //     "FOREIGN KEY (download_queue_id) REFERENCES download_queue(id) "
-  //     "ON DELETE CASCADE "
-  //     "ON UPDATE NO ACTION"
-  //     ");";
+  static const createDownloadItemQueue =
+      "CREATE TABLE IF NOT EXISTS download_item_queue ("
+      "download_item_id INTEGER NOT NULL,"
+      "download_queue_id INTEGER NOT NULL,"
+      "FOREIGN KEY (download_item_id) REFERENCES download_item(id)"
+      " ON DELETE CASCADE "
+      "ON UPDATE NO ACTION,"
+      "FOREIGN KEY (download_queue_id) REFERENCES download_queue(id) "
+      "ON DELETE CASCADE "
+      "ON UPDATE NO ACTION"
+      ");";
 
   static const createSetting = "CREATE TABLE IF NOT EXISTS setting ("
       "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -43,7 +43,7 @@ class DBQueries {
   static const insertDefaultSettings = "";
 
   static const createAllTables = createDownloadItem +
-      // createDownloadQueue +
-      // createDownloadItemQueue +
+      createDownloadQueue +
+      createDownloadItemQueue +
       createSetting;
 }

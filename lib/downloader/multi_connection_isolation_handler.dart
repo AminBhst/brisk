@@ -5,6 +5,7 @@ import 'dart:isolate';
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/downloader/single_connection_isolation_handler.dart';
 import 'package:brisk/model/download_item.dart';
+import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/isolate/download_isolator_args.dart';
 import 'package:brisk/model/isolate/isolate_method_args.dart';
@@ -106,7 +107,7 @@ class MultiConnectionIsolationHandler {
   /// Writes all the file parts inside the temp folder into one file therefore
   /// creating the final downloaded file.
   static bool assembleFile(
-      DownloadItem downloadItem, Directory baseTempDir, Directory baseSaveDir) {
+      DownloadItemModel downloadItem, Directory baseTempDir, Directory baseSaveDir) {
     final tempPath = join(baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final segmentDirs = tempDir.listSync().map((o) => o as Directory).toList();
@@ -294,14 +295,14 @@ class MultiConnectionIsolationHandler {
     baseSaveDir = data.baseSaveDir;
   }
 
-  static bool isAssembledFileInvalid(DownloadItem downloadItem) {
+  static bool isAssembledFileInvalid(DownloadItemModel downloadItem) {
     final assembledFile = File(downloadItem.filePath);
     return assembledFile.existsSync() &&
         assembledFile.lengthSync() != downloadItem.contentLength;
   }
 
   static DownloadProgress reassembleFile(
-      DownloadItem downloadItem, Directory baseTempDir) {
+      DownloadItemModel downloadItem, Directory baseTempDir) {
     File(downloadItem.filePath).deleteSync();
 
     final success = assembleFile(downloadItem, baseTempDir, baseSaveDir);

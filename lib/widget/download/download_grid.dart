@@ -3,6 +3,7 @@ import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/dao/download_item_dao.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
+import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/download/download_info_dialog.dart';
@@ -13,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'dart:io';
 
+import '../../db/HiveBoxes.dart';
 import 'download_progress_window.dart';
 
 class DownloadGrid extends StatefulWidget {
@@ -117,8 +119,8 @@ class _DownloadGridState extends State<DownloadGrid> {
                 width: fileType == DLFileType.program ? 25 : 30,
                 height: fileType == DLFileType.program ? 25 : 30,
                 child: SvgPicture.asset(
-                  FileUtil.resolveFileTypeIconPath(fileType),
-                  color: FileUtil.resolveFileTypeIconColor(fileType),
+                  FileUtil.resolveFileTypeIconPath(fileType.name),
+                  color: FileUtil.resolveFileTypeIconColor(fileType.name),
                 ),
               ),
               const SizedBox(width: 5),
@@ -196,6 +198,7 @@ class _DownloadGridState extends State<DownloadGrid> {
   }
 
   void onPopupMenuItemSelected(int value, int id) {
+    final dl = HiveBoxes.instance.downloadItemsBox.get(id)!;
     switch (value) {
       case 1:
         showDialog(
@@ -211,24 +214,18 @@ class _DownloadGridState extends State<DownloadGrid> {
         );
         break;
       case 3:
-        DownloadItemDao.instance.getById(id).then((dl) {
-          showDialog(
-              context: context,
-              builder: (context) =>
-                  DownloadInfoDialog(dl, showActionButtons: false));
-        });
+        showDialog(
+            context: context,
+            builder: (context) =>
+                DownloadInfoDialog(dl, showActionButtons: false));
         break;
       case 4:
-        DownloadItemDao.instance.getById(id).then((dl) {
-          launchUrlString("file:${dl.filePath}");
-        });
+        launchUrlString("file:${dl.filePath}");
         break;
       case 5:
-        DownloadItemDao.instance.getById(id).then((dl) {
-          final folder = dl.filePath
-              .substring(0, dl.filePath.lastIndexOf(Platform.pathSeparator));
-          launchUrlString("file:$folder");
-        });
+        final folder = dl.filePath
+            .substring(0, dl.filePath.lastIndexOf(Platform.pathSeparator));
+        launchUrlString("file:$folder");
         break;
     }
   }
@@ -242,6 +239,7 @@ class _DownloadGridState extends State<DownloadGrid> {
   Widget build(BuildContext context) {
     final provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);
+    final queueProvider = Provider.of<QueueProvider>(context);
     final size = MediaQuery.of(context).size;
     return Material(
       type: MaterialType.transparency,
@@ -265,13 +263,25 @@ class _DownloadGridState extends State<DownloadGrid> {
           ),
           columns: columns,
           rows: [],
-          onLoaded: (event) {
+          onLoaded: (event) async {
             PlutoGridStateManagerProvider.plutoStateManager
                 ?.setShowLoading(true);
             PlutoGridStateManagerProvider.setStateManager(event.stateManager);
             PlutoGridStateManagerProvider.plutoStateManager
                 ?.setSelectingMode(PlutoGridSelectingMode.row);
-            provider.fetchRows();
+            if (!queueProvider.queueSelected) {
+              provider.fetchRows(
+                  HiveBoxes.instance.downloadItemsBox.values.toList());
+            } else {
+              final queueId = queueProvider.selectedQueueId!;
+              final queue =
+                  await HiveBoxes.instance.downloadQueueBox.get(queueId);
+              if (queue?.downloadItemsIds == null) return;
+              final downloads = queue!.downloadItemsIds!
+                  .map((e) => HiveBoxes.instance.downloadItemsBox.get(e)!)
+                  .toList();
+              provider.fetchRows(downloads);
+            }
           },
         ),
       ),

@@ -57,5 +57,14 @@ class PlutoGridStateManagerProvider {
         0;
   }
 
+  static void doOperationOnCheckedRows(Function(int id, PlutoRow row) operation) {
+    final selectedRows = _stateManager?.checkedRows;
+    if (selectedRows == null) return;
+    for (var row in selectedRows) {
+      final id = row.cells["id"]!.value;
+      operation(id, row);
+    }
+  }
+
   static PlutoGridStateManager? get plutoStateManager => _stateManager;
 }

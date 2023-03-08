@@ -1,4 +1,5 @@
-import 'package:brisk/dao/download_item_dao.dart';
+import 'package:brisk/db/HiveBoxes.dart';
+import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/util/file_util.dart';
@@ -107,7 +108,8 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
                     ),
                     const SizedBox(height: 10),
                     Padding(
-                      padding: EdgeInsets.only(left: widget.showActionButtons ? 55 : 16),
+                      padding: EdgeInsets.only(
+                          left: widget.showActionButtons ? 55 : 16),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -215,11 +217,14 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
     );
   }
 
+  /// TODO fix download id bug
   void addToList() async {
     final request = widget.downloadItem;
-    await DownloadItemDao.instance.save(request);
-    provider.insertRows([DownloadProgress(downloadItem: request)]);
-    // provider.incrementNumberOfUnFinishedDownloads();
+    await HiveBoxes.instance.downloadItemsBox.add(request);
+    provider.insertRows([
+      DownloadProgress(
+          downloadItem: DownloadItemModel.fromDownloadItem(request))
+    ]);
     if (!mounted) return;
     Navigator.of(context).pop();
   }
@@ -236,13 +241,13 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
         widget.downloadItem.filePath = location;
         txtController.text = location;
       });
-      DownloadItemDao.instance.update(widget.downloadItem);
+      HiveBoxes.instance.downloadItemsBox
+          .put(widget.downloadItem.key, widget.downloadItem);
     }
   }
 
   void _onDownloadPressed(BuildContext context) async {
-    final id = await DownloadItemDao.instance.save(widget.downloadItem);
-    widget.downloadItem.id = id;
+    await HiveBoxes.instance.downloadItemsBox.add(widget.downloadItem);
     if (!mounted) return;
     final provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);
@@ -251,12 +256,12 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
     if (SettingsCache.openDownloadProgressWindow) {
       showDialog(
         context: context,
-        builder: (_) => DownloadProgressWindow(widget.downloadItem.id),
+        builder: (_) => DownloadProgressWindow(widget.downloadItem.key),
         barrierDismissible: false,
       );
     }
     provider.executeDownloadCommand(
-      widget.downloadItem.id,
+      widget.downloadItem.key,
       DownloadCommand.start,
     );
   }

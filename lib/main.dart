@@ -1,15 +1,23 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:brisk/dao/download_queue_dao.dart';
+import 'package:brisk/db/HiveBoxes.dart';
 import 'package:brisk/db/db_provider.dart';
+import 'package:brisk/model/download_item.dart';
+import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
+import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/notification_util.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/download_grid.dart';
 import 'package:brisk/widget/side_menu/side_menu.dart';
+import 'package:brisk/widget/top_menu/queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/top_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:window_manager/window_manager.dart';
 import './util/file_util.dart';
 import 'package:provider/provider.dart';
@@ -17,8 +25,9 @@ import 'package:timezone/data/latest.dart' as tz;
 
 import 'util/settings_cache.dart';
 
-void main() {
+void main() async {
   tz.initializeTimeZones();
+  await initHive();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<DownloadRequestProvider>(
@@ -27,9 +36,19 @@ void main() {
       ChangeNotifierProvider<SettingsProvider>(
         create: (_) => SettingsProvider(),
       ),
+      ChangeNotifierProvider<QueueProvider>(
+        create: (_) => QueueProvider(),
+      ),
     ],
     child: const MyApp(),
   ));
+}
+
+Future<void> initHive() async {
+  await Hive.initFlutter("Brisk");
+  Hive.registerAdapter(DownloadItemAdapter());
+  Hive.registerAdapter(DownloadQueueAdapter());
+  await HiveBoxes.instance.openBoxes();
 }
 
 class MyApp extends StatelessWidget {
@@ -57,7 +76,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with WindowListener {
-
   @override
   void onWindowClose() async {
     bool isPreventClose = await windowManager.isPreventClose();
@@ -89,6 +107,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     NotificationUtil.initPlugin();
     windowManager.addListener(this);
     windowManager.setPreventClose(true);
+    // DownloadQueueDao.instance.getById(1).then((value) => print(value.queue.first.fileName));
     super.initState();
   }
 
@@ -97,7 +116,6 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     windowManager.removeListener(this);
     super.dispose();
   }
-
 
   void startExtensionServer() async {
     var server = await HttpServer.bind(InternetAddress.loopbackIPv4, 8080);
@@ -110,6 +128,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
+    final queueProvider = Provider.of<QueueProvider>(context);
     return Scaffold(
       // backgroundColor: const Color.fromRGBO(40, 46, 58, 1),
       backgroundColor: Colors.black26,
@@ -125,7 +144,9 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TopMenu(),
+                    queueProvider.queueSelected
+                        ? QueueTopMenu()
+                        : TopMenu(),
                     DownloadGrid(),
                   ],
                 )

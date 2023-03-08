@@ -1,5 +1,7 @@
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
+import 'package:brisk/db/HiveBoxes.dart';
+import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/widget/setting/settings_window.dart';
@@ -10,11 +12,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
+import '../../provider/queue_provider.dart';
+
 class SideMenu extends StatelessWidget {
   const SideMenu({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final queueProvider = Provider.of<QueueProvider>(context);
     final size = MediaQuery.of(context).size;
     return Container(
       width: size.width * 0.2,
@@ -40,7 +45,10 @@ class SideMenu extends StatelessWidget {
                 Icons.download_rounded,
                 color: Colors.white,
               ),
-              onTap: PlutoGridStateManagerProvider.removeFilters,
+              onTap: () {
+                PlutoGridStateManagerProvider.removeFilters();
+                queueProvider.setIsQueueTopMenu(false);
+              },
               children: [
                 SideMenuListTileItem(
                   text: 'Music',
@@ -122,12 +130,21 @@ class SideMenu extends StatelessWidget {
               // ),
               title: "Finished",
             ),
-            // const SideMenuExpansionTile(
-            //   icon: Icon(Icons.queue, color: Colors.white),
-            //   title: 'Queues',
-            //   onTap: null,
-            //   children: [],
-            // ),
+            SideMenuExpansionTile(
+              icon: Icon(Icons.queue, color: Colors.white),
+              title: 'Queues',
+              onTap: null,
+              children: HiveBoxes.instance.downloadQueueBox.values
+                  .map(
+                    (e) => SideMenuListTileItem(
+                      text: e.name,
+                      responsive: false,
+                      icon: null,
+                      onTap: () => onQueueItemPressed(queueProvider, e),
+                    ),
+                  )
+                  .toList(),
+            ),
             const Spacer(),
             Padding(
               padding: const EdgeInsets.all(50),
@@ -143,6 +160,12 @@ class SideMenu extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void onQueueItemPressed(QueueProvider queueProvider, DownloadQueue e) {
+    PlutoGridStateManagerProvider.plutoStateManager?.removeAllRows();
+    queueProvider.setIsQueueTopMenu(true);
+    queueProvider.selectedQueueId = e.key;
   }
 
   void onSettingPressed(BuildContext context) {

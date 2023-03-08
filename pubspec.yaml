@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.1+2
+version: 1.0.2+3
 
 environment:
   sdk: '>=3.0.0-35.0.dev <4.0.0'
@@ -49,6 +49,9 @@ dependencies:
   windows_notification: ^0.0.3
   url_launcher: ^6.1.9
   window_manager: ^0.3.0
+  hive_flutter: ^1.1.0
+  hive: ^2.2.3
+  number_inc_dec: ^0.8.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -59,12 +62,13 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.11.0"
-
+  hive_generator: ^2.0.0
+  build_runner: ^2.3.3
 
 flutter_icons:
   windows:
     generate: true
-    image_path: "assets/icons/logo.png"
+    image_path: "assets/icons/logo.svg"
     icon_size: 48
   macos:
     generate: true
@@ -103,7 +107,7 @@ flutter:
     - assets/icons/image.svg
     - assets/icons/logo.svg
     - assets/icons/github.svg
-#    - assets/icons/logo.png
+  #    - assets/icons/logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

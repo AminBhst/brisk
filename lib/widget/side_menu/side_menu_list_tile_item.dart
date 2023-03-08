@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 
 class SideMenuListTileItem extends StatelessWidget {
   final String text;
-  final Widget icon;
+  final Widget? icon;
   final double size;
   Widget? trailing;
   VoidCallback onTap;
+  final bool responsive;
 
   SideMenuListTileItem({
     super.key,
     required this.text,
-    required this.icon,
+    this.responsive = true,
+    this.icon,
     this.size = 25,
     this.trailing,
     required this.onTap,
@@ -39,5 +41,5 @@ class SideMenuListTileItem extends StatelessWidget {
       ),
     );
   }
-  bool minimizedSideMenu(Size size) => size.width < 1300;
+  bool minimizedSideMenu(Size size) => size.width < 1300 && responsive;
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:brisk/constants/file_duplication_behaviour.dart';
 import 'package:brisk/dao/download_item_dao.dart';
+import 'package:brisk/db/HiveBoxes.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
@@ -138,7 +139,7 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
     item.supportsPause = fileInfo.supportsPause;
     item.contentLength = fileInfo.contentLength;
     item.fileName = fileInfo.fileName;
-    item.fileType = FileUtil.detectFileType(fileInfo.fileName);
+    item.fileType = FileUtil.detectFileType(fileInfo.fileName).name;
     final fileExists = FileUtil.checkFileDuplication(item.fileName);
     final dlDuplication = checkDownloadDuplication(item.fileName);
     if (dlDuplication || fileExists) {
@@ -156,23 +157,22 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
 
   void handleUpdateDownloadUrl(
       FileInfo fileInfo, BuildContext context, String url) {
-    DownloadItemDao.instance.getById(widget.downloadId!).then((dl) {
-      if (dl.contentLength != fileInfo.contentLength) {
-        showDialog(
-            context: context,
-            builder: (context) => const ErrorDialog(
-                  width: 400,
-                  text: "The given URL does not refer to the same file",
-                ));
-      } else {
-        showDialog(
-            context: context,
-            builder: (context) => ConfirmationDialog(
-                  onConfirmPressed: () => updateUrl(context, url, dl),
-                  title: "Are you sure you want to update the URL?",
-                ));
-      }
-    });
+    final dl = HiveBoxes.instance.downloadItemsBox.get(widget.downloadId!)!;
+    if (dl.contentLength != fileInfo.contentLength) {
+      showDialog(
+          context: context,
+          builder: (context) => const ErrorDialog(
+                width: 400,
+                text: "The given URL does not refer to the same file",
+              ));
+    } else {
+      showDialog(
+          context: context,
+          builder: (context) => ConfirmationDialog(
+                onConfirmPressed: () => updateUrl(context, url, dl),
+                title: "Are you sure you want to update the URL?",
+              ));
+    }
   }
 
   void updateUrl(BuildContext context, String url, DownloadItem dl) {
@@ -181,7 +181,7 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
             .downloads[widget.downloadId];
     downloadProgress?.downloadItem.downloadUrl = url;
     dl.downloadUrl = url;
-    DownloadItemDao.instance.update(dl);
+    HiveBoxes.instance.downloadItemsBox.put(dl.key, dl);
     Navigator.of(context).pop();
   }
 

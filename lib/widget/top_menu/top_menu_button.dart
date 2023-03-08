@@ -6,7 +6,12 @@ class TopMenuButton extends StatelessWidget {
   final Color onHoverColor;
   final VoidCallback onTap;
 
-  const TopMenuButton({super.key, required this.title, required this.icon, this.onHoverColor = Colors.blueGrey, required this.onTap});
+  const TopMenuButton(
+      {super.key,
+      required this.title,
+      required this.icon,
+      this.onHoverColor = Colors.blueGrey,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +25,17 @@ class TopMenuButton extends StatelessWidget {
           height: 80,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               icon,
-              Text(title, style: const TextStyle(color: Colors.white))
+              SizedBox(
+                width: 90,
+                child: Text(
+                  title,
+                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                  textAlign: TextAlign.center,
+                ),
+              )
             ],
           ),
         ),

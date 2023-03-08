@@ -5,7 +5,9 @@ import 'dart:isolate';
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/dao/download_item_dao.dart';
+import 'package:brisk/db/HiveBoxes.dart';
 import 'package:brisk/downloader/multi_connection_isolation_handler.dart';
+import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/isolate/download_isolator_args.dart';
@@ -29,9 +31,12 @@ class DownloadRequestProvider with ChangeNotifier {
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
   void addRequest(DownloadItem item) {
-    final progress = DownloadProgress(downloadItem: item);
-    downloads.addAll({item.id: progress});
-    insertRows([DownloadProgress(downloadItem: item)]);
+    final progress = DownloadProgress(
+        downloadItem: DownloadItemModel.fromDownloadItem(item));
+    downloads.addAll({item.key!: progress});
+    insertRows([
+      DownloadProgress(downloadItem: DownloadItemModel.fromDownloadItem(item))
+    ]);
     PlutoGridStateManagerProvider.plutoStateManager?.notifyListeners();
     notifyListeners();
   }
@@ -49,7 +54,8 @@ class DownloadRequestProvider with ChangeNotifier {
         ? SettingsCache.connectionsNumber
         : 1;
 
-    final connectionCount = getExistingConnectionCount(downloadItem) ?? totalConnections;
+    final connectionCount =
+        getExistingConnectionCount(downloadItem) ?? totalConnections;
     final isolatorArgs = SegmentedDownloadIsolateArgs(
       command: command,
       downloadItem: downloadProgress.downloadItem,
@@ -62,12 +68,13 @@ class DownloadRequestProvider with ChangeNotifier {
     if (channel == null) {
       channel = await _spawnHandlerIsolate(id);
       if (command == DownloadCommand.cancel) return;
-      channel.stream.listen((progress) => _listenToHandlerChannel(progress, id));
+      channel.stream
+          .listen((progress) => _listenToHandlerChannel(progress, id));
     }
     channel.sink.add(isolatorArgs);
   }
 
-  int? getExistingConnectionCount(DownloadItem downloadItem) {
+  int? getExistingConnectionCount(DownloadItemModel downloadItem) {
     final tempPath = join(SettingsCache.temporaryDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     return tempDir.existsSync() ? tempDir.listSync().length : null;
@@ -85,14 +92,14 @@ class DownloadRequestProvider with ChangeNotifier {
     return channel;
   }
 
-
   void _listenToHandlerChannel(dynamic progress, int id) {
     if (progress is DownloadProgress) {
       downloads[id] = progress;
       _handleNotification(progress);
       final downloadItem = progress.downloadItem;
       notifyAllListeners(progress);
-      _updateDownloadRequest(progress, downloadItem);
+      final dl = HiveBoxes.instance.downloadItemsBox.get(downloadItem.id)!;
+      _updateDownloadRequest(progress, dl);
       if (progress.status == DownloadStatus.failed) {
         _killIsolateConnection(id);
       }
@@ -117,9 +124,13 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   Future<DownloadProgress> _addDownloadProgress(int id) async {
-    final downloadRequest = await DownloadItemDao.instance.getById(id);
-    downloads.addAll({id: DownloadProgress(downloadItem: downloadRequest)});
-    return DownloadProgress(downloadItem: downloadRequest);
+    final downloadItem = HiveBoxes.instance.downloadItemsBox.get(id)!;
+    downloads.addAll({
+      id: DownloadProgress(
+          downloadItem: DownloadItemModel.fromDownloadItem(downloadItem))
+    });
+    return DownloadProgress(
+        downloadItem: DownloadItemModel.fromDownloadItem(downloadItem));
   }
 
   void _killIsolateConnection(int id) {
@@ -139,7 +150,7 @@ class DownloadRequestProvider with ChangeNotifier {
       if (status == DownloadStatus.assembleComplete) {
         item.finishDate = DateTime.now();
       }
-      DownloadItemDao.instance.update(item);
+      HiveBoxes.instance.downloadItemsBox.put(item.key, item);
       _previousUpdateTime = _nowMillis;
     }
   }
@@ -178,7 +189,7 @@ class DownloadRequestProvider with ChangeNotifier {
           "time_left": PlutoCell(value: e.estimatedRemaining),
           "start_date": PlutoCell(value: e.downloadItem.startDate),
           "finish_date": PlutoCell(value: e.downloadItem.finishDate ?? ""),
-          "file_type": PlutoCell(value: e.downloadItem.fileType.name),
+          "file_type": PlutoCell(value: e.downloadItem.fileType),
           "id": PlutoCell(value: e.downloadItem.id),
         },
       );
@@ -191,10 +202,11 @@ class DownloadRequestProvider with ChangeNotifier {
     PlutoGridStateManagerProvider.updateRowCells(progress);
   }
 
-  Future<void> fetchRows() async {
-    final requests = (await DownloadItemDao.instance.getAll())
-        .map((e) =>
-            DownloadProgress(downloadItem: e, downloadProgress: e.progress))
+  Future<void> fetchRows(List<DownloadItem> items) async {
+    final requests = items
+        .map((e) => DownloadProgress(
+            downloadItem: DownloadItemModel.fromDownloadItem(e),
+            downloadProgress: e.progress))
         .toList();
     final stateManager = PlutoGridStateManagerProvider.plutoStateManager;
     stateManager?.removeAllRows();

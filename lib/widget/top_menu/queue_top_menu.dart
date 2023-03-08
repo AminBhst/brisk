@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:brisk/constants/download_command.dart';
+import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/dao/download_item_dao.dart';
 import 'package:brisk/db/HiveBoxes.dart';
 import 'package:brisk/model/download_queue.dart';
@@ -19,10 +22,15 @@ import '../../dao/download_queue_dao.dart';
 import '../../provider/download_request_provider.dart';
 import '../../util/file_util.dart';
 import '../queue/add_to_queue_window.dart';
+import '../queue/start_queue_window.dart';
 
-class TopMenu extends StatelessWidget {
+class QueueTopMenu extends StatelessWidget {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
+  Timer? timer;
+  int simultaneousDownloads = 1;
+  Map<int, bool> completion = {};
 
   String url = '';
   late DownloadRequestProvider provider;
@@ -44,13 +52,10 @@ class TopMenu extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: TopMenuButton(
-              onTap: () => showDialog(
-                context: context,
-                builder: (_) => AddUrlDialog(),
-                barrierDismissible: false,
-              ),
-              title: 'Add URL',
-              icon: const Icon(Icons.add_rounded, color: Colors.white),
+              onTap: () => onStartQueuePressed(context),
+              title: 'Start Queue',
+              icon: const Icon(Icons.play_arrow_rounded, color: Colors.white),
+              onHoverColor: Colors.green,
             ),
           ),
           TopMenuButton(
@@ -76,25 +81,6 @@ class TopMenu extends StatelessWidget {
             title: 'Remove',
             icon: const Icon(Icons.delete, color: Colors.white),
             onHoverColor: Colors.red,
-          ),
-          TopMenuButton(
-            onTap: () => onAddToQueuePressed(context),
-            title: 'Add to queue',
-            icon: const Icon(Icons.queue, color: Colors.white),
-            onHoverColor: Colors.teal,
-          ),
-          const SizedBox(width: 10),
-          Container(
-            width: 2,
-            height: 50,
-            color: Colors.white,
-          ),
-          const SizedBox(width: 10),
-          TopMenuButton(
-            onTap: () => onCreateQueuePressed(context),
-            title: 'Create Queue',
-            icon: const Icon(Icons.queue_outlined, color: Colors.white),
-            onHoverColor: Colors.teal,
           ),
         ],
       ),
@@ -133,6 +119,46 @@ class TopMenu extends StatelessWidget {
     );
   }
 
+  void runQueueTimer(int i) {
+    simultaneousDownloads = i;
+    if (timer != null) return;
+    timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      completion.forEach((key, value) {
+        final download = provider.downloads[key];
+        if (download != null && download.status == DownloadStatus.assembleComplete) {
+          completion.removeWhere((id, _) => id == key);
+        }
+      });
+      final rows = fetchQueueRows(i);
+      for (final row in rows) {
+        final id = row.cells['id'] as int;
+        completion.addAll({id: false});
+        provider.executeDownloadCommand(id, DownloadCommand.start);
+      }
+    });
+  }
+
+  Iterable<PlutoRow> fetchQueueRows(int i) {
+    return PlutoGridStateManagerProvider.plutoStateManager!.rows
+        .where((row) =>
+            row.cells['status'] != DownloadStatus.assembleComplete &&
+            !completion.containsKey(row.cells['id']))
+        .toList()
+        .getRange(0, i);
+  }
+
+  void onStartQueuePressed(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => StartQueueWindow(
+        onStartPressed: (int i) {
+          PlutoGridStateManagerProvider.plutoStateManager?.rows
+              .forEach((element) {});
+        },
+      ),
+    );
+  }
+
   void onRemovePressed(BuildContext context) {
     showDialog(
       context: context,
@@ -140,7 +166,8 @@ class TopMenu extends StatelessWidget {
           onConfirmPressed: () {
             final stateManager =
                 PlutoGridStateManagerProvider.plutoStateManager;
-            PlutoGridStateManagerProvider.doOperationOnCheckedRows((id, row) async {
+            PlutoGridStateManagerProvider.doOperationOnCheckedRows(
+                (id, row) async {
               stateManager?.removeRows([row]);
               FileUtil.deleteDownloadTempDirectory(id);
               provider.executeDownloadCommand(
@@ -153,5 +180,4 @@ class TopMenu extends StatelessWidget {
           title: "Are you sure you want to delete the selected downloads?"),
     );
   }
-
 }

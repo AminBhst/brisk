@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import '../constants/types.dart';
 import '../util/file_util.dart';
@@ -78,7 +79,7 @@ class MultiConnectionHttpDownloadRequest {
   /// the resume button.
   bool pauseButtonEnabled = false;
 
-  DownloadItem downloadItem;
+  DownloadItemModel downloadItem;
 
   final Directory baseTempDir;
 
@@ -145,6 +146,7 @@ class MultiConnectionHttpDownloadRequest {
 
     try {
       var response = client.send(request);
+      response.timeout(const Duration(seconds: 5));
       response.asStream().listen((http.StreamedResponse streamedResponse) {
         streamedResponse.stream
             .listen(_processChunk, onDone: _onDownloadComplete, onError: (e) {
@@ -153,18 +155,19 @@ class MultiConnectionHttpDownloadRequest {
         });
       });
     } catch (e) {
+      print("YOOY OO YOOOOO ???? $e");
       _notifyChange();
     }
   }
 
   void _runTimerBasedConnectionReset() {
-    if (connectionResetTimer != null) return;
-    connectionResetTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      if (connectionRetryAllowed) {
-        resetConnection();
-        _retryCount++;
-      }
-    });
+    // if (connectionResetTimer != null) return;
+    // connectionResetTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+    //   if (connectionRetryAllowed) {
+    //     resetConnection();
+    //     _retryCount++
+    //   }
+    // });
   }
 
   void _setChunkCount() {
@@ -176,6 +179,7 @@ class MultiConnectionHttpDownloadRequest {
   void resetConnection() {
     client.close();
     _clearBuffer();
+    _dynamicFlushThreshold = double.infinity;
     start(progressCallback!, connectionReset: true);
   }
 
@@ -244,6 +248,8 @@ class MultiConnectionHttpDownloadRequest {
   void _flushBuffer() {
     final filePath = join(tempDirectory.path, _chunkCount.toString());
     final bytes = _writeToUin8List(tempReceivedBytes, buffer);
+    _chunkCount++;
+    _flushQueueCount++;
     File(filePath).writeAsBytes(mode: FileMode.writeOnly, bytes).then((file) {
       if (isWritePartCaughtUp && paused) {
         _updateStatus("Download Paused");
@@ -256,8 +262,6 @@ class MultiConnectionHttpDownloadRequest {
       _flushQueueComplete++;
       _notifyChange();
     });
-    _chunkCount++;
-    _flushQueueCount++;
     _clearBuffer();
   }
 

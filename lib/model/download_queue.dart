@@ -1,13 +1,14 @@
-import 'download_item.dart';
+import 'package:hive/hive.dart';
 
-class DownloadQueue {
-  final int id;
-  final String queueName;
-  List<DownloadItem> queue;
+part 'download_queue.g.dart';
 
-  DownloadQueue({
-    required this.id,
-    required this.queueName,
-    this.queue = const [],
-  });
+@HiveType(typeId: 1)
+class DownloadQueue extends HiveObject {
+  @HiveField(0)
+  String name;
+
+  @HiveField(1)
+  List<int>? downloadItemsIds;
+
+  DownloadQueue({required this.name, this.downloadItemsIds});
 }
