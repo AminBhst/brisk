@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class RoundedOutlinedButton extends StatelessWidget {
+class RoundedOutlinedButton extends StatefulWidget {
   final VoidCallback onPressed;
   final Color borderColor;
   final Color textColor;
@@ -19,22 +19,35 @@ class RoundedOutlinedButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<RoundedOutlinedButton> createState() => _RoundedOutlinedButtonState();
+}
+
+class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
+  bool hover = false;
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width,
+      width: widget.width,
       child: OutlinedButton(
-        onPressed: onPressed,
+        onPressed: widget.onPressed,
+        onHover: (val) => setState(() => hover = val),
         style: ButtonStyle(
-          backgroundColor: MaterialStatePropertyAll(backgroundColor),
+          backgroundColor: MaterialStatePropertyAll(
+            hover ? widget.borderColor : widget.backgroundColor,
+          ),
           shape: MaterialStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
-          side: MaterialStateProperty.all(BorderSide(
-            color: borderColor,
-          )),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          ),
+          side: MaterialStateProperty.all(
+            BorderSide(
+              color: widget.borderColor,
+            ),
+          ),
         ),
         child: Text(
-          text,
-          style: TextStyle(color: textColor),
+          widget.text,
+          style: TextStyle(color: hover ? Colors.white : widget.textColor),
         ),
       ),
     );
