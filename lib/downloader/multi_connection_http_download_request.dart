@@ -161,13 +161,13 @@ class MultiConnectionHttpDownloadRequest {
   }
 
   void _runTimerBasedConnectionReset() {
-    // if (connectionResetTimer != null) return;
-    // connectionResetTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-    //   if (connectionRetryAllowed) {
-    //     resetConnection();
-    //     _retryCount++
-    //   }
-    // });
+    if (connectionResetTimer != null) return;
+    connectionResetTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (connectionRetryAllowed) {
+        resetConnection();
+        _retryCount++;
+      }
+    });
   }
 
   void _setChunkCount() {
