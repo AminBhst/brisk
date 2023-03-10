@@ -4,7 +4,6 @@ import 'dart:isolate';
 
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/downloader/single_connection_isolation_handler.dart';
-import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/isolate/download_isolator_args.dart';
@@ -93,7 +92,6 @@ class MultiConnectionIsolationHandler {
                   downloadProgress.status = DownloadStatus.assembleFailed;
                   downloadProgress.downloadItem.status = DownloadStatus.assembleFailed;
                 }
-                handlerChannel.sink.add(downloadProgress);
               }
               _setConnectionProgresses(downloadProgress);
               handlerChannel.sink.add(downloadProgress);
