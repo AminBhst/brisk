@@ -58,7 +58,7 @@ class MultiConnectionIsolationHandler {
               _connectionProgresses[id]![segmentNumber] = progress;
               double totalByteTransferRate =
                   _calculateTotalConnectionsTransferRate(id);
-              final isTempWriteDone = checkTempWriteCompletion(id);
+              final isTempWriteComplete = checkTempWriteCompletion(id);
               final totalProgress = _calculateTotalDownloadProgress(id);
               final transferRate =
                   convertByteTransferRateToReadableStr(totalByteTransferRate);
@@ -76,9 +76,7 @@ class MultiConnectionIsolationHandler {
                 totalProgress,
               );
               _setStatus(id, downloadProgress);
-              if (isTempWriteDone &&
-                  downloadItem.status != DownloadStatus.assembleComplete &&
-                  downloadItem.status != DownloadStatus.assembleFailed) {
+              if (isTempWriteComplete && isAssembleEligible(downloadItem)) {
                 downloadProgress.status = DownloadStatus.assembling;
                 handlerChannel.sink.add(downloadProgress);
                 final success = assembleFile(
@@ -86,12 +84,7 @@ class MultiConnectionIsolationHandler {
                   progress.baseTempDir,
                   data.baseSaveDir,
                 );
-                if (success) {
-                  _setCompletionStatuses(downloadProgress);
-                } else {
-                  downloadProgress.status = DownloadStatus.assembleFailed;
-                  downloadProgress.downloadItem.status = DownloadStatus.assembleFailed;
-                }
+                _setCompletionStatuses(success, downloadProgress);
               }
               _setConnectionProgresses(downloadProgress);
               handlerChannel.sink.add(downloadProgress);
@@ -102,10 +95,15 @@ class MultiConnectionIsolationHandler {
     });
   }
 
+  static bool isAssembleEligible(DownloadItemModel downloadItem) {
+    return downloadItem.status != DownloadStatus.assembleComplete &&
+        downloadItem.status != DownloadStatus.assembleFailed;
+  }
+
   /// Writes all the file parts inside the temp folder into one file therefore
   /// creating the final downloaded file.
-  static bool assembleFile(
-      DownloadItemModel downloadItem, Directory baseTempDir, Directory baseSaveDir) {
+  static bool assembleFile(DownloadItemModel downloadItem,
+      Directory baseTempDir, Directory baseSaveDir) {
     final tempPath = join(baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final segmentDirs = tempDir.listSync().map((o) => o as Directory).toList();
@@ -144,12 +142,18 @@ class MultiConnectionIsolationHandler {
     progress.connectionProgresses = _connectionProgresses[id]!.values.toList();
   }
 
-  static void _setCompletionStatuses(DownloadProgress downloadProgress) {
-    downloadProgress.assembleProgress = 1;
-    downloadProgress.status = DownloadStatus.assembleComplete;
-    downloadProgress.downloadItem.status = DownloadStatus.assembleComplete;
+  static void _setCompletionStatuses(
+      bool success, DownloadProgress downloadProgress) {
+    if (success) {
+      downloadProgress.assembleProgress = 1;
+      downloadProgress.status = DownloadStatus.assembleComplete;
+      downloadProgress.downloadItem.status = DownloadStatus.assembleComplete;
+      downloadProgress.downloadItem.finishDate = DateTime.now();
+    } else {
+      downloadProgress.status = DownloadStatus.assembleFailed;
+      downloadProgress.downloadItem.status = DownloadStatus.assembleFailed;
+    }
     downloadProgress.transferRate = "";
-    downloadProgress.downloadItem.finishDate = DateTime.now();
   }
 
   static void _setEstimation(
@@ -160,7 +164,6 @@ class MultiConnectionIsolationHandler {
   }
 
   static int _tempTime = _nowMillis;
-
 
   static void _calculateEstimatedRemaining(int id, double bytesTransferRate) {
     final progresses = _connectionProgresses[id];
