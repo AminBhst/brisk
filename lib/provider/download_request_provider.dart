@@ -49,6 +49,7 @@ class DownloadRequestProvider with ChangeNotifier {
     DownloadProgress? downloadProgress = downloads[id];
     downloadProgress ??= await _addDownloadProgress(id);
     final downloadItem = downloadProgress.downloadItem;
+    if (downloadItem.status == DownloadStatus.assembleComplete) return;
     StreamChannel? channel = handlerChannels[id];
     final totalConnections = downloadProgress.downloadItem.supportsPause
         ? SettingsCache.connectionsNumber

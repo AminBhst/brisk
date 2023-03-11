@@ -21,6 +21,7 @@ class SettingsPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(15), color: Colors.black26),
       child: PageView(
         controller: provider.settingsPageController,
+        physics: NeverScrollableScrollPhysics(),
         children: const [
           GeneralSettingsPage(),
           FileSettingsPage(),
