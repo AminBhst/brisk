@@ -27,7 +27,7 @@ class AskDuplicationAction extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
-              "Download Already exists!",
+              "Download already exists!",
               style: TextStyle(color: Colors.white),
             ),
             const SizedBox(height: 50),
