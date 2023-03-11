@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:brisk/constants/file_duplication_behaviour.dart';
 import 'package:brisk/dao/download_item_dao.dart';
-import 'package:brisk/db/HiveBoxes.dart';
+import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';

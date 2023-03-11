@@ -1,6 +1,6 @@
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
-import 'package:brisk/db/HiveBoxes.dart';
+import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
@@ -78,7 +78,6 @@ class SideMenu extends StatelessWidget {
                   text: 'Programs',
                   icon: SvgPicture.asset(
                     'assets/icons/program.svg',
-                    // color: Color.fromRGBO(65, 21, 48, 1),
                     color: const Color.fromRGBO(245, 139, 84, 1),
                   ),
                   size: 30,
@@ -101,16 +100,6 @@ class SideMenu extends StatelessWidget {
                 'assets/icons/unfinished.svg',
                 color: Colors.white,
               ),
-              // trailing: Consumer<DownloadRequestProvider>(
-              //   builder: (context, provider, child) {
-              //     return NumberBadge(
-              //       color: Colors.red,
-              //       number: provider.numberOfUnfinishedDownloads.toString(),
-              //     );
-              //   },
-              // ),
-              trailing: null,
-              // builder: (context, provider, child) ),
               title: "Unfinished",
             ),
             SideMenuItem(
@@ -119,32 +108,27 @@ class SideMenu extends StatelessWidget {
                 Icons.download_done_rounded,
                 color: Colors.white,
               ),
-              trailing: null,
-              // trailing: Consumer<DownloadRequestProvider>(
-              //   builder: (context, provider, child) {
-              //     return NumberBadge(
-              //       color: Colors.green,
-              //       number: provider.numberOfCompletedDownloads.toString(),
-              //     );
-              //   },
-              // ),
               title: "Finished",
             ),
-            SideMenuExpansionTile(
-              icon: Icon(Icons.queue, color: Colors.white),
-              title: 'Queues',
-              onTap: null,
-              children: HiveBoxes.instance.downloadQueueBox.values
-                  .map(
-                    (e) => SideMenuListTileItem(
-                      text: e.name,
-                      responsive: false,
-                      icon: null,
-                      onTap: () => onQueueItemPressed(queueProvider, e),
-                    ),
-                  )
-                  .toList(),
+            SideMenuItem(
+              onTap: () => queueProvider.setIsQueueTopMenu(true),
+              leading: Icon(Icons.queue, color: Colors.white),
+              title: "Queues",
             ),
+            // SideMenuExpansionTile(
+            //   icon: Icon(Icons.queue, color: Colors.white),
+            //   title: 'Queues',
+            //   onTap: null,
+            //   children: HiveBoxes.instance.downloadQueueBox.values
+            //       .map(
+            //         (e) => SideMenuListTileItem(
+            //           text: e.name,
+            //           responsive: false,
+            //           icon: null,
+            //           onTap: () => onQueueItemPressed(queueProvider, e),
+            //         ),
+            //       ).toList(),
+            // ),
             const Spacer(),
             Padding(
               padding: const EdgeInsets.all(50),

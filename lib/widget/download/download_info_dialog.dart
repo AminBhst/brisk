@@ -1,4 +1,4 @@
-import 'package:brisk/db/HiveBoxes.dart';
+import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/provider/download_request_provider.dart';

@@ -19,6 +19,8 @@ class _StartQueueWindowState extends State<StartQueueWindow> {
   @override
   Widget build(BuildContext context) {
     return ClosableWindow(
+      disableCloseButton: true,
+      padding: EdgeInsets.only(top: 60),
       width: 530,
       height: 250,
       content: Column(
@@ -51,12 +53,12 @@ class _StartQueueWindowState extends State<StartQueueWindow> {
             children: [
               RoundedOutlinedButton(
                 width: 80,
-                onPressed: () {},
+                onPressed: () => Navigator.of(context).pop(),
                 borderColor: Colors.red,
                 textColor: Colors.red,
                 text: "Cancel",
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 20),
               RoundedOutlinedButton(
                 width: 80,
                 onPressed: () {

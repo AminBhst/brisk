@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/dao/download_item_dao.dart';
-import 'package:brisk/db/HiveBoxes.dart';
+import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
@@ -30,7 +30,7 @@ class QueueTopMenu extends StatelessWidget {
 
   Timer? timer;
   int simultaneousDownloads = 1;
-  Map<int, bool> completion = {};
+  List<int> runningRequests = [];
 
   String url = '';
   late DownloadRequestProvider provider;
@@ -82,6 +82,13 @@ class QueueTopMenu extends StatelessWidget {
             icon: const Icon(Icons.delete, color: Colors.white),
             onHoverColor: Colors.red,
           ),
+          TopMenuButton(
+            onTap: () => onCreateQueuePressed(context),
+            title: 'Create Queue',
+            icon: const Icon(Icons.queue_outlined, color: Colors.white),
+            fontSize: 11.5,
+            onHoverColor: Colors.teal,
+          ),
         ],
       ),
     );
@@ -121,30 +128,33 @@ class QueueTopMenu extends StatelessWidget {
 
   void runQueueTimer(int i) {
     simultaneousDownloads = i;
-    if (timer != null) return;
-    timer = Timer.periodic(const Duration(seconds: 2), (timer) {
-      completion.forEach((key, value) {
-        final download = provider.downloads[key];
-        if (download != null && download.status == DownloadStatus.assembleComplete) {
-          completion.removeWhere((id, _) => id == key);
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      List<int> toRemove = [];
+      runningRequests.forEach((request) {
+        final download = provider.downloads[request];
+        if (download != null &&
+            download.status == DownloadStatus.assembleComplete) {
+          toRemove.add(request);
         }
       });
-      final rows = fetchQueueRows(i);
-      for (final row in rows) {
-        final id = row.cells['id'] as int;
-        completion.addAll({id: false});
+      toRemove.forEach((id) => runningRequests.remove(id));
+      final requestsToStart = simultaneousDownloads - runningRequests.length;
+      for (int i = 0; i < requestsToStart; i++) {
+        final row = fetchQueueRow();
+        final id = row.cells['id']!.value;
         provider.executeDownloadCommand(id, DownloadCommand.start);
+        runningRequests.add(id);
       }
     });
   }
 
-  Iterable<PlutoRow> fetchQueueRows(int i) {
+  PlutoRow fetchQueueRow() {
     return PlutoGridStateManagerProvider.plutoStateManager!.rows
         .where((row) =>
-            row.cells['status'] != DownloadStatus.assembleComplete &&
-            !completion.containsKey(row.cells['id']))
+            row.cells['status']!.value != DownloadStatus.assembleComplete &&
+            !runningRequests.contains(row.cells['id']!.value))
         .toList()
-        .getRange(0, i);
+        .first;
   }
 
   void onStartQueuePressed(BuildContext context) {
@@ -152,8 +162,7 @@ class QueueTopMenu extends StatelessWidget {
       context: context,
       builder: (context) => StartQueueWindow(
         onStartPressed: (int i) {
-          PlutoGridStateManagerProvider.plutoStateManager?.rows
-              .forEach((element) {});
+          runQueueTimer(i);
         },
       ),
     );

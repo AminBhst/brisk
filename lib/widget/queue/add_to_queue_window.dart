@@ -1,5 +1,5 @@
 import 'package:brisk/dao/download_queue_dao.dart';
-import 'package:brisk/db/HiveBoxes.dart';
+import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
@@ -98,6 +98,7 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
       queue.downloadItemsIds!.add(id);
       HiveBoxes.instance.downloadQueueBox.put(queue.key, queue);
     }
+    Navigator.of(context).pop();
   }
 
   void setDownloadQueues() {

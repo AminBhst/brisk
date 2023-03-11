@@ -11,7 +11,7 @@ class SideMenuItem extends StatelessWidget {
     required this.onTap,
     this.hoverColor = const Color.fromRGBO(51, 59, 75, 1),
     required this.leading,
-    required this.trailing,
+    this.trailing = null,
     required this.title,
   });
 

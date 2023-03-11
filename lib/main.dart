@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:brisk/dao/download_queue_dao.dart';
-import 'package:brisk/db/HiveBoxes.dart';
+import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/db/db_provider.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/download_queue.dart';
@@ -12,6 +12,7 @@ import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/notification_util.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/download_grid.dart';
+import 'package:brisk/widget/queue/download_queue_list.dart';
 import 'package:brisk/widget/side_menu/side_menu.dart';
 import 'package:brisk/widget/top_menu/queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/top_menu.dart';
@@ -59,9 +60,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Brisk',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -107,7 +105,6 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     NotificationUtil.initPlugin();
     windowManager.addListener(this);
     windowManager.setPreventClose(true);
-    // DownloadQueueDao.instance.getById(1).then((value) => print(value.queue.first.fileName));
     super.initState();
   }
 
@@ -144,10 +141,10 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    queueProvider.queueSelected ? QueueTopMenu() : TopMenu(),
                     queueProvider.queueSelected
-                        ? QueueTopMenu()
-                        : TopMenu(),
-                    DownloadGrid(),
+                        ? DownloadQueueList()
+                        : DownloadGrid(),
                   ],
                 )
               ],

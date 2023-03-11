@@ -1,6 +1,6 @@
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/dao/download_item_dao.dart';
-import 'package:brisk/db/HiveBoxes.dart';
+import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
@@ -81,19 +81,7 @@ class TopMenu extends StatelessWidget {
             onTap: () => onAddToQueuePressed(context),
             title: 'Add to queue',
             icon: const Icon(Icons.queue, color: Colors.white),
-            onHoverColor: Colors.teal,
-          ),
-          const SizedBox(width: 10),
-          Container(
-            width: 2,
-            height: 50,
-            color: Colors.white,
-          ),
-          const SizedBox(width: 10),
-          TopMenuButton(
-            onTap: () => onCreateQueuePressed(context),
-            title: 'Create Queue',
-            icon: const Icon(Icons.queue_outlined, color: Colors.white),
+            fontSize: 11.5,
             onHoverColor: Colors.teal,
           ),
         ],
@@ -119,13 +107,6 @@ class TopMenu extends StatelessWidget {
     });
   }
 
-  void onCreateQueuePressed(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => CreateQueueWindow(),
-    );
-  }
-
   void onAddToQueuePressed(BuildContext context) {
     showDialog(
       context: context,
@@ -134,24 +115,36 @@ class TopMenu extends StatelessWidget {
   }
 
   void onRemovePressed(BuildContext context) {
-    showDialog(
+    final stateManager =
+        PlutoGridStateManagerProvider.plutoStateManager;
+    if (stateManager!.checkedRows.isEmpty) return;
+      showDialog(
       context: context,
       builder: (context) => ConfirmationDialog(
           onConfirmPressed: () {
-            final stateManager =
-                PlutoGridStateManagerProvider.plutoStateManager;
             PlutoGridStateManagerProvider.doOperationOnCheckedRows((id, row) async {
-              stateManager?.removeRows([row]);
+              stateManager.removeRows([row]);
               FileUtil.deleteDownloadTempDirectory(id);
               provider.executeDownloadCommand(
                   id, DownloadCommand.clearConnections);
               HiveBoxes.instance.downloadItemsBox.delete(id);
+              deleteDownloadFromQueues(id);
               provider.downloads.removeWhere((key, _) => key == id);
             });
-            stateManager?.notifyListeners();
+            stateManager.notifyListeners();
           },
           title: "Are you sure you want to delete the selected downloads?"),
     );
   }
 
+  void deleteDownloadFromQueues(int id) {
+    final queuesContainingDownload = HiveBoxes.instance.downloadQueueBox.values
+        .where((element) =>
+            element.downloadItemsIds != null &&
+            element.downloadItemsIds!.contains(id));
+    for (final queue in queuesContainingDownload) {
+      queue.downloadItemsIds?.remove(id);
+      HiveBoxes.instance.downloadQueueBox.put(queue.key, queue);
+    }
+  }
 }

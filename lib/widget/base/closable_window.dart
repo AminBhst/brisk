@@ -7,6 +7,7 @@ class ClosableWindow extends StatelessWidget {
   final List<Widget> actions;
   final VoidCallback? onWindowClosed;
   final EdgeInsets padding;
+  final bool disableCloseButton;
 
   const ClosableWindow({
     super.key,
@@ -15,7 +16,8 @@ class ClosableWindow extends StatelessWidget {
     this.height = 400,
     this.onWindowClosed,
     this.actions = const [],
-    this.padding= const EdgeInsets.all(20),
+    this.padding = const EdgeInsets.all(20),
+    this.disableCloseButton = false,
   });
 
   @override
@@ -31,6 +33,7 @@ class ClosableWindow extends StatelessWidget {
           padding: padding,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
+            border: Border.fromBorderSide(BorderSide(color: Colors.white24)),
             color: const Color.fromRGBO(25, 25, 25, 1),
           ),
           child: Column(
@@ -39,19 +42,22 @@ class ClosableWindow extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Stack(
                   children: [
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Material(
-                        type: MaterialType.transparency,
-                        child: IconButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              onWindowClosed?.call();
-                            },
-                            icon: const Icon(
-                              Icons.close_rounded,
-                              color: Colors.white,
-                            )),
+                    Visibility(
+                      visible : !disableCloseButton,
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: IconButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                onWindowClosed?.call();
+                              },
+                              icon: const Icon(
+                                Icons.close_rounded,
+                                color: Colors.white,
+                              )),
+                        ),
                       ),
                     )
                   ],

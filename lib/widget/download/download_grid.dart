@@ -7,6 +7,7 @@ import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/download/download_info_dialog.dart';
+import 'package:brisk/widget/download/download_row_pop_up_menu_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -14,7 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'dart:io';
 
-import '../../db/HiveBoxes.dart';
+import '../../db/hive_boxes.dart';
 import 'download_progress_window.dart';
 
 class DownloadGrid extends StatefulWidget {
@@ -54,67 +55,7 @@ class _DownloadGridState extends State<DownloadGrid> {
           final fileType = FileUtil.detectFileType(fileName);
           return Row(
             children: [
-              PopupMenuButton(
-                icon: const Icon(
-                  Icons.more_vert_rounded,
-                  color: Colors.white,
-                ),
-                color: const Color.fromRGBO(48, 48, 48, 1),
-                tooltip: "Options",
-                onSelected: (value) => onPopupMenuItemSelected(value, id),
-                itemBuilder: (BuildContext bc) {
-                  final provider =
-                      Provider.of<DownloadRequestProvider>(bc, listen: false);
-                  final downloadProgress = provider.downloads[id];
-                  final downloadExists = downloadProgress != null;
-                  final downloadComplete =
-                      status == DownloadStatus.assembleComplete;
-                  final updateUrlEnabled = downloadExists
-                      ? (downloadProgress.status == DownloadStatus.paused ||
-                          downloadProgress.status == DownloadStatus.canceled)
-                      : (status == DownloadStatus.paused ||
-                          status == DownloadStatus.canceled);
-                  return [
-                    PopupMenuItem(
-                      value: 1,
-                      enabled: updateUrlEnabled,
-                      child: !updateUrlEnabled
-                          ? Tooltip(
-                              message: "Download must be paused",
-                              child: getPopupMenuText(
-                                "Update URL",
-                                updateUrlEnabled,
-                              ),
-                            )
-                          : getPopupMenuText("Update URL", updateUrlEnabled),
-                    ),
-                    PopupMenuItem(
-                        value: 2,
-                        enabled: downloadExists,
-                        child: getPopupMenuText(
-                          "Open progress window",
-                          downloadExists,
-                        )),
-                    PopupMenuItem(
-                      value: 3,
-                      child: getPopupMenuText("Properties", true),
-                    ),
-                    PopupMenuItem(
-                      value: 4,
-                      enabled: downloadComplete,
-                      child: getPopupMenuText("Open file", downloadComplete),
-                    ),
-                    PopupMenuItem(
-                      value: 5,
-                      enabled: downloadComplete,
-                      child: getPopupMenuText(
-                        "Open file location",
-                        downloadComplete,
-                      ),
-                    )
-                  ];
-                },
-              ),
+              DownloadRowPopUpMenuButton(status: status, id: id),
               SizedBox(
                 width: fileType == DLFileType.program ? 25 : 30,
                 height: fileType == DLFileType.program ? 25 : 30,
