@@ -3,7 +3,7 @@
 # Brisk
 
 Brisk is a fast, multi-threaded, cross-platform download manager. <p>
-The core download functionalities are written using solely dart's [http package](https://pub.dev/packages/http)
+The core download functionalities are written solely using dart's [http package](https://pub.dev/packages/http)
 
 
 ## Download
@@ -26,5 +26,4 @@ Installation files for Windows and Linux(rpm,deb,tar.gz) are available at [Githu
 - Download speed limiter
 - System tray
 
-If you have a feature request please open an issue and explain it in details.
-<p>Please refrain from requesting features which are already mentioned in the section above. </p>
+If you have a feature request, please open an issue and explain it in details.
