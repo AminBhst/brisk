@@ -48,7 +48,7 @@ class DownloadRequestProvider with ChangeNotifier {
     DownloadProgress? downloadProgress = downloads[id];
     downloadProgress ??= await _addDownloadProgress(id);
     final downloadItem = downloadProgress.downloadItem;
-    if (downloadItem.status == DownloadStatus.assembleComplete) return;
+    if (checkDownloadCompletion(downloadItem)) return;
     StreamChannel? channel = handlerChannels[id];
     final totalConnections = downloadProgress.downloadItem.supportsPause
         ? SettingsCache.connectionsNumber
@@ -72,6 +72,12 @@ class DownloadRequestProvider with ChangeNotifier {
           .listen((progress) => _listenToHandlerChannel(progress, id));
     }
     channel.sink.add(isolatorArgs);
+  }
+
+  bool checkDownloadCompletion(DownloadItemModel downloadItem) {
+    final file = File(downloadItem.filePath);
+    return downloadItem.status == DownloadStatus.assembleComplete ||
+        (file.existsSync() && file.lengthSync() == downloadItem.contentLength);
   }
 
   int? getExistingConnectionCount(DownloadItemModel downloadItem) {
