@@ -74,7 +74,9 @@ class AddDownloadUiUtil {
         showAskDuplicationActionDialog(
             context, fileExists, item, additionalPop);
       } else if (behaviour == FileDuplicationBehaviour.skip) {
-        Navigator.of(context).pop();
+        if (additionalPop) {
+          Navigator.of(context).pop();
+        }
         showDownloadExistsSnackBar(context);
       }
     } else {
