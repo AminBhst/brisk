@@ -80,21 +80,16 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
   }
 
   void onAddPressed() async {
-    final selectedQueue = downloadQueues
-        ?.where((queue) => queue.name == selectedValue)
-        .first;
-    final selectedRows =
-        PlutoGridUtil.plutoStateManager?.checkedRows;
+    final selectedQueue =
+        downloadQueues?.where((queue) => queue.name == selectedValue).first;
+    final selectedRows = PlutoGridUtil.plutoStateManager?.checkedRows;
     if (selectedQueue == null || selectedRows == null) return;
     final queue = HiveBoxes.instance.downloadQueueBox.get(selectedQueue.key)!;
     for (var row in selectedRows) {
       final id = row.cells["id"]!.value;
-      if (queue.downloadItemsIds != null) {
-        if (queue.downloadItemsIds!.any((item) => item == id)) continue;
-        queue.downloadItemsIds = [...queue.downloadItemsIds!];
-      } else {
-        queue.downloadItemsIds = [];
-      }
+      queue.downloadItemsIds ??= [];
+      if (queue.downloadItemsIds!.any((item) => item == id)) continue;
+      queue.downloadItemsIds = [...queue.downloadItemsIds!];
       queue.downloadItemsIds!.add(id);
       HiveBoxes.instance.downloadQueueBox.put(queue.key, queue);
     }
