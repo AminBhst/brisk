@@ -9,9 +9,9 @@ import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/queue/create_queue_window.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive/hive.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
 
@@ -20,14 +20,40 @@ import '../../provider/download_request_provider.dart';
 import '../../util/file_util.dart';
 import '../queue/add_to_queue_window.dart';
 
-class TopMenu extends StatelessWidget {
+class TopMenu extends StatefulWidget {
+  @override
+  State<TopMenu> createState() => _TopMenuState();
+}
+
+class _TopMenuState extends State<TopMenu> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   String url = '';
+
   late DownloadRequestProvider provider;
 
   TextEditingController txtController = TextEditingController();
+
+
+  @override
+  void initState() {
+    HotKey _hotKey = HotKey(
+      KeyCode.keyQ,
+      modifiers: [KeyModifier.alt, KeyModifier.control],
+      scope: HotKeyScope.inapp,
+    );
+    hotKeyManager.register(
+      _hotKey,
+      keyDownHandler: (hotKey) async {
+        print("objectADSASDADASDSDASDASDASDIAOSDHIOASHDOIHASODIH");
+        // String url = await FlutterClipboard.paste();
+        // setState(() => txtController.text = url);
+        // _onAddPressed(context);
+      },
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,5 +164,4 @@ class TopMenu extends StatelessWidget {
           title: "Are you sure you want to delete the selected downloads?"),
     );
   }
-
 }

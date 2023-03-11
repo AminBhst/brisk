@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:brisk/dao/download_queue_dao.dart';
 import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/db/db_provider.dart';
 import 'package:brisk/model/download_item.dart';
@@ -9,27 +8,33 @@ import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
+import 'package:brisk/util/add_download_ui_util.dart';
+import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/notification_util.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/download_grid.dart';
+import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:brisk/widget/queue/download_queue_list.dart';
 import 'package:brisk/widget/side_menu/side_menu.dart';
 import 'package:brisk/widget/top_menu/download_queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/top_menu.dart';
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:window_manager/window_manager.dart';
 import './util/file_util.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:hotkey_manager/hotkey_manager.dart';
 
 import 'util/settings_cache.dart';
 
 void main() async {
   tz.initializeTimeZones();
   await initHive();
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<DownloadRequestProvider>(
@@ -111,6 +116,12 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   }
 
   @override
+  void didChangeDependencies() {
+    registerDefaultDownloadAdditionHotKey(context);
+    super.didChangeDependencies();
+  }
+
+  @override
   void dispose() {
     windowManager.removeListener(this);
     super.dispose();
@@ -125,42 +136,49 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final queueProvider = Provider.of<QueueProvider>(context);
-    return Scaffold(
-      // backgroundColor: const Color.fromRGBO(40, 46, 58, 1),
-      backgroundColor: Colors.black26,
-      body: Column(
-        children: [
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SideMenu(),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (queueProvider.queueTopMenu)
-                      QueueTopMenu()
-                    else if (queueProvider.downloadQueueTopMenu)
-                      DownloadQueueTopMenu()
-                    else
-                      TopMenu(),
-                    if (queueProvider.selectedQueueId != null)
-                      DownloadGrid()
-                    else if (queueProvider.queueTabSelected)
-                      DownloadQueueList()
-                    else
-                      DownloadGrid()
-                  ],
-                )
-              ],
+    return LoaderOverlay(
+      useDefaultLoading: false,
+      overlayWidget: FileInfoLoader(
+        onCancelPressed: () => AddDownloadUiUtil.cancelRequest(context),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.black26,
+        body: Column(
+          children: [
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SideMenu(),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (queueProvider.queueTopMenu)
+                        QueueTopMenu()
+                      else if (queueProvider.downloadQueueTopMenu)
+                        DownloadQueueTopMenu()
+                      else
+                        TopMenu(),
+                      if (queueProvider.selectedQueueId != null)
+                        DownloadGrid()
+                      else if (queueProvider.queueTabSelected)
+                        DownloadQueueList()
+                      else
+                        DownloadGrid()
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
