@@ -13,6 +13,8 @@ String convertByteToReadableStr(int length) {
     return '${(length / 1073741824).toStringAsFixed(2)} GB';
   } else if (length >= 1048576) {
     return '${(length / 1048576).toStringAsFixed(2)} MB';
+  } else if (length > 1024) {
+    return '${(length / 1024).toStringAsFixed(2)} KB';
   } else {
     return length.toString();
   }
