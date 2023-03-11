@@ -11,7 +11,7 @@ import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/isolate/download_isolator_args.dart';
-import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
+import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/notification_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -37,7 +37,7 @@ class DownloadRequestProvider with ChangeNotifier {
     insertRows([
       DownloadProgress(downloadItem: DownloadItemModel.fromDownloadItem(item))
     ]);
-    PlutoGridStateManagerProvider.plutoStateManager?.notifyListeners();
+    PlutoGridUtil.plutoStateManager?.notifyListeners();
     notifyListeners();
   }
 
@@ -100,6 +100,9 @@ class DownloadRequestProvider with ChangeNotifier {
       final downloadItem = progress.downloadItem;
       notifyAllListeners(progress);
       final dl = HiveBoxes.instance.downloadItemsBox.get(downloadItem.id)!;
+      if (progress.assembleProgress == 1) {
+        HiveBoxes.instance.removeDownloadFromQueues(dl.key);
+      }
       _updateDownloadRequest(progress, dl);
       if (progress.status == DownloadStatus.failed) {
         _killIsolateConnection(id);
@@ -157,7 +160,7 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   void insertRows(List<DownloadProgress> progressData) {
-    final stateManager = PlutoGridStateManagerProvider.plutoStateManager;
+    final stateManager = PlutoGridUtil.plutoStateManager;
     final rows = stateManager?.rows;
     final lastIndex = rows!.isNotEmpty ? rows.last.sortIdx : -1;
     stateManager?.insertRows(lastIndex + 1, buildRows(progressData));
@@ -200,7 +203,7 @@ class DownloadRequestProvider with ChangeNotifier {
   void notifyAllListeners(DownloadProgress progress) {
     if (handlerChannels[progress.downloadItem.id] == null) return;
     notifyListeners();
-    PlutoGridStateManagerProvider.updateRowCells(progress);
+    PlutoGridUtil.updateRowCells(progress);
   }
 
   Future<void> fetchRows(List<DownloadItem> items) async {
@@ -209,7 +212,7 @@ class DownloadRequestProvider with ChangeNotifier {
             downloadItem: DownloadItemModel.fromDownloadItem(e),
             downloadProgress: e.progress))
         .toList();
-    final stateManager = PlutoGridStateManagerProvider.plutoStateManager;
+    final stateManager = PlutoGridUtil.plutoStateManager;
     stateManager?.removeAllRows();
     stateManager?.insertRows(0, buildRows(requests));
     stateManager?.setShowLoading(false);

@@ -15,6 +15,7 @@ import 'package:path/path.dart';
 import '../util/file_util.dart';
 import '../util/readability_util.dart';
 
+/// TODO : send pause command to isolates which are pending connection
 class MultiConnectionIsolationHandler {
   /// Keeps a map of all stream channels related to the running download requests
   static final Map<int, Map<int, StreamChannel>> _connectionChannels = {};

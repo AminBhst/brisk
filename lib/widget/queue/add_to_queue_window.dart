@@ -1,6 +1,6 @@
 import 'package:brisk/dao/download_queue_dao.dart';
 import 'package:brisk/db/hive_boxes.dart';
-import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
+import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
@@ -24,6 +24,8 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
     return ClosableWindow(
       width: 300,
       height: 250,
+      disableCloseButton: true,
+      padding: EdgeInsets.only(top: 50),
       content: Column(
         children: [
           Row(
@@ -58,7 +60,7 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
             children: [
               RoundedOutlinedButton(
                 width: 80,
-                onPressed: () {},
+                onPressed: () => Navigator.of(context).pop(),
                 borderColor: Colors.red,
                 textColor: Colors.red,
                 text: "Cancel",
@@ -84,7 +86,7 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
         ?.where((queue) => queue.name == selectedValue)
         .first;
     final selectedRows =
-        PlutoGridStateManagerProvider.plutoStateManager?.checkedRows;
+        PlutoGridUtil.plutoStateManager?.checkedRows;
     if (selectedQueue == null || selectedRows == null) return;
     final queue = HiveBoxes.instance.downloadQueueBox.get(selectedQueue.key)!;
     for (var row in selectedRows) {

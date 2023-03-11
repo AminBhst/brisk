@@ -1,10 +1,12 @@
 import 'package:brisk/dao/download_queue_dao.dart';
 import 'package:brisk/db/hive_boxes.dart';
-import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
+import 'package:brisk/provider/pluto_grid_util.dart';
+import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../model/download_queue.dart';
 
 class CreateQueueWindow extends StatefulWidget {
@@ -22,6 +24,8 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
     return ClosableWindow(
       width: 350,
       height: 250,
+      disableCloseButton: true,
+      padding: EdgeInsets.only(top: 60),
       content: Column(
         children: [
           Row(
@@ -50,7 +54,7 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
             children: [
               RoundedOutlinedButton(
                 width: 80,
-                onPressed: () {},
+                onPressed: () => Navigator.of(context).pop(),
                 borderColor: Colors.red,
                 textColor: Colors.red,
                 text: "Cancel",
@@ -72,6 +76,7 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
   }
 
   void onCreatePressed(BuildContext context) async {
+    final provider = Provider.of<QueueProvider>(context, listen: false);
     final box = HiveBoxes.instance.downloadQueueBox;
     final duplicateQueueName = box.values
         .where((queue) => queue.name == txtController.value.text)
@@ -85,7 +90,8 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
         ),
       );
     } else {
-      await box.add(DownloadQueue(name: txtController.value.text));
+      final queue = DownloadQueue(name: txtController.value.text);
+      await provider.saveQueue(queue);
       Navigator.of(context).pop();
     }
   }

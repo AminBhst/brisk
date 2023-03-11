@@ -4,24 +4,36 @@ import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
+import '../../provider/queue_provider.dart';
 import '../../util/file_util.dart';
 
 class QueueDetailsWindow extends StatefulWidget {
-  const QueueDetailsWindow({Key? key}) : super(key: key);
+  DownloadQueue queue;
+  QueueDetailsWindow({Key? key, required this.queue}) : super(key: key);
 
   @override
   State<QueueDetailsWindow> createState() => _QueueDetailsWindowState();
 }
 
 class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
-  DownloadQueue queue = HiveBoxes.instance.downloadQueueBox.values.first;
+  late List<int>? downloadIds = [];
+
+
+  @override
+  void initState() {
+    downloadIds = [...?widget.queue.downloadItemsIds];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return ClosableWindow(
       width: 800,
       height: 500,
+      disableCloseButton: true,
+      padding: EdgeInsets.only(top: 60),
       content: SizedBox(
         child: Column(
           children: [
@@ -47,7 +59,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                         buildDefaultDragHandles: false,
                         itemBuilder: (context, index) {
                           final dl = HiveBoxes.instance.downloadItemsBox
-                              .get(queue.downloadItemsIds![index])!;
+                              .get(HiveBoxes.instance.downloadQueueBox.get(widget.queue.key)!.downloadItemsIds![index])!;
                           return ListTile(
                             key: ValueKey(dl.key),
                             leading: SizedBox(
@@ -118,26 +130,27 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
   }
 
   void onSavePressed() async {
-    await queue.save();
+    await widget.queue.save();
+    Provider.of<QueueProvider>(context,listen: false).notifyListeners();
     Navigator.of(context).pop();
   }
 
   void onCancelPressed() {
-    queue = HiveBoxes.instance.downloadQueueBox.get(queue.key)!;
+    widget.queue.downloadItemsIds = downloadIds;
     Navigator.of(context).pop();
   }
 
   int get itemCount =>
-      queue.downloadItemsIds == null ? 0 : queue.downloadItemsIds!.length;
+      widget.queue.downloadItemsIds == null ? 0 : widget.queue.downloadItemsIds!.length;
 
   void onReorder(int oldIndex, int newIndex) {
-    final len = queue.downloadItemsIds!.length;
+    final len = widget.queue.downloadItemsIds!.length;
     if (newIndex >= len) newIndex = len - 1;
     if (oldIndex >= len) oldIndex = len - 1;
-    final id = queue.downloadItemsIds!.removeAt(oldIndex);
-    queue.downloadItemsIds!.insert(newIndex, id);
+    final id = widget.queue.downloadItemsIds!.removeAt(oldIndex);
+    widget.queue.downloadItemsIds!.insert(newIndex, id);
   }
 
   void onRemovePressed(int index) =>
-      setState(() => queue.downloadItemsIds!.removeAt(index));
+      setState(() => widget.queue.downloadItemsIds!.removeAt(index));
 }

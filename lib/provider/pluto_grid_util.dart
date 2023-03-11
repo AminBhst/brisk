@@ -3,7 +3,7 @@ import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
-class PlutoGridStateManagerProvider {
+class PlutoGridUtil {
   static PlutoGridStateManager? _stateManager;
 
   static void updateRowCells(DownloadProgress progress) {

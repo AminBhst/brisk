@@ -220,7 +220,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
   /// TODO fix download id bug
   void addToList() async {
     final request = widget.downloadItem;
-    await HiveBoxes.instance.downloadItemsBox.add(request);
+    await HiveBoxes.instance.addDownloadItem(request);
     provider.insertRows([
       DownloadProgress(
           downloadItem: DownloadItemModel.fromDownloadItem(request))
@@ -247,7 +247,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
   }
 
   void _onDownloadPressed(BuildContext context) async {
-    await HiveBoxes.instance.downloadItemsBox.add(widget.downloadItem);
+    await HiveBoxes.instance.addDownloadItem(widget.downloadItem);
     if (!mounted) return;
     final provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);

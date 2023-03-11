@@ -2,7 +2,7 @@ import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/model/download_queue.dart';
-import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
+import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/widget/setting/settings_window.dart';
 import 'package:brisk/widget/side_menu/side_menu_expansion_tile.dart';
@@ -45,10 +45,7 @@ class SideMenu extends StatelessWidget {
                 Icons.download_rounded,
                 color: Colors.white,
               ),
-              onTap: () {
-                PlutoGridStateManagerProvider.removeFilters();
-                queueProvider.setIsQueueTopMenu(false);
-              },
+              onTap: () => onDownloadsPressed(queueProvider),
               children: [
                 SideMenuListTileItem(
                   text: 'Music',
@@ -111,7 +108,7 @@ class SideMenu extends StatelessWidget {
               title: "Finished",
             ),
             SideMenuItem(
-              onTap: () => queueProvider.setIsQueueTopMenu(true),
+              onTap: () => onQueueTabPressed(queueProvider),
               leading: Icon(Icons.queue, color: Colors.white),
               title: "Queues",
             ),
@@ -146,10 +143,19 @@ class SideMenu extends StatelessWidget {
     );
   }
 
-  void onQueueItemPressed(QueueProvider queueProvider, DownloadQueue e) {
-    PlutoGridStateManagerProvider.plutoStateManager?.removeAllRows();
-    queueProvider.setIsQueueTopMenu(true);
-    queueProvider.selectedQueueId = e.key;
+  void onDownloadsPressed(QueueProvider queueProvider) {
+    PlutoGridUtil.removeFilters();
+    queueProvider.setQueueTopMenu(false);
+    queueProvider.setSelectedQueue(null);
+    queueProvider.setQueueTabSelected(false);
+    queueProvider.setDownloadQueueTopMenu(false);
+  }
+
+  void onQueueTabPressed(QueueProvider queueProvider) {
+    PlutoGridUtil.plutoStateManager?.removeAllRows();
+    queueProvider.setQueueTopMenu(true);
+    queueProvider.setQueueTabSelected(true);
+    queueProvider.setSelectedQueue(null);
   }
 
   void onSettingPressed(BuildContext context) {
@@ -162,17 +168,17 @@ class SideMenu extends StatelessWidget {
   }
 
   void setGridFileTypeFilter(DLFileType fileType) {
-    PlutoGridStateManagerProvider.setFilter("file_type", fileType.name);
+    PlutoGridUtil.setFilter("file_type", fileType.name);
   }
 
   void setUnfinishedGridFilter() {
-    PlutoGridStateManagerProvider.setFilter(
+    PlutoGridUtil.setFilter(
         "status", DownloadStatus.assembleComplete,
         negate: true);
   }
 
   void setFinishedFilter() {
-    PlutoGridStateManagerProvider.setFilter(
+    PlutoGridUtil.setFilter(
         "status", DownloadStatus.assembleComplete);
   }
 

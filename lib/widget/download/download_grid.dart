@@ -2,7 +2,7 @@ import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/dao/download_item_dao.dart';
 import 'package:brisk/provider/download_request_provider.dart';
-import 'package:brisk/provider/pluto_grid_state_manager_provider.dart';
+import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
@@ -138,44 +138,6 @@ class _DownloadGridState extends State<DownloadGrid> {
     ];
   }
 
-  void onPopupMenuItemSelected(int value, int id) {
-    final dl = HiveBoxes.instance.downloadItemsBox.get(id)!;
-    switch (value) {
-      case 1:
-        showDialog(
-          context: context,
-          builder: (context) =>
-              AddUrlDialog(downloadId: id, updateDialog: true),
-        );
-        break;
-      case 2:
-        showDialog(
-          context: context,
-          builder: (_) => DownloadProgressWindow(id),
-        );
-        break;
-      case 3:
-        showDialog(
-            context: context,
-            builder: (context) =>
-                DownloadInfoDialog(dl, showActionButtons: false));
-        break;
-      case 4:
-        launchUrlString("file:${dl.filePath}");
-        break;
-      case 5:
-        final folder = dl.filePath
-            .substring(0, dl.filePath.lastIndexOf(Platform.pathSeparator));
-        launchUrlString("file:$folder");
-        break;
-    }
-  }
-
-  Widget getPopupMenuText(String text, bool enabled) => Text(text,
-      style: TextStyle(
-        color: enabled ? Colors.white : Colors.grey,
-      ));
-
   @override
   Widget build(BuildContext context) {
     final provider =
@@ -205,12 +167,10 @@ class _DownloadGridState extends State<DownloadGrid> {
           columns: columns,
           rows: [],
           onLoaded: (event) async {
-            PlutoGridStateManagerProvider.plutoStateManager
-                ?.setShowLoading(true);
-            PlutoGridStateManagerProvider.setStateManager(event.stateManager);
-            PlutoGridStateManagerProvider.plutoStateManager
+            PlutoGridUtil.setStateManager(event.stateManager);
+            PlutoGridUtil.plutoStateManager
                 ?.setSelectingMode(PlutoGridSelectingMode.row);
-            if (!queueProvider.queueSelected) {
+            if (queueProvider.selectedQueueId == null) {
               provider.fetchRows(
                   HiveBoxes.instance.downloadItemsBox.values.toList());
             } else {

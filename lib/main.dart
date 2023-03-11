@@ -14,6 +14,7 @@ import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/download_grid.dart';
 import 'package:brisk/widget/queue/download_queue_list.dart';
 import 'package:brisk/widget/side_menu/side_menu.dart';
+import 'package:brisk/widget/top_menu/download_queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/top_menu.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,7 @@ Future<void> initHive() async {
   Hive.registerAdapter(DownloadItemAdapter());
   Hive.registerAdapter(DownloadQueueAdapter());
   await HiveBoxes.instance.openBoxes();
+  HiveBoxes.instance.putInitialBoxValues();
 }
 
 class MyApp extends StatelessWidget {
@@ -141,10 +143,18 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    queueProvider.queueSelected ? QueueTopMenu() : TopMenu(),
-                    queueProvider.queueSelected
-                        ? DownloadQueueList()
-                        : DownloadGrid(),
+                    if (queueProvider.queueTopMenu)
+                      QueueTopMenu()
+                    else if (queueProvider.downloadQueueTopMenu)
+                      DownloadQueueTopMenu()
+                    else
+                      TopMenu(),
+                    if (queueProvider.selectedQueueId != null)
+                      DownloadGrid()
+                    else if (queueProvider.queueTabSelected)
+                      DownloadQueueList()
+                    else
+                      DownloadGrid()
                   ],
                 )
               ],
