@@ -1,8 +1,6 @@
-import 'package:brisk/dao/download_queue_dao.dart';
 import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
-import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
 import '../../model/download_queue.dart';

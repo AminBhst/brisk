@@ -2,7 +2,6 @@ import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
-import '../constants/file_type.dart';
 
 part 'download_item.g.dart';
 
@@ -34,15 +33,12 @@ class DownloadItem extends HiveObject{
   double progress;
 
   @HiveField(9)
-  final int queueOrder;
-
-  @HiveField(10)
   String fileType;
 
-  @HiveField(11)
+  @HiveField(10)
   bool supportsPause;
 
-  @HiveField(12)
+  @HiveField(11)
   String status;
 
   DownloadItem({
@@ -53,7 +49,6 @@ class DownloadItem extends HiveObject{
     required this.startDate,
     this.finishDate,
     required this.progress,
-    this.queueOrder = 0,
     this.contentLength = 0,
     this.fileType = "other",
     this.supportsPause = false,

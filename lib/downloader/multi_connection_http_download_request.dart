@@ -6,7 +6,6 @@ import 'package:brisk/model/download_progress.dart';
 import '../constants/types.dart';
 import '../util/file_util.dart';
 import 'package:path/path.dart';
-import 'package:brisk/model/download_item.dart';
 import 'package:http/http.dart' as http;
 import '../constants/download_status.dart';
 

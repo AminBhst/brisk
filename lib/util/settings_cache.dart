@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:brisk/constants/file_duplication_behaviour.dart';
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/constants/setting_type.dart';
-import 'package:brisk/dao/setting_dao.dart';
-import 'package:brisk/db/db_provider.dart';
+import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/file_extensions.dart';
-import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/parse_util.dart';
+import './file_util.dart';
 
 class SettingsCache {
   /// General
@@ -100,7 +100,7 @@ class SettingsCache {
   };
 
   static Future<void> setCachedSettings() async {
-    final settings = await SettingDao.instance.getAll();
+    final settings = HiveBoxes.instance.settingBox.values;
     for (var setting in settings) {
       final value = setting.value;
       switch (parseSettingOptions(setting.name)) {
@@ -158,7 +158,7 @@ class SettingsCache {
   }
 
   static void saveCachedSettingsToDB() async {
-    final allSettings = await SettingDao.instance.getAll();
+    final allSettings = HiveBoxes.instance.settingBox.values;
     for (var setting in allSettings) {
       switch (parseSettingOptions(setting.name)) {
         case SettingOptions.notificationOnDownloadCompletion:
@@ -176,7 +176,8 @@ class SettingsCache {
           setting.value = parseBoolStr(SettingsCache.minimizeToTrayOnClose);
           break;
         case SettingOptions.openDownloadProgressWindow:
-          setting.value = parseBoolStr(SettingsCache.openDownloadProgressWindow);
+          setting.value =
+              parseBoolStr(SettingsCache.openDownloadProgressWindow);
           break;
         case SettingOptions.temporaryPath:
           setting.value = SettingsCache.temporaryDir.path;
@@ -213,13 +214,29 @@ class SettingsCache {
           break;
         default:
       }
-      await SettingDao.instance.update(setting);
+      await setting.save();
     }
   }
 
   static Future<void> resetDefault() async {
-    await SettingDao.instance.deleteAllRows();
-    await DBProvider.instance.getDB(init: true);
+    HiveBoxes.instance.settingBox.values
+        .forEach((setting) async => await setting.delete());
+    await setDefaultSettings();
     await setCachedSettings();
+  }
+
+  static Future<void> setDefaultSettings() async {
+    defaultSettings["savePath"]![1] = FileUtil.defaultSaveDir.path;
+    defaultSettings["temporaryPath"]![1] = FileUtil.defaultTempFileDir.path;
+    for (int i = 0; i < defaultSettings.length; i++) {
+      final key = defaultSettings.keys.elementAt(i);
+      final value = defaultSettings[key]!;
+      final setting = Setting(
+        name: key,
+        value: value[1],
+        settingType: value[0],
+      );
+      await HiveBoxes.instance.settingBox.put(i, setting);
+    }
   }
 }

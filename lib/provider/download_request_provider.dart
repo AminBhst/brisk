@@ -4,7 +4,6 @@ import 'dart:isolate';
 
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
-import 'package:brisk/dao/download_item_dao.dart';
 import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/downloader/multi_connection_isolation_handler.dart';
 import 'package:brisk/model/download_item_model.dart';

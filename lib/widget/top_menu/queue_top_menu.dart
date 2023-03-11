@@ -27,7 +27,7 @@ class QueueTopMenu extends StatelessWidget {
               onTap: () => onCreateQueuePressed(context),
               title: 'Create Queue',
               fontSize: 11.5,
-              icon: const Icon(Icons.queue_outlined, color: Colors.white),
+              icon: const Icon(Icons.add_rounded, color: Colors.white),
               onHoverColor: Colors.green,
             ),
           ),

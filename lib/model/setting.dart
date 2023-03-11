@@ -1,10 +1,21 @@
-import 'package:brisk/constants/setting_type.dart';
+import 'package:hive/hive.dart';
 
-class Setting {
-  int id;
+part 'setting.g.dart';
+
+@HiveType(typeId: 2)
+class Setting extends HiveObject {
+  @HiveField(0)
   String name;
-  String value;
-  SettingType type;
 
-  Setting({this.id = 0, required this.name, required this.value, required this.type});
+  @HiveField(1)
+  String value;
+
+  @HiveField(2)
+  String settingType;
+
+  Setting({
+    required this.name,
+    required this.value,
+    required this.settingType,
+  });
 }

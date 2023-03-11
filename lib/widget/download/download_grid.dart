@@ -1,22 +1,15 @@
-import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
-import 'package:brisk/dao/download_item_dao.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/file_util.dart';
-import 'package:brisk/widget/download/add_url_dialog.dart';
-import 'package:brisk/widget/download/download_info_dialog.dart';
 import 'package:brisk/widget/download/download_row_pop_up_menu_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'dart:io';
 
 import '../../db/hive_boxes.dart';
-import 'download_progress_window.dart';
 
 class DownloadGrid extends StatefulWidget {
   @override

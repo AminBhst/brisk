@@ -20,7 +20,7 @@ class _ConnectionNumberGroupState extends State<ConnectionNumberGroup> {
         DropDownSetting(
           onChanged: _onChanged,
           text: "Number of download connections",
-          items: [1, 2, 3, 4, 5, 6, 7, 8].map((e) => e.toString()).toList(),
+          items: [1, 2, 4, 8].map((e) => e.toString()).toList(),
           value: SettingsCache.connectionsNumber.toString(),
         ),
       ],

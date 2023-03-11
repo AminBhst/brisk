@@ -1,28 +1,10 @@
-import 'dart:async';
-
-import 'package:brisk/constants/file_duplication_behaviour.dart';
-import 'package:brisk/dao/download_item_dao.dart';
-import 'package:brisk/db/hive_boxes.dart';
-import 'package:brisk/model/download_item.dart';
-import 'package:brisk/model/file_metadata.dart';
-import 'package:brisk/model/isolate/isolate_args_pair.dart';
-import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/util/add_download_ui_util.dart';
-import 'package:brisk/util/file_util.dart';
-import 'package:brisk/util/http_util.dart';
-import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
-import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'dart:isolate';
 
-import 'package:provider/provider.dart';
-import '../../util/settings_cache.dart';
-import 'ask_duplication_action.dart';
-import 'download_info_dialog.dart';
 
 class AddUrlDialog extends StatefulWidget {
   final bool updateDialog;

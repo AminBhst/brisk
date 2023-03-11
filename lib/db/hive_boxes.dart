@@ -1,4 +1,6 @@
 import 'package:brisk/model/download_queue.dart';
+import 'package:brisk/model/setting.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:hive/hive.dart';
 
 import '../model/download_item.dart';
@@ -12,14 +14,21 @@ class HiveBoxes {
 
   late final Box<DownloadQueue> downloadQueueBox;
 
+  late final Box<Setting> settingBox;
+
   Future<void> openBoxes() async {
     downloadItemsBox = await Hive.openBox<DownloadItem>("download_items");
     downloadQueueBox = await Hive.openBox<DownloadQueue>("download_queues");
+    settingBox = await Hive.openBox<Setting>("settings");
   }
 
-  void putInitialBoxValues() {
-    if (downloadQueueBox.get(0) != null) return;
-    downloadQueueBox.put(0, DownloadQueue(name: "Main"));
+  Future<void> putInitialBoxValues() async {
+    if (downloadQueueBox.get(0) == null) {
+      downloadQueueBox.put(0, DownloadQueue(name: "Main"));
+    }
+    if (settingBox.get(0) == null) {
+      await SettingsCache.setDefaultSettings();
+    }
   }
 
   Future<void> addDownloadItem(DownloadItem downloadItem) async {

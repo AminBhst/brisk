@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:brisk/db/hive_boxes.dart';
-import 'package:brisk/db/db_provider.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/download_queue.dart';
+import 'package:brisk/model/setting.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
@@ -19,7 +19,6 @@ import 'package:brisk/widget/side_menu/side_menu.dart';
 import 'package:brisk/widget/top_menu/download_queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/top_menu.dart';
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -27,7 +26,6 @@ import 'package:window_manager/window_manager.dart';
 import './util/file_util.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:hotkey_manager/hotkey_manager.dart';
 
 import 'util/settings_cache.dart';
 
@@ -55,8 +53,8 @@ Future<void> initHive() async {
   await Hive.initFlutter("Brisk");
   Hive.registerAdapter(DownloadItemAdapter());
   Hive.registerAdapter(DownloadQueueAdapter());
+  Hive.registerAdapter(SettingAdapter());
   await HiveBoxes.instance.openBoxes();
-  HiveBoxes.instance.putInitialBoxValues();
 }
 
 class MyApp extends StatelessWidget {
@@ -104,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     // startExtensionServer();
     FileUtil.setDefaultTempDir().then((value) {
       FileUtil.setDefaultSaveDir().then((value) {
-        DBProvider.instance.getDB(init: true).then((_) {
+        HiveBoxes.instance.putInitialBoxValues().then((value) {
           SettingsCache.setCachedSettings();
         });
       });

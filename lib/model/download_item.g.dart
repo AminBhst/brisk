@@ -24,18 +24,17 @@ class DownloadItemAdapter extends TypeAdapter<DownloadItem> {
       startDate: fields[5] as DateTime,
       finishDate: fields[7] as DateTime?,
       progress: fields[8] as double,
-      queueOrder: fields[9] as int,
       contentLength: fields[6] as int,
-      fileType: fields[10] as String,
-      supportsPause: fields[11] as bool,
-      status: fields[12] as String,
+      fileType: fields[9] as String,
+      supportsPause: fields[10] as bool,
+      status: fields[11] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, DownloadItem obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(11)
       ..writeByte(1)
       ..write(obj.uid)
       ..writeByte(2)
@@ -53,12 +52,10 @@ class DownloadItemAdapter extends TypeAdapter<DownloadItem> {
       ..writeByte(8)
       ..write(obj.progress)
       ..writeByte(9)
-      ..write(obj.queueOrder)
-      ..writeByte(10)
       ..write(obj.fileType)
-      ..writeByte(11)
+      ..writeByte(10)
       ..write(obj.supportsPause)
-      ..writeByte(12)
+      ..writeByte(11)
       ..write(obj.status);
   }
 

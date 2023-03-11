@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/download_item_model.dart';
 
 import '../downloader/multi_connection_http_download_request.dart';

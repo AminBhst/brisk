@@ -19,8 +19,6 @@ class DownloadItemModel {
 
   double progress;
 
-  final int queueOrder;
-
   String fileType;
 
   bool supportsPause;
@@ -36,7 +34,6 @@ class DownloadItemModel {
     required this.startDate,
     this.finishDate,
     required this.progress,
-    this.queueOrder = 0,
     this.contentLength = 0,
     this.fileType = "other",
     this.supportsPause = false,
@@ -54,7 +51,6 @@ class DownloadItemModel {
       filePath: item.filePath,
       fileType: item.fileType,
       finishDate: item.finishDate,
-      queueOrder: item.queueOrder,
       status: item.status,
       supportsPause: item.supportsPause,
       uid: item.uid,
