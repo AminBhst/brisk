@@ -9,14 +9,16 @@ The core download logic is written solely using dart's [http package](https://pu
 ## Download
 Installation files for Windows and Linux(rpm,deb,tar.gz) are available at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 
-## Demo
-<img align="center" src="https://i.im.ge/2023/02/25/7d6R9J.Brisk-Demo.gif">
-
 
 ## Features
 - Multi-segment file downloading
 - Download Queues
 - Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
+
+
+## Demo
+<img align="center" src="https://i.im.ge/2023/02/25/7d6R9J.Brisk-Demo.gif">
+
 
 
 ## Known issues
