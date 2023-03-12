@@ -8,7 +8,7 @@ import 'package:brisk/model/setting.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
-import 'package:brisk/util/add_download_ui_util.dart';
+import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/notification_util.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
@@ -142,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     return LoaderOverlay(
       useDefaultLoading: false,
       overlayWidget: FileInfoLoader(
-        onCancelPressed: () => AddDownloadUiUtil.cancelRequest(context),
+        onCancelPressed: () => DownloadAdditionUiUtil.cancelRequest(context),
       ),
       child: Scaffold(
         backgroundColor: Colors.black26,

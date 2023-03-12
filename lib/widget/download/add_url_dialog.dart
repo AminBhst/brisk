@@ -1,4 +1,4 @@
-import 'package:brisk/util/add_download_ui_util.dart';
+import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:clipboard/clipboard.dart';
@@ -24,7 +24,7 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
     return LoaderOverlay(
       useDefaultLoading: false,
       overlayWidget: FileInfoLoader(
-        onCancelPressed: () => AddDownloadUiUtil.cancelRequest(context),
+        onCancelPressed: () => DownloadAdditionUiUtil.cancelRequest(context),
       ),
       child: AlertDialog(
         insetPadding: const EdgeInsets.all(10),
@@ -86,7 +86,7 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
 
   void _onAddPressed(BuildContext context) {
     final url = txtController.text;
-    AddDownloadUiUtil.handleDownloadAddition(context, url,
+    DownloadAdditionUiUtil.handleDownloadAddition(context, url,
         updateDialog: widget.updateDialog,
         downloadId: widget.downloadId,
         additionalPop: true);

@@ -68,10 +68,6 @@ class MultiConnectionHttpDownloadRequest {
   double writeProgress = 0;
   bool isWritingFilePart = false;
 
-  /// Determines if the user is permitted to hit the start (Resume) button or not
-  /// for further information refer to docs for [isWritePartCaughtUp]
-  // bool startButtonEnabled = false;
-
   /// Determines if the user is permitted to hit the pause button or not.
   /// In order to prevent issues (mostly regarding [startButtonEnabled] property),
   /// the user is only permitted to hit the pause button only once before hitting
@@ -154,7 +150,6 @@ class MultiConnectionHttpDownloadRequest {
         });
       });
     } catch (e) {
-      print("YOOY OO YOOOOO ???? $e");
       _notifyChange();
     }
   }
@@ -244,6 +239,14 @@ class MultiConnectionHttpDownloadRequest {
     }
   }
 
+
+  /// Flushes the buffer containing the received bytes
+  /// to the disk.
+  ///
+  /// all flush operations write temp files which their name corresponds to the order
+  /// in which they were received.
+  /// The path for the temp files is determined as followed :
+  /// [FileUtil.defaultTempFileDir]/[downloadItem.uid]/[segmentNumber]
   void _flushBuffer() {
     final filePath = join(tempDirectory.path, _chunkCount.toString());
     final bytes = _writeToUin8List(tempReceivedBytes, buffer);
@@ -342,18 +345,6 @@ class MultiConnectionHttpDownloadRequest {
     return bytes;
   }
 
-  /// Spawns an isolate which flushes the buffer containing the received bytes
-  /// to the disk.
-  ///
-  /// all flush operations write temp files which their name corresponds to the order
-  /// in which they were received.
-  /// The path for the temp files is determined as followed :
-  /// [FileUtil.defaultTempFileDir]/[downloadItem.id]/[segmentNumber]
-  ///
-  /// a [receivePort] is returned which is used to communicate between the main
-  /// and the flusher isolate in order to notify the main isolate about the
-  /// state of the disk write operation
-
   void _updateReceivedBytes(List<int> chunk) {
     totalReceivedBytes += chunk.length;
     tempReceivedBytes += chunk.length;
@@ -379,6 +370,10 @@ class MultiConnectionHttpDownloadRequest {
         segmentNumber.toString(),
       ));
 
+
+  /// Determines if the user is permitted to hit the start (Resume) button or not
+  /// for further information refer to docs for [isWritePartCaughtUp]
+  // bool startButtonEnabled = false;
   bool get isStartButtonEnabled =>
       (isWritePartCaughtUp && paused) || downloadProgress == 0;
 

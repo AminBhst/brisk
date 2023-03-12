@@ -61,13 +61,12 @@ class MultiConnectionIsolationHandler {
                   _calculateTotalConnectionsTransferRate(id);
               final isTempWriteComplete = checkTempWriteCompletion(id);
               final totalProgress = _calculateTotalDownloadProgress(id);
-              final transferRate =
-                  convertByteTransferRateToReadableStr(totalByteTransferRate);
               _calculateEstimatedRemaining(id, totalByteTransferRate);
               final downloadProgress = DownloadProgress(
                 downloadItem: progress.downloadItem,
                 downloadProgress: totalProgress,
-                transferRate: transferRate,
+                transferRate:
+                    convertByteTransferRateToReadableStr(totalByteTransferRate),
               );
               _setEstimation(id, downloadProgress, totalProgress);
               _setButtonAvailability(

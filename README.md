@@ -22,7 +22,6 @@ Installation files for Windows and Linux(rpm,deb,tar.gz) are available at [Githu
 ## Known issues
 - Notifications are not currently implemented for MacOS
 - Launch on startup and minimize to tray options are unavailable in settings
-- Some linux distros might face problems regarding notifications
 
 ## Features to come
 - Browser extension for seamless downloads

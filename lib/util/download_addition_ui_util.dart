@@ -19,7 +19,7 @@ import '../widget/download/download_info_dialog.dart';
 import 'file_util.dart';
 import 'http_util.dart';
 
-class AddDownloadUiUtil {
+class DownloadAdditionUiUtil {
   static Isolate? fileInfoExtractorIsolate;
 
   static void cancelRequest(BuildContext context) {

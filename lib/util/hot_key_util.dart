@@ -2,7 +2,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 
-import 'add_download_ui_util.dart';
+import 'download_addition_ui_util.dart';
 
 void registerDefaultDownloadAdditionHotKey(BuildContext context) {
   HotKey _hotKey = HotKey(
@@ -14,7 +14,7 @@ void registerDefaultDownloadAdditionHotKey(BuildContext context) {
     _hotKey,
     keyDownHandler: (hotKey) async {
       String url = await FlutterClipboard.paste();
-      AddDownloadUiUtil.handleDownloadAddition(context, url);
+      DownloadAdditionUiUtil.handleDownloadAddition(context, url);
     },
   );
 }
