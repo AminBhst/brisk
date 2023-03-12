@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -30,6 +31,7 @@ class FileUtil {
     Completer<Directory> completer = Completer();
     getDownloadsDirectory().then((dir) {
       defaultSaveDir = Directory(join(dir!.path, 'Brisk'));
+
       /// TODO FIX NULL CHECK
       defaultSaveDir.createSync(recursive: true);
       completer.complete(defaultSaveDir);
@@ -46,24 +48,31 @@ class FileUtil {
 
     final subDir = _fileTypeToFolderName(detectFileType(fileName));
     var filePath = join(saveDir.path, subDir, fileName);
-    final subdirFullPath = join(saveDir.path, subDir);
+    final subDirFullPath = join(saveDir.path, subDir);
     var file = File(filePath);
     final extension = fileName.endsWith("tar.gz")
         ? "tar.gz"
         : fileName.substring(fileName.lastIndexOf('.') + 1);
     int version = 1;
 
-    while (file.existsSync()) {
+    while (checkDownloadDuplication(file)) {
       var rawName = getRawFileName(fileName);
       if (versionedFileRegex.hasMatch(rawName)) {
         rawName = rawName.substring(0, rawName.lastIndexOf('_'));
       }
       ++version;
       fileName = '${rawName}_$version.$extension';
-      file = File(join(subdirFullPath, fileName));
+      file = File(join(subDirFullPath, fileName));
     }
 
     return join(saveDir.path, subDir, fileName);
+  }
+
+  static bool checkDownloadDuplication(File file) {
+    return HiveBoxes.instance.downloadItemsBox.values
+            .where((element) => element.filePath == file.path)
+            .isNotEmpty ||
+        file.existsSync();
   }
 
   static String getRawFileName(String fileName) {

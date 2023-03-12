@@ -91,6 +91,8 @@ class DownloadQueueTopMenu extends StatelessWidget {
   }
 
   void onStopAllPressed() {
+    runningRequests = [];
+    timer?.cancel();
     provider.downloads.forEach((id, _) {
       provider.executeDownloadCommand(id, DownloadCommand.pause);
     });

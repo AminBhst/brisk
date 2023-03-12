@@ -67,7 +67,7 @@ class DownloadAdditionUiUtil {
     item.fileName = fileInfo.fileName;
     item.fileType = FileUtil.detectFileType(fileInfo.fileName).name;
     final fileExists = FileUtil.checkFileDuplication(item.fileName);
-    final dlDuplication = checkDownloadDuplication(context, item.fileName);
+    final dlDuplication = checkDownloadDuplication(item.fileName);
     if (dlDuplication || fileExists) {
       final behaviour = SettingsCache.fileDuplicationBehaviour;
       if (behaviour == FileDuplicationBehaviour.ask) {
@@ -195,11 +195,9 @@ class DownloadAdditionUiUtil {
     return completer.future;
   }
 
-  static bool checkDownloadDuplication(BuildContext context, String fileName) {
-    final provider =
-        Provider.of<DownloadRequestProvider>(context, listen: false);
-    return provider.downloads.values
-        .where((dl) => dl.downloadItem.fileName == fileName)
+  static bool checkDownloadDuplication(String fileName) {
+    return HiveBoxes.instance.downloadItemsBox.values
+        .where((dl) => dl.fileName == fileName)
         .isNotEmpty;
   }
 }

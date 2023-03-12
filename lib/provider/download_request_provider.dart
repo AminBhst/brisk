@@ -75,7 +75,9 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   bool checkDownloadCompletion(DownloadItemModel downloadItem) {
-    return downloadItem.status == DownloadStatus.assembleComplete;
+    final file = File(downloadItem.filePath);
+    return downloadItem.status == DownloadStatus.assembleComplete ||
+        (file.existsSync() && file.lengthSync() == downloadItem.contentLength);
   }
 
   int? getExistingConnectionCount(DownloadItemModel downloadItem) {
