@@ -22,6 +22,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
   Timer? timer;
   int simultaneousDownloads = 1;
   List<int> runningRequests = [];
+  List<int> stoppedRequests = [];
 
   String url = '';
   late DownloadRequestProvider provider;
@@ -50,6 +51,12 @@ class DownloadQueueTopMenu extends StatelessWidget {
             ),
           ),
           TopMenuButton(
+            onTap: onStopAllPressed,
+            title: 'Stop Queue',
+            icon: const Icon(Icons.stop_circle_rounded, color: Colors.white),
+            onHoverColor: Colors.redAccent,
+          ),
+          TopMenuButton(
             onTap: onDownloadPressed,
             title: 'Download',
             icon: const Icon(Icons.download_rounded, color: Colors.white),
@@ -59,12 +66,6 @@ class DownloadQueueTopMenu extends StatelessWidget {
             onTap: onStopPressed,
             title: 'Stop',
             icon: const Icon(Icons.stop_rounded, color: Colors.white),
-            onHoverColor: Colors.redAccent,
-          ),
-          TopMenuButton(
-            onTap: onStopAllPressed,
-            title: 'Stop All',
-            icon: const Icon(Icons.stop_circle_outlined, color: Colors.white),
             onHoverColor: Colors.redAccent,
           ),
           TopMenuButton(
@@ -86,6 +87,8 @@ class DownloadQueueTopMenu extends StatelessWidget {
 
   void onStopPressed() {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {
+      runningRequests.removeWhere((dlId) => dlId == id);
+      stoppedRequests.add(id);
       provider.executeDownloadCommand(id, DownloadCommand.pause);
     });
   }
@@ -93,6 +96,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
   void onStopAllPressed() {
     runningRequests = [];
     timer?.cancel();
+    timer = null;
     provider.downloads.forEach((id, _) {
       provider.executeDownloadCommand(id, DownloadCommand.pause);
     });
@@ -107,19 +111,21 @@ class DownloadQueueTopMenu extends StatelessWidget {
 
   void runQueueTimer(int i) {
     simultaneousDownloads = i;
+    stoppedRequests = [];
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       List<int> toRemove = [];
       runningRequests.forEach((request) {
         final download = provider.downloads[request];
         if (download != null &&
-            download.status == DownloadStatus.assembleComplete) {
+            (download.status == DownloadStatus.assembleComplete ||
+            download.status == DownloadStatus.assembleFailed)) {
           toRemove.add(request);
         }
       });
       toRemove.forEach((id) => runningRequests.remove(id));
       final requestsToStart = simultaneousDownloads - runningRequests.length;
       for (int i = 0; i < requestsToStart; i++) {
-        final row = fetchQueueRow();
+        final row = fetchNextQueueRow();
         final id = row.cells['id']!.value;
         provider.executeDownloadCommand(id, DownloadCommand.start);
         runningRequests.add(id);
@@ -127,11 +133,12 @@ class DownloadQueueTopMenu extends StatelessWidget {
     });
   }
 
-  PlutoRow fetchQueueRow() {
+  PlutoRow fetchNextQueueRow() {
     return PlutoGridUtil.plutoStateManager!.rows
         .where((row) =>
             row.cells['status']!.value != DownloadStatus.assembleComplete &&
-            !runningRequests.contains(row.cells['id']!.value))
+            !runningRequests.contains(row.cells['id']!.value) &&
+            !stoppedRequests.contains(row.cells['id']!.value))
         .toList()
         .first;
   }
