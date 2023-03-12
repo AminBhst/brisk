@@ -11,6 +11,7 @@ import '../../util/file_util.dart';
 
 class QueueDetailsWindow extends StatefulWidget {
   DownloadQueue queue;
+
   QueueDetailsWindow({Key? key, required this.queue}) : super(key: key);
 
   @override
@@ -20,7 +21,6 @@ class QueueDetailsWindow extends StatefulWidget {
 class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
   late List<int>? downloadIds = [];
 
-
   @override
   void initState() {
     downloadIds = [...?widget.queue.downloadItemsIds];
@@ -29,6 +29,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return ClosableWindow(
       width: 800,
       height: 500,
@@ -39,14 +40,14 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
           children: [
             SizedBox(
               width: 600,
-              height: 300,
+              height: resolveRowHeight(size),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                     width: 600,
-                    height: 900,
+                    height: resolveListHeight(size),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.fromBorderSide(
@@ -58,8 +59,10 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                       child: ReorderableListView.builder(
                         buildDefaultDragHandles: false,
                         itemBuilder: (context, index) {
-                          final dl = HiveBoxes.instance.downloadItemsBox
-                              .get(HiveBoxes.instance.downloadQueueBox.get(widget.queue.key)!.downloadItemsIds![index])!;
+                          final dl = HiveBoxes.instance.downloadItemsBox.get(
+                              HiveBoxes.instance.downloadQueueBox
+                                  .get(widget.queue.key)!
+                                  .downloadItemsIds![index])!;
                           return ListTile(
                             key: ValueKey(dl.key),
                             leading: SizedBox(
@@ -101,7 +104,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                 ],
               ),
             ),
-            SizedBox(height: 50),
+            SizedBox(height: resolveButtonMargin(size)),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -129,9 +132,28 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
     );
   }
 
+  double resolveListHeight(Size size) {
+    return size.height < 600 ? 200 : 900;
+  }
+
+  double resolveButtonMargin(Size size) {
+    double margin = 50;
+    if (size.height < 600) {
+      margin = 20;
+    }
+    if (size.height < 500) {
+      margin = 0;
+    }
+    return margin;
+  }
+
+  double resolveRowHeight(Size size) {
+    return size.height < 600 ? 250 : 300;
+  }
+
   void onSavePressed() async {
     await widget.queue.save();
-    Provider.of<QueueProvider>(context,listen: false).notifyListeners();
+    Provider.of<QueueProvider>(context, listen: false).notifyListeners();
     Navigator.of(context).pop();
   }
 
@@ -140,8 +162,9 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
     Navigator.of(context).pop();
   }
 
-  int get itemCount =>
-      widget.queue.downloadItemsIds == null ? 0 : widget.queue.downloadItemsIds!.length;
+  int get itemCount => widget.queue.downloadItemsIds == null
+      ? 0
+      : widget.queue.downloadItemsIds!.length;
 
   void onReorder(int oldIndex, int newIndex) {
     final len = widget.queue.downloadItemsIds!.length;
@@ -153,4 +176,5 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
 
   void onRemovePressed(int index) =>
       setState(() => widget.queue.downloadItemsIds!.removeAt(index));
+
 }
