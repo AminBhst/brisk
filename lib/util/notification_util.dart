@@ -18,17 +18,22 @@ class NotificationUtil {
     LinuxInitializationSettings(
       defaultActionName: 'Open notification',
     );
+    const DarwinInitializationSettings darwinInitSettings =
+    DarwinInitializationSettings(
+    );
     await flnPlugin.initialize(
-      const InitializationSettings(linux: linuxInitSettings),
+      const InitializationSettings(linux: linuxInitSettings, macOS: darwinInitSettings),
     );
   }
 
   static void showNotification(String header, String body) async {
     final id = Random().nextInt(100);
-    if (Platform.isLinux) {
+    if (Platform.isLinux || Platform.isMacOS) {
       const LinuxNotificationDetails linuxDetails = LinuxNotificationDetails();
+      const DarwinNotificationDetails darwinDetails = DarwinNotificationDetails();
       const NotificationDetails notificationDetails = NotificationDetails(
         linux: linuxDetails,
+        macOS: darwinDetails,
       );
       await flnPlugin.show(
         id,
