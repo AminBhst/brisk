@@ -31,9 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.5
-  sqflite_common_ffi: ^2.2.0+1
-  sqflite: ^2.2.0+3
-  sqlite3_flutter_libs:
   path_provider: ^2.0.11
   flutter_svg: ^1.1.6
   clipboard: ^0.1.3
