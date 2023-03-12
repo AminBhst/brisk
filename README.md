@@ -16,11 +16,10 @@ Installation files for Windows and Linux(rpm,deb,tar.gz) are available at [Githu
 ## Features
 - Multi-segment file downloading
 - Download Queues
-- Hotkey (ctrl+alt+A) to quickly add download URLs from the clipboard
+- Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
 
 
 ## Known issues
-- Notifications are not currently implemented for MacOS
 - Launch on startup and minimize to tray options are unavailable in settings
 
 ## Features to come
