@@ -10,7 +10,7 @@ import '../../provider/queue_provider.dart';
 import '../../util/file_util.dart';
 
 class QueueDetailsWindow extends StatefulWidget {
-  DownloadQueue queue;
+  final DownloadQueue queue;
 
   QueueDetailsWindow({Key? key, required this.queue}) : super(key: key);
 
