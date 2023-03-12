@@ -179,11 +179,17 @@ class MultiConnectionHttpDownloadRequest {
 
   void cancel({bool failure = false}) {
     client.close();
+    _cancelConnectionResetTimer();
     _clearBuffer();
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
     _updateStatus(status);
     detailsStatus = status;
     _notifyChange();
+  }
+
+  void _cancelConnectionResetTimer() {
+    connectionResetTimer?.cancel();
+    connectionResetTimer = null;
   }
 
   void _notifyChange() {
@@ -248,6 +254,7 @@ class MultiConnectionHttpDownloadRequest {
   /// The path for the temp files is determined as followed :
   /// [FileUtil.defaultTempFileDir]/[downloadItem.uid]/[segmentNumber]
   void _flushBuffer() {
+    if (buffer.isEmpty) return;
     final filePath = join(tempDirectory.path, _chunkCount.toString());
     final bytes = _writeToUin8List(tempReceivedBytes, buffer);
     _chunkCount++;
@@ -306,6 +313,7 @@ class MultiConnectionHttpDownloadRequest {
 
   void pause(DownloadProgressCallback progressCallback) {
     paused = true;
+    _cancelConnectionResetTimer();
     this.progressCallback = progressCallback;
     _flushBuffer();
     _updateStatus(DownloadStatus.paused);
