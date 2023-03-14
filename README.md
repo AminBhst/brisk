@@ -1,3 +1,5 @@
+[![license](https://img.shields.io/github/license/AminBhst/brisk)](https://github.com/AminBhst/brisk/blob/main/LICENSE)
+[![release](https://img.shields.io/github/v/release/AminBhst/brisk)](https://github.com/AminBhst/brisk/releases)
 <p align="center">
 <img width="100" src="assets/icons/logo.png" alt="Brisk">
 <p align="center"> Fast, multi-threaded, cross-platform download manager</pal>
