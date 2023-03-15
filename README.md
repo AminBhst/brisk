@@ -18,7 +18,7 @@ at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 
 ## Demo
 
-<img align="center" src="https://i.im.ge/2023/02/25/7d6R9J.Brisk-Demo.gif">
+<img align="center" src="assets/Brisk-v1.2.0-demo.gif">
 
 ## Known issues
 
