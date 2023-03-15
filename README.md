@@ -7,7 +7,7 @@
 
 ## Download
 
-Installation files for Windows and Linux(rpm,deb,tar.gz) are available
+Installation files for Windows,Linux and macOS are available
 at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 
 ## Features
@@ -31,3 +31,6 @@ at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 - System tray
 
 If you have a feature request, please open an issue and explain it in details.
+
+## Credits
+- MacOS support : [Norman-w](https://github.com/Norman-w)
