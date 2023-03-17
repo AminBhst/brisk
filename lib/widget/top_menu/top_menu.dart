@@ -143,11 +143,10 @@ class _TopMenuState extends State<TopMenu> {
       context: context,
       builder: (context) => ConfirmationDialog(
           onConfirmPressed: () {
-            PlutoGridUtil.doOperationOnCheckedRows((id, row) async {
+            PlutoGridUtil.doOperationOnCheckedRows((id, row) {
               stateManager.removeRows([row]);
               FileUtil.deleteDownloadTempDirectory(id);
-              provider.executeDownloadCommand(
-                  id, DownloadCommand.clearConnections);
+              provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
               HiveBoxes.instance.downloadItemsBox.delete(id);
               HiveBoxes.instance.removeDownloadFromQueues(id);
               provider.downloads.removeWhere((key, _) => key == id);
