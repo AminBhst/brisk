@@ -34,30 +34,30 @@ class DownloadAdditionUiUtil {
         context: context,
         builder: (_) => const ErrorDialog(text: 'Invalid URL'),
       );
-    } else {
-      final item = DownloadItem.fromUrl(url);
-      _spawnFileInfoRetrieverIsolate(item).then((rPort) {
-        context.loaderOverlay.show();
-        retrieveFileInfo(rPort).then((fileInfo) {
-          context.loaderOverlay.hide();
-          if (updateDialog) {
-            handleUpdateDownloadUrl(fileInfo, context, url, downloadId!);
-          } else {
-            addDownload(item, fileInfo, context, additionalPop);
-          }
-        }).onError(
-          (_, __) {
-            _cancelRequest(context);
-            showDialog(
-              context: context,
-              builder: (_) => const ErrorDialog(
-                text: 'Could not retrieve file information!',
-              ),
-            );
-          },
-        );
-      });
+      return;
     }
+    final item = DownloadItem.fromUrl(url);
+    _spawnFileInfoRetrieverIsolate(item).then((rPort) {
+      context.loaderOverlay.show();
+      retrieveFileInfo(rPort).then((fileInfo) {
+        context.loaderOverlay.hide();
+        if (updateDialog) {
+          handleUpdateDownloadUrl(fileInfo, context, url, downloadId!);
+        } else {
+          addDownload(item, fileInfo, context, additionalPop);
+        }
+      }).onError(
+        (_, __) {
+          _cancelRequest(context);
+          showDialog(
+            context: context,
+            builder: (_) => const ErrorDialog(
+              text: 'Could not retrieve file information!',
+            ),
+          );
+        },
+      );
+    });
   }
 
   static void addDownload(DownloadItem item, FileInfo fileInfo,
