@@ -12,7 +12,9 @@ at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 
 ## Prerequisites
 On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/keybinder) installed.
- The name of the package for Debian/Ubuntu is ```keybinder-3.0``` and for Fedora/RHEL/CentOS is ```keybinder3```
+ - Debian/Ubuntu : ```keybinder-3.0```
+ - Fedora/RHEL/CentOS : ```keybinder3```
+ - Arch Linux : ```libkeybinder3```
 
 
 ## Features
