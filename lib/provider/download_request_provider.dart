@@ -31,7 +31,8 @@ class DownloadRequestProvider with ChangeNotifier {
 
   void addRequest(DownloadItem item) {
     final progress = DownloadProgress(
-        downloadItem: DownloadItemModel.fromDownloadItem(item));
+      downloadItem: DownloadItemModel.fromDownloadItem(item),
+    );
     downloads.addAll({item.key!: progress});
     insertRows([
       DownloadProgress(downloadItem: DownloadItemModel.fromDownloadItem(item))
@@ -107,6 +108,7 @@ class DownloadRequestProvider with ChangeNotifier {
       final dl = HiveBoxes.instance.downloadItemsBox.get(downloadItem.id)!;
       if (progress.assembleProgress == 1) {
         HiveBoxes.instance.removeDownloadFromQueues(dl.key);
+        PlutoGridUtil.removeCachedRow(id);
       }
       _updateDownloadRequest(progress, dl);
       if (progress.status == DownloadStatus.failed) {

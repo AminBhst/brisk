@@ -6,8 +6,11 @@ import 'package:pluto_grid/pluto_grid.dart';
 class PlutoGridUtil {
   static PlutoGridStateManager? _stateManager;
 
+  static final List<PlutoRow> cachedRows = [];
+
   static void updateRowCells(DownloadProgress progress) {
-    final row = findPlutoRowById(progress.downloadItem.id);
+    final id = progress.downloadItem.id;
+    final row = findCachedRow(id) ?? findRowById(id);
     if (row == null) return;
     final cells = row.cells;
     final downloadItem = progress.downloadItem;
@@ -23,10 +26,21 @@ class PlutoGridUtil {
     _stateManager?.notifyListeners();
   }
 
-  static PlutoRow? findPlutoRowById(int id) {
+  static void removeCachedRow(int id) {
+    cachedRows.removeWhere((row) => row.cells["id"]?.value == id);
+  }
+
+  static PlutoRow? findCachedRow(int id) {
+    final results = cachedRows.where((row) => row.cells["id"]?.value == id);
+    if (results.length != 1) return null;
+    return results.first;
+  }
+
+  static PlutoRow? findRowById(int id) {
     final results =
         _stateManager?.rows.where((row) => row.cells["id"]?.value == id);
     if (results == null || results.length != 1) return null;
+    cachedRows.add(results.first);
     return results.first;
   }
 
