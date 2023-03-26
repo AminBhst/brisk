@@ -95,7 +95,7 @@ class MultiConnectionHttpDownloadRequest {
   int _retryCount = 0;
 
   int maxConnectionRetryCount;
-  
+
   int connectionRetryTimeoutMillis;
 
   MultiConnectionHttpDownloadRequest({
@@ -143,11 +143,8 @@ class MultiConnectionHttpDownloadRequest {
       var response = client.send(request);
       response.timeout(const Duration(seconds: 5));
       response.asStream().listen((http.StreamedResponse streamedResponse) {
-        streamedResponse.stream
-            .listen(_processChunk, onDone: _onDownloadComplete, onError: (e) {
-          client.close();
-          _notifyChange();
-        });
+        streamedResponse.stream.listen(_processChunk,
+            onDone: _onDownloadComplete, onError: _onClientError);
       });
     } catch (e) {
       _notifyChange();
@@ -245,7 +242,6 @@ class MultiConnectionHttpDownloadRequest {
     }
   }
 
-
   /// Flushes the buffer containing the received bytes
   /// to the disk.
   ///
@@ -342,6 +338,12 @@ class MultiConnectionHttpDownloadRequest {
     client.close();
   }
 
+  void _onClientError(dynamic error) {
+    client.close();
+    _clearBuffer();
+    _notifyChange();
+  }
+
   Uint8List _writeToUin8List(int length, List<List<int>> chunks) {
     int start = 0;
     final bytes = Uint8List(length);
@@ -377,7 +379,6 @@ class MultiConnectionHttpDownloadRequest {
         downloadItem.uid.toString(),
         segmentNumber.toString(),
       ));
-
 
   /// Determines if the user is permitted to hit the start (Resume) button or not
   /// for further information refer to docs for [isWritePartCaughtUp]
