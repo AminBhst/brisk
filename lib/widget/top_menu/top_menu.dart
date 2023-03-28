@@ -3,14 +3,10 @@ import 'dart:io';
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
-import 'package:brisk/widget/base/checkedbox_confirmation_dialog.dart';
-import 'package:brisk/widget/base/confirmation_dialog.dart';
+import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:hotkey_manager/hotkey_manager.dart';
-import 'package:pluto_grid/src/manager/pluto_grid_state_manager.dart';
 import 'package:pluto_grid/src/model/pluto_row.dart';
 import 'package:provider/provider.dart';
 
@@ -24,8 +20,6 @@ class TopMenu extends StatefulWidget {
 }
 
 class _TopMenuState extends State<TopMenu> {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
 
   String url = '';
 
