@@ -28,26 +28,6 @@ class _TopMenuState extends State<TopMenu> {
 
   TextEditingController txtController = TextEditingController();
 
-
-  @override
-  void initState() {
-    HotKey _hotKey = HotKey(
-      KeyCode.keyQ,
-      modifiers: [KeyModifier.alt, KeyModifier.control],
-      scope: HotKeyScope.inapp,
-    );
-    hotKeyManager.register(
-      _hotKey,
-      keyDownHandler: (hotKey) async {
-        print("objectADSASDADASDSDASDASDASDIAOSDHIOASHDOIHASODIH");
-        // String url = await FlutterClipboard.paste();
-        // setState(() => txtController.text = url);
-        // _onAddPressed(context);
-      },
-    );
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
