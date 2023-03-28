@@ -141,10 +141,12 @@ class MultiConnectionHttpDownloadRequest {
 
     try {
       var response = client.send(request);
-      response.timeout(const Duration(seconds: 5));
       response.asStream().listen((http.StreamedResponse streamedResponse) {
-        streamedResponse.stream.listen(_processChunk,
-            onDone: _onDownloadComplete, onError: _onClientError);
+        streamedResponse.stream.listen(
+          _processChunk,
+          onDone: _onDownloadComplete,
+          onError: _onError,
+        );
       });
     } catch (e) {
       _notifyChange();
@@ -338,7 +340,7 @@ class MultiConnectionHttpDownloadRequest {
     client.close();
   }
 
-  void _onClientError(dynamic error) {
+  void _onError(dynamic error) {
     client.close();
     _clearBuffer();
     _notifyChange();
