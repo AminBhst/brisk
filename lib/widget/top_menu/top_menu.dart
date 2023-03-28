@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/db/hive_boxes.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
+import 'package:brisk/widget/base/checkedbox_confirmation_dialog.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
+import 'package:pluto_grid/src/manager/pluto_grid_state_manager.dart';
+import 'package:pluto_grid/src/model/pluto_row.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/download_request_provider.dart';
@@ -116,24 +121,36 @@ class _TopMenuState extends State<TopMenu> {
   }
 
   void onRemovePressed(BuildContext context) {
-    final stateManager =
-        PlutoGridUtil.plutoStateManager;
+    final stateManager = PlutoGridUtil.plutoStateManager;
     if (stateManager!.checkedRows.isEmpty) return;
-      showDialog(
+    showDialog(
       context: context,
-      builder: (context) => ConfirmationDialog(
-          onConfirmPressed: () {
-            PlutoGridUtil.doOperationOnCheckedRows((id, row) {
-              stateManager.removeRows([row]);
-              FileUtil.deleteDownloadTempDirectory(id);
-              provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
-              HiveBoxes.instance.downloadItemsBox.delete(id);
-              HiveBoxes.instance.removeDownloadFromQueues(id);
-              provider.downloads.removeWhere((key, _) => key == id);
-            });
-            stateManager.notifyListeners();
-          },
-          title: "Are you sure you want to delete the selected downloads?"),
+      builder: (context) => CheckboxConfirmationDialog(
+        onConfirmPressed: (deleteFile) {
+          PlutoGridUtil.doOperationOnCheckedRows((id, row) {
+            deleteOnCheckedRows(row, id, deleteFile);
+          });
+          stateManager.notifyListeners();
+        },
+        title: "Are you sure you want to delete the selected downloads?",
+        checkBoxTitle: 'Delete downloaded file',
+      ),
     );
+  }
+
+  void deleteOnCheckedRows(PlutoRow row, int id, bool deleteFile) {
+    PlutoGridUtil.plutoStateManager!.removeRows([row]);
+    FileUtil.deleteDownloadTempDirectory(id);
+    provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
+    if (deleteFile) {
+      final downloadItem = HiveBoxes.instance.downloadItemsBox.get(id);
+      final file = File(downloadItem!.filePath);
+      if (file.existsSync()) {
+        file.delete();
+      }
+    }
+    HiveBoxes.instance.downloadItemsBox.delete(id);
+    HiveBoxes.instance.removeDownloadFromQueues(id);
+    provider.downloads.removeWhere((key, _) => key == id);
   }
 }
