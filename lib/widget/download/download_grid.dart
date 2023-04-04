@@ -50,8 +50,8 @@ class _DownloadGridState extends State<DownloadGrid> {
             children: [
               DownloadRowPopUpMenuButton(status: status, id: id),
               SizedBox(
-                width: fileType == DLFileType.program ? 25 : 30,
-                height: fileType == DLFileType.program ? 25 : 30,
+                width: resolveIconSize(fileType),
+                height: resolveIconSize(fileType),
                 child: SvgPicture.asset(
                   FileUtil.resolveFileTypeIconPath(fileType.name),
                   color: FileUtil.resolveFileTypeIconColor(fileType.name),
@@ -129,6 +129,15 @@ class _DownloadGridState extends State<DownloadGrid> {
         type: PlutoColumnType.text(),
       )
     ];
+  }
+
+  double resolveIconSize(DLFileType fileType) {
+    if (fileType == DLFileType.documents || fileType == DLFileType.program)
+      return 25;
+    else if (fileType == DLFileType.music)
+      return 28;
+    else
+      return 30;
   }
 
   @override
