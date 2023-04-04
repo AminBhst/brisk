@@ -74,7 +74,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
                               convertByteToReadableStr(
                                   widget.downloadItem.contentLength),
                               style: const TextStyle(
-                                fontSize: 10,
+                                fontSize: 13,
                                 color: Colors.white,
                               ),
                             ),
