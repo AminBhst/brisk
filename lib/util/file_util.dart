@@ -16,15 +16,26 @@ class FileUtil {
   static late Directory defaultTempFileDir;
   static late Directory defaultSaveDir;
 
-  static Future<Directory> setDefaultTempDir() {
+  /// Due to the fact that on Linux, temporary directory (/tmp) is cleaned on
+  /// reboot, another default temp directory has to be created.
+  static Future<Directory> setDefaultTempDir() async {
     Completer<Directory> completer = Completer();
-    getTemporaryDirectory().then((dir) {
-      final tmpSubDir = join(dir.path, 'Brisk');
-      defaultTempFileDir = Directory(tmpSubDir);
-      defaultTempFileDir.createSync(recursive: true);
-      completer.complete(defaultTempFileDir);
-    });
+    Directory tempDir =
+        Platform.isLinux ? await linuxDefaultTempDir : await defaultTempDir;
+    tempDir.createSync(recursive: true);
+    defaultTempFileDir = tempDir;
+    completer.complete(tempDir);
     return completer.future;
+  }
+
+  static Future<Directory> get defaultTempDir async {
+    final baseTempDir = await getTemporaryDirectory();
+    return Directory(join(baseTempDir.path, 'Brisk'));
+  }
+
+  static Future<Directory> get linuxDefaultTempDir async {
+    final downloadsDir = await getDownloadsDirectory();
+    return Directory(join(downloadsDir!.path, 'Brisk', 'Temp'));
   }
 
   static Future<Directory> setDefaultSaveDir() {
