@@ -17,18 +17,18 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
     return SettingsGroup(
       title: "Behaviour",
       children: [
-        SwitchSetting(
-          text: "Launch on startup",
-          switchValue: SettingsCache.launchOnStartUp,
-          // onChanged: (val) =>
-          //     setState(() => SettingsCache.launchOnStartUp = val),
-        ),
-        SwitchSetting(
-          text: "Minimize to tray on close",
-          switchValue: SettingsCache.minimizeToTrayOnClose,
-          // onChanged: (val) =>
-          //     setState(() => SettingsCache.minimizeToTrayOnClose = val),
-        ),
+        // SwitchSetting(
+        //   text: "Launch on startup",
+        //   switchValue: SettingsCache.launchOnStartUp,
+        //   // onChanged: (val) =>
+        //   //     setState(() => SettingsCache.launchOnStartUp = val),
+        // ),
+        // SwitchSetting(
+        //   text: "Minimize to tray on close",
+        //   switchValue: SettingsCache.minimizeToTrayOnClose,
+        //   // onChanged: (val) =>
+        //   //     setState(() => SettingsCache.minimizeToTrayOnClose = val),
+        // ),
         SwitchSetting(
           text: "Open download progress window when a new download has started",
           switchValue: SettingsCache.openDownloadProgressWindow,
