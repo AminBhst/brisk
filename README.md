@@ -30,10 +30,6 @@ On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/key
 
 <img align="center" src="assets/Brisk-v1.2.0-demo.gif">
 
-## Known issues
-
-- Launch on startup and minimize to tray options are unavailable in settings
-
 ## Features to come
 
 - Browser extension for seamless downloads
