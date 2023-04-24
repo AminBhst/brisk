@@ -24,6 +24,7 @@ On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/key
 
 - Multi-segment file downloading
 - Download Queues
+- Smart connection reset
 - Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
 
 ## Demo
