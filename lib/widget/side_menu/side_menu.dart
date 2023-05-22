@@ -145,6 +145,7 @@ class SideMenu extends StatelessWidget {
 
   void onDownloadsPressed(QueueProvider queueProvider) {
     PlutoGridUtil.removeFilters();
+    PlutoGridUtil.cachedRows.clear();
     queueProvider.setQueueTopMenu(false);
     queueProvider.setSelectedQueue(null);
     queueProvider.setQueueTabSelected(false);
@@ -153,6 +154,7 @@ class SideMenu extends StatelessWidget {
 
   void onQueueTabPressed(QueueProvider queueProvider) {
     PlutoGridUtil.plutoStateManager?.removeAllRows();
+    PlutoGridUtil.cachedRows.clear();
     queueProvider.setQueueTopMenu(true);
     queueProvider.setQueueTabSelected(true);
     queueProvider.setSelectedQueue(null);

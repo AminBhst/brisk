@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/util/readability_util.dart';
@@ -6,6 +8,7 @@ import 'package:pluto_grid/pluto_grid.dart';
 class PlutoGridUtil {
   static PlutoGridStateManager? _stateManager;
 
+  static Timer? cacheClearTimer;
   static final List<PlutoRow> cachedRows = [];
 
   static void updateRowCells(DownloadProgress progress) {
@@ -24,6 +27,16 @@ class PlutoGridUtil {
     cells["status"]?.value = downloadItem.status;
     cells["finish_date"]?.value = downloadItem.finishDate ?? "";
     _stateManager?.notifyListeners();
+    _runPeriodicCachedRowClear();
+  }
+
+
+  static void _runPeriodicCachedRowClear() {
+    if (cacheClearTimer != null) return;
+    cacheClearTimer = Timer.periodic(
+      const Duration(seconds: 3),
+          (timer) => cachedRows.clear(),
+    );
   }
 
   static void removeCachedRow(int id) {

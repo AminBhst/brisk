@@ -207,13 +207,19 @@ class DownloadRequestProvider with ChangeNotifier {
     }).toList();
   }
 
+
+
+  // int _tmpTime = _nowMillis;
   void notifyAllListeners(DownloadProgress progress) {
+    // if (_tmpTime + 90 > _nowMillis) return;
+    // _tmpTime = _nowMillis;
     if (handlerChannels[progress.downloadItem.id] == null) return;
     notifyListeners();
     PlutoGridUtil.updateRowCells(progress);
   }
 
   Future<void> fetchRows(List<DownloadItem> items) async {
+    PlutoGridUtil.cachedRows.clear();
     final requests = items
         .map((e) => DownloadProgress(
             downloadItem: DownloadItemModel.fromDownloadItem(e),
