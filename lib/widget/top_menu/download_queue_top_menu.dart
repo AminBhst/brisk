@@ -110,6 +110,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
   }
 
   void runQueueTimer(int i) {
+    if (timer != null) return;
     simultaneousDownloads = i;
     stoppedRequests = [];
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
