@@ -4,7 +4,7 @@
 [![platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20MacOS-blue)]()
 <p align="center">
 <img width="100" src="assets/icons/logo.png" alt="Brisk">
-<p align="center"> Fast, multi-threaded, cross-platform download manager</pal>
+<p align="center"> Fast, multithreaded, cross-platform download manager</pal>
 </p>
 
 ## Download
