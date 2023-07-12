@@ -9,7 +9,7 @@
 
 ## Download
 
-Installation files for Windows, Linux and macOS are available
+Installation files for Windows, Linux are available
 at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 
 ## Prerequisites
