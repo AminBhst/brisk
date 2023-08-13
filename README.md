@@ -46,7 +46,7 @@ On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/key
 
 ## Demo
 
-<img align="center" src="assets/Brisk-v1.2.0-demo.gif">
+<img align="center" src="assets/Brisk-Demo.gif">
 
 ## Features to come
 
