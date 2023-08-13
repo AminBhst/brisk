@@ -12,6 +12,22 @@
 Installation files for Windows and Linux are available
 at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 
+## Browser Integration
+As of version 1.3.0, Brisk supports browser integration that allows for capturing downloads from the browser and adding them directly into the app.
+[Github Repository](https://github.com/AminBhst/brisk-browser-extension)
+
+### Installing The Browser Extension
+#### Chrome / Edge / Opera
+[link-chrome]: https://chrome.google.com/webstore/detail/motrix-webextension/djlkbfdlljbachafjmfomhaciglnmkgj 'Version published on Chrome Web Store'
+
+[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" width="48" alt="Chrome" valign="middle">][link-chrome] [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge.svg" width="48" alt="Edge" valign="middle">][link-chrome] [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/opera/opera.svg" width="48" alt="Opera" valign="middle">][link-chrome]
+
+#### Firefox
+[link-firefox]: https://addons.mozilla.org/en-US/firefox/addon/brisk/
+
+[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox.svg" width="48" alt="Firefox" valign="middle">][link-firefox]
+
+
 ## Prerequisites
 
 On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/keybinder) installed.
@@ -22,6 +38,7 @@ On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/key
 
 ## Features
 
+- Browser Integration
 - Multi-segment file downloading
 - Download Queues
 - Smart connection reset
@@ -33,7 +50,7 @@ On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/key
 
 ## Features to come
 
-- Browser extension for seamless downloads
+- Dynamic file segmentation for highest download speed
 - Download speed limiter
 - System tray
 

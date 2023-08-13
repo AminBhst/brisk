@@ -38,17 +38,23 @@ class SettingsSideMenu extends StatelessWidget {
               SettingsSideMenuItem(
                 tabId: 2,
                 title: "Connection",
-                icon: Icons.network_check_rounded,
+                icon: Icons.wifi,
               ),
               SizedBox(height: itemMargin),
               SettingsSideMenuItem(
                 tabId: 3,
+                title: "Extension",
+                icon: Icons.extension,
+              ),
+              SizedBox(height: itemMargin),
+              SettingsSideMenuItem(
+                tabId: 4,
                 title: "About",
                 icon: Icons.info,
               ),
               SizedBox(height: itemMargin),
               SettingsSideMenuItem(
-                tabId: 4,
+                tabId: 5,
                 title: "Bug Report",
                 icon: Icons.bug_report_rounded,
               ),

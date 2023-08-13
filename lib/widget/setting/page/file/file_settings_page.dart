@@ -1,5 +1,3 @@
-import 'package:brisk/widget/setting/base/text_field_setting.dart';
-import 'package:brisk/widget/setting/page/file/file_behaviour_group.dart';
 import 'package:brisk/widget/setting/page/file/file_category_group.dart';
 import 'package:brisk/widget/setting/page/file/path_settings_group.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +17,6 @@ class FileSettingsPage extends StatelessWidget {
           children: const [
             PathSettingsGroup(),
             FileCategoryGroup(),
-            FileBehaviourGroup(),
           ],
         ),
       ),

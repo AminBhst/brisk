@@ -1,4 +1,4 @@
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/widget/queue/queue_list_item.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +22,7 @@ class DownloadQueueList extends StatelessWidget {
   }
 
   List<Widget> buildQueues(BuildContext context) {
-    return HiveBoxes.instance.downloadQueueBox.values.map((e) {
+    return HiveUtil.instance.downloadQueueBox.values.map((e) {
       return QueueListItem(queue: e);
     }).toList();
   }

@@ -1,4 +1,4 @@
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/provider/download_request_provider.dart';
@@ -220,7 +220,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
   /// TODO fix download id bug
   void addToList() async {
     final request = widget.downloadItem;
-    await HiveBoxes.instance.addDownloadItem(request);
+    await HiveUtil.instance.addDownloadItem(request);
     provider.insertRows([
       DownloadProgress(
           downloadItem: DownloadItemModel.fromDownloadItem(request))
@@ -241,13 +241,13 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
         widget.downloadItem.filePath = location;
         txtController.text = location;
       });
-      HiveBoxes.instance.downloadItemsBox
+      HiveUtil.instance.downloadItemsBox
           .put(widget.downloadItem.key, widget.downloadItem);
     }
   }
 
   void _onDownloadPressed(BuildContext context) async {
-    await HiveBoxes.instance.addDownloadItem(widget.downloadItem);
+    await HiveUtil.instance.addDownloadItem(widget.downloadItem);
     if (!mounted) return;
     final provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);

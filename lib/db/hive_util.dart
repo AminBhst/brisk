@@ -1,20 +1,29 @@
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/settings_cache.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 
 import '../model/download_item.dart';
 
-class HiveBoxes {
-  HiveBoxes._();
+class HiveUtil {
+  HiveUtil._();
 
-  static final HiveBoxes instance = HiveBoxes._();
+  static final HiveUtil instance = HiveUtil._();
 
   late final Box<DownloadItem> downloadItemsBox;
 
   late final Box<DownloadQueue> downloadQueueBox;
 
   late final Box<Setting> settingBox;
+
+
+  Future<void> initHive() async {
+    await Hive.initFlutter("Brisk");
+    Hive.registerAdapter(DownloadItemAdapter());
+    Hive.registerAdapter(DownloadQueueAdapter());
+    Hive.registerAdapter(SettingAdapter());
+    await HiveUtil.instance.openBoxes();
+  }
 
   Future<void> openBoxes() async {
     downloadItemsBox = await Hive.openBox<DownloadItem>("download_items");
@@ -26,7 +35,7 @@ class HiveBoxes {
     if (downloadQueueBox.get(0) == null) {
       downloadQueueBox.put(0, DownloadQueue(name: "Main"));
     }
-    if (settingBox.get(0) == null) {
+    if (settingBox.values.length != SettingsCache.defaultSettings.length) {
       await SettingsCache.setDefaultSettings();
     }
   }

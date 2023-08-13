@@ -9,7 +9,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
 
-import '../../db/hive_boxes.dart';
+import '../../db/hive_util.dart';
 
 class DownloadGrid extends StatefulWidget {
   @override
@@ -174,14 +174,14 @@ class _DownloadGridState extends State<DownloadGrid> {
                 ?.setSelectingMode(PlutoGridSelectingMode.row);
             if (queueProvider.selectedQueueId == null) {
               provider.fetchRows(
-                  HiveBoxes.instance.downloadItemsBox.values.toList());
+                  HiveUtil.instance.downloadItemsBox.values.toList());
             } else {
               final queueId = queueProvider.selectedQueueId!;
               final queue =
-                  await HiveBoxes.instance.downloadQueueBox.get(queueId);
+                  await HiveUtil.instance.downloadQueueBox.get(queueId);
               if (queue?.downloadItemsIds == null) return;
               final downloads = queue!.downloadItemsIds!
-                  .map((e) => HiveBoxes.instance.downloadItemsBox.get(e)!)
+                  .map((e) => HiveUtil.instance.downloadItemsBox.get(e)!)
                   .toList();
               provider.fetchRows(downloads);
             }

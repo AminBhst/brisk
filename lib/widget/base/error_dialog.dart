@@ -3,8 +3,16 @@ import 'package:flutter/material.dart';
 class ErrorDialog extends StatelessWidget {
   final String text;
   final double width;
+  final double height;
+  final String? title;
 
-  const ErrorDialog({super.key, required this.text, this.width = 300});
+  const ErrorDialog({
+    super.key,
+    this.text = '',
+    this.width = 300,
+    this.height = 30,
+    this.title = null,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +21,25 @@ class ErrorDialog extends StatelessWidget {
       backgroundColor: Colors.black,
       content: SizedBox(
         width: width,
-        height: 30,
-        child: Row(
+        height: height,
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(Icons.warning_rounded,color: Colors.red),
-            const SizedBox(width: 10),
-            Text(text,style: const TextStyle(color: Colors.red)),
+            Row(
+              children: [
+                const Icon(Icons.warning_rounded, color: Colors.red),
+                const SizedBox(width: 10),
+                if (title != null)
+                  Text(
+                    title!,
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+              ],
+            ),
+            Text(text, style: const TextStyle(color: Colors.red)),
           ],
         ),
       ),

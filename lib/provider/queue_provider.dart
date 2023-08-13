@@ -1,4 +1,4 @@
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -34,7 +34,7 @@ class QueueProvider with ChangeNotifier {
   }
 
   Future<void> saveQueue(DownloadQueue queue) async {
-    await HiveBoxes.instance.downloadQueueBox.add(queue);
+    await HiveUtil.instance.downloadQueueBox.add(queue);
     notifyListeners();
   }
 

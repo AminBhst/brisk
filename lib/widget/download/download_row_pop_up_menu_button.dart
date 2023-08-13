@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../../db/hive_boxes.dart';
+import '../../db/hive_util.dart';
 import '../../provider/download_request_provider.dart';
 import 'add_url_dialog.dart';
 import 'download_info_dialog.dart';
@@ -90,7 +90,7 @@ class DownloadRowPopUpMenuButton extends StatelessWidget {
       ));
 
   void onPopupMenuItemSelected(int value, int id, BuildContext context) {
-    final dl = HiveBoxes.instance.downloadItemsBox.get(id)!;
+    final dl = HiveUtil.instance.downloadItemsBox.get(id)!;
     switch (value) {
       case 1:
         showDialog(

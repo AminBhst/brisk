@@ -1,4 +1,4 @@
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
@@ -59,8 +59,8 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                       child: ReorderableListView.builder(
                         buildDefaultDragHandles: false,
                         itemBuilder: (context, index) {
-                          final dl = HiveBoxes.instance.downloadItemsBox.get(
-                              HiveBoxes.instance.downloadQueueBox
+                          final dl = HiveUtil.instance.downloadItemsBox.get(
+                              HiveUtil.instance.downloadQueueBox
                                   .get(widget.queue.key)!
                                   .downloadItemsIds![index])!;
                           return ListTile(

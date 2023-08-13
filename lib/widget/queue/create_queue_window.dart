@@ -1,4 +1,4 @@
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
@@ -75,7 +75,7 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
 
   void onCreatePressed(BuildContext context) async {
     final provider = Provider.of<QueueProvider>(context, listen: false);
-    final box = HiveBoxes.instance.downloadQueueBox;
+    final box = HiveUtil.instance.downloadQueueBox;
     final duplicateQueueName = box.values
         .where((queue) => queue.name == txtController.value.text)
         .isNotEmpty;
@@ -83,7 +83,8 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
       showDialog(
         context: context,
         builder: (context) => ErrorDialog(
-          text: "A queue with this name already exists!",
+          title: "A queue with this name already exists!",
+          height: 50,
           width: 400,
         ),
       );

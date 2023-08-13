@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:brisk/constants/file_duplication_behaviour.dart';
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/constants/setting_type.dart';
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:brisk/util/parse_util.dart';
@@ -16,6 +16,8 @@ class SettingsCache {
   static late bool launchOnStartUp;
   static late bool minimizeToTrayOnClose;
   static late bool openDownloadProgressWindow;
+  static late bool enableWindowToFront;
+  static late int extensionPort;
 
   /// File
   static late Directory temporaryDir;
@@ -96,11 +98,23 @@ class SettingsCache {
     SettingOptions.connectionRetryTimeout.name: [
       SettingType.connection.name,
       "10",
+    ],
+    SettingOptions.enableWindowToFront.name: [
+      SettingType.extension.name,
+      "true",
+    ],
+    SettingOptions.extensionPort.name: [
+      SettingType.extension.name,
+      "3020",
+    ],
+    SettingOptions.lastUpdateCheck.name: [
+      SettingType.system.name,
+      "0",
     ]
   };
 
   static Future<void> setCachedSettings() async {
-    final settings = HiveBoxes.instance.settingBox.values;
+    final settings = HiveUtil.instance.settingBox.values;
     for (var setting in settings) {
       final value = setting.value;
       switch (parseSettingOptions(setting.name)) {
@@ -152,13 +166,19 @@ class SettingsCache {
         case SettingOptions.connectionRetryTimeout:
           connectionRetryTimeout = int.parse(value);
           break;
+        case SettingOptions.enableWindowToFront:
+          enableWindowToFront = parseBool(value);
+          break;
+        case SettingOptions.extensionPort:
+          extensionPort = int.parse(value);
+          break;
         default:
       }
     }
   }
 
   static void saveCachedSettingsToDB() async {
-    final allSettings = HiveBoxes.instance.settingBox.values;
+    final allSettings = HiveUtil.instance.settingBox.values;
     for (var setting in allSettings) {
       switch (parseSettingOptions(setting.name)) {
         case SettingOptions.notificationOnDownloadCompletion:
@@ -212,6 +232,12 @@ class SettingsCache {
         case SettingOptions.connectionRetryTimeout:
           setting.value = SettingsCache.connectionRetryTimeout.toString();
           break;
+        case SettingOptions.enableWindowToFront:
+          setting.value = parseBoolStr(SettingsCache.enableWindowToFront);
+          break;
+        case SettingOptions.extensionPort:
+          setting.value = SettingsCache.extensionPort.toString();
+          break;
         default:
       }
       await setting.save();
@@ -219,7 +245,7 @@ class SettingsCache {
   }
 
   static Future<void> resetDefault() async {
-    HiveBoxes.instance.settingBox.values
+    HiveUtil.instance.settingBox.values
         .forEach((setting) async => await setting.delete());
     await setDefaultSettings();
     await setCachedSettings();
@@ -236,7 +262,7 @@ class SettingsCache {
         value: value[1],
         settingType: value[0],
       );
-      await HiveBoxes.instance.settingBox.put(i, setting);
+      await HiveUtil.instance.settingBox.put(i, setting);
     }
   }
 }

@@ -7,7 +7,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/file_duplication_behaviour.dart';
-import '../db/hive_boxes.dart';
+import '../db/hive_util.dart';
 import '../model/download_item.dart';
 import '../model/file_metadata.dart';
 import '../model/isolate/isolate_args_pair.dart';
@@ -32,7 +32,7 @@ class DownloadAdditionUiUtil {
     if (!isUrlValid(url)) {
       showDialog(
         context: context,
-        builder: (_) => const ErrorDialog(text: 'Invalid URL'),
+        builder: (_) => const ErrorDialog(height: 45, title: 'Invalid URL'),
       );
       return;
     }
@@ -86,7 +86,7 @@ class DownloadAdditionUiUtil {
 
   static void handleUpdateDownloadUrl(
       FileInfo fileInfo, BuildContext context, String url, int downloadId) {
-    final dl = HiveBoxes.instance.downloadItemsBox.get(downloadId)!;
+    final dl = HiveUtil.instance.downloadItemsBox.get(downloadId)!;
     if (dl.contentLength != fileInfo.contentLength) {
       showDialog(
           context: context,
@@ -111,7 +111,7 @@ class DownloadAdditionUiUtil {
             .downloads[downloadId];
     downloadProgress?.downloadItem.downloadUrl = url;
     dl.downloadUrl = url;
-    HiveBoxes.instance.downloadItemsBox.put(dl.key, dl);
+    HiveUtil.instance.downloadItemsBox.put(dl.key, dl);
     Navigator.of(context).pop();
   }
 
@@ -196,7 +196,7 @@ class DownloadAdditionUiUtil {
   }
 
   static bool checkDownloadDuplication(String fileName) {
-    return HiveBoxes.instance.downloadItemsBox.values
+    return HiveUtil.instance.downloadItemsBox.values
         .where((dl) => dl.fileName == fileName)
         .isNotEmpty;
   }

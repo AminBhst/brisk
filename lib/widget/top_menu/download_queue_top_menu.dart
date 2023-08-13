@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../constants/download_command.dart';
 import '../../constants/download_status.dart';
-import '../../db/hive_boxes.dart';
+import '../../db/hive_util.dart';
 import '../../provider/download_request_provider.dart';
 import '../../provider/pluto_grid_util.dart';
 import '../../util/file_util.dart';
@@ -164,7 +164,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
         title:
             "Are you sure you want to remove the selected downloads from the queue?",
         onConfirmPressed: () async {
-          final queue = HiveBoxes.instance.downloadQueueBox
+          final queue = HiveUtil.instance.downloadQueueBox
               .get(queueProvider.selectedQueueId)!;
           if (queue.downloadItemsIds == null) return;
           PlutoGridUtil.doOperationOnCheckedRows((id, row) async {

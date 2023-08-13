@@ -4,6 +4,8 @@ enum SettingOptions {
     launchOnStartUp,
     minimizeToTrayOnClose,
     openDownloadProgressWindow,
+    enableWindowToFront,
+    extensionPort,
     temporaryPath,
     savePath,
     videoFormats,
@@ -15,4 +17,5 @@ enum SettingOptions {
     connectionsNumber,
     connectionRetryCount,
     connectionRetryTimeout,
+    lastUpdateCheck,
 }

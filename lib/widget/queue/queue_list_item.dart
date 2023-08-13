@@ -1,4 +1,4 @@
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/queue/queue_details_window.dart';
@@ -72,7 +72,7 @@ class QueueListItem extends StatelessWidget {
   }
 
   void onDetailsTap(BuildContext context) {
-    queue = HiveBoxes.instance.downloadQueueBox.get(queue.key)!;
+    queue = HiveUtil.instance.downloadQueueBox.get(queue.key)!;
     showDialog(
       context: context,
       barrierDismissible: false,

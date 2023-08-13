@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
+import 'package:brisk/util/http_util.dart';
 import '../constants/types.dart';
 import '../util/file_util.dart';
 import 'package:path/path.dart';
@@ -110,13 +111,12 @@ class MultiConnectionHttpDownloadRequest {
   });
 
   /// Starts the download request.
-  /// [notifyChange] is used to let the provider know that the values are
-  /// changed so that it calls notify listeners
-  /// which can be used to display its live progress.
+  /// [progressCallback] is used to let the provider know that the values are
+  /// changed so that it calls notify listeners which can be used to display its live progress.
   void start(DownloadProgressCallback progressCallback,
       {bool connectionReset = false}) {
     if (!connectionReset && startNotAllowed) return;
-    _runTimerBasedConnectionReset();
+    _runConnectionResetTimer();
 
     detailsStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
@@ -127,7 +127,7 @@ class MultiConnectionHttpDownloadRequest {
     _notifyChange();
 
     final request = http.Request('GET', Uri.parse(downloadItem.downloadUrl));
-    request.headers.addAll({'content-type': 'multipart/byteranges;'});
+    request.headers.addAll(contentType_MultiPartByteRanges);
     final isFinished = _setByteRangeHeader(request);
     if (isFinished) {
       pauseButtonEnabled = true;
@@ -153,7 +153,7 @@ class MultiConnectionHttpDownloadRequest {
     }
   }
 
-  void _runTimerBasedConnectionReset() {
+  void _runConnectionResetTimer() {
     if (connectionResetTimer != null) return;
     connectionResetTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (connectionRetryAllowed) {
@@ -221,7 +221,7 @@ class MultiConnectionHttpDownloadRequest {
   /// Processes each data [chunk] in [streamedResponse].
   /// Once the [tempReceivedBytes] hits the [_dynamicFlushThreshold], the buffer is
   /// flushed to the disk. This process continues until the download has been
-  /// finished. The buffer will be emptied after each flush to be
+  /// finished. The buffer will be emptied after each flush
   void _processChunk(List<int> chunk) {
     _updateStatus(DownloadStatus.downloading);
     lastResponseTimeMillis = _nowMillis;
@@ -247,7 +247,7 @@ class MultiConnectionHttpDownloadRequest {
   /// Flushes the buffer containing the received bytes
   /// to the disk.
   ///
-  /// all flush operations write temp files which their name corresponds to the order
+  /// all flush operations write temp files with their name corresponding to the order
   /// in which they were received.
   /// The path for the temp files is determined as followed :
   /// [FileUtil.defaultTempFileDir]/[downloadItem.uid]/[segmentNumber]

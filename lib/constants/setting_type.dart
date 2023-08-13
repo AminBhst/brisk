@@ -1,3 +1,3 @@
 enum SettingType {
-  general, file, connection
+  general, file, connection, extension, system
 }

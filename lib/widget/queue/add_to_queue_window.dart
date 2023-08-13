@@ -1,4 +1,4 @@
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
@@ -84,21 +84,21 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
         downloadQueues?.where((queue) => queue.name == selectedValue).first;
     final selectedRows = PlutoGridUtil.plutoStateManager?.checkedRows;
     if (selectedQueue == null || selectedRows == null) return;
-    final queue = HiveBoxes.instance.downloadQueueBox.get(selectedQueue.key)!;
+    final queue = HiveUtil.instance.downloadQueueBox.get(selectedQueue.key)!;
     for (var row in selectedRows) {
       final id = row.cells["id"]!.value;
       queue.downloadItemsIds ??= [];
       if (queue.downloadItemsIds!.any((item) => item == id)) continue;
       queue.downloadItemsIds = [...queue.downloadItemsIds!];
       queue.downloadItemsIds!.add(id);
-      HiveBoxes.instance.downloadQueueBox.put(queue.key, queue);
+      HiveUtil.instance.downloadQueueBox.put(queue.key, queue);
     }
     Navigator.of(context).pop();
   }
 
   void setDownloadQueues() {
     setState(() {
-      downloadQueues = HiveBoxes.instance.downloadQueueBox.values.toList();
+      downloadQueues = HiveUtil.instance.downloadQueueBox.values.toList();
     });
   }
 }

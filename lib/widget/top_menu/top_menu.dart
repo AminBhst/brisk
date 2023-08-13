@@ -1,14 +1,17 @@
 import 'dart:io';
 
 import 'package:brisk/constants/download_command.dart';
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
+import 'package:brisk/util/http_util.dart';
 import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pluto_grid/src/model/pluto_row.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../provider/download_request_provider.dart';
 import '../../util/file_util.dart';
@@ -20,7 +23,6 @@ class TopMenu extends StatefulWidget {
 }
 
 class _TopMenuState extends State<TopMenu> {
-
   String url = '';
 
   late DownloadRequestProvider provider;
@@ -82,12 +84,24 @@ class _TopMenuState extends State<TopMenu> {
             fontSize: 11.5,
             onHoverColor: Colors.teal,
           ),
+          SizedBox(width: 5),
+          Container(color: Colors.white, width: 1, height: 40),
+          TopMenuButton(
+            title: 'Extension',
+            icon: Icon(
+              Icons.extension,
+              color: Colors.white,
+            ),
+            onTap: () => launchUrlString(
+              'https://github.com/AminBhst/brisk-browser-extension',
+            ),
+          )
         ],
       ),
     );
   }
 
-  void onDownloadPressed() {
+  void onDownloadPressed() async {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {
       provider.executeDownloadCommand(id, DownloadCommand.start);
     });
@@ -137,14 +151,14 @@ class _TopMenuState extends State<TopMenu> {
     FileUtil.deleteDownloadTempDirectory(id);
     provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
     if (deleteFile) {
-      final downloadItem = HiveBoxes.instance.downloadItemsBox.get(id);
+      final downloadItem = HiveUtil.instance.downloadItemsBox.get(id);
       final file = File(downloadItem!.filePath);
       if (file.existsSync()) {
         file.delete();
       }
     }
-    HiveBoxes.instance.downloadItemsBox.delete(id);
-    HiveBoxes.instance.removeDownloadFromQueues(id);
+    HiveUtil.instance.downloadItemsBox.delete(id);
+    HiveUtil.instance.removeDownloadFromQueues(id);
     provider.downloads.removeWhere((key, _) => key == id);
   }
 }

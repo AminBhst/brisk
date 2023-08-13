@@ -1,16 +1,12 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:brisk/db/hive_boxes.dart';
-import 'package:brisk/model/download_item.dart';
-import 'package:brisk/model/download_queue.dart';
-import 'package:brisk/model/setting.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/hot_key_util.dart';
+import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/notification_util.dart';
+import 'package:brisk/browser_extension//browser_extension_server.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/download_grid.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
@@ -20,7 +16,6 @@ import 'package:brisk/widget/top_menu/download_queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/top_menu.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:window_manager/window_manager.dart';
 import './util/file_util.dart';
@@ -31,7 +26,7 @@ import 'util/settings_cache.dart';
 
 void main() async {
   tz.initializeTimeZones();
-  await initHive();
+  await HiveUtil.instance.initHive();
 
   runApp(MultiProvider(
     providers: [
@@ -49,13 +44,6 @@ void main() async {
   ));
 }
 
-Future<void> initHive() async {
-  await Hive.initFlutter("Brisk");
-  Hive.registerAdapter(DownloadItemAdapter());
-  Hive.registerAdapter(DownloadQueueAdapter());
-  Hive.registerAdapter(SettingAdapter());
-  await HiveBoxes.instance.openBoxes();
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -97,12 +85,12 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     }
   }
 
+  /// TODO : Check for update on startup
   @override
   void initState() {
-    // startExtensionServer();
-    FileUtil.setDefaultTempDir().then((value) {
-      FileUtil.setDefaultSaveDir().then((value) {
-        HiveBoxes.instance.putInitialBoxValues().then((value) {
+    FileUtil.setDefaultTempDir().then((_) {
+      FileUtil.setDefaultSaveDir().then((_) {
+        HiveUtil.instance.putInitialBoxValues().then((_) {
           SettingsCache.setCachedSettings();
         });
       });
@@ -116,6 +104,8 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   @override
   void didChangeDependencies() {
     registerDefaultDownloadAdditionHotKey(context);
+    BrowserExtensionServer.start(context);
+    checkForUpdate(context);
     super.didChangeDependencies();
   }
 
@@ -124,16 +114,6 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     windowManager.removeListener(this);
     super.dispose();
   }
-
-  void startExtensionServer() async {
-    var server = await HttpServer.bind(InternetAddress.loopbackIPv4, 8080);
-    await for (var request in server) {
-      request.listen((event) async {
-        var json = jsonDecode(String.fromCharCodes(event));
-      });
-    }
-  }
-
 
 
   @override

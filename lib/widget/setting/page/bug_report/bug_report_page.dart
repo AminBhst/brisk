@@ -20,29 +20,23 @@ class BugReportPage extends StatelessWidget {
               children: [
                 SizedBox(
                   width: size.width * 0.6,
+                  height: 50,
                   child: const Text(
-                    "In order to report a bug or request a feature, open a new issue in the project github repo and add the proper labels.\n\n"
-                        "The link of the project repo is available in the about tab.",
+                    "In order to report a bug or request a feature, open a new issue in the project github repo and add the proper labels.\n\n",
                     style: TextStyle(color: Colors.white),
                   ),
+                ),
+                InkWell(
+                  child: SizedBox(
+                    width: size.width * 0.6,
+                    child: const Text("Click to open an issue",
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ),
+                  onTap: () => launchUrlString("https://github.com/AminBhst/brisk/issues/new"),
                 )
               ],
             ),
-            SettingsGroup(
-              height: 500,
-              title: "Note",
-              children: [
-                SizedBox(
-                  width: size.width * 0.6,
-                  child: const Text(
-                        "Please refrain from submitting issues which have already been mentioned in known issues section in the project README",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                )
-
-              ],
-            )
-
           ],
         ),
       ),

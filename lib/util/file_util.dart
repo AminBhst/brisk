@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -80,7 +80,7 @@ class FileUtil {
   }
 
   static bool checkDownloadDuplication(File file) {
-    return HiveBoxes.instance.downloadItemsBox.values
+    return HiveUtil.instance.downloadItemsBox.values
             .where((element) => element.filePath == file.path)
             .isNotEmpty ||
         file.existsSync();

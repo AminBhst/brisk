@@ -30,7 +30,7 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
       title: "Paths",
       children: [
         TextFieldSetting(
-          text: "Temporary Path",
+          text: "Temp Files Path",
           textWidth: size.width * 0.6 * 0.2,
           width: size.width * 0.6 * 0.3,
           txtController: tempPathController,

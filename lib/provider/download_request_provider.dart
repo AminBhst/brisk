@@ -4,7 +4,7 @@ import 'dart:isolate';
 
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
-import 'package:brisk/db/hive_boxes.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/downloader/multi_connection_isolation_handler.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
@@ -105,9 +105,9 @@ class DownloadRequestProvider with ChangeNotifier {
       _handleNotification(progress);
       final downloadItem = progress.downloadItem;
       notifyAllListeners(progress);
-      final dl = HiveBoxes.instance.downloadItemsBox.get(downloadItem.id)!;
+      final dl = HiveUtil.instance.downloadItemsBox.get(downloadItem.id)!;
       if (progress.assembleProgress == 1) {
-        HiveBoxes.instance.removeDownloadFromQueues(dl.key);
+        HiveUtil.instance.removeDownloadFromQueues(dl.key);
         PlutoGridUtil.removeCachedRow(id);
       }
       _updateDownloadRequest(progress, dl);
@@ -135,7 +135,7 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   Future<DownloadProgress> _addDownloadProgress(int id) async {
-    final downloadItem = HiveBoxes.instance.downloadItemsBox.get(id)!;
+    final downloadItem = HiveUtil.instance.downloadItemsBox.get(id)!;
     downloads.addAll({
       id: DownloadProgress(
           downloadItem: DownloadItemModel.fromDownloadItem(downloadItem))
@@ -161,7 +161,7 @@ class DownloadRequestProvider with ChangeNotifier {
       if (status == DownloadStatus.assembleComplete) {
         item.finishDate = DateTime.now();
       }
-      HiveBoxes.instance.downloadItemsBox.put(item.key, item);
+      HiveUtil.instance.downloadItemsBox.put(item.key, item);
       _previousUpdateTime = _nowMillis;
     }
   }
