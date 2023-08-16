@@ -31,7 +31,7 @@ As of version 1.3.0, Brisk supports browser integration that allows for capturin
 Download the Flutter SDK (Recommended version 3.7.11) and set the environment variable
 
 ```bash
-flutter build macos {macos OR windows OR linux}
+flutter build {macos OR windows OR linux}
 ```
 
 ## Prerequisites
