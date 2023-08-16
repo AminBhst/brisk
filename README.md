@@ -27,7 +27,7 @@ As of version 1.3.0, Brisk supports browser integration that allows for capturin
 
 [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox.svg" width="48" alt="Firefox" valign="middle">][link-firefox]
 
-## Build from source
+## Build From Source
 Download the Flutter SDK (Recommended version 3.7.11) and set the environment variable
 
 ```bash
