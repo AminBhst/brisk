@@ -27,8 +27,8 @@ class DownloadAdditionUiUtil {
     context.loaderOverlay.hide();
   }
 
-  static void handleDownloadAddition(BuildContext context, String url,
-      {bool updateDialog = false, int? downloadId, additionalPop = false}) {
+  static Future<void> handleDownloadAddition(BuildContext context, String url,
+      {bool updateDialog = false, int? downloadId, additionalPop = false}) async {
     if (!isUrlValid(url)) {
       showDialog(
         context: context,
@@ -36,6 +36,14 @@ class DownloadAdditionUiUtil {
       );
     } else {
       final item = DownloadItem.fromUrl(url);
+      var isValidDiskSpace = await FileUtil.checkDiskSpace(item.contentLength,item.filePath);
+      if(!isValidDiskSpace){
+        showDialog(
+          context: context,
+          builder: (_) => const ErrorDialog(text: 'Not enough disk space'),
+        );
+        return;
+      }
       _spawnFileInfoRetrieverIsolate(item).then((rPort) {
         context.loaderOverlay.show();
         retrieveFileInfo(rPort).then((fileInfo) {

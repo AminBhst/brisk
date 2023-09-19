@@ -6,6 +6,7 @@ import 'package:brisk/util/file_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
+import 'package:universal_disk_space/universal_disk_space.dart';
 
 import '../constants/file_type.dart';
 import '../model/isolate/isolate_args_pair.dart';
@@ -201,5 +202,19 @@ class FileUtil {
     final subDir = _fileTypeToFolderName(detectFileType(fileName));
     final filePath = join(SettingsCache.saveDir.path, subDir, fileName);
     return File(filePath).existsSync();
+  }
+
+  static Future<bool> checkDiskSpace(int contentLength, String fileName) async {
+    var dir = Directory(SettingsCache.saveDir.path);
+    var disk = await DiskSpace().getDisk(dir);
+    var availableSpace = disk.availableSpace;
+    var fileSize = contentLength;
+    var fileNameSize = fileName.length;
+    var totalSize = fileSize + fileNameSize;
+    if (availableSpace > totalSize) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
