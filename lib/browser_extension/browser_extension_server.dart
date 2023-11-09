@@ -29,17 +29,24 @@ class BrowserExtensionServer {
     }
     await for (var request in server) {
       request.listen((event) async {
+        var httpRequest = request as HttpRequest;
         final json = jsonDecode(String.fromCharCodes(event));
         if (parseBool(enableWindowToFront)) {
           WindowToFront.activate();
         }
         /// TODO make use of cookies
         DownloadAdditionUiUtil.handleDownloadAddition(context, json['url']);
-        await request.response.flush();
+        addHeaders(httpRequest);
+        httpRequest.response.statusCode = HttpStatus.ok;
         await request.response.close();
         return;
       });
     }
+  }
+
+  static void addHeaders(HttpRequest httpRequest) {
+    httpRequest.response.headers.add("Access-Control-Allow-Origin", "*");
+    httpRequest.response.headers.add("Access-Control-Allow-Headers", "*");
   }
 
   static void _showPortInUseError(BuildContext context, String port) {
