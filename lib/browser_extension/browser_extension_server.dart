@@ -19,18 +19,17 @@ class BrowserExtensionServer {
     try {
       _isServerRunning = true;
       final server = await HttpServer.bind(InternetAddress.loopbackIPv4, port);
-      await handleExtensionRequests(server, _windowToFrontEnabled, context);
+      await handleExtensionRequests(server, context);
     } catch (e) {
       _showPortInUseError(context, port.toString());
     }
   }
 
-  static Future<void> handleExtensionRequests(
-      server, bool windowToFront, BuildContext context) async {
+  static Future<void> handleExtensionRequests(server, context) async {
     await for (HttpRequest request in server) {
       request.listen((body) async {
         final jsonBody = jsonDecode(String.fromCharCodes(body));
-        if (windowToFront) {
+        if (_windowToFrontEnabled) {
           WindowToFront.activate();
         }
         _handleDownloadAddition(jsonBody, context, request);
@@ -51,7 +50,6 @@ class BrowserExtensionServer {
   static void _handleMultiDownloadRequest(jsonBody, context, request) {
     List downloadHrefs = jsonBody["data"]["downloadHrefs"];
     if (downloadHrefs.isEmpty) return;
-
   }
 
   static void _handleSingleDownloadRequest(jsonBody, context, request) async {
