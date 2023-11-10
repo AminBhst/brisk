@@ -113,32 +113,41 @@ class MultiConnectionHttpDownloadRequest {
   /// Starts the download request.
   /// [progressCallback] is used to let the provider know that the values are
   /// changed so that it calls notify listeners which can be used to display its live progress.
-  void start(DownloadProgressCallback progressCallback,
-      {bool connectionReset = false}) {
+  void start(DownloadProgressCallback progressCallback, {bool connectionReset = false}) {
     if (!connectionReset && startNotAllowed) return;
     _runConnectionResetTimer();
 
-    detailsStatus =
-        connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
-    status = detailsStatus;
-    this.progressCallback = progressCallback;
-    client = http.Client();
-    paused = false;
+    initVars(connectionReset, progressCallback);
     _notifyChange();
 
-    final request = http.Request('GET', Uri.parse(downloadItem.downloadUrl));
-    request.headers.addAll(contentType_MultiPartByteRanges);
+    final request = buildDownloadRequest();
     final isFinished = _setByteRangeHeader(request);
     if (isFinished) {
-      pauseButtonEnabled = true;
-      downloadProgress = 1;
-      writeProgress = 1;
-      detailsStatus = DownloadStatus.complete;
+      setDownloadCompletionVars();
       _notifyChange();
       return;
     }
     _setChunkCount();
 
+    sendDownloadRequest(request);
+  }
+
+  void initVars(bool connectionReset, DownloadProgressCallback progressCallback) {
+     detailsStatus =
+        connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
+    status = detailsStatus;
+    this.progressCallback = progressCallback;
+    client = http.Client();
+    paused = false;
+  }
+
+  http.Request buildDownloadRequest() {
+    final request = http.Request('GET', Uri.parse(downloadItem.downloadUrl));
+    request.headers.addAll(contentType_MultiPartByteRanges);
+    return request;
+  }
+
+  void sendDownloadRequest(http.Request request) {
     try {
       var response = client.send(request);
       response.asStream().listen((http.StreamedResponse streamedResponse) {
@@ -151,6 +160,13 @@ class MultiConnectionHttpDownloadRequest {
     } catch (e) {
       _notifyChange();
     }
+  }
+
+  void setDownloadCompletionVars() {
+    pauseButtonEnabled = true;
+    downloadProgress = 1;
+    writeProgress = 1;
+    detailsStatus = DownloadStatus.complete;
   }
 
   void _runConnectionResetTimer() {
