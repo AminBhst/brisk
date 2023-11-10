@@ -12,7 +12,7 @@ import 'package:window_to_front/window_to_front.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
 
-  static void start(BuildContext context) async {
+  static void setup(BuildContext context) async {
     if (_isServerRunning) return;
 
     final port = _extensionPort;

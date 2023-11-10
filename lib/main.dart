@@ -104,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   @override
   void didChangeDependencies() {
     registerDefaultDownloadAdditionHotKey(context);
-    BrowserExtensionServer.start(context);
+    BrowserExtensionServer.setup(context);
     checkForUpdate(context);
     super.didChangeDependencies();
   }
