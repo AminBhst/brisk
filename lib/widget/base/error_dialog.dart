@@ -10,7 +10,7 @@ class ErrorDialog extends StatelessWidget {
     super.key,
     this.text = '',
     this.width = 300,
-    this.height = 30,
+    this.height = 60,
     this.title = null,
   });
 

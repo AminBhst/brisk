@@ -1,3 +1,4 @@
+import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:hive/hive.dart';
@@ -67,4 +68,14 @@ class DownloadItem extends HiveObject{
       fileType: fileType.name,
     );
   }
+
+  factory DownloadItem.fromFileInfo(FileInfo fileInfo) {
+    final item = DownloadItem.fromUrl(fileInfo.url);
+    item.fileName = fileInfo.fileName;
+    item.fileType = FileUtil.detectFileType(item.fileName).name;
+    item.contentLength = fileInfo.contentLength;
+    item.supportsPause = fileInfo.supportsPause;
+    return item;
+  }
+
 }

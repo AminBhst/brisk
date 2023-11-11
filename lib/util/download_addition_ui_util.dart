@@ -47,7 +47,8 @@ class DownloadAdditionUiUtil {
           addDownload(item, fileInfo, context, additionalPop);
         }
       }).onError(
-        (_, __) {
+        (e, s) {
+          /// TODO Add log files
           _cancelRequest(context);
           showDialog(
             context: context,
@@ -71,8 +72,7 @@ class DownloadAdditionUiUtil {
     if (dlDuplication || fileExists) {
       final behaviour = SettingsCache.fileDuplicationBehaviour;
       if (behaviour == FileDuplicationBehaviour.ask) {
-        showAskDuplicationActionDialog(
-            context, fileExists, item, additionalPop);
+        showAskDuplicationActionDialog(context, item, additionalPop);
       } else if (behaviour == FileDuplicationBehaviour.skip) {
         if (additionalPop) {
           Navigator.of(context).pop();
@@ -80,7 +80,7 @@ class DownloadAdditionUiUtil {
         showDownloadExistsSnackBar(context);
       }
     } else {
-      showDownloadInfoDialog(context, item, false, additionalPop);
+      showDownloadInfoDialog(context, item, additionalPop);
     }
   }
 
@@ -135,15 +135,14 @@ class DownloadAdditionUiUtil {
     context.loaderOverlay.hide();
   }
 
-  static void showAskDuplicationActionDialog(BuildContext context,
-      bool fileExists, DownloadItem item, bool additionalPop) {
+  static void showAskDuplicationActionDialog(BuildContext context, DownloadItem item, bool additionalPop) {
     showDialog(
       context: context,
       builder: (context) => AskDuplicationAction(
-        fileDuplication: fileExists,
+        fileDuplication: false,
         onCreateNewPressed: () {
           Navigator.of(context).pop();
-          showDownloadInfoDialog(context, item, fileExists, additionalPop);
+          showDownloadInfoDialog(context, item, additionalPop);
         },
         onSkipPressed: () {
           if (additionalPop) {
@@ -170,8 +169,7 @@ class DownloadAdditionUiUtil {
     ));
   }
 
-  static void showDownloadInfoDialog(BuildContext context, DownloadItem item,
-      bool dlExists, bool additionalPop) {
+  static void showDownloadInfoDialog(BuildContext context, DownloadItem item, bool additionalPop) {
     if (additionalPop) {
       Navigator.of(context).pop();
     }

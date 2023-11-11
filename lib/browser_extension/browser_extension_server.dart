@@ -1,11 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/model/download_item.dart';
+import 'package:brisk/model/file_metadata.dart';
+import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
+import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:brisk/widget/download/multi_download_addition_dialog.dart';
+import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:window_to_front/window_to_front.dart';
 
@@ -50,10 +57,81 @@ class BrowserExtensionServer {
   static void _handleMultiDownloadRequest(jsonBody, context, request) {
     List downloadHrefs = jsonBody["data"]["downloadHrefs"];
     if (downloadHrefs.isEmpty) return;
+    final downloadItems = downloadHrefs.map((e) => DownloadItem.fromUrl(e));
+    _spawnFileInfoRetrieverIsolate(downloadItems.toList()).then((rPort) {
+      _showLoadingDialog(context);
+      retrieveFilesInfo(rPort).then((fileInfos) {
+        Navigator.of(context).pop();
+        showDialog(
+          context: context,
+          builder: (_) => MultiDownloadAdditionDialog(fileInfos),
+        );
+      }).onError(
+        (e, ee) {
+          _cancelRequest(context);
+          showDialog(
+            context: context,
+            builder: (_) => const ErrorDialog(
+              text: 'Could not retrieve file information!',
+            ),
+          );
+        },
+      );
+    });
+  }
+
+  static void _showLoadingDialog(context) {
+    showDialog(
+      context: context,
+      builder: (_) => FileInfoLoader(onCancelPressed: () {
+        _cancelRequest(context);
+        Navigator.of(context).pop();
+      }),
+    );
+  }
+
+  static Future<List<FileInfo>> retrieveFilesInfo(
+      ReceivePort receivePort) async {
+    final Completer<List<FileInfo>> completer = Completer();
+    receivePort.listen((message) {
+      if (message is List<FileInfo>) {
+        completer.complete(message);
+      } else {
+        completer.completeError(message);
+      }
+    });
+    return completer.future;
+  }
+
+  static void _cancelRequest(BuildContext context) {
+    fileInfoExtractorIsolate?.kill();
+  }
+
+  static Isolate? fileInfoExtractorIsolate = null;
+
+  static Future<ReceivePort> _spawnFileInfoRetrieverIsolate(
+      List<DownloadItem> downloadItems) async {
+    final ReceivePort receivePort = ReceivePort();
+    fileInfoExtractorIsolate =
+        await Isolate.spawn<IsolateArgsPair<List<DownloadItem>>>(
+      requestFileInfoIsolate,
+      IsolateArgsPair(receivePort.sendPort, downloadItems),
+      paused: true,
+    );
+    fileInfoExtractorIsolate?.addErrorListener(receivePort.sendPort);
+    fileInfoExtractorIsolate
+        ?.resume(fileInfoExtractorIsolate!.pauseCapability!);
+    return receivePort;
+  }
+
+  static Future<void> requestFileInfoIsolate(IsolateArgsPair args) async {
+    final result = await requestFileInfoBatch(args.obj);
+    args.sendPort.send(result);
   }
 
   static void _handleSingleDownloadRequest(jsonBody, context, request) async {
-    DownloadAdditionUiUtil.handleDownloadAddition(context, jsonBody['url']);
+    DownloadAdditionUiUtil.handleDownloadAddition(
+        context, jsonBody['data']['url']);
     addCORSHeaders(request);
     request.response.statusCode = HttpStatus.ok;
     await request.response.close();

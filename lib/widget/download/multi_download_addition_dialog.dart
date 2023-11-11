@@ -1,0 +1,221 @@
+import 'package:brisk/constants/download_status.dart';
+import 'package:brisk/constants/file_duplication_behaviour.dart';
+import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/model/download_item.dart';
+import 'package:brisk/model/download_item_model.dart';
+import 'package:brisk/model/download_progress.dart';
+import 'package:brisk/model/file_metadata.dart';
+import 'package:brisk/util/download_addition_ui_util.dart';
+import 'package:brisk/util/settings_cache.dart';
+import 'package:brisk/widget/base/closable_window.dart';
+import 'package:brisk/widget/base/rounded_outlined_button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+
+import '../../provider/download_request_provider.dart';
+import '../../util/file_util.dart';
+
+class MultiDownloadAdditionDialog extends StatefulWidget {
+  List<FileInfo> fileInfos = [];
+  late DownloadRequestProvider provider;
+
+  MultiDownloadAdditionDialog(this.fileInfos);
+
+  @override
+  State<MultiDownloadAdditionDialog> createState() =>
+      _MultiDownloadAdditionDialogState();
+}
+
+class _MultiDownloadAdditionDialogState
+    extends State<MultiDownloadAdditionDialog> {
+  @override
+  Widget build(BuildContext context) {
+    widget.provider =
+        Provider.of<DownloadRequestProvider>(context, listen: false);
+    final size = MediaQuery.of(context).size;
+    return ClosableWindow(
+        disableCloseButton: true,
+        height: 600,
+        width: 700,
+        content: Container(
+          height: resolveMainContainerHeight(size),
+          width: 600,
+          child: Column(
+            children: [
+              Container(
+                width: 600,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey),
+                ),
+                height: resolveScrollViewHeight(size),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ...widget.fileInfos.map((e) => getListTileItem(e))
+                    ],
+                  ),
+                ),
+              ),
+              Spacer(),
+              Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RoundedOutlinedButton(
+                      width: 80,
+                      onPressed: () => Navigator.of(context).pop(),
+                      borderColor: Colors.red,
+                      text: "Cancel",
+                      textColor: Colors.red,
+                    ),
+                    const SizedBox(width: 10),
+                    RoundedOutlinedButton(
+                      width: 80,
+                      onPressed: onAddPressed,
+                      borderColor: Colors.green,
+                      text: "Add",
+                      textColor: Colors.green,
+                    ),
+                  ])
+            ],
+          ),
+        ));
+  }
+
+  void onAddPressed() async {
+    final downloadItems =
+        widget.fileInfos.map((e) => DownloadItem.fromFileInfo(e)).toList();
+
+    await updateDuplicateUrls(downloadItems);
+    for (final item in downloadItems.toSet()) {
+      await HiveUtil.instance.addDownloadItem(item);
+      widget.provider.insertRows([
+        DownloadProgress(downloadItem: DownloadItemModel.fromDownloadItem(item))
+      ]);
+    }
+    if (!mounted) return;
+    Navigator.of(context).pop();
+  }
+
+  Future<void> updateDuplicateUrls(List<DownloadItem> downloadItems) async {
+    final duplicates = downloadItems.where(checkDownloadDuplication).toList();
+    final uncompletedDownloads = HiveUtil.instance.downloadItemsBox.values
+        .where((element) => element.status != DownloadStatus.complete);
+    for (final download in uncompletedDownloads) {
+      final fileNames = duplicates.map((e) => e.fileName).toList();
+      if (fileNames.contains(download.fileName)) {
+        download.downloadUrl = duplicates
+            .where((dl) => dl.fileName == download.fileName)
+            .first
+            .downloadUrl;
+        await download.save();
+      }
+    }
+    downloadItems.removeWhere(checkDownloadDuplication);
+  }
+
+  bool checkDownloadDuplication(DownloadItem item) {
+    return DownloadAdditionUiUtil.checkDownloadDuplication(item.fileName) ||
+        FileUtil.checkFileDuplication(item.fileName);
+  }
+
+  double resolveScrollViewHeight(Size size) {
+    if (size.height < 390) {
+      return 70;
+    }
+    if (size.height < 450) {
+      return 160;
+    }
+    if (size.height < 500) {
+      return 220;
+    }
+    if (size.height < 550) {
+      return 250;
+    }
+    if (size.height < 600) {
+      return 290;
+    }
+    if (size.height < 648) {
+      return 340;
+    }
+    return 420;
+  }
+
+  double resolveMainContainerHeight(Size size) {
+    if (size.height < 348) {
+      return 110;
+    }
+    if (size.height < 390) {
+      return 140;
+    }
+    if (size.height < 440) {
+      return 220;
+    }
+    if (size.height < 470) {
+      return 270;
+    }
+    if (size.height < 520) {
+      return 300;
+    }
+    if (size.height < 570) {
+      return 350;
+    }
+    if (size.height < 598) {
+      return 400;
+    }
+    if (size.height < 648) {
+      return 430;
+    }
+    if (size.height < 668) {
+      return 480;
+    }
+    return 500;
+  }
+
+  Widget getListTileItem(FileInfo fileInfo) {
+    final fileType = FileUtil.detectFileType(fileInfo.fileName);
+    return Container(
+      width: 600,
+      height: 70,
+      child: Padding(
+        padding: EdgeInsets.all(10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              child: SvgPicture.asset(
+                FileUtil.resolveFileTypeIconPath(fileType.name),
+                width: 35,
+                height: 35,
+                color: FileUtil.resolveFileTypeIconColor(fileType.name),
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(fileInfo.fileName, style: TextStyle(color: Colors.white)),
+                Text('35.4 MB',
+                    style: TextStyle(color: Colors.white, fontSize: 14)),
+              ],
+            ),
+            const Spacer(),
+            IconButton(
+              icon: Icon(Icons.delete),
+              color: Colors.red,
+              onPressed: () {
+                setState(() => widget.fileInfos.remove(fileInfo));
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}

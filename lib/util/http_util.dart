@@ -66,14 +66,27 @@ List<int> calculateByteStartAndByteEnd(
   return [byteStart, byteEnd];
 }
 
+Future<List<FileInfo>?> requestFileInfoBatch(
+    List<DownloadItem> downloadItems) async {
+  List<FileInfo> fileInfos = [];
+  for (final item in downloadItems) {
+    final fileInfo = await requestFileInfo(item, ignoreException: true);
+    if (fileInfo == null) continue;
+    fileInfo.url = item.downloadUrl;
+    fileInfos.add(fileInfo);
+  }
+  return fileInfos;
+}
+
 /// Sends a HEAD request to the url given in the [downloadItem] object.
 /// Determines pause/resume functionality support by the server,
 /// total file size and the content-type of the request.
-Future<FileInfo> requestFileInfo(DownloadItem downloadItem) async {
+Future<FileInfo?> requestFileInfo(DownloadItem downloadItem,
+    {bool ignoreException = false}) async {
   final request = http.Request("HEAD", Uri.parse(downloadItem.downloadUrl));
   final client = http.Client();
   var response = client.send(request);
-  Completer<FileInfo> completer = Completer();
+  Completer<FileInfo?> completer = Completer();
   response.asStream().listen((streamedResponse) {
     final headers = streamedResponse.headers;
     var filename = extractFilenameFromHeaders(headers);
@@ -81,6 +94,10 @@ Future<FileInfo> requestFileInfo(DownloadItem downloadItem) async {
       downloadItem.fileName = filename;
     }
     if (headers["content-length"] == null) {
+      if (ignoreException) {
+        completer.complete(null);
+        return;
+      }
       throw Exception({"Could not retrieve result from the given URL"});
     }
     downloadItem.contentLength = int.parse(headers["content-length"]!);
@@ -109,7 +126,6 @@ Future<dynamic> checkLatestBriskRelease() async {
   return completer.future;
 }
 
-
 // TODO Refactor and fix version check logic
 void checkForUpdate(BuildContext context) async {
   var lastUpdateCheck = await HiveUtil.instance.settingBox.get(18);
@@ -137,7 +153,7 @@ void checkForUpdate(BuildContext context) async {
       context: context,
       builder: (context) => ConfirmationDialog(
         title:
-        "New version of Brisk is available. Do you want to download the latest version?",
+            "New version of Brisk is available. Do you want to download the latest version?",
         onConfirmPressed: () => launchUrlString(
           "https://github.com/AminBhst/brisk/releases/latest",
         ),

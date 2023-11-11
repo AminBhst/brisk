@@ -39,6 +39,12 @@ class _CheckedBoxedConfirmationDialogState
             Row(
               children: [
                 Checkbox(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2.0),
+                    ),
+                    side: MaterialStateBorderSide.resolveWith(
+                      (states) => BorderSide(width: 1.0, color: Colors.grey),
+                    ),
                     activeColor: Colors.blueGrey,
                     value: checkBoxValue,
                     onChanged: (value) =>
