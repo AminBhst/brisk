@@ -75,6 +75,7 @@ class DownloadItem extends HiveObject{
     item.fileType = FileUtil.detectFileType(item.fileName).name;
     item.contentLength = fileInfo.contentLength;
     item.supportsPause = fileInfo.supportsPause;
+    item.filePath = FileUtil.getFilePath(item.fileName);
     return item;
   }
 
