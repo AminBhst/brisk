@@ -13,8 +13,7 @@ Installation files for Windows and Linux are available
 at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 
 ## Browser Integration
-As of version 1.3.0, Brisk supports browser integration that allows for capturing downloads from the browser and adding them directly into the app.
-[Github Repository](https://github.com/AminBhst/brisk-browser-extension)
+As of version 1.3.0, Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-extension) that allows for capturing downloads from the browser and adding them directly into the app.
 
 ### Installing The Browser Extension
 #### Chrome / Edge / Opera
@@ -26,14 +25,6 @@ As of version 1.3.0, Brisk supports browser integration that allows for capturin
 [link-firefox]: https://addons.mozilla.org/en-US/firefox/addon/brisk/
 
 [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox.svg" width="48" alt="Firefox" valign="middle">][link-firefox]
-
-## Build From Source
-Download the Flutter SDK (Recommended version 3.7.11) and set the environment variable
-
-```bash
-flutter build {macos OR windows OR linux}
-```
-
 ## Prerequisites
 
 On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/keybinder) installed.
@@ -53,6 +44,14 @@ On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/key
 ## Demo With Browser Integration
 
 <img align="center" src="assets/Brisk-Demo.gif">
+
+## Build From Source
+
+Download the Flutter SDK (Recommended version 3.7.11) and set the path variable
+
+```bash
+flutter build macos/windows/linux
+```
 
 ## Features to come
 
