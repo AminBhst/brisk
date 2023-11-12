@@ -50,7 +50,8 @@ class FileUtil {
     return completer.future;
   }
 
-  static String getFilePath(String fileName, {Directory? baseSaveDir}) {
+  static String getFilePath(String fileName,
+      {Directory? baseSaveDir, bool checkFileDuplicationOnly = false}) {
     final saveDir = baseSaveDir ?? SettingsCache.saveDir;
     if (!saveDir.existsSync()) {
       saveDir.createSync();
@@ -66,7 +67,7 @@ class FileUtil {
         : fileName.substring(fileName.lastIndexOf('.') + 1);
     int version = 1;
 
-    while (checkDownloadDuplication(file)) {
+    while (checkDownloadDuplication(file, checkFileDuplicationOnly)) {
       var rawName = getRawFileName(fileName);
       if (versionedFileRegex.hasMatch(rawName)) {
         rawName = rawName.substring(0, rawName.lastIndexOf('_'));
@@ -79,7 +80,9 @@ class FileUtil {
     return join(saveDir.path, subDir, fileName);
   }
 
-  static bool checkDownloadDuplication(File file) {
+  static bool checkDownloadDuplication(File file, bool checkFileDuplicationOnly) {
+    if (checkFileDuplicationOnly) return file.existsSync();
+
     return HiveUtil.instance.downloadItemsBox.values
             .where((element) => element.filePath == file.path)
             .isNotEmpty ||

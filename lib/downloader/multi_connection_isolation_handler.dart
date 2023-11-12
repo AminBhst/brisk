@@ -113,6 +113,7 @@ class MultiConnectionIsolationHandler {
       final newFilePath = FileUtil.getFilePath(
         downloadItem.fileName,
         baseSaveDir: baseSaveDir,
+        checkFileDuplicationOnly: true
       );
       fileToWrite = File(newFilePath);
     }
@@ -307,6 +308,7 @@ class MultiConnectionIsolationHandler {
     File(downloadItem.filePath).deleteSync();
 
     final success = assembleFile(downloadItem, baseTempDir, baseSaveDir);
+    print("STATUS : " + success.toString());
     final status = success
         ? DownloadStatus.assembleComplete
         : DownloadStatus.assembleFailed;
