@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brisk/provider/queue_provider.dart';
+import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -34,7 +35,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
     final size = MediaQuery.of(context).size;
     return Container(
-      width: size.width * 0.80,
+      width: resolveWindowWidth(size),
       height: 70,
       color: const Color.fromRGBO(46, 54, 67, 1),
       child: Row(

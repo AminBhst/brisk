@@ -4,6 +4,7 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/settings_provider.dart';
+import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/setting/settings_window.dart';
 import 'package:brisk/widget/side_menu/side_menu_expansion_tile.dart';
 import 'package:brisk/widget/side_menu/side_menu_item.dart';
@@ -22,7 +23,7 @@ class SideMenu extends StatelessWidget {
     final queueProvider = Provider.of<QueueProvider>(context);
     final size = MediaQuery.of(context).size;
     return Container(
-      width: size.width * 0.2,
+      width: resolveSideMenuWidth(size),
       height: double.infinity,
       color: const Color.fromRGBO(55, 64, 81, 1),
       child: Material(
@@ -112,20 +113,6 @@ class SideMenu extends StatelessWidget {
               leading: Icon(Icons.queue, color: Colors.white),
               title: "Queues",
             ),
-            // SideMenuExpansionTile(
-            //   icon: Icon(Icons.queue, color: Colors.white),
-            //   title: 'Queues',
-            //   onTap: null,
-            //   children: HiveBoxes.instance.downloadQueueBox.values
-            //       .map(
-            //         (e) => SideMenuListTileItem(
-            //           text: e.name,
-            //           responsive: false,
-            //           icon: null,
-            //           onTap: () => onQueueItemPressed(queueProvider, e),
-            //         ),
-            //       ).toList(),
-            // ),
             const Spacer(),
             Padding(
               padding: const EdgeInsets.all(50),
@@ -184,5 +171,4 @@ class SideMenu extends StatelessWidget {
         "status", DownloadStatus.assembleComplete);
   }
 
-  bool minimizedSideMenu(Size size) => size.width < 1300;
 }

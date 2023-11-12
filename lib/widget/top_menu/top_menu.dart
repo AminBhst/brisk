@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
+import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
@@ -32,7 +33,7 @@ class _TopMenuState extends State<TopMenu> {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
     final size = MediaQuery.of(context).size;
     return Container(
-      width: size.width * 0.80,
+      width: resolveWindowWidth(size),
       height: 70,
       color: const Color.fromRGBO(46, 54, 67, 1),
       child: Row(
@@ -93,7 +94,7 @@ class _TopMenuState extends State<TopMenu> {
             onTap: () => launchUrlString(
               'https://github.com/AminBhst/brisk-browser-extension',
             ),
-          )
+          ),
         ],
       ),
     );

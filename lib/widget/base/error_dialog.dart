@@ -5,6 +5,7 @@ class ErrorDialog extends StatelessWidget {
   final double width;
   final double height;
   final String? title;
+  final double textHeight;
 
   const ErrorDialog({
     super.key,
@@ -12,6 +13,7 @@ class ErrorDialog extends StatelessWidget {
     this.width = 300,
     this.height = 60,
     this.title = null,
+    this.textHeight = 90,
   });
 
   @override
@@ -24,10 +26,16 @@ class ErrorDialog extends StatelessWidget {
         height: height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.warning_rounded, color: Colors.red),
+                SizedBox(
+                    height: 25,
+                    child:
+                        const Icon(Icons.warning_rounded, color: Colors.red)),
                 const SizedBox(width: 10),
                 if (title != null)
                   Text(
@@ -39,7 +47,9 @@ class ErrorDialog extends StatelessWidget {
                   ),
               ],
             ),
-            Text(text, style: const TextStyle(color: Colors.red)),
+            SizedBox(
+                height: textHeight,
+                child: Text(text, style: const TextStyle(color: Colors.red))),
           ],
         ),
       ),

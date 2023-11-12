@@ -32,7 +32,11 @@ class DownloadAdditionUiUtil {
     if (!isUrlValid(url)) {
       showDialog(
         context: context,
-        builder: (_) => const ErrorDialog(height: 45, title: 'Invalid URL'),
+        builder: (_) => const ErrorDialog(
+          width: 30,
+          height: 45,
+          title: 'Invalid URL',
+        ),
       );
       return;
     }
@@ -53,7 +57,8 @@ class DownloadAdditionUiUtil {
           showDialog(
             context: context,
             builder: (_) => const ErrorDialog(
-              text: 'Could not retrieve file information!',
+              textHeight: 0,
+              title: "Could not retrieve file information!",
             ),
           );
         },
@@ -135,7 +140,8 @@ class DownloadAdditionUiUtil {
     context.loaderOverlay.hide();
   }
 
-  static void showAskDuplicationActionDialog(BuildContext context, DownloadItem item, bool additionalPop) {
+  static void showAskDuplicationActionDialog(
+      BuildContext context, DownloadItem item, bool additionalPop) {
     showDialog(
       context: context,
       builder: (context) => AskDuplicationAction(
@@ -169,7 +175,8 @@ class DownloadAdditionUiUtil {
     ));
   }
 
-  static void showDownloadInfoDialog(BuildContext context, DownloadItem item, bool additionalPop) {
+  static void showDownloadInfoDialog(
+      BuildContext context, DownloadItem item, bool additionalPop) {
     if (additionalPop) {
       Navigator.of(context).pop();
     }

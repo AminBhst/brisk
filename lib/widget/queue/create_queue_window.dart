@@ -83,7 +83,7 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
       showDialog(
         context: context,
         builder: (context) => ErrorDialog(
-          title: "A queue with this name already exists!",
+          title: "Queue with this name already exists!",
           height: 50,
           width: 400,
         ),

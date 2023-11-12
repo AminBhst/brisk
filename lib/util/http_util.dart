@@ -87,7 +87,7 @@ Future<FileInfo?> requestFileInfo(DownloadItem downloadItem,
   final client = http.Client();
   var response = client.send(request);
   Completer<FileInfo?> completer = Completer();
-  response.asStream().listen((streamedResponse) {
+  response.asStream().timeout(Duration(seconds: 10)).listen((streamedResponse) {
     final headers = streamedResponse.headers;
     var filename = extractFilenameFromHeaders(headers);
     if (filename != null) {

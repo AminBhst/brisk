@@ -3,6 +3,7 @@ import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/file_util.dart';
+import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/download/download_row_pop_up_menu_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -37,7 +38,7 @@ class _DownloadGridState extends State<DownloadGrid> {
       ),
       PlutoColumn(
         enableRowChecked: true,
-        width: 300,
+        width: 360,
         title: 'File Name',
         field: 'file_name',
         type: PlutoColumnType.text(),
@@ -150,7 +151,7 @@ class _DownloadGridState extends State<DownloadGrid> {
       type: MaterialType.transparency,
       child: Container(
         height: size.height - 70,
-        width: size.width * 0.8,
+        width: resolveWindowWidth(size),
         decoration: const BoxDecoration(color: Colors.black26),
         child: PlutoGrid(
           key: UniqueKey(),

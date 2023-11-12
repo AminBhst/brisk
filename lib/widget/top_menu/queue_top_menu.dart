@@ -1,4 +1,5 @@
 
+import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/queue/create_queue_window.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class QueueTopMenu extends StatelessWidget {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
     final size = MediaQuery.of(context).size;
     return Container(
-      width: size.width * 0.80,
+      width: resolveWindowWidth(size),
       height: 70,
       color: const Color.fromRGBO(46, 54, 67, 1),
       child: Row(

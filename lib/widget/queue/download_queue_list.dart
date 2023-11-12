@@ -1,4 +1,5 @@
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/queue/queue_list_item.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,7 @@ class DownloadQueueList extends StatelessWidget {
       type: MaterialType.transparency,
       child: Container(
         height: size.height - 70,
-        width: size.width * 0.8,
+        width: resolveWindowWidth(size),
         color: Color.fromRGBO(40, 46, 58, 1),
         child: Column(
           children: buildQueues(context),
