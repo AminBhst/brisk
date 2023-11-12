@@ -24,6 +24,8 @@ import 'package:timezone/data/latest.dart' as tz;
 
 import 'util/settings_cache.dart';
 
+// TODO add current version in settings
+// TODO Add log files for errors
 void main() async {
   tz.initializeTimeZones();
   await HiveUtil.instance.initHive();
