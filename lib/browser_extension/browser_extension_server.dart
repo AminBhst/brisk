@@ -18,6 +18,7 @@ import 'package:window_to_front/window_to_front.dart';
 
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
+  static int _requestRateLimitMillis = 1000;
 
   static void setup(BuildContext context) async {
     if (_isServerRunning) return;
@@ -26,25 +27,43 @@ class BrowserExtensionServer {
     try {
       _isServerRunning = true;
       final server = await HttpServer.bind(InternetAddress.loopbackIPv4, port);
-      await handleExtensionRequests(server, context);
+      handleExtensionRequests(server, context);
     } catch (e) {
       _showPortInUseError(context, port.toString());
     }
   }
 
+  static int _latestRequestServed = 0;
+
   static Future<void> handleExtensionRequests(server, context) async {
-    await for (HttpRequest request in server) {
-      request.listen((body) async {
+    await for (final request in server) {
+      await for (final body in request) {
+        if (_tooManyRequestsReached) {
+          await handleTooManyRequests(request);
+          continue;
+        }
+        _latestRequestServed = DateTime.now().millisecondsSinceEpoch;
         final jsonBody = jsonDecode(String.fromCharCodes(body));
         if (_windowToFrontEnabled) {
           WindowToFront.activate();
         }
-        _handleDownloadAddition(jsonBody, context, request);
-      });
+        await _handleDownloadAddition(jsonBody, context, request);
+      }
     }
   }
 
-  static void _handleDownloadAddition(jsonBody, context, request) async {
+  static Future<void> handleTooManyRequests(HttpRequest request) async {
+    request.response.statusCode = HttpStatus.tooManyRequests;
+    await request.response.flush();
+    await request.response.close();
+  }
+
+  static get _tooManyRequestsReached =>
+      _latestRequestServed + _requestRateLimitMillis >
+      DateTime.now().millisecondsSinceEpoch;
+
+  static Future<void> _handleDownloadAddition(
+      jsonBody, context, request) async {
     final type = jsonBody["type"];
     if (type == "single") {
       _handleSingleDownloadRequest(jsonBody, context, request);
@@ -52,20 +71,25 @@ class BrowserExtensionServer {
     if (type == "multi") {
       _handleMultiDownloadRequest(jsonBody, context, request);
     }
+    await request.response.flush();
+    await request.response.close();
   }
 
-  static void _handleMultiDownloadRequest(jsonBody, context, request) {
+  static void _handleMultiDownloadRequest(
+      jsonBody, context, HttpRequest request) {
     List downloadHrefs = jsonBody["data"]["downloadHrefs"];
     if (downloadHrefs.isEmpty) return;
     final downloadItems = downloadHrefs.map((e) => DownloadItem.fromUrl(e));
+    _showLoadingDialog(context);
     _spawnFileInfoRetrieverIsolate(downloadItems.toList()).then((rPort) {
-      _showLoadingDialog(context);
       retrieveFilesInfo(rPort).then((fileInfos) {
         Navigator.of(context).pop();
         showDialog(
           context: context,
+          barrierDismissible: false,
           builder: (_) => MultiDownloadAdditionDialog(fileInfos),
         );
+        _cancelRequest(context);
       }).onError(
         (e, ee) {
           _cancelRequest(context);
@@ -104,7 +128,7 @@ class BrowserExtensionServer {
   }
 
   static void _cancelRequest(BuildContext context) {
-    fileInfoExtractorIsolate?.kill();
+    fileInfoExtractorIsolate?.kill(priority: 0);
   }
 
   static Isolate? fileInfoExtractorIsolate = null;
@@ -134,7 +158,6 @@ class BrowserExtensionServer {
         context, jsonBody['data']['url']);
     addCORSHeaders(request);
     request.response.statusCode = HttpStatus.ok;
-    await request.response.close();
   }
 
   static void addCORSHeaders(HttpRequest httpRequest) {
