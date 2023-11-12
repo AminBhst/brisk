@@ -43,7 +43,7 @@ On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/key
 
 ## Demo With Browser Integration
 
-<img align="center" src="assets/Brisk-Demo.gif">
+<img align="center" width="850" src="assets/Brisk-Demo.gif">
 
 ## Build From Source
 
