@@ -144,7 +144,7 @@ void checkForUpdate(BuildContext context) async {
   if (json == null || json['tag_name'] == null) return;
 
   String tagName = json['tag_name'];
-  tagName = tagName.replaceAll(".", "");
+  tagName = tagName.replaceAll(".", "").replaceAll("v", "");
   int latestVersion = int.parse(tagName);
   final packageInfo = await PackageInfo.fromPlatform();
   int currentVersion = int.parse(packageInfo.version.replaceAll(".", ""));
