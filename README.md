@@ -52,7 +52,7 @@ On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/key
 
 ## Demo
 
-<img align="center" src="assets/Brisk-Demo.gif">
+<img align="center" width="600" src="assets/Brisk-Demo.gif">
 
 ## Features to come
 
