@@ -1,12 +1,11 @@
 import 'package:brisk/constants/download_status.dart';
-import 'package:brisk/constants/file_duplication_behaviour.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
-import 'package:brisk/util/settings_cache.dart';
+import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
@@ -47,13 +46,13 @@ class _MultiDownloadAdditionDialogState
                 width: 600,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey),
+                  border: Border.all(color: Color.fromRGBO(220, 220, 220, 0.2)),
                 ),
                 height: resolveScrollViewHeight(size),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      ...widget.fileInfos.map((e) => getListTileItem(e))
+                      ...widget.fileInfos.map((e) => getListTileItem(e,size))
                     ],
                   ),
                 ),
@@ -174,7 +173,14 @@ class _MultiDownloadAdditionDialogState
     return 500;
   }
 
-  Widget getListTileItem(FileInfo fileInfo) {
+  double resolveListContainerWidth(Size size) {
+    if (size.width > 700) {
+      return 450;
+    }
+    return size.width * 0.5;
+  }
+
+  Widget getListTileItem(FileInfo fileInfo, Size size) {
     final fileType = FileUtil.detectFileType(fileInfo.fileName);
     return Container(
       width: 600,
@@ -196,14 +202,25 @@ class _MultiDownloadAdditionDialogState
             SizedBox(
               width: 10,
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(fileInfo.fileName, style: TextStyle(color: Colors.white)),
-                Text('35.4 MB',
-                    style: TextStyle(color: Colors.white, fontSize: 14)),
-              ],
+            SizedBox(
+              width: resolveListContainerWidth(size),
+              height: 45,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      width: resolveListContainerWidth(size),
+                        child: Text(
+                      fileInfo.fileName,
+                      style: TextStyle(color: Colors.white, overflow: TextOverflow.ellipsis),
+                    )),
+                  ),
+                  Text(convertByteToReadableStr(fileInfo.contentLength),
+                      style: TextStyle(color: Colors.white, fontSize: 14)),
+                ],
+              ),
             ),
             const Spacer(),
             IconButton(
