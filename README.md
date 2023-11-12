@@ -50,7 +50,7 @@ On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/key
 - Smart connection reset
 - Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
 
-## Demo
+## Demo With Browser Integration
 
 <img align="center" src="assets/Brisk-Demo.gif">
 
