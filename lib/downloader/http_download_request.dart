@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 import '../constants/download_status.dart';
 
-class MultiConnectionHttpDownloadRequest {
+class HttpDownloadRequest {
   /// Buffer containing the received bytes
   List<List<int>> buffer = [];
 
@@ -99,7 +99,7 @@ class MultiConnectionHttpDownloadRequest {
 
   int connectionRetryTimeoutMillis;
 
-  MultiConnectionHttpDownloadRequest({
+  HttpDownloadRequest({
     required this.downloadItem,
     required this.baseTempDir,
     required this.segmentNumber,

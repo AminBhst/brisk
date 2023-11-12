@@ -1,14 +1,13 @@
 import 'package:brisk/constants/download_command.dart';
-import 'package:brisk/downloader/multi_connection_http_download_request.dart';
+import 'package:brisk/downloader/http_download_request.dart';
 import 'package:brisk/model/isolate/download_isolator_args.dart';
 import 'package:brisk/model/isolate/isolate_method_args.dart';
 import 'package:stream_channel/isolate_channel.dart';
 
 import '../util/http_util.dart';
 
-class SingleConnectionIsolationHandler {
-  static final Map<int, Map<int, MultiConnectionHttpDownloadRequest>>
-      _connections = {};
+class SingleConnectionManager {
+  static final Map<int, Map<int, HttpDownloadRequest>> _connections = {};
 
   static void handleSingleConnection(HandleSingleConnectionArgs args) async {
     final channel = IsolateChannel.connectSend(args.sendPort);
@@ -17,15 +16,14 @@ class SingleConnectionIsolationHandler {
         final id = data.downloadItem.id;
         _connections[id] ??= {};
         final segmentNumber = data.segmentNumber ?? args.segmentNumber;
-        MultiConnectionHttpDownloadRequest? request =
-            _connections[id]![segmentNumber];
+        HttpDownloadRequest? request = _connections[id]![segmentNumber];
         if (request == null) {
           final startEndByte = calculateByteStartAndByteEnd(
             args.totalSegments,
             segmentNumber,
             data.downloadItem.contentLength,
           );
-          request = MultiConnectionHttpDownloadRequest(
+          request = HttpDownloadRequest(
             downloadItem: data.downloadItem,
             baseTempDir: data.baseTempDir,
             segmentNumber: segmentNumber,

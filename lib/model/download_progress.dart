@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:brisk/model/download_item_model.dart';
 
-import '../downloader/multi_connection_http_download_request.dart';
+import '../downloader/http_download_request.dart';
 
 class DownloadProgress {
   List<DownloadProgress> connectionProgresses = [];
@@ -46,7 +46,7 @@ class DownloadProgress {
   });
 
   factory DownloadProgress.loadFromMultiConnectionDownloadRequest(
-      MultiConnectionHttpDownloadRequest request) {
+      HttpDownloadRequest request) {
     final downloadProgress = DownloadProgress(
       downloadProgress: request.downloadProgress,
       transferRate: request.transferRate,

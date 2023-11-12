@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:brisk/constants/download_status.dart';
-import 'package:brisk/downloader/single_connection_isolation_handler.dart';
+import 'package:brisk/downloader/single_connection_manager.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/isolate/download_isolator_args.dart';
@@ -16,7 +16,7 @@ import '../util/file_util.dart';
 import '../util/readability_util.dart';
 
 /// TODO : send pause command to isolates which are pending connection
-class MultiConnectionIsolationHandler {
+class MultiConnectionCoordinator {
   /// Keeps a map of all stream channels related to the running download requests
   static final Map<int, Map<int, StreamChannel>> _connectionChannels = {};
 
@@ -283,7 +283,7 @@ class MultiConnectionIsolationHandler {
       sendPort: rPort.sendPort,
     );
     final isolate = await Isolate.spawn<HandleSingleConnectionArgs>(
-        SingleConnectionIsolationHandler.handleSingleConnection, isolateArgs,
+        SingleConnectionManager.handleSingleConnection, isolateArgs,
         errorsAreFatal: false);
     _connectionIsolates[downloadId] ??= {};
     _connectionIsolates[downloadId]![segmentNumber] = isolate;
