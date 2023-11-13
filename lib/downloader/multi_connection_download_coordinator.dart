@@ -15,9 +15,16 @@ import 'package:path/path.dart';
 import '../util/file_util.dart';
 import '../util/readability_util.dart';
 
-/// TODO : send pause command to isolates which are pending connection
-class MultiConnectionCoordinator {
-  /// Keeps a map of all stream channels related to the running download requests
+/// Coordinates and manages download connections.
+/// By default, each download request consists of 8 download connections that are tasked to receive their designated bytes and save them as temporary files.
+/// For each download item, [handleMultiConnectionRequest] will be called in designated isolate spawned by the [DownloadRequestProvider].
+/// The coordinator will track the state of the download connections, retrieve and aggregate data such as the overall download speed and progress,
+/// manage the availability of pause/resume buttons and assemble the file when the all connections have finished receiving and writing their data.
+class MultiConnectionDownloadCoordinator {
+
+  /// TODO : send pause command to isolates which are pending connection
+
+  /// A map of all stream channels related to the running download requests
   static final Map<int, Map<int, StreamChannel>> _connectionChannels = {};
 
   static final Map<int, Map<int, DownloadProgress>> _connectionProgresses = {};
