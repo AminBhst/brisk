@@ -17,7 +17,7 @@ import '../util/readability_util.dart';
 
 /// Coordinates and manages download connections.
 /// By default, each download request consists of 8 download connections that are tasked to receive their designated bytes and save them as temporary files.
-/// For each download item, [handleMultiConnectionRequest] will be called in a designated isolate spawned by the [DownloadRequestProvider].
+/// For each download item, [startDownloadRequest] will be called in a designated isolate spawned by the [DownloadRequestProvider].
 /// The coordinator will track the state of the download connections, retrieve and aggregate data such as the overall download speed and progress,
 /// manage the availability of pause/resume buttons and assemble the file when the all connections have finished receiving and writing their data.
 class MultiConnectionDownloadCoordinator {
@@ -36,7 +36,7 @@ class MultiConnectionDownloadCoordinator {
   /// Settings
   static late Directory baseSaveDir;
 
-  static void handleMultiConnectionRequest(SendPort sendPort) async {
+  static void startDownloadRequest(SendPort sendPort) async {
     final handlerChannel = IsolateChannel.connectSend(sendPort);
     handlerChannel.stream.listen((data) async {
       if (data is SegmentedDownloadIsolateArgs) {

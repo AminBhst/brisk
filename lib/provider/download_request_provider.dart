@@ -67,7 +67,7 @@ class DownloadRequestProvider with ChangeNotifier {
       maxConnectionRetryCount: SettingsCache.connectionRetryCount,
     );
     if (channel == null) {
-      channel = await _spawnHandlerIsolate(id);
+      channel = await _spawnCoordinatorIsolate(id);
       if (command == DownloadCommand.cancel) return;
       channel.stream
           .listen((progress) => _listenToHandlerChannel(progress, id));
@@ -87,11 +87,11 @@ class DownloadRequestProvider with ChangeNotifier {
     return tempDir.existsSync() ? tempDir.listSync().length : null;
   }
 
-  Future<StreamChannel> _spawnHandlerIsolate(int id) async {
+  Future<StreamChannel> _spawnCoordinatorIsolate(int id) async {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
     final isolate = await Isolate.spawn(
-      MultiConnectionDownloadCoordinator.handleMultiConnectionRequest,
+      MultiConnectionDownloadCoordinator.startDownloadRequest,
       rPort.sendPort,
     );
     handlerIsolates[id] = isolate;
