@@ -1,3 +1,12 @@
+/*
+ * Filename: d:\OSContrib\brisk\lib\widget\side_menu\side_menu.dart
+ * Path: d:\OSContrib\brisk\lib\widget\side_menu
+ * Created Date: Friday, November 17th 2023, 10:45:05 pm
+ * Author: Dhanesh
+ * 
+ * Copyright (c) 2023 Trinom Digital Pvt Ltd
+ */
+
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/db/hive_util.dart';
@@ -120,13 +129,16 @@ class SideMenu extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(
-                iconSize: 30,
-                onPressed: () => onSettingPressed(context),
-                icon: const Icon(
-                  Icons.settings,
-                  color: Colors.white,
-                )),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: IconButton(
+                  iconSize: 30,
+                  onPressed: () => onSettingPressed(context),
+                  icon: const Icon(
+                    Icons.settings,
+                    color: Colors.white,
+                  )),
+            ),
           ],
         ),
       ),
