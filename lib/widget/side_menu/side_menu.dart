@@ -1,3 +1,12 @@
+/*
+ * Filename: d:\OSContrib\brisk\lib\widget\side_menu\side_menu.dart
+ * Path: d:\OSContrib\brisk\lib\widget\side_menu
+ * Created Date: Friday, November 17th 2023, 10:45:05 pm
+ * Author: Dhanesh
+ * 
+ * Copyright (c) 2023 Trinom Digital Pvt Ltd
+ */
+
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/db/hive_util.dart';
@@ -29,6 +38,7 @@ class SideMenu extends StatelessWidget {
       child: Material(
         type: MaterialType.transparency,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 10, top: 30),
@@ -92,30 +102,35 @@ class SideMenu extends StatelessWidget {
                 )
               ],
             ),
-            SideMenuItem(
-              onTap: setUnfinishedGridFilter,
-              leading: SvgPicture.asset(
-                'assets/icons/unfinished.svg',
-                color: Colors.white,
+            Flexible(
+              child: Column(
+                children: [
+                  SideMenuItem(
+                    onTap: setUnfinishedGridFilter,
+                    leading: SvgPicture.asset(
+                      'assets/icons/unfinished.svg',
+                      color: Colors.white,
+                    ),
+                    title: "Unfinished",
+                  ),
+                  SideMenuItem(
+                    onTap: setFinishedFilter,
+                    leading: const Icon(
+                      Icons.download_done_rounded,
+                      color: Colors.white,
+                    ),
+                    title: "Finished",
+                  ),
+                  SideMenuItem(
+                    onTap: () => onQueueTabPressed(queueProvider),
+                    leading: Icon(Icons.queue, color: Colors.white),
+                    title: "Queues",
+                  ),
+                ],
               ),
-              title: "Unfinished",
             ),
-            SideMenuItem(
-              onTap: setFinishedFilter,
-              leading: const Icon(
-                Icons.download_done_rounded,
-                color: Colors.white,
-              ),
-              title: "Finished",
-            ),
-            SideMenuItem(
-              onTap: () => onQueueTabPressed(queueProvider),
-              leading: Icon(Icons.queue, color: Colors.white),
-              title: "Queues",
-            ),
-            const Spacer(),
             Padding(
-              padding: const EdgeInsets.all(50),
+              padding: const EdgeInsets.only(bottom: 20.0),
               child: IconButton(
                   iconSize: 30,
                   onPressed: () => onSettingPressed(context),
@@ -161,14 +176,11 @@ class SideMenu extends StatelessWidget {
   }
 
   void setUnfinishedGridFilter() {
-    PlutoGridUtil.setFilter(
-        "status", DownloadStatus.assembleComplete,
+    PlutoGridUtil.setFilter("status", DownloadStatus.assembleComplete,
         negate: true);
   }
 
   void setFinishedFilter() {
-    PlutoGridUtil.setFilter(
-        "status", DownloadStatus.assembleComplete);
+    PlutoGridUtil.setFilter("status", DownloadStatus.assembleComplete);
   }
-
 }
