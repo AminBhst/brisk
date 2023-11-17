@@ -1,16 +1,5 @@
-/*
- * Filename: d:\OSContrib\brisk\lib\widget\side_menu\side_menu.dart
- * Path: d:\OSContrib\brisk\lib\widget\side_menu
- * Created Date: Friday, November 17th 2023, 10:45:05 pm
- * Author: Dhanesh
- * 
- * Copyright (c) 2023 Trinom Digital Pvt Ltd
- */
-
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
-import 'package:brisk/db/hive_util.dart';
-import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/util/responsive_util.dart';
