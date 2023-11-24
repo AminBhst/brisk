@@ -20,6 +20,7 @@ const urlRegex = '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]'
     '{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]'
     '+\.[^\s]{2,})';
 
+// Removed usage because of status 400 in google drive. also it doesn't seem necessary anyway
 const Map<String, String> contentType_MultiPartByteRanges = {
   'content-type': 'multipart/byteranges;'
 };

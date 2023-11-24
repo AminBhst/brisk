@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
-import 'package:brisk/util/http_util.dart';
 import '../constants/types.dart';
 import '../util/file_util.dart';
 import 'package:path/path.dart';
@@ -142,9 +141,7 @@ class HttpDownloadRequest {
   }
 
   http.Request buildDownloadRequest() {
-    final request = http.Request('GET', Uri.parse(downloadItem.downloadUrl));
-    request.headers.addAll(contentType_MultiPartByteRanges);
-    return request;
+    return http.Request('GET', Uri.parse(downloadItem.downloadUrl));
   }
 
   void sendDownloadRequest(http.Request request) {
