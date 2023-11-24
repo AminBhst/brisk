@@ -422,7 +422,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
       height = 530;
     }
     if (size.height < 800) {
-      height = size.height * 0.75 - 50;
+      height = size.height * 0.78 - 50;
     }
     if (size.height < 680) {
       height = size.height * 0.8;
