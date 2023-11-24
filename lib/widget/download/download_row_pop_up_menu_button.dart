@@ -103,6 +103,7 @@ class DownloadRowPopUpMenuButton extends StatelessWidget {
         showDialog(
           context: context,
           builder: (_) => DownloadProgressWindow(id),
+          barrierDismissible: false,
         );
         break;
       case 3:
