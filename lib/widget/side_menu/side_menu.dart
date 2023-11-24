@@ -27,7 +27,6 @@ class SideMenu extends StatelessWidget {
       child: Material(
         type: MaterialType.transparency,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 10, top: 30),
@@ -91,35 +90,30 @@ class SideMenu extends StatelessWidget {
                 )
               ],
             ),
-            Flexible(
-              child: Column(
-                children: [
-                  SideMenuItem(
-                    onTap: setUnfinishedGridFilter,
-                    leading: SvgPicture.asset(
-                      'assets/icons/unfinished.svg',
-                      color: Colors.white,
-                    ),
-                    title: "Unfinished",
-                  ),
-                  SideMenuItem(
-                    onTap: setFinishedFilter,
-                    leading: const Icon(
-                      Icons.download_done_rounded,
-                      color: Colors.white,
-                    ),
-                    title: "Finished",
-                  ),
-                  SideMenuItem(
-                    onTap: () => onQueueTabPressed(queueProvider),
-                    leading: Icon(Icons.queue, color: Colors.white),
-                    title: "Queues",
-                  ),
-                ],
+            SideMenuItem(
+              onTap: setUnfinishedGridFilter,
+              leading: SvgPicture.asset(
+                'assets/icons/unfinished.svg',
+                color: Colors.white,
               ),
+              title: "Unfinished",
             ),
+            SideMenuItem(
+              onTap: setFinishedFilter,
+              leading: const Icon(
+                Icons.download_done_rounded,
+                color: Colors.white,
+              ),
+              title: "Finished",
+            ),
+            SideMenuItem(
+              onTap: () => onQueueTabPressed(queueProvider),
+              leading: Icon(Icons.queue, color: Colors.white),
+              title: "Queues",
+            ),
+            const Spacer(),
             Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
+              padding: const EdgeInsets.only(bottom: 20),
               child: IconButton(
                   iconSize: 30,
                   onPressed: () => onSettingPressed(context),
