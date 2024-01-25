@@ -87,16 +87,14 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     }
   }
 
-  /// TODO : Check for update on startup
+
   @override
   void initState() {
-    FileUtil.setDefaultTempDir().then((_) {
-      FileUtil.setDefaultSaveDir().then((_) {
-        HiveUtil.instance.putInitialBoxValues().then((_) {
-          SettingsCache.setCachedSettings();
-        });
-      });
-    });
+    FileUtil.setDefaultTempDir()
+        .then((_) => FileUtil.setDefaultSaveDir())
+        .then((_) => HiveUtil.instance.putInitialBoxValues())
+        .then((value) => SettingsCache.setCachedSettings());
+
     NotificationUtil.initPlugin();
     windowManager.addListener(this);
     windowManager.setPreventClose(true);
