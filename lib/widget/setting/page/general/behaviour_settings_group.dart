@@ -13,12 +13,11 @@ class BehaviourSettingsGroup extends StatefulWidget {
   State<BehaviourSettingsGroup> createState() => _BehaviourSettingsGroupState();
 }
 
-
-
 class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
   static const dropDownAskStr = "Always ask";
   static const dropDownSkipStr = "Skip download";
-  static const dropDownSuffixStr = "Suffix new file with [_version]";
+  static const dropDownAddStr = "Add new";
+  static const dropDownUpdateUrlSTr = "Update URL";
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +52,8 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
           text: "Duplicate download action",
           onChanged: _onDropDownChanged,
           items: const [
-            dropDownSuffixStr,
+            dropDownAddStr,
+            dropDownUpdateUrlSTr,
             dropDownSkipStr,
             dropDownAskStr,
           ],
@@ -68,8 +68,10 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
         return dropDownAskStr;
       case FileDuplicationBehaviour.skip:
         return dropDownSkipStr;
-      case FileDuplicationBehaviour.suffix:
-        return dropDownSuffixStr;
+      case FileDuplicationBehaviour.updateUrl:
+        return dropDownUpdateUrlSTr;
+      case FileDuplicationBehaviour.add:
+        return dropDownAddStr;
     }
   }
 
@@ -85,8 +87,10 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
         return FileDuplicationBehaviour.ask;
       case dropDownSkipStr:
         return FileDuplicationBehaviour.skip;
-      case dropDownSuffixStr:
-        return FileDuplicationBehaviour.suffix;
+      case dropDownAddStr:
+        return FileDuplicationBehaviour.add;
+      case dropDownUpdateUrlSTr:
+        return FileDuplicationBehaviour.updateUrl;
       default:
         return FileDuplicationBehaviour.ask;
     }

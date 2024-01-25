@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:isolate';
 
+import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -44,9 +45,10 @@ class DownloadAdditionUiUtil {
     _spawnFileInfoRetrieverIsolate(item).then((rPort) {
       context.loaderOverlay.show();
       retrieveFileInfo(rPort).then((fileInfo) {
+        fileInfo.url = url;
         context.loaderOverlay.hide();
         if (updateDialog) {
-          handleUpdateDownloadUrl(fileInfo, context, url, downloadId!);
+          handleUpdateDownloadUrl(fileInfo, context, downloadId!);
         } else {
           addDownload(item, fileInfo, context, additionalPop);
         }
@@ -76,36 +78,52 @@ class DownloadAdditionUiUtil {
     final dlDuplication = checkDownloadDuplication(item.fileName);
     if (dlDuplication || fileExists) {
       final behaviour = SettingsCache.fileDuplicationBehaviour;
-      if (behaviour == FileDuplicationBehaviour.ask) {
-        showAskDuplicationActionDialog(context, item, additionalPop);
-      } else if (behaviour == FileDuplicationBehaviour.skip) {
-        if (additionalPop) {
-          Navigator.of(context).pop();
-        }
-        showDownloadExistsSnackBar(context);
+      switch (behaviour) {
+        case FileDuplicationBehaviour.ask:
+          showAskDuplicationActionDialog(context, item, additionalPop, fileInfo);
+          break;
+        case FileDuplicationBehaviour.skip:
+          _skipDownload(context, additionalPop);
+          break;
+        case FileDuplicationBehaviour.add:
+          showDownloadInfoDialog(context, item, additionalPop);
+          break;
+        case FileDuplicationBehaviour.updateUrl:
+          _onUpdateUrlPressed(false, context, fileInfo, showUpdatedSnackbar: true);
+          break;
       }
     } else {
       showDownloadInfoDialog(context, item, additionalPop);
     }
   }
 
+  static void _skipDownload(BuildContext context, bool additionalPop) {
+    if (additionalPop) {
+      Navigator.of(context).pop();
+    }
+    _showSnackBar(context, "Download already exists!");
+  }
+
   static void handleUpdateDownloadUrl(
-      FileInfo fileInfo, BuildContext context, String url, int downloadId) {
+      FileInfo fileInfo, BuildContext context, int downloadId) {
     final dl = HiveUtil.instance.downloadItemsBox.get(downloadId)!;
     if (dl.contentLength != fileInfo.contentLength) {
       showDialog(
-          context: context,
-          builder: (context) => const ErrorDialog(
-                width: 400,
-                text: "The given URL does not refer to the same file",
-              ));
+        context: context,
+        builder: (context) => const ErrorDialog(
+          width: 400,
+          text: "The given URL does not refer to the same file",
+        ),
+      );
     } else {
       showDialog(
-          context: context,
-          builder: (context) => ConfirmationDialog(
-                onConfirmPressed: () => updateUrl(context, url, dl, downloadId),
-                title: "Are you sure you want to update the URL?",
-              ));
+        context: context,
+        builder: (context) => ConfirmationDialog(
+          onConfirmPressed: () =>
+              updateUrl(context, fileInfo.url, dl, downloadId),
+          title: "Are you sure you want to update the URL?",
+        ),
+      );
     }
   }
 
@@ -140,8 +158,8 @@ class DownloadAdditionUiUtil {
     context.loaderOverlay.hide();
   }
 
-  static void showAskDuplicationActionDialog(
-      BuildContext context, DownloadItem item, bool additionalPop) {
+  static void showAskDuplicationActionDialog(BuildContext context,
+      DownloadItem item, bool additionalPop, FileInfo fileInfo) {
     showDialog(
       context: context,
       builder: (context) => AskDuplicationAction(
@@ -150,29 +168,49 @@ class DownloadAdditionUiUtil {
           Navigator.of(context).pop();
           showDownloadInfoDialog(context, item, additionalPop);
         },
-        onSkipPressed: () {
-          if (additionalPop) {
-            Navigator.of(context)
-              ..pop()
-              ..pop();
-          } else {
-            Navigator.of(context).pop();
-          }
-        },
+        onSkipPressed: () => _onSkipPressed(context, additionalPop),
+        onUpdateUrlPressed: () => _onUpdateUrlPressed(true, context, fileInfo),
       ),
       barrierDismissible: true,
     );
   }
 
-  static void showDownloadExistsSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  static void _onUpdateUrlPressed(bool pop,context, FileInfo fileInfo,
+      {bool showUpdatedSnackbar = false}) async {
+    if (pop) {
+      Navigator.of(context).pop();
+    }
+    final downloadItem_boxValue = HiveUtil.instance.downloadItemsBox.values
+        .where((item) =>
+            item.fileName == fileInfo.fileName &&
+            item.contentLength == fileInfo.contentLength &&
+            item.status != DownloadStatus.assembleComplete)
+        .first;
+    downloadItem_boxValue.downloadUrl = fileInfo.url;
+    await downloadItem_boxValue.save();
+    if (!showUpdatedSnackbar) return;
+    _showSnackBar(context, "Updated Download URL");
+  }
+
+  static void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       showCloseIcon: true,
       closeIconColor: Colors.white,
       content: Text(
-        "Download already exists!",
+        message,
         textAlign: TextAlign.center,
       ),
     ));
+  }
+
+  static void _onSkipPressed(BuildContext context, bool additionalPop) {
+    if (additionalPop) {
+      Navigator.of(context)
+        ..pop()
+        ..pop();
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   static void showDownloadInfoDialog(

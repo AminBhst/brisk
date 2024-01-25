@@ -1,4 +1,4 @@
 enum FileDuplicationBehaviour {
-  ask, suffix, skip
+  ask, add, skip, updateUrl
 }
 

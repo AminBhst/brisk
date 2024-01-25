@@ -5,12 +5,14 @@ class AskDuplicationAction extends StatelessWidget {
   final bool fileDuplication;
   final VoidCallback onSkipPressed;
   final VoidCallback onCreateNewPressed;
+  final VoidCallback onUpdateUrlPressed;
 
   const AskDuplicationAction({
     super.key,
     required this.fileDuplication,
     required this.onSkipPressed,
     required this.onCreateNewPressed,
+    required this.onUpdateUrlPressed,
   });
 
   @override
@@ -18,9 +20,9 @@ class AskDuplicationAction extends StatelessWidget {
     return AlertDialog(
       insetPadding: const EdgeInsets.all(2),
       backgroundColor: const Color.fromRGBO(25, 25, 25, 1),
-      icon: const Icon(Icons.warning_amber_rounded,color: Colors.red,),
+      icon: const Icon(Icons.warning_amber_rounded,color: Colors.red, size: 40),
       content: SizedBox(
-        width: 300,
+        width: 430,
         height: 100,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -36,17 +38,28 @@ class AskDuplicationAction extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 RoundedOutlinedButton(
-                  text: "Skip Download",
-                  borderColor: Colors.red,
-                  textColor: Colors.red,
+                  text: "Skip",
+                  borderColor: Colors.redAccent,
+                  textColor: Colors.white,
+                  backgroundColor: Colors.redAccent,
                   onPressed: onSkipPressed,
+                  width: 100,
                 ),
                 const SizedBox(width: 15),
                 RoundedOutlinedButton(
-                  text: "Create New File",
+                  text: "Add New",
+                  textColor: Colors.green,
+                  borderColor: Colors.green,
+                  onPressed: onCreateNewPressed,
+                  width: 100,
+                ),
+                const SizedBox(width: 15),
+                RoundedOutlinedButton(
+                  text: "Update URL",
                   textColor: Colors.blueGrey,
                   borderColor: Colors.blueGrey,
-                  onPressed: onCreateNewPressed,
+                  onPressed: onUpdateUrlPressed,
+                  width: 110,
                 ),
               ],
             )
