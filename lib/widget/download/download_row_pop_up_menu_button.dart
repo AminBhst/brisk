@@ -37,10 +37,10 @@ class DownloadRowPopUpMenuButton extends StatelessWidget {
         final downloadExists = downloadProgress != null;
         final downloadComplete = status == DownloadStatus.assembleComplete;
         final updateUrlEnabled = downloadExists
-            ? (downloadProgress.status == DownloadStatus.paused ||
-                downloadProgress.status == DownloadStatus.canceled)
-            : (status == DownloadStatus.paused ||
-                status == DownloadStatus.canceled);
+            ? (downloadProgress.status != DownloadStatus.assembleComplete ||
+                downloadProgress.status != DownloadStatus.downloading)
+            : (status != DownloadStatus.assembleComplete ||
+                status != DownloadStatus.downloading);
         return [
           PopupMenuItem(
               value: 2,
