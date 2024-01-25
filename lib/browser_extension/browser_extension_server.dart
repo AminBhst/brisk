@@ -42,8 +42,7 @@ class BrowserExtensionServer {
     }
   }
 
-  static Future<void> _handleDownloadAddition(
-      jsonBody, context, request) async {
+  static Future<void> _handleDownloadAddition(jsonBody, context, request) async {
     final type = jsonBody["type"];
     if (type == "single") {
       _handleSingleDownloadRequest(jsonBody, context, request);
@@ -58,6 +57,7 @@ class BrowserExtensionServer {
   static void _handleMultiDownloadRequest(jsonBody, context, request) {
     List downloadHrefs = jsonBody["data"]["downloadHrefs"];
     if (downloadHrefs.isEmpty) return;
+    downloadHrefs = downloadHrefs.toSet().toList(); // Removes duplicates
     final downloadItems = downloadHrefs.map((e) => DownloadItem.fromUrl(e));
     _cancelClicked = false;
     _showLoadingDialog(context);
