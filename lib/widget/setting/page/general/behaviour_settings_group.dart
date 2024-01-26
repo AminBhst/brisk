@@ -38,7 +38,7 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
         //   //     setState(() => SettingsCache.minimizeToTrayOnClose = val),
         // ),
         SwitchSetting(
-          text: "Open download progress window when a new download has started",
+          text: "Open download progress window when a new download starts",
           switchValue: SettingsCache.openDownloadProgressWindow,
           onChanged: (val) =>
               setState(() => SettingsCache.openDownloadProgressWindow = val),
