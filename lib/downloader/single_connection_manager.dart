@@ -12,7 +12,7 @@ class SingleConnectionManager {
   static void handleSingleConnection(HandleSingleConnectionArgs args) async {
     final channel = IsolateChannel.connectSend(args.sendPort);
     channel.stream.listen((data) {
-      if (data is SegmentedDownloadIsolateArgs) {
+      if (data is DownloadIsolateArgs) {
         final id = data.downloadItem.id;
         _connections[id] ??= {};
         final segmentNumber = data.segmentNumber ?? args.segmentNumber;

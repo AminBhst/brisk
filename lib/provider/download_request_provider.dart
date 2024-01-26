@@ -57,7 +57,7 @@ class DownloadRequestProvider with ChangeNotifier {
 
     final connectionCount =
         getExistingConnectionCount(downloadItem) ?? totalConnections;
-    final isolatorArgs = SegmentedDownloadIsolateArgs(
+    final isolatorArgs = DownloadIsolateArgs(
       command: command,
       downloadItem: downloadProgress.downloadItem,
       baseTempDir: SettingsCache.temporaryDir,
