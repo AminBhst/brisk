@@ -47,7 +47,7 @@ On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/key
 
 ## Build From Source
 
-Download the Flutter SDK (Recommended version 3.7.11) and set the path variable
+Download the Flutter SDK (Recommended version 3.16.9) and set the path variable
 
 ```bash
 flutter build macos/windows/linux
