@@ -78,8 +78,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   @override
   void onWindowClose() async {
     bool isPreventClose = await windowManager.isPreventClose();
-    if (!mounted) return;
-    if (isPreventClose) {
+    if (!mounted || !isPreventClose) return;
       showDialog(
         context: context,
         builder: (_) => ConfirmationDialog(
@@ -90,7 +89,6 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
           },
         ),
       );
-    }
   }
 
   @override
