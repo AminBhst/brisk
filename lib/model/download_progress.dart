@@ -45,7 +45,7 @@ class DownloadProgress {
     this.totalSegments = 0,
   });
 
-  factory DownloadProgress.loadFromMultiConnectionDownloadRequest(
+  factory DownloadProgress.loadFromHttpDownloadRequest(
       HttpDownloadRequest request) {
     final downloadProgress = DownloadProgress(
       downloadProgress: request.downloadProgress,

@@ -315,7 +315,6 @@ class MultiConnectionDownloadCoordinator {
     File(downloadItem.filePath).deleteSync();
 
     final success = assembleFile(downloadItem, baseTempDir, baseSaveDir);
-    print("STATUS : " + success.toString());
     final status = success
         ? DownloadStatus.assembleComplete
         : DownloadStatus.assembleFailed;

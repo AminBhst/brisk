@@ -211,7 +211,7 @@ class HttpDownloadRequest {
   }
 
   void _notifyChange() {
-    final data = DownloadProgress.loadFromMultiConnectionDownloadRequest(this);
+    final data = DownloadProgress.loadFromHttpDownloadRequest(this);
     progressCallback!(data);
   }
 
