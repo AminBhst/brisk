@@ -55,6 +55,8 @@ class _DownloadGridState extends State<DownloadGrid> {
                 height: resolveIconSize(fileType),
                 child: SvgPicture.asset(
                   FileUtil.resolveFileTypeIconPath(fileType.name),
+                  colorFilter:
+                      ColorFilter.mode(Colors.white60, BlendMode.srcIn),
                 ),
               ),
               const SizedBox(width: 5),
@@ -95,7 +97,7 @@ class _DownloadGridState extends State<DownloadGrid> {
       PlutoColumn(
         readOnly: true,
         enableSorting: false,
-        width: 90,
+        width: 100,
         title: 'Speed',
         field: 'transfer_rate',
         type: PlutoColumnType.text(),

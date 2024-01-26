@@ -14,7 +14,6 @@ class ConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Color.fromRGBO(35, 39, 46, 1),
       content: Container(
         child: Text(
           title,

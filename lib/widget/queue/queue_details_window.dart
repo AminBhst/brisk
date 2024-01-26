@@ -70,6 +70,8 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                               height: 25,
                               child: SvgPicture.asset(
                                 FileUtil.resolveFileTypeIconPath(dl.fileType),
+                                colorFilter: ColorFilter.mode(
+                                    Colors.white60, BlendMode.srcIn),
                               ),
                             ),
                             title: Text(dl.fileName,

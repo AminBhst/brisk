@@ -67,6 +67,8 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
                                   widget.downloadItem.fileType),
                               width: 70,
                               height: 70,
+                              colorFilter: ColorFilter.mode(
+                                  Colors.white60, BlendMode.srcIn),
                             )),
                             Text(
                               convertByteToReadableStr(
