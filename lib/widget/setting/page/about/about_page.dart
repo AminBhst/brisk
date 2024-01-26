@@ -1,7 +1,6 @@
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class AboutPage extends StatelessWidget {
@@ -60,11 +59,13 @@ class AboutPage extends StatelessWidget {
                       "assets/icons/github.svg",
                       height: 35,
                       width: 35,
-                      color: Colors.white60,
+                      colorFilter:
+                          ColorFilter.mode(Colors.white60, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 30),
                     InkWell(
-                        onTap: () => launchUrlString("https://github.com/AminBhst"),
+                        onTap: () =>
+                            launchUrlString("https://github.com/AminBhst"),
                         child: const Text(
                           "AminBhst",
                           style: TextStyle(
@@ -83,11 +84,13 @@ class AboutPage extends StatelessWidget {
                       "assets/icons/github.svg",
                       height: 35,
                       width: 35,
-                      color: Colors.white60,
+                      colorFilter:
+                          ColorFilter.mode(Colors.white60, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 30),
                     InkWell(
-                        onTap: () => launchUrlString("https://github.com/AminBhst/Brisk"),
+                        onTap: () => launchUrlString(
+                            "https://github.com/AminBhst/Brisk"),
                         child: const Text(
                           "AminBhst/Brisk",
                           style: TextStyle(

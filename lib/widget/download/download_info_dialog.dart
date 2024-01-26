@@ -5,8 +5,8 @@ import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/util/settings_cache.dart';
-import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/outlined_text_field.dart';
+import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -62,14 +62,18 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
                         Column(
                           children: [
                             SizedBox(
-                                child: SvgPicture.asset(
-                              FileUtil.resolveFileTypeIconPath(
-                                  widget.downloadItem.fileType),
-                              width: 70,
-                              height: 70,
-                              color: FileUtil.resolveFileTypeIconColor(
-                                  widget.downloadItem.fileType),
-                            )),
+                              child: SvgPicture.asset(
+                                FileUtil.resolveFileTypeIconPath(
+                                    widget.downloadItem.fileType),
+                                width: 70,
+                                height: 70,
+                                colorFilter: ColorFilter.mode(
+                                  FileUtil.resolveFileTypeIconColor(
+                                      widget.downloadItem.fileType),
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
                             Text(
                               convertByteToReadableStr(
                                   widget.downloadItem.contentLength),

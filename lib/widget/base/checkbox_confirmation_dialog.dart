@@ -25,10 +25,8 @@ class _CheckedBoxedConfirmationDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color.fromRGBO(25, 25, 25, 1),
       content: Container(
         height: 75,
-        color: const Color.fromRGBO(25, 25, 25, 1),
         child: Column(
           children: [
             Text(
@@ -39,16 +37,16 @@ class _CheckedBoxedConfirmationDialogState
             Row(
               children: [
                 Checkbox(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2.0),
-                    ),
-                    side: MaterialStateBorderSide.resolveWith(
-                      (states) => BorderSide(width: 1.0, color: Colors.grey),
-                    ),
-                    activeColor: Colors.blueGrey,
-                    value: checkBoxValue,
-                    onChanged: (value) =>
-                        setState(() => checkBoxValue = value)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2.0),
+                  ),
+                  side: MaterialStateBorderSide.resolveWith(
+                    (states) => BorderSide(width: 1.0, color: Colors.grey),
+                  ),
+                  activeColor: Colors.blueGrey,
+                  value: checkBoxValue,
+                  onChanged: (value) => setState(() => checkBoxValue = value),
+                ),
                 Text(
                   widget.checkBoxTitle,
                   style: const TextStyle(color: Colors.white, fontSize: 14),

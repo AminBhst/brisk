@@ -1,7 +1,5 @@
-import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/widget/setting/side_menu/settings_side_menu_item.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SettingsSideMenu extends StatelessWidget {
   const SettingsSideMenu({super.key});
@@ -15,7 +13,9 @@ class SettingsSideMenu extends StatelessWidget {
         color: Colors.black26,
         borderRadius: BorderRadius.circular(25),
       ),
-      width: minimizedSideMenu(size) ? size.width *0.6 * 0.08 : size.width * 0.6 * 0.14,
+      width: minimizedSideMenu(size)
+          ? size.width * 0.6 * 0.08
+          : size.width * 0.6 * 0.14,
       height: size.height < 700 ? size.height * 0.3 : 400,
       child: Center(
         child: SingleChildScrollView(

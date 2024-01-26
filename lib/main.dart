@@ -1,12 +1,12 @@
+import 'package:brisk/browser_extension//browser_extension_server.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/download_request_provider.dart';
-import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
+import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/notification_util.dart';
-import 'package:brisk/browser_extension//browser_extension_server.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/download_grid.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
@@ -17,11 +17,11 @@ import 'package:brisk/widget/top_menu/queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/top_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:window_manager/window_manager.dart';
-import './util/file_util.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:window_manager/window_manager.dart';
 
+import './util/file_util.dart';
 import 'util/settings_cache.dart';
 
 // TODO add current version in settings
@@ -30,38 +30,45 @@ void main() async {
   tz.initializeTimeZones();
   await HiveUtil.instance.initHive();
 
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider<DownloadRequestProvider>(
-        create: (_) => DownloadRequestProvider(),
-      ),
-      ChangeNotifierProvider<SettingsProvider>(
-        create: (_) => SettingsProvider(),
-      ),
-      ChangeNotifierProvider<QueueProvider>(
-        create: (_) => QueueProvider(),
-      ),
-    ],
-    child: const MyApp(),
-  ));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<DownloadRequestProvider>(
+          create: (_) => DownloadRequestProvider(),
+        ),
+        ChangeNotifierProvider<SettingsProvider>(
+          create: (_) => SettingsProvider(),
+        ),
+        ChangeNotifierProvider<QueueProvider>(
+          create: (_) => QueueProvider(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
-
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Brisk',
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
+      ),
+      home: const MyHomePage(title: 'Brisk Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
   final String title;
 
   @override
@@ -86,7 +93,6 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
       );
     }
   }
-
 
   @override
   void initState() {
@@ -115,13 +121,12 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final queueProvider = Provider.of<QueueProvider>(context);
     return LoaderOverlay(
       useDefaultLoading: false,
-      overlayWidget: FileInfoLoader(
+      overlayWidgetBuilder: (progress) => FileInfoLoader(
         onCancelPressed: () => DownloadAdditionUiUtil.cancelRequest(context),
       ),
       child: Scaffold(

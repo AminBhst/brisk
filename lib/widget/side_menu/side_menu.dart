@@ -34,7 +34,7 @@ class SideMenu extends StatelessWidget {
                 "assets/icons/logo.svg",
                 height: 25,
                 width: 25,
-                color: Colors.white60,
+                colorFilter: ColorFilter.mode(Colors.white60, BlendMode.srcIn),
               ),
             ),
             const SizedBox(height: 20),
@@ -50,7 +50,8 @@ class SideMenu extends StatelessWidget {
                   text: 'Music',
                   icon: SvgPicture.asset(
                     'assets/icons/music.svg',
-                    color: Colors.cyanAccent,
+                    colorFilter:
+                        ColorFilter.mode(Colors.cyanAccent, BlendMode.srcIn),
                   ),
                   onTap: () => setGridFileTypeFilter(DLFileType.music),
                 ),
@@ -58,7 +59,8 @@ class SideMenu extends StatelessWidget {
                   text: 'Videos',
                   icon: SvgPicture.asset(
                     'assets/icons/video.svg',
-                    color: Colors.pinkAccent,
+                    colorFilter:
+                        ColorFilter.mode(Colors.pinkAccent, BlendMode.srcIn),
                   ),
                   onTap: () => setGridFileTypeFilter(DLFileType.video),
                 ),
@@ -66,7 +68,8 @@ class SideMenu extends StatelessWidget {
                   text: 'Documents',
                   icon: SvgPicture.asset(
                     'assets/icons/document.svg',
-                    color: Colors.orangeAccent,
+                    colorFilter:
+                        ColorFilter.mode(Colors.orangeAccent, BlendMode.srcIn),
                   ),
                   onTap: () => setGridFileTypeFilter(DLFileType.documents),
                 ),
@@ -74,7 +77,8 @@ class SideMenu extends StatelessWidget {
                   text: 'Programs',
                   icon: SvgPicture.asset(
                     'assets/icons/program.svg',
-                    color: const Color.fromRGBO(245, 139, 84, 1),
+                    colorFilter: ColorFilter.mode(
+                        const Color.fromRGBO(245, 139, 84, 1), BlendMode.srcIn),
                   ),
                   size: 30,
                   onTap: () => setGridFileTypeFilter(DLFileType.program),
@@ -83,7 +87,8 @@ class SideMenu extends StatelessWidget {
                   text: 'Archive',
                   icon: SvgPicture.asset(
                     'assets/icons/archive.svg',
-                    color: Colors.lightBlue,
+                    colorFilter:
+                        ColorFilter.mode(Colors.lightBlue, BlendMode.srcIn),
                   ),
                   size: 32,
                   onTap: () => setGridFileTypeFilter(DLFileType.compressed),
@@ -94,7 +99,7 @@ class SideMenu extends StatelessWidget {
               onTap: setUnfinishedGridFilter,
               leading: SvgPicture.asset(
                 'assets/icons/unfinished.svg',
-                color: Colors.white,
+                colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
               ),
               title: "Unfinished",
             ),
