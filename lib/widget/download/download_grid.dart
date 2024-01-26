@@ -55,8 +55,10 @@ class _DownloadGridState extends State<DownloadGrid> {
                 height: resolveIconSize(fileType),
                 child: SvgPicture.asset(
                   FileUtil.resolveFileTypeIconPath(fileType.name),
-                  colorFilter:
-                      ColorFilter.mode(Colors.white60, BlendMode.srcIn),
+                  colorFilter: ColorFilter.mode(
+                    FileUtil.resolveFileTypeIconColor(fileType.name),
+                    BlendMode.srcIn,
+                  ),
                 ),
               ),
               const SizedBox(width: 5),
@@ -82,14 +84,14 @@ class _DownloadGridState extends State<DownloadGrid> {
       ),
       PlutoColumn(
         readOnly: true,
-        width: 100,
+        width: 95,
         title: 'Progress',
         field: 'progress',
         type: PlutoColumnType.text(),
       ),
       PlutoColumn(
         readOnly: true,
-        width: 115,
+        width: 90,
         title: "Status",
         field: "status",
         type: PlutoColumnType.text(),
@@ -97,14 +99,14 @@ class _DownloadGridState extends State<DownloadGrid> {
       PlutoColumn(
         readOnly: true,
         enableSorting: false,
-        width: 100,
-        title: 'Speed',
+        width: 125,
+        title: 'Transfer Rate',
         field: 'transfer_rate',
         type: PlutoColumnType.text(),
       ),
       PlutoColumn(
         readOnly: true,
-        width: 115,
+        width: 120,
         title: 'Time Left',
         field: 'time_left',
         type: PlutoColumnType.text(),

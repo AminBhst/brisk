@@ -62,14 +62,18 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
                         Column(
                           children: [
                             SizedBox(
-                                child: SvgPicture.asset(
-                              FileUtil.resolveFileTypeIconPath(
-                                  widget.downloadItem.fileType),
-                              width: 70,
-                              height: 70,
-                              colorFilter: ColorFilter.mode(
-                                  Colors.white60, BlendMode.srcIn),
-                            )),
+                              child: SvgPicture.asset(
+                                FileUtil.resolveFileTypeIconPath(
+                                    widget.downloadItem.fileType),
+                                width: 70,
+                                height: 70,
+                                colorFilter: ColorFilter.mode(
+                                  FileUtil.resolveFileTypeIconColor(
+                                      widget.downloadItem.fileType),
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
                             Text(
                               convertByteToReadableStr(
                                   widget.downloadItem.contentLength),

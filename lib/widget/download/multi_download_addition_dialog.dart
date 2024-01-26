@@ -196,7 +196,10 @@ class _MultiDownloadAdditionDialogState
                 FileUtil.resolveFileTypeIconPath(fileType.name),
                 width: 35,
                 height: 35,
-                colorFilter: ColorFilter.mode(Colors.white60, BlendMode.srcIn),
+                colorFilter: ColorFilter.mode(
+                  FileUtil.resolveFileTypeIconColor(fileType.name),
+                  BlendMode.srcIn,
+                ),
               ),
             ),
             SizedBox(

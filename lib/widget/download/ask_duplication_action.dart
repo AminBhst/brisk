@@ -20,7 +20,8 @@ class AskDuplicationAction extends StatelessWidget {
     return AlertDialog(
       insetPadding: const EdgeInsets.all(2),
       backgroundColor: const Color.fromRGBO(25, 25, 25, 1),
-      icon: const Icon(Icons.warning_amber_rounded,color: Colors.red, size: 40),
+      icon:
+          const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 40),
       content: SizedBox(
         width: 430,
         height: 100,
@@ -33,35 +34,34 @@ class AskDuplicationAction extends StatelessWidget {
               style: TextStyle(color: Colors.white),
             ),
             const SizedBox(height: 50),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                RoundedOutlinedButton(
-                  text: "Skip",
-                  borderColor: Colors.redAccent,
-                  textColor: Colors.white,
-                  backgroundColor: Colors.redAccent,
-                  onPressed: onSkipPressed,
-                  width: 100,
-                ),
-                const SizedBox(width: 15),
-                RoundedOutlinedButton(
-                  text: "Add New",
-                  textColor: Colors.green,
-                  borderColor: Colors.green,
-                  onPressed: onCreateNewPressed,
-                  width: 100,
-                ),
-                const SizedBox(width: 15),
-                RoundedOutlinedButton(
-                  text: "Update URL",
-                  textColor: Colors.blueGrey,
-                  borderColor: Colors.blueGrey,
-                  onPressed: onUpdateUrlPressed,
-                  width: 110,
-                ),
-              ],
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  RoundedOutlinedButton(
+                    text: "Skip",
+                    borderColor: Colors.redAccent,
+                    textColor: Colors.white,
+                    backgroundColor: Colors.redAccent,
+                    onPressed: onSkipPressed,
+                  ),
+                  const SizedBox(width: 15),
+                  RoundedOutlinedButton(
+                    text: "Add New",
+                    textColor: Colors.green,
+                    borderColor: Colors.green,
+                    onPressed: onCreateNewPressed,
+                  ),
+                  const SizedBox(width: 15),
+                  RoundedOutlinedButton(
+                    text: "Update URL",
+                    textColor: Colors.blueGrey,
+                    borderColor: Colors.blueGrey,
+                    onPressed: onUpdateUrlPressed,
+                  ),
+                ],
+              ),
             )
           ],
         ),
