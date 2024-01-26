@@ -112,7 +112,8 @@ class HttpDownloadRequest {
   /// Starts the download request.
   /// [progressCallback] is used to let the provider know that the values are
   /// changed so that it calls notify listeners which can be used to display its live progress.
-  void start(DownloadProgressCallback progressCallback, {bool connectionReset = false}) {
+  void start(DownloadProgressCallback progressCallback,
+      {bool connectionReset = false}) {
     if (!connectionReset && startNotAllowed) return;
     _runConnectionResetTimer();
 
@@ -142,7 +143,10 @@ class HttpDownloadRequest {
 
   http.Request buildDownloadRequest() {
     final request = http.Request('GET', Uri.parse(downloadItem.downloadUrl));
-    request.headers.addAll({"User-Agent" : "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;"});
+    request.headers.addAll({
+      "User-Agent":
+          "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;"
+    });
     return request;
   }
 
