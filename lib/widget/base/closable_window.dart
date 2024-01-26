@@ -25,6 +25,7 @@ class ClosableWindow extends StatelessWidget {
     return AlertDialog(
       insetPadding: const EdgeInsets.all(20),
       backgroundColor: Colors.transparent,
+      elevation: 0,
       content: AnimatedSize(
         duration: const Duration(milliseconds: 100),
         child: Container(
@@ -32,7 +33,7 @@ class ClosableWindow extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(25),
             border: Border.fromBorderSide(BorderSide(color: Colors.white24)),
             color: const Color.fromRGBO(25, 25, 25, 1),
           ),
