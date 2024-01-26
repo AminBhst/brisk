@@ -78,9 +78,9 @@ class _TopMenuState extends State<TopMenu> {
           ),
           TopMenuButton(
             onTap: () => onAddToQueuePressed(context),
-            title: 'Add to queue',
+            title: 'Add To Queue',
             icon: const Icon(Icons.queue, color: Colors.white),
-            fontSize: 11.5,
+            fontSize: 10.5,
             onHoverColor: Colors.teal,
           ),
           SizedBox(width: 5),
