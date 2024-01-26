@@ -52,7 +52,7 @@ class _MultiDownloadAdditionDialogState
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      ...widget.fileInfos.map((e) => getListTileItem(e,size))
+                      ...widget.fileInfos.map((e) => getListTileItem(e, size))
                     ],
                   ),
                 ),
@@ -196,7 +196,6 @@ class _MultiDownloadAdditionDialogState
                 FileUtil.resolveFileTypeIconPath(fileType.name),
                 width: 35,
                 height: 35,
-                color: FileUtil.resolveFileTypeIconColor(fileType.name),
               ),
             ),
             SizedBox(
@@ -211,11 +210,13 @@ class _MultiDownloadAdditionDialogState
                 children: [
                   Expanded(
                     child: SizedBox(
-                      width: resolveListContainerWidth(size),
+                        width: resolveListContainerWidth(size),
                         child: Text(
-                      fileInfo.fileName,
-                      style: TextStyle(color: Colors.white, overflow: TextOverflow.ellipsis),
-                    )),
+                          fileInfo.fileName,
+                          style: TextStyle(
+                              color: Colors.white,
+                              overflow: TextOverflow.ellipsis),
+                        )),
                   ),
                   Text(convertByteToReadableStr(fileInfo.contentLength),
                       style: TextStyle(color: Colors.white, fontSize: 14)),

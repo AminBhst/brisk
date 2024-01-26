@@ -70,8 +70,6 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                               height: 25,
                               child: SvgPicture.asset(
                                 FileUtil.resolveFileTypeIconPath(dl.fileType),
-                                color: FileUtil.resolveFileTypeIconColor(
-                                    dl.fileType),
                               ),
                             ),
                             title: Text(dl.fileName,
@@ -176,5 +174,4 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
 
   void onRemovePressed(int index) =>
       setState(() => widget.queue.downloadItemsIds!.removeAt(index));
-
 }

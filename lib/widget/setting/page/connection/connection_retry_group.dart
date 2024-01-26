@@ -1,7 +1,6 @@
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:brisk/widget/setting/base/text_field_setting.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../../../util/settings_cache.dart';
 
@@ -27,13 +26,17 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
           ),
           width: 50,
           textWidth: size.width * 0.6 * 0.32,
-          icon: const Text("-1 = infinite", style: TextStyle(color: Colors.white),),
+          icon: const Text(
+            "-1 = infinite",
+            style: TextStyle(color: Colors.white),
+          ),
           text: "Max connection retry count",
           keyboardType: const TextInputType.numberWithOptions(
             signed: true,
             decimal: false,
           ),
-          txtController: TextEditingController(text: SettingsCache.connectionRetryCount.toString()),
+          txtController: TextEditingController(
+              text: SettingsCache.connectionRetryCount.toString()),
         ),
         const SizedBox(height: 10),
         TextFieldSetting(
@@ -44,8 +47,12 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
           width: 75,
           textWidth: size.width * 0.6 * 0.32,
           text: "Connection retry timeout",
-          icon: const Text("seconds", style: TextStyle(color: Colors.white),),
-          txtController: TextEditingController(text: SettingsCache.connectionRetryTimeout.toString()),
+          icon: const Text(
+            "seconds",
+            style: TextStyle(color: Colors.white),
+          ),
+          txtController: TextEditingController(
+              text: SettingsCache.connectionRetryTimeout.toString()),
         )
       ],
     );

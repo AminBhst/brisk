@@ -5,7 +5,6 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
-
 class AddUrlDialog extends StatefulWidget {
   final bool updateDialog;
   final int? downloadId;
@@ -23,7 +22,7 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
   Widget build(BuildContext context) {
     return LoaderOverlay(
       useDefaultLoading: false,
-      overlayWidget: FileInfoLoader(
+      overlayWidgetBuilder: (progress) => FileInfoLoader(
         onCancelPressed: () => DownloadAdditionUiUtil.cancelRequest(context),
       ),
       child: AlertDialog(

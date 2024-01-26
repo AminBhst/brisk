@@ -1,8 +1,6 @@
-import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/widget/setting/page/general/behaviour_settings_group.dart';
 import 'package:brisk/widget/setting/page/general/notification_settings_group.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class GeneralSettingsPage extends StatelessWidget {
   const GeneralSettingsPage({super.key});

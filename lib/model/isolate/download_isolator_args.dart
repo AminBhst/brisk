@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:brisk/constants/download_command.dart';
-import 'package:brisk/model/download_item.dart';
 
 import '../download_item_model.dart';
 

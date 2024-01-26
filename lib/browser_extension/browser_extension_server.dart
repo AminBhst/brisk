@@ -42,7 +42,8 @@ class BrowserExtensionServer {
     }
   }
 
-  static Future<void> _handleDownloadAddition(jsonBody, context, request) async {
+  static Future<void> _handleDownloadAddition(
+      jsonBody, context, request) async {
     final type = jsonBody["type"];
     if (type == "single") {
       _handleSingleDownloadRequest(jsonBody, context, request);

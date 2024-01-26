@@ -12,10 +12,8 @@ import '../../constants/download_status.dart';
 import '../../db/hive_util.dart';
 import '../../provider/download_request_provider.dart';
 import '../../provider/pluto_grid_util.dart';
-import '../../util/file_util.dart';
 import '../base/confirmation_dialog.dart';
 import '../queue/add_to_queue_window.dart';
-import '../queue/create_queue_window.dart';
 import '../queue/start_queue_window.dart';
 
 class DownloadQueueTopMenu extends StatelessWidget {
@@ -120,7 +118,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
         final download = provider.downloads[request];
         if (download != null &&
             (download.status == DownloadStatus.assembleComplete ||
-            download.status == DownloadStatus.assembleFailed)) {
+                download.status == DownloadStatus.assembleFailed)) {
           toRemove.add(request);
         }
       });

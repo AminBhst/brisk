@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import '../../provider/queue_provider.dart';
 
 class QueueListItem extends StatelessWidget {
-  QueueListItem({Key? key, required this.queue}) : super(key: key);
+  QueueListItem({super.key, required this.queue});
   DownloadQueue queue;
 
   @override

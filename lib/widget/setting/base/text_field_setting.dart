@@ -43,7 +43,7 @@ class TextFieldSetting extends StatelessWidget {
           width: width,
           height: 50,
           child: OutLinedTextField(
-            controller: txtController!,
+            controller: txtController,
             keyboardType: keyboardType,
             onChanged: onChanged,
           ),

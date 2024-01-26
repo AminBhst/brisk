@@ -55,7 +55,6 @@ class _DownloadGridState extends State<DownloadGrid> {
                 height: resolveIconSize(fileType),
                 child: SvgPicture.asset(
                   FileUtil.resolveFileTypeIconPath(fileType.name),
-                  color: FileUtil.resolveFileTypeIconColor(fileType.name),
                 ),
               ),
               const SizedBox(width: 5),

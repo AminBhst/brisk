@@ -6,17 +6,16 @@ class ConfirmationDialog extends StatelessWidget {
   final String title;
 
   const ConfirmationDialog({
-    Key? key,
+    super.key,
     required this.onConfirmPressed,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color.fromRGBO(25, 25, 25, 1),
+      backgroundColor: Color.fromRGBO(35, 39, 46, 1),
       content: Container(
-        color: const Color.fromRGBO(25, 25, 25, 1),
         child: Text(
           title,
           style: const TextStyle(color: Colors.white),
