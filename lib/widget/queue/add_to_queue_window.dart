@@ -3,6 +3,7 @@ import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
+
 import '../../model/download_queue.dart';
 
 class AddToQueueWindow extends StatefulWidget {
@@ -30,20 +31,19 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("Select Queue : ", style: TextStyle(color: Colors.white)),
+              Text("Select Queue : "),
               Padding(
                 padding: const EdgeInsets.only(left: 12),
                 child: DropdownButton<String>(
                   value: selectedValue,
-                  dropdownColor: Colors.black87,
                   menuMaxHeight: 200,
                   items: downloadQueues?.map((DownloadQueue value) {
                     return DropdownMenuItem<String>(
                       value: value.name,
                       child: SizedBox(
-                          width: 100,
-                          child: Text(value.name,
-                              style: const TextStyle(color: Colors.white))),
+                        width: 100,
+                        child: Text(value.name),
+                      ),
                     );
                   }).toList(),
                   onChanged: (value) => setState(() => selectedValue = value),
@@ -57,7 +57,6 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               RoundedOutlinedButton(
-                width: 80,
                 onPressed: () => Navigator.of(context).pop(),
                 borderColor: Colors.red,
                 textColor: Colors.red,
@@ -65,7 +64,6 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
               ),
               const SizedBox(width: 10),
               RoundedOutlinedButton(
-                width: 80,
                 onPressed: onAddPressed,
                 borderColor: Colors.green,
                 textColor: Colors.green,
