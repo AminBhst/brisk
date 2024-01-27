@@ -45,6 +45,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
             child: TopMenuButton(
               onTap: () => onStartQueuePressed(context),
               title: 'Start Queue',
+              fontSize: 12,
               icon: const Icon(Icons.play_arrow_rounded, color: Colors.white),
               onHoverColor: Colors.green,
             ),
@@ -52,6 +53,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
           TopMenuButton(
             onTap: onStopAllPressed,
             title: 'Stop Queue',
+            fontSize: 12,
             icon: const Icon(Icons.stop_circle_rounded, color: Colors.white),
             onHoverColor: Colors.redAccent,
           ),

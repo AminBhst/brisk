@@ -26,12 +26,15 @@ class _CheckedBoxedConfirmationDialogState
   Widget build(BuildContext context) {
     return AlertDialog(
       content: Container(
-        height: 75,
+        height: 100,
         child: Column(
           children: [
-            Text(
-              widget.title,
-              style: const TextStyle(color: Colors.white),
+            Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Text(
+                widget.title,
+                style: const TextStyle(fontSize: 17),
+              ),
             ),
             const SizedBox(height: 20),
             Row(

@@ -20,9 +20,7 @@ class SettingsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery
-        .of(context)
-        .size;
+    final size = MediaQuery.of(context).size;
     return SizedBox(
       height: height,
       width: size.width * 0.6 * 0.68,
@@ -33,7 +31,13 @@ class SettingsGroup extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 18)),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           Container(
             width: containerWidth,

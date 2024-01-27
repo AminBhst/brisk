@@ -30,7 +30,7 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("Queue name : ", style: TextStyle(color: Colors.white)),
+              Text("Queue name : "),
               const SizedBox(width: 10),
               SizedBox(
                   width: 150,
@@ -51,7 +51,7 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               RoundedOutlinedButton(
-                width: 80,
+                width: 95,
                 onPressed: () => Navigator.of(context).pop(),
                 borderColor: Colors.red,
                 textColor: Colors.red,
@@ -59,7 +59,7 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
               ),
               const SizedBox(width: 10),
               RoundedOutlinedButton(
-                width: 80,
+                width: 95,
                 onPressed: () => onCreatePressed(context),
                 borderColor: Colors.green,
                 textColor: Colors.green,

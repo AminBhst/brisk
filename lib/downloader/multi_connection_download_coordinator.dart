@@ -21,7 +21,6 @@ import '../util/readability_util.dart';
 /// The coordinator will track the state of the download connections, retrieve and aggregate data such as the overall download speed and progress,
 /// manage the availability of pause/resume buttons and assemble the file when the all connections have finished receiving and writing their data.
 class MultiConnectionDownloadCoordinator {
-
   /// TODO : send pause command to isolates which are pending connection
 
   /// A map of all stream channels related to the running download requests

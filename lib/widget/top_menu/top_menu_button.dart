@@ -37,7 +37,7 @@ class TopMenuButton extends StatelessWidget {
                   padding: const EdgeInsets.all(5),
                   child: Text(
                     title,
-                    style: TextStyle(color: Colors.white, fontSize: fontSize),
+                    style: TextStyle(fontSize: fontSize),
                     textAlign: TextAlign.center,
                   ),
                 ),

@@ -26,6 +26,8 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
       disableCloseButton: true,
       padding: EdgeInsets.only(top: 50),
       content: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -61,6 +63,7 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
                 borderColor: Colors.red,
                 textColor: Colors.red,
                 text: "Cancel",
+                width: 95,
               ),
               const SizedBox(width: 10),
               RoundedOutlinedButton(
@@ -68,6 +71,7 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
                 borderColor: Colors.green,
                 textColor: Colors.green,
                 text: "Add",
+                width: 95,
               ),
             ],
           )

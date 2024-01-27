@@ -61,12 +61,14 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
         actions: <Widget>[
           RoundedOutlinedButton(
             text: "Cancel",
+            width: 95,
             borderColor: Colors.red,
             textColor: Colors.red,
             onPressed: () => _onCancelPressed(context),
           ),
           RoundedOutlinedButton(
             text: widget.updateDialog ? "Update" : "Add",
+            width: 95,
             borderColor: Colors.green,
             textColor: Colors.green,
             onPressed: () => _onAddPressed(context),

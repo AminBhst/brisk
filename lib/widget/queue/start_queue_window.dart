@@ -30,7 +30,7 @@ class _StartQueueWindowState extends State<StartQueueWindow> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text("Number of simultaneous downloads : ",
-                  style: TextStyle(color: Colors.white)),
+                  style: TextStyle(fontSize: 16)),
               const SizedBox(width: 10),
               SizedBox(
                 width: 90,
@@ -52,7 +52,7 @@ class _StartQueueWindowState extends State<StartQueueWindow> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               RoundedOutlinedButton(
-                width: 80,
+                width: 95,
                 onPressed: () => Navigator.of(context).pop(),
                 borderColor: Colors.red,
                 textColor: Colors.red,
@@ -60,7 +60,7 @@ class _StartQueueWindowState extends State<StartQueueWindow> {
               ),
               const SizedBox(width: 20),
               RoundedOutlinedButton(
-                width: 80,
+                width: 95,
                 onPressed: () {
                   widget.onStartPressed(int.parse(txtController.text));
                   Navigator.of(context).pop();
