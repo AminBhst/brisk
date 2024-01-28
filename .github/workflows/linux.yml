@@ -16,8 +16,10 @@ on:
 jobs:
   Build:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read 
     steps:
+    
       - name: Checkout the code
         uses: actions/checkout@v3
       
@@ -57,7 +59,10 @@ jobs:
   Release:
     runs-on: ubuntu-latest
     needs: Build
+    permissions:
+      contents: write
     steps:
+    
       - name: Donwload artifact
         uses: actions/download-artifact@v4.1.0
         with:
@@ -76,7 +81,10 @@ jobs:
     needs:
       - Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
+    
       - name: Remove build artifacts
         uses: geekyeggo/delete-artifact@v1
       
