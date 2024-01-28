@@ -55,7 +55,6 @@ jobs:
           path: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
 
   Release:
-    name: Release a version
     runs-on: ubuntu-latest
     needs: Build
     steps:
@@ -74,13 +73,11 @@ jobs:
           files: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
 
   Cleanup:
-    name: Cleanup actions
     needs:
       - Release
     runs-on: ubuntu-latest
     steps:
       - name: Remove build artifacts
         uses: geekyeggo/delete-artifact@v1
-        with:
-          name: brisk
+      
  
