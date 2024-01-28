@@ -31,7 +31,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           # 11
-          flutter-version: "3.0.0"
+          flutter-version: "3.16.9"
           channel: 'stable'
       # 12
       - name: Get dependencies
