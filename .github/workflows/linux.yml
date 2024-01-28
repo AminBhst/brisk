@@ -43,5 +43,4 @@ jobs:
       - name: Start release build
         run: |
          flutter build linux
-         ls -la build/linux
-         ls -la build/linux/outputs/
+         ls -la build/linux/x64/
