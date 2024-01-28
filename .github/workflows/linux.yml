@@ -87,5 +87,10 @@ jobs:
     
       - name: Remove build artifacts
         uses: geekyeggo/delete-artifact@v1
+        with:
+          token: ${{ github.token }}
+          name: brisk
+          failOnError: true
+        
       
  
