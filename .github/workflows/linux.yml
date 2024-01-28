@@ -29,8 +29,8 @@ jobs:
           flutter-version: "3.16.9"
           channel: 'stable'
           cache: true
-          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' # optional, change this to force refresh cache
-          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' # optional, change this to specify the cache path
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' 
           architecture: x64
 
       - name: Install required tools     
@@ -44,10 +44,18 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Cache the dependencies
+        uses: actions/cache@v4.0.0
+        with:
+          path: /opt/hostedtoolcache/flutter/stable-3.16.9-x64/.pub-cache 
+          key: flutter-brisk-dependencies
+          restore-keys: flutter-brisk-dependencies
+
+
       - name: Start the build process
         run: flutter build linux
          
-      - name: Compress 
+      - name: Compress the release file
         run: tar -cvJf Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
 
       - name: Upload artifact 
@@ -55,6 +63,7 @@ jobs:
         with:
           name: brisk
           path: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
+          retention-days: 1
 
   Release:
     runs-on: ubuntu-latest
@@ -77,20 +86,20 @@ jobs:
           body: Test version!
           files: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
 
-  Cleanup:
-    needs:
-      - Release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
+  # Cleanup:
+  #   needs:
+  #     - Release
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   steps:
     
-      - name: Remove build artifacts
-        uses: geekyeggo/delete-artifact@v1
-        with:
-          token: ${{ github.token }}
-          name: brisk
-          failOnError: true
+  #     - name: Remove build artifacts
+  #       uses: geekyeggo/delete-artifact@v1
+  #       with:
+  #         token: ${{ github.token }}
+  #         name: brisk
+  #         failOnError: true
         
       
  
