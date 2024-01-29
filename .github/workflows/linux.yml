@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Enter the tag of this release'
+        description: 'Enter a tag for this release'
         required: true
         type: string
 
@@ -40,17 +40,20 @@ jobs:
       
       - name: Enable linux-desktop for flutter
         run: flutter config --enable-linux-desktop
-      
-      - name: Get dependencies
-        run: flutter pub get
 
       - name: Cache the dependencies
         uses: actions/cache@v4.0.0
         with:
           path: /opt/hostedtoolcache/flutter/stable-3.16.9-x64/.pub-cache 
-          key: flutter-brisk-dependencies
-          restore-keys: flutter-brisk-dependencies
-
+          key: | 
+           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.lock') }}
+           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.lock') }}
+           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
+      
+      - name: Get dependencies
+        run: flutter pub get
 
       - name: Start the build process
         run: flutter build linux
