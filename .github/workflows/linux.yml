@@ -42,6 +42,7 @@ jobs:
         run: flutter config --enable-linux-desktop
 
       - name: Cache the dependencies
+        id: pub-cache
         uses: actions/cache@v4.0.0
         with:
           path: /opt/hostedtoolcache/flutter/stable-3.16.9-x64/.pub-cache 
@@ -53,6 +54,7 @@ jobs:
            ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
       
       - name: Get dependencies
+        if: ${{ steps.pub-cache.outputs.cache-hit != 'true' }}
         run: flutter pub get
 
       - name: Start the build process
