@@ -35,7 +35,7 @@ As of version 1.3.0, Brisk supports [Browser Integration](https://github.com/Ami
 ### appindicator3-0.1
 - Debian/Ubuntu : ```libayatana-appindicator3-dev```
 - Fedora/RHEL/CentOS : ```libappindicator-gtk3-devel```
-- - Arch Linux : ```libappindicator-gtk3```
+- Arch Linux : ```libappindicator-gtk3```
 
 ## Features
 
