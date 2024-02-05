@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:brisk/constants/app_closure_behaviour.dart';
 import 'package:brisk/constants/file_duplication_behaviour.dart';
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/file_extensions.dart';
+import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/parse_util.dart';
 import './file_util.dart';
 
@@ -14,7 +16,6 @@ class SettingsCache {
   static late bool notificationOnDownloadCompletion;
   static late bool notificationOnDownloadFailure;
   static late bool launchOnStartUp;
-  static late bool minimizeToTrayOnClose;
   static late bool openDownloadProgressWindow;
   static late bool enableWindowToFront;
   static late int extensionPort;
@@ -28,6 +29,7 @@ class SettingsCache {
   static late List<String> compressedFormats;
   static late List<String> programFormats;
   static late FileDuplicationBehaviour fileDuplicationBehaviour;
+  static late AppClosureBehaviour appClosureBehaviour;
 
   // Connection
   static late int connectionsNumber;
@@ -44,10 +46,6 @@ class SettingsCache {
       "true",
     ],
     SettingOptions.launchOnStartUp.name: [
-      SettingType.general.name,
-      "false",
-    ],
-    SettingOptions.minimizeToTrayOnClose.name: [
       SettingType.general.name,
       "false",
     ],
@@ -86,6 +84,10 @@ class SettingsCache {
     SettingOptions.fileDuplicationBehaviour.name: [
       SettingType.file.name,
       FileDuplicationBehaviour.ask.name,
+    ],
+    SettingOptions.appClosureBehaviour.name: [
+      SettingType.general.name,
+      AppClosureBehaviour.ask.name,
     ],
     SettingOptions.connectionsNumber.name: [
       SettingType.connection.name,
@@ -127,9 +129,6 @@ class SettingsCache {
         case SettingOptions.launchOnStartUp:
           launchOnStartUp = parseBool(value);
           break;
-        case SettingOptions.minimizeToTrayOnClose:
-          minimizeToTrayOnClose = parseBool(value);
-          break;
         case SettingOptions.openDownloadProgressWindow:
           openDownloadProgressWindow = parseBool(value);
           break;
@@ -157,6 +156,9 @@ class SettingsCache {
         case SettingOptions.fileDuplicationBehaviour:
           fileDuplicationBehaviour = parseFileDuplicationBehaviour(value);
           break;
+        case SettingOptions.appClosureBehaviour:
+          appClosureBehaviour = parseAppCloseBehaviour(value);
+          break;
         case SettingOptions.connectionsNumber:
           connectionsNumber = int.parse(value);
           break;
@@ -177,7 +179,7 @@ class SettingsCache {
     }
   }
 
-  static void saveCachedSettingsToDB() async {
+  static Future<void> saveCachedSettingsToDB() async {
     final allSettings = HiveUtil.instance.settingBox.values;
     for (var setting in allSettings) {
       switch (parseSettingOptions(setting.name)) {
@@ -191,9 +193,6 @@ class SettingsCache {
           break;
         case SettingOptions.launchOnStartUp:
           setting.value = parseBoolStr(SettingsCache.launchOnStartUp);
-          break;
-        case SettingOptions.minimizeToTrayOnClose:
-          setting.value = parseBoolStr(SettingsCache.minimizeToTrayOnClose);
           break;
         case SettingOptions.openDownloadProgressWindow:
           setting.value =
@@ -223,6 +222,9 @@ class SettingsCache {
         case SettingOptions.fileDuplicationBehaviour:
           setting.value = SettingsCache.fileDuplicationBehaviour.name;
           break;
+        case SettingOptions.appClosureBehaviour:
+          setting.value = SettingsCache.appClosureBehaviour.name;
+          break;
         case SettingOptions.connectionsNumber:
           setting.value = SettingsCache.connectionsNumber.toString();
           break;
@@ -241,7 +243,12 @@ class SettingsCache {
         default:
       }
       await setting.save();
+      await performRequiredUpdates();
     }
+  }
+
+  static Future<void> performRequiredUpdates() async {
+    await updateLaunchAtStartupSetting();
   }
 
   static Future<void> resetDefault() async {

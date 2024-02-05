@@ -1,3 +1,4 @@
+import 'package:brisk/constants/app_closure_behaviour.dart';
 import 'package:brisk/constants/file_duplication_behaviour.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/constants/setting_options.dart';
@@ -18,6 +19,12 @@ DLFileType parseFileType(String val) {
 
 FileDuplicationBehaviour parseFileDuplicationBehaviour(String val) {
   return FileDuplicationBehaviour.values
+      .where((type) => type.name == val)
+      .first;
+}
+
+AppClosureBehaviour parseAppCloseBehaviour(String val) {
+  return AppClosureBehaviour.values
       .where((type) => type.name == val)
       .first;
 }

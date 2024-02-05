@@ -1,7 +1,9 @@
 import 'package:brisk/model/download_queue.dart';
+import 'package:brisk/model/general_data.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../model/download_item.dart';
 
@@ -16,12 +18,14 @@ class HiveUtil {
 
   late final Box<Setting> settingBox;
 
+  late final Box<GeneralData> generalDataBox;
 
   Future<void> initHive() async {
     await Hive.initFlutter("Brisk");
     Hive.registerAdapter(DownloadItemAdapter());
     Hive.registerAdapter(DownloadQueueAdapter());
     Hive.registerAdapter(SettingAdapter());
+    Hive.registerAdapter(GeneralDataAdapter());
     await HiveUtil.instance.openBoxes();
   }
 
@@ -29,6 +33,7 @@ class HiveUtil {
     downloadItemsBox = await Hive.openBox<DownloadItem>("download_items");
     downloadQueueBox = await Hive.openBox<DownloadQueue>("download_queues");
     settingBox = await Hive.openBox<Setting>("settings");
+    generalDataBox = await Hive.openBox<GeneralData>("general_data");
   }
 
   Future<void> putInitialBoxValues() async {
@@ -38,6 +43,26 @@ class HiveUtil {
     if (settingBox.values.length != SettingsCache.defaultSettings.length) {
       await SettingsCache.setDefaultSettings();
     }
+
+    final appVersion = generalDataBox.values
+        .where((val) => val.fieldName == "appVersion")
+        .firstOrNull;
+    if (appVersion == null) {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final appVersion = await GeneralData(
+        fieldName: "appVersion",
+        value: packageInfo.version,
+      );
+      await generalDataBox.add(appVersion);
+      await SettingsCache.resetDefault();
+    } else {
+      await performRequiredAppVersionUpdates();
+    }
+  }
+
+  /// To be used for specific cases where some db values need to be updated
+  /// based on specific version bumps
+  Future<void> performRequiredAppVersionUpdates() async {
   }
 
   Future<void> addDownloadItem(DownloadItem downloadItem) async {

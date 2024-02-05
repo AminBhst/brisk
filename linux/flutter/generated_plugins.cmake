@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   hotkey_manager
   screen_retriever
+  tray_manager
   url_launcher_linux
   window_manager
   window_to_front
