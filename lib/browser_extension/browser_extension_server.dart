@@ -12,6 +12,7 @@ import 'package:brisk/widget/download/multi_download_addition_dialog.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:window_to_front/window_to_front.dart';
+import 'package:window_manager/window_manager.dart';
 
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
@@ -35,6 +36,7 @@ class BrowserExtensionServer {
       await for (final body in request) {
         final jsonBody = jsonDecode(String.fromCharCodes(body));
         if (_windowToFrontEnabled) {
+          await windowManager.show();
           WindowToFront.activate();
         }
         await _handleDownloadAddition(jsonBody, context, request);
