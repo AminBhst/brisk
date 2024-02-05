@@ -118,23 +118,23 @@ class _MyHomePageState extends State<MyHomePage>
         onExitPressed: (rememberChecked) async {
           Navigator.of(context).pop();
           if (rememberChecked) {
-            saveNewAppClosureBehaviour(AppClosureBehaviour.exit);
+            await saveNewAppClosureBehaviour(AppClosureBehaviour.exit);
           }
-          windowManager.destroy();
+          await windowManager.destroy();
         },
         onMinimizeToTrayPressed: (rememberChecked) {
-          initTray();
-          windowManager.hide();
           if (rememberChecked) {
             saveNewAppClosureBehaviour(AppClosureBehaviour.minimizeToTray);
           }
+          initTray();
+          windowManager.hide();
         },
       ),
     );
   }
 
 
-  void saveNewAppClosureBehaviour(AppClosureBehaviour behaviour) async {
+  Future<void> saveNewAppClosureBehaviour(AppClosureBehaviour behaviour) async {
     SettingsCache.appClosureBehaviour = behaviour;
     await SettingsCache.saveCachedSettingsToDB();
   }
