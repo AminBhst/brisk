@@ -60,7 +60,7 @@ flutter build macos|windows|linux
 
 - Dynamic file segmentation for highest download speed
 - Download speed limiter
-- System tray
+- Download Scheduling
 
 If you have a feature request, please open an issue and explain it in details.
 
