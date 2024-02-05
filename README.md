@@ -25,13 +25,16 @@ As of version 1.3.0, Brisk supports [Browser Integration](https://github.com/Ami
 [link-firefox]: https://addons.mozilla.org/en-US/firefox/addon/brisk/
 
 [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox.svg" width="48" alt="Firefox" valign="middle">][link-firefox]
-## Prerequisites
+## Linux Prerequisites
 
-On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/keybinder) installed.
-
+### keybinder-3
 - Debian/Ubuntu : ```keybinder-3.0```
 - Fedora/RHEL/CentOS : ```keybinder3```
 - Arch Linux : ```libkeybinder3```
+
+### appindicator3-0.1
+- Debian/Ubuntu : ```libayatana-appindicator3-dev```
+- Fedora/RHEL/CentOS : ```libappindicator-gtk3-devel```
 
 ## Features
 
