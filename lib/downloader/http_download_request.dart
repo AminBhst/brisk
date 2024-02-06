@@ -85,6 +85,8 @@ class HttpDownloadRequest {
 
   final int endByte;
 
+  int previousBufferEndByte = 0;
+
   final int totalSegments;
 
   /// Connection retry
@@ -132,8 +134,9 @@ class HttpDownloadRequest {
     sendDownloadRequest(request);
   }
 
-  void initVars(bool connectionReset, DownloadProgressCallback progressCallback) {
-     detailsStatus =
+  void initVars(
+      bool connectionReset, DownloadProgressCallback progressCallback) {
+    detailsStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
     status = detailsStatus;
     this.progressCallback = progressCallback;
@@ -272,7 +275,7 @@ class HttpDownloadRequest {
   /// [FileUtil.defaultTempFileDir]/[downloadItem.uid]/[segmentNumber]
   void _flushBuffer() {
     if (buffer.isEmpty) return;
-    final filePath = join(tempDirectory.path, _chunkCount.toString());
+    final filePath = join(tempDirectory.path, tempFileName);
     final bytes = _writeToUin8List(tempReceivedBytes, buffer);
     _chunkCount++;
     _flushQueueCount++;
@@ -287,6 +290,7 @@ class HttpDownloadRequest {
       }
       _flushQueueComplete++;
       _notifyChange();
+      previousBufferEndByte += bytes.lengthInBytes;
     });
     _clearBuffer();
   }
@@ -395,10 +399,22 @@ class HttpDownloadRequest {
 
   int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
+
+  /// e.g. 0-50, 51-150, 151-400 and so on...
+  String get tempFileName =>
+      tempFileStartByte.toString() + "-" + tempFileEndByte.toString();
+
+  /// The end byte of the buffer with respect to the target file (The file which will be built after download completes).
+  int get tempFileEndByte => tempReceivedBytes + previousBufferEndByte;
+
+  /// The start byte of the buffer with respect to the target file
+  int get tempFileStartByte => startByte + previousBufferEndByte == 0
+      ? 0
+      : startByte + previousBufferEndByte + 1;
+
   Directory get tempDirectory => Directory(join(
         baseTempDir.path,
         downloadItem.uid.toString(),
-        segmentNumber.toString(),
       ));
 
   /// Determines if the user is permitted to hit the start (Resume) button or not
