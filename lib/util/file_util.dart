@@ -204,7 +204,11 @@ class FileUtil {
   }
 
   static int sortByFileName(FileSystemEntity a, FileSystemEntity b) {
-    return fileNameToInt(a).compareTo(fileNameToInt(b));
+    final aName = basename(a.path);
+    final bName = basename(b.path);
+    final aStartByte = aName.substring(0, aName.indexOf("-"));
+    final bStartByte = bName.substring(0, bName.indexOf("-"));
+    return int.parse(aStartByte).compareTo(int.parse(bStartByte));
   }
 
   static int fileNameToInt(FileSystemEntity file) {

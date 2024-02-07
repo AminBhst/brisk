@@ -117,22 +117,21 @@ class MultiConnectionDownloadCoordinator {
       Directory baseTempDir, Directory baseSaveDir) {
     final tempPath = join(baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
-    final segmentDirs = tempDir.listSync().map((o) => o as Directory).toList();
-    segmentDirs.sort(FileUtil.sortByFileName);
+    final tempFies = tempDir.listSync().map((o) => o as File).toList();
+    tempFies.sort(FileUtil.sortByFileName);
     File fileToWrite = File(downloadItem.filePath);
     if (fileToWrite.existsSync()) {
-      final newFilePath = FileUtil.getFilePath(downloadItem.fileName,
-          baseSaveDir: baseSaveDir, checkFileDuplicationOnly: true);
+      final newFilePath = FileUtil.getFilePath(
+        downloadItem.fileName,
+        baseSaveDir: baseSaveDir,
+        checkFileDuplicationOnly: true,
+      );
       fileToWrite = File(newFilePath);
     }
     fileToWrite.createSync(recursive: true);
-    for (var dir in segmentDirs) {
-      final segmentFiles = dir.listSync().map((o) => o as File).toList();
-      segmentFiles.sort(FileUtil.sortByFileName);
-      for (var file in segmentFiles) {
-        final bytes = file.readAsBytesSync();
-        fileToWrite.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
-      }
+    for (var file in tempFies) {
+      final bytes = file.readAsBytesSync();
+      fileToWrite.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
     }
     final assembleSuccessful =
         fileToWrite.lengthSync() == downloadItem.contentLength;

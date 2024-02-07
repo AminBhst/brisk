@@ -278,6 +278,7 @@ class HttpDownloadRequest {
     final filePath = join(tempDirectory.path, tempFileName);
     final bytes = _writeToUin8List(tempReceivedBytes, buffer);
     _chunkCount++;
+    previousBufferEndByte += bytes.lengthInBytes;
     _flushQueueCount++;
     File(filePath).writeAsBytes(mode: FileMode.writeOnly, bytes).then((file) {
       if (isWritePartCaughtUp && paused) {
@@ -290,7 +291,6 @@ class HttpDownloadRequest {
       }
       _flushQueueComplete++;
       _notifyChange();
-      previousBufferEndByte += bytes.lengthInBytes;
     });
     _clearBuffer();
   }
@@ -398,7 +398,6 @@ class HttpDownloadRequest {
       detailsStatus == DownloadStatus.complete;
 
   int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
-
 
   /// e.g. 0-50, 51-150, 151-400 and so on...
   String get tempFileName =>
