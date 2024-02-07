@@ -61,7 +61,6 @@ class HttpDownloadRequest {
   // static const _staticFlushThreshold = 524288;
   double _dynamicFlushThreshold = 52428800;
 
-  int _chunkCount = 0;
   int _flushQueueCount = 0;
   int _flushQueueComplete = 0;
 
@@ -129,7 +128,6 @@ class HttpDownloadRequest {
       _notifyChange();
       return;
     }
-    _setChunkCount();
 
     sendDownloadRequest(request);
   }
@@ -185,11 +183,6 @@ class HttpDownloadRequest {
     });
   }
 
-  void _setChunkCount() {
-    final files =
-        tempDirectory.listSync(recursive: true).map((file) => file as File);
-    _chunkCount = files.isEmpty ? 0 : files.length + 1;
-  }
 
   void resetConnection() {
     client.close();
@@ -277,7 +270,6 @@ class HttpDownloadRequest {
     if (buffer.isEmpty) return;
     final filePath = join(tempDirectory.path, tempFileName);
     final bytes = _writeToUin8List(tempReceivedBytes, buffer);
-    _chunkCount++;
     previousBufferEndByte += bytes.lengthInBytes;
     _flushQueueCount++;
     File(filePath).writeAsBytes(mode: FileMode.writeOnly, bytes).then((file) {
