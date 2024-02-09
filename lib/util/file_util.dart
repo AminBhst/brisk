@@ -80,7 +80,8 @@ class FileUtil {
     return join(saveDir.path, subDir, fileName);
   }
 
-  static bool checkDownloadDuplication(File file, bool checkFileDuplicationOnly) {
+  static bool checkDownloadDuplication(
+      File file, bool checkFileDuplicationOnly) {
     if (checkFileDuplicationOnly) return file.existsSync();
 
     return HiveUtil.instance.downloadItemsBox.values
@@ -209,6 +210,14 @@ class FileUtil {
     final aStartByte = aName.substring(0, aName.indexOf("-"));
     final bStartByte = bName.substring(0, bName.indexOf("-"));
     return int.parse(aStartByte).compareTo(int.parse(bStartByte));
+  }
+
+  static int getStartByteFromTempFileName(String tempFileName) {
+    return int.parse(tempFileName.substring(0, tempFileName.indexOf("-")));
+  }
+
+  static int getEndByteFromTempFileName(String fileName) {
+    return int.parse(fileName.substring(fileName.indexOf("-")));
   }
 
   static int fileNameToInt(FileSystemEntity file) {

@@ -30,10 +30,15 @@ class MultiConnectionDownloadCoordinator {
 
   static final Map<int, Map<int, Isolate>> _connectionIsolates = {};
 
-  static Map<int, String> completionEstimations = {};
+  static final Map<int, String> completionEstimations = {};
+
+  /// The last time in millis since the last check for dynamic segmentation per downloads
+  static final Map<int, int> last_ds_checks = {};
 
   /// Settings
   static late Directory baseSaveDir;
+
+  static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
   static void startDownloadRequest(SendPort sendPort) async {
     final handlerChannel = IsolateChannel.connectSend(sendPort);
@@ -55,6 +60,14 @@ class MultiConnectionDownloadCoordinator {
         });
       }
     });
+  }
+
+  static void _dynammicSegmentation(DownloadProgress progress) {
+    final downloadId = progress.downloadItem.id;
+    final lastCheck = last_ds_checks[downloadId];
+    if (lastCheck != null && lastCheck + 2000 > _nowMillis) {
+
+    }
   }
 
   static void handleDownloadProgressUpdates(DownloadProgress progress,
@@ -79,6 +92,7 @@ class MultiConnectionDownloadCoordinator {
       totalProgress,
     );
     _setStatus(id, downloadProgress);
+    _dynammicSegmentation(downloadProgress);
     if (isTempWriteComplete && isAssembleEligible(data.downloadItem)) {
       downloadProgress.status = DownloadStatus.assembling;
       handlerChannel.sink.add(downloadProgress);
@@ -104,6 +118,44 @@ class MultiConnectionDownloadCoordinator {
         _connectionChannels[id]![i]!.sink.add(data);
       }
     }
+
+    if (_connectionChannels[id]![i] == null) {
+      await _spawnDownloadRequestIsolate(data, i, data.totalConnections);
+    } else {
+      _connectionChannels[id]![i]!.sink.add(data);
+    }
+  }
+
+  /// Analyzes the temp files and returns the missing temp byte ranges
+  static Map<int, int> _getMissingByteRanges(DownloadIsolateArgs data) {
+    final tempFiles =
+        data.baseTempDir.listSync().map((o) => o as File).toList();
+
+    if (tempFiles.isEmpty) {
+      return {0: data.downloadItem.contentLength};
+    }
+
+    tempFiles.sort(FileUtil.sortByFileName);
+    String prevFileName = "";
+    Map<int, int> missingBytes = {};
+    for (final tempFile in tempFiles) {
+      final tempFileName = basename(tempFile.path);
+      if (prevFileName == "") {
+        prevFileName = tempFileName;
+        continue;
+      }
+
+      final startByte = FileUtil.getStartByteFromTempFileName(tempFileName);
+      final prevEndByte = FileUtil.getEndByteFromTempFileName(prevFileName);
+
+      if (prevEndByte + 1 != startByte) {
+        final missingStartByte = prevEndByte + 1;
+        final missingEndByte = startByte - 1;
+        missingBytes[missingStartByte] = missingEndByte;
+      }
+      prevFileName = tempFileName;
+    }
+    return missingBytes;
   }
 
   static bool isAssembleEligible(DownloadItemModel downloadItem) {
@@ -275,7 +327,10 @@ class MultiConnectionDownloadCoordinator {
   /// connection exception occurs. Otherwise, we wouldn't be able to reset the
   /// connection because the isolate would already be dead.
   static Future<void> _spawnDownloadRequestIsolate(
-      DownloadIsolateArgs args, int segmentNumber, int totalSegments) async {
+    DownloadIsolateArgs args,
+    int segmentNumber,
+    int totalSegments,
+  ) async {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
     channel.sink.add(args);
@@ -288,15 +343,15 @@ class MultiConnectionDownloadCoordinator {
       sendPort: rPort.sendPort,
     );
     final isolate = await Isolate.spawn<HandleSingleConnectionArgs>(
-        SingleConnectionManager.handleSingleConnection, isolateArgs,
-        errorsAreFatal: false);
+      SingleConnectionManager.handleSingleConnection,
+      isolateArgs,
+      errorsAreFatal: false,
+    );
     _connectionIsolates[downloadId] ??= {};
     _connectionIsolates[downloadId]![segmentNumber] = isolate;
     _connectionChannels[downloadId] ??= {};
     _connectionChannels[downloadId]![segmentNumber] = channel;
   }
-
-  static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
   static void _setSettings(DownloadIsolateArgs data) {
     baseSaveDir = data.baseSaveDir;

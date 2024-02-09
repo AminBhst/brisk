@@ -53,9 +53,6 @@ class HttpDownloadRequest {
 
   http.Client client = http.Client();
 
-  final int segmentNumber;
-
-  /// Threshold which determines the buffer flush frequency (in bytes)
   /// Threshold is currently only dynamically decided (4 times the byte transfer rate per second -
   /// and less than 100MB)
   // static const _staticFlushThreshold = 524288;
@@ -102,7 +99,6 @@ class HttpDownloadRequest {
   HttpDownloadRequest({
     required this.downloadItem,
     required this.baseTempDir,
-    required this.segmentNumber,
     required this.startByte,
     required this.endByte,
     required this.totalSegments,

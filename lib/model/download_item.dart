@@ -42,6 +42,9 @@ class DownloadItem extends HiveObject{
   @HiveField(11)
   String status;
 
+  @HiveField(12)
+  int totalConnections;
+
   DownloadItem({
     this.uid = "",
     required this.fileName,
@@ -54,6 +57,7 @@ class DownloadItem extends HiveObject{
     this.fileType = "other",
     this.supportsPause = false,
     this.status = "In Queue",
+    this.totalConnections = 1,
   });
 
   factory DownloadItem.fromUrl(String url) {
