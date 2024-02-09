@@ -52,18 +52,24 @@ jobs:
       - name: move the packages
         run: find ./dist -name brisk* -execdir mv {} ../../ \;
 
+      - name: change the deb name
+        run: find ./ -name *.deb -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.deb \;
+
       - name: Upload artifact deb
         uses: actions/upload-artifact@v4.0.0
         with:
           name: deb
-          path: ./*.deb
+          path: ./Brisk-${{ inputs.tag }}-linux-x86_64.deb
           retention-days: 1
+      
+      - name: change the rpm name
+        run: find ./ -name *.rpm -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.rpm \;
 
       - name: Upload artifact rpm
         uses: actions/upload-artifact@v4.0.0
         with:
           name: rpm
-          path: ./*.rpm
+          path: ./Brisk-${{ inputs.tag }}-linux-x86_64.rpm
           retention-days: 1
 
   Release:
@@ -78,16 +84,10 @@ jobs:
         with:
           name: deb
 
-      - name: change the deb name
-        run: find ./ -name *.deb -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.deb \;
-
       - name: Donwload artifact rpm
         uses: actions/download-artifact@v4.1.0
         with:
           name: rpm
-
-      - name: change the rpm name
-        run: find ./ -name *.rpm -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.rpm \;
 
       - name: Release the changes
         uses: softprops/action-gh-release@v1
