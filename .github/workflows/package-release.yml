@@ -49,11 +49,21 @@ jobs:
       - name: Start the build process
         run: flutter_distributor release --name=prod
 
-      - name: Upload artifact 
+      - name: move the packages
+        run: find ./dist -name brisk* -execdir mv {} ../../ \;
+
+      - name: Upload artifact deb
         uses: actions/upload-artifact@v4.0.0
         with:
-          name: brisk
-          path: ./dist/
+          name: deb
+          path: ./*.deb
+          retention-days: 1
+
+      - name: Upload artifact rpm
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: rpm
+          path: ./*.rpm
           retention-days: 1
 
   Release:
@@ -63,10 +73,21 @@ jobs:
       contents: write
     steps:
     
-      - name: Donwload artifact
+      - name: Donwload artifact deb
         uses: actions/download-artifact@v4.1.0
         with:
-          name: brisk
+          name: deb
+
+      - name: change the deb name
+        run: find ./ -name *.deb -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.deb \;
+
+      - name: Donwload artifact rpm
+        uses: actions/download-artifact@v4.1.0
+        with:
+          name: rpm
+
+      - name: change the rpm name
+        run: find ./ -name *.rpm -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.rpm \;
 
       - name: Release the changes
         uses: softprops/action-gh-release@v1
@@ -75,7 +96,9 @@ jobs:
         with:
           tag_name: ${{ inputs.tag }} 
           body: ${{ inputs.Release_note }} 
-          files: ./dist/
+          files: |
+           ./Brisk-${{ inputs.tag }}-linux-x86_64.rpm
+           ./Brisk-${{ inputs.tag }}-linux-x86_64.deb
 
       
  
