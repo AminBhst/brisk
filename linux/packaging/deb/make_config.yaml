@@ -1,0 +1,37 @@
+display_name: Brisk
+package_name: brisk
+
+maintainer:
+  name: AminBhst
+  email: gameali774@gmail.com
+
+priority: optional
+
+section: x11
+
+installed_size: 16100
+
+dependencies:
+  - gir1.2-keybinder-3.0
+  - keybinder-3.0-doc
+  - libkeybinder-3.0-0
+  - libkeybinder-3.0-dev
+  - libayatana-appindicator3-dev
+
+essential: false
+
+icon: linux/assets/logo.png
+
+postuninstall_scripts:
+  - echo "Have a good time!"
+
+keywords:
+  - Brisk
+
+generic_name: Brisk
+
+categories:
+  - Applications
+  - Utility
+
+startup_notify: true
