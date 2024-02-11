@@ -13,7 +13,7 @@ class DownloadIsolateArgs {
   DownloadCommand command;
   DownloadItemModel downloadItem;
   Directory baseTempDir;
-  int? startbyte;
+  int? startByte;
   int? endByte;
 
   DownloadIsolateArgs({
@@ -25,7 +25,7 @@ class DownloadIsolateArgs {
     this.connectionRetryTimeout = 10,
     this.maxConnectionRetryCount = -1,
     this.segmentNumber,
-    this.startbyte,
+    this.startByte,
     this.endByte,
   });
 }

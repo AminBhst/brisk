@@ -70,6 +70,7 @@ class DownloadRequestProvider with ChangeNotifier {
       channel = await _spawnCoordinatorIsolate(id);
       if (command == DownloadCommand.cancel) return;
       channel.stream
+          .cast<DownloadProgress>()
           .listen((progress) => _listenToHandlerChannel(progress, id));
     }
     channel.sink.add(isolatorArgs);
@@ -99,21 +100,19 @@ class DownloadRequestProvider with ChangeNotifier {
     return channel;
   }
 
-  void _listenToHandlerChannel(dynamic progress, int id) {
-    if (progress is DownloadProgress) {
-      downloads[id] = progress;
-      _handleNotification(progress);
-      final downloadItem = progress.downloadItem;
-      notifyAllListeners(progress);
-      final dl = HiveUtil.instance.downloadItemsBox.get(downloadItem.id)!;
-      if (progress.assembleProgress == 1) {
-        HiveUtil.instance.removeDownloadFromQueues(dl.key);
-        PlutoGridUtil.removeCachedRow(id);
-      }
-      _updateDownloadRequest(progress, dl);
-      if (progress.status == DownloadStatus.failed) {
-        _killIsolateConnection(id);
-      }
+  void _listenToHandlerChannel(DownloadProgress progress, int id) {
+    downloads[id] = progress;
+    _handleNotification(progress);
+    final downloadItem = progress.downloadItem;
+    notifyAllListeners(progress);
+    final dl = HiveUtil.instance.downloadItemsBox.get(downloadItem.id)!;
+    if (progress.assembleProgress == 1) {
+      HiveUtil.instance.removeDownloadFromQueues(dl.key);
+      PlutoGridUtil.removeCachedRow(id);
+    }
+    _updateDownloadRequest(progress, dl);
+    if (progress.status == DownloadStatus.failed) {
+      _killIsolateConnection(id);
     }
   }
 
@@ -153,9 +152,7 @@ class DownloadRequestProvider with ChangeNotifier {
   /// Updates the download request based on the incoming progress from handler isolate every 6 seconds
   void _updateDownloadRequest(DownloadProgress progress, DownloadItem item) {
     final status = progress.status;
-    if (_previousUpdateTime + 6000 < _nowMillis ||
-        status == DownloadStatus.assembleComplete ||
-        status == DownloadStatus.paused) {
+    if (isUpdateEligible(status)) {
       item.progress = progress.downloadProgress;
       item.status = status;
       if (status == DownloadStatus.assembleComplete) {
@@ -164,6 +161,12 @@ class DownloadRequestProvider with ChangeNotifier {
       HiveUtil.instance.downloadItemsBox.put(item.key, item);
       _previousUpdateTime = _nowMillis;
     }
+  }
+
+  bool isUpdateEligible(String status) {
+    return _previousUpdateTime + 6000 < _nowMillis ||
+        status == DownloadStatus.assembleComplete ||
+        status == DownloadStatus.paused;
   }
 
   void insertRows(List<DownloadProgress> progressData) {
@@ -206,8 +209,6 @@ class DownloadRequestProvider with ChangeNotifier {
       );
     }).toList();
   }
-
-
 
   // int _tmpTime = _nowMillis;
   void notifyAllListeners(DownloadProgress progress) {

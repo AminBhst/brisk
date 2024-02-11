@@ -27,6 +27,7 @@ class DownloadProgress {
 
   DownloadProgress({
     required this.downloadItem,
+    this.segmentNumber = 0,
     this.downloadProgress = 0,
     this.transferRate = "",
     this.status = "",
@@ -61,7 +62,7 @@ class DownloadProgress {
       totalReceivedBytes: request.totalReceivedBytes,
       segmentLength: request.segmentLength,
       detailsStatus: request.detailsStatus,
-      totalSegments: request.totalSegments,
+      segmentNumber: request.segmentNumber,
     );
     downloadProgress.baseTempDir = request.baseTempDir;
     return downloadProgress;

@@ -1,13 +1,13 @@
-import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:ui';
 
+import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/downloader/single_connection_manager.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/isolate/download_isolator_args.dart';
-import 'package:brisk/model/isolate/isolate_method_args.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:path/path.dart';
@@ -37,6 +37,12 @@ class MultiConnectionDownloadCoordinator {
 
   /// Settings
   static late Directory baseSaveDir;
+  static late Directory baseTempDir;
+  static late int totalConnections;
+  static late int connectionRetryTimeout;
+  static late int maxConnectionRetryCount;
+
+  // static final Map<int, int> totalConnections = {};
 
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
@@ -54,29 +60,106 @@ class MultiConnectionDownloadCoordinator {
       }
       await spawnOrSendToExistingDownloadIsolates(data);
       if (isListened) return;
-      for (final channel in _connectionChannels[id]!.values) {
-        channel.stream.cast<DownloadProgress>().listen((progress) {
-          handleDownloadProgressUpdates(progress, data, handlerChannel);
-        });
-      }
+      _connectionChannels[id]![0]
+          ?.stream
+          .cast<DownloadProgress>()
+          .listen((progress) {
+        handleDownloadProgressUpdates(progress, data, handlerChannel);
+      });
+      // for (final channel in _connectionChannels[id]!.values) {
+      //   channel.stream.cast<DownloadProgress>().listen((progress) {
+      //     handleDownloadProgressUpdates(progress, data, handlerChannel);
+      //   });
+      // }
     });
   }
 
-  static void _dynammicSegmentation(DownloadProgress progress) {
+  /// TODO Remove
+  static bool skip = false;
+
+  static _dynamicSegmentation(
+      DownloadProgress progress, IsolateChannel handlerChannel) async {
+    final downloadId = progress.downloadItem.id;
+    last_ds_checks[downloadId] ??= _nowMillis;
+    if (!_shouldCreateNewConnections(progress) || skip) {
+      return;
+    }
+
+    skip = true;
+    last_ds_checks[downloadId] = _nowMillis;
+    final segments = _splitSegment(progress.downloadItem);
+    print("SEGMENTS : ${segments}");
+    _sendRefreshSegmentCommand(
+      progress,
+      segments.keys.elementAt(0),
+      segments.values.elementAt(0),
+    );
+
+    final data = DownloadIsolateArgs(
+      command: DownloadCommand.start,
+      downloadItem: progress.downloadItem,
+      baseTempDir: baseTempDir,
+      totalConnections: totalConnections,
+      baseSaveDir: baseSaveDir,
+      startByte: segments.keys.elementAt(1),
+      endByte: segments.values.elementAt(1),
+    );
+    await _spawnSingleDownloadIsolate(data, 1);
+    _connectionChannels[downloadId]![1]
+        ?.stream
+        .cast<DownloadProgress>()
+        .listen((prog) {
+      handleDownloadProgressUpdates(prog, data, handlerChannel, false);
+    });
+  }
+
+  /// Instead of sending a pause command and restarting the download with new segments,
+  /// we can just use the length setter in uint8list to cut the temp file to the length that we need (MUCH MORE OPTIMIZED)
+  static void _sendRefreshSegmentCommand(
+    DownloadProgress progress,
+    int startByte,
+    int endByte,
+  ) {
+    final channels = _connectionChannels[progress.downloadItem.id];
+    if (channels == null || channels.isEmpty) {
+      return;
+    }
+
+    final data = DownloadIsolateArgs(
+      command: DownloadCommand.refreshSegment,
+      baseSaveDir: baseSaveDir,
+      totalConnections: totalConnections,
+      downloadItem: progress.downloadItem,
+      baseTempDir: baseSaveDir,
+      startByte: startByte,
+      endByte: endByte,
+      segmentNumber: 0,
+    );
+    channels[0]!.sink.add(data);
+  }
+
+  static Map<int, int> _splitSegment(DownloadItemModel downloadItem) {
+    final isolates = _connectionIsolates[downloadItem.id];
+    final endOne = (downloadItem.contentLength / 2).floor();
+    return {0: endOne, endOne + 1: downloadItem.contentLength};
+  }
+
+  static bool _shouldCreateNewConnections(DownloadProgress progress) {
     final downloadId = progress.downloadItem.id;
     final lastCheck = last_ds_checks[downloadId];
-    if (lastCheck != null && lastCheck + 2000 > _nowMillis) {
-
-    }
+    return lastCheck != null &&
+        lastCheck + 2000 < _nowMillis &&
+        progress.totalDownloadProgress != 1;
   }
 
   static void handleDownloadProgressUpdates(DownloadProgress progress,
-      DownloadIsolateArgs data, IsolateChannel<dynamic> handlerChannel) {
+      DownloadIsolateArgs data, IsolateChannel<dynamic> handlerChannel,
+      [bool ds = true]) async {
     final int id = data.downloadItem.id;
     _connectionProgresses[id] ??= {};
     _connectionProgresses[id]![progress.segmentNumber] = progress;
     double totalByteTransferRate = _calculateTotalConnectionsTransferRate(id);
-    final isTempWriteComplete = checkTempWriteCompletion(id);
+    final isTempWriteComplete = checkTempWriteCompletion(data);
     final totalProgress = _calculateTotalDownloadProgress(id);
     _calculateEstimatedRemaining(id, totalByteTransferRate);
     final downloadProgress = DownloadProgress(
@@ -92,46 +175,65 @@ class MultiConnectionDownloadCoordinator {
       totalProgress,
     );
     _setStatus(id, downloadProgress);
-    _dynammicSegmentation(downloadProgress);
+    if (ds) {
+      await _dynamicSegmentation(downloadProgress, handlerChannel);
+    }
     if (isTempWriteComplete && isAssembleEligible(data.downloadItem)) {
       downloadProgress.status = DownloadStatus.assembling;
       handlerChannel.sink.add(downloadProgress);
-      final success = assembleFile(
-        data.downloadItem,
-        progress.baseTempDir,
-        data.baseSaveDir,
-      );
-      _setCompletionStatuses(success, downloadProgress);
+      // final success = assembleFile(
+      //   data.downloadItem,
+      //   progress.baseTempDir,
+      //   data.baseSaveDir,
+      // );
+      // _setCompletionStatuses(success, downloadProgress);
     }
     _setConnectionProgresses(downloadProgress);
     handlerChannel.sink.add(downloadProgress);
   }
 
-  static Future<void> spawnOrSendToExistingDownloadIsolates(
-      DownloadIsolateArgs data) async {
+  static spawnOrSendToExistingDownloadIsolates(DownloadIsolateArgs data) async {
+    // final totalConnections = data.totalConnections;
     final int id = data.downloadItem.id;
     _connectionChannels[id] ??= {};
-    for (int i = 1; i <= data.totalConnections; i++) {
-      if (_connectionChannels[id]![i] == null) {
-        await _spawnDownloadRequestIsolate(data, i, data.totalConnections);
-      } else {
-        _connectionChannels[id]![i]!.sink.add(data);
-      }
-    }
-
-    if (_connectionChannels[id]![i] == null) {
-      await _spawnDownloadRequestIsolate(data, i, data.totalConnections);
+    if (_connectionChannels[id]!.isEmpty) {
+      final missingByteRanges = _getMissingByteRanges(data);
+      await _spawnDownloadIsolates(data, missingByteRanges);
+      print(missingByteRanges);
     } else {
-      _connectionChannels[id]![i]!.sink.add(data);
+      _connectionChannels[id]!.values.forEach((channel) {
+        channel.sink.add(data);
+      });
+    }
+    // if (missingByteRanges.length > totalConnections) {
+    /// TODO This shouldn't really happen but just in case we should do sth about it
+    // }
+  }
+
+  static _spawnDownloadIsolates(
+      DownloadIsolateArgs data, Map<int, int> missingByteRanges) async {
+    for (int i = 0; i < missingByteRanges.length; i++) {
+      data.startByte = missingByteRanges.keys.elementAt(i);
+      print("==================== START BYTE =================");
+      print(data.startByte);
+      data.endByte = missingByteRanges.values.elementAt(i);
+      print("==================== END BYTE =================");
+      print(data.endByte);
+      await _spawnSingleDownloadIsolate(data, i);
     }
   }
 
   /// Analyzes the temp files and returns the missing temp byte ranges
+  /// TODO handle if no missing bytes were found
   static Map<int, int> _getMissingByteRanges(DownloadIsolateArgs data) {
-    final tempFiles =
-        data.baseTempDir.listSync().map((o) => o as File).toList();
+    var tempFiles;
+    final tempDirPath = join(data.baseTempDir.path, data.downloadItem.uid);
+    final tempDir = Directory(tempDirPath);
+    if (tempDir.existsSync()) {
+      tempFiles = tempDir.listSync().map((o) => o as File).toList();
+    }
 
-    if (tempFiles.isEmpty) {
+    if (tempFiles == null || tempFiles.isEmpty) {
       return {0: data.downloadItem.contentLength};
     }
 
@@ -181,6 +283,7 @@ class MultiConnectionDownloadCoordinator {
       fileToWrite = File(newFilePath);
     }
     fileToWrite.createSync(recursive: true);
+    print("Creating file...");
     for (var file in tempFies) {
       final bytes = file.readAsBytesSync();
       fileToWrite.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
@@ -301,17 +404,22 @@ class MultiConnectionDownloadCoordinator {
 
   static double _calculateTotalDownloadProgress(int id) {
     double totalProgress = 0;
-    _connectionProgresses[id]!.forEach((_, value) {
-      totalProgress += value.totalDownloadProgress;
+    _connectionProgresses[id]!.values.forEach((progress) {
+      totalProgress += progress.totalDownloadProgress;
     });
     return totalProgress;
   }
 
-  static bool checkTempWriteCompletion(int id) {
-    final progresses = _connectionProgresses[id]!.values;
-    final totalSegments = progresses.first.totalSegments;
-    return progresses.every((progress) => progress.writeProgress == 1) &&
-        progresses.length == totalSegments;
+  /// TODO fix
+  static bool checkTempWriteCompletion(DownloadIsolateArgs data) {
+    final progresses = _connectionProgresses[data.downloadItem.id]!.values;
+    final tempComplete =
+        progresses.every((progress) => progress.writeProgress == 1);
+    if (!tempComplete) {
+      return false;
+    }
+
+    return _getMissingByteRanges(data).length == 0;
   }
 
   static double _calculateTotalConnectionsTransferRate(int id) {
@@ -326,25 +434,16 @@ class MultiConnectionDownloadCoordinator {
   /// [errorsAreFatal] is set to false to prevent isolate from closing when a
   /// connection exception occurs. Otherwise, we wouldn't be able to reset the
   /// connection because the isolate would already be dead.
-  static Future<void> _spawnDownloadRequestIsolate(
-    DownloadIsolateArgs args,
-    int segmentNumber,
-    int totalSegments,
-  ) async {
+  static _spawnSingleDownloadIsolate(
+      DownloadIsolateArgs data, int segmentNumber) async {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
-    channel.sink.add(args);
-    final downloadId = args.downloadItem.id;
-    final isolateArgs = HandleSingleConnectionArgs(
-      totalSegments: totalSegments,
-      segmentNumber: segmentNumber,
-      maxConnectionRetryCount: args.maxConnectionRetryCount,
-      connectionRetryTimeout: args.connectionRetryTimeout,
-      sendPort: rPort.sendPort,
-    );
-    final isolate = await Isolate.spawn<HandleSingleConnectionArgs>(
+    final downloadId = data.downloadItem.id;
+    data.segmentNumber = segmentNumber;
+    channel.sink.add(data);
+    final isolate = await Isolate.spawn(
       SingleConnectionManager.handleSingleConnection,
-      isolateArgs,
+      rPort.sendPort,
       errorsAreFatal: false,
     );
     _connectionIsolates[downloadId] ??= {};
@@ -355,6 +454,10 @@ class MultiConnectionDownloadCoordinator {
 
   static void _setSettings(DownloadIsolateArgs data) {
     baseSaveDir = data.baseSaveDir;
+    baseTempDir = data.baseTempDir;
+    connectionRetryTimeout = data.connectionRetryTimeout;
+    maxConnectionRetryCount = data.maxConnectionRetryCount;
+    totalConnections = data.totalConnections;
   }
 
   static bool isAssembledFileInvalid(DownloadItemModel downloadItem) {

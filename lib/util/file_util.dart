@@ -217,7 +217,7 @@ class FileUtil {
   }
 
   static int getEndByteFromTempFileName(String fileName) {
-    return int.parse(fileName.substring(fileName.indexOf("-")));
+    return int.parse(fileName.substring(fileName.indexOf("-") + 1));
   }
 
   static int fileNameToInt(FileSystemEntity file) {
