@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/util/settings_cache.dart';
+import 'package:path/path.dart';
+import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
@@ -95,10 +98,58 @@ class _TopMenuState extends State<TopMenu> {
               'https://github.com/AminBhst/brisk-browser-extension',
             ),
           ),
+          SizedBox(width: 5),
+          Container(color: Colors.white, width: 1, height: 40),
+          TopMenuButton(
+            title: 'Build',
+            icon: Icon(
+              Icons.extension,
+              color: Colors.white,
+            ),
+            onTap: () {
+              final dlitem = HiveUtil.instance.downloadItemsBox.getAt(0);
+              final itemModel = DownloadItemModel.fromDownloadItem(dlitem!);
+              assembleFile(itemModel, SettingsCache.temporaryDir, SettingsCache.saveDir);
+              print("DONE");
+            },
+          ),
         ],
       ),
     );
   }
+
+  static bool assembleFile(DownloadItemModel downloadItem,
+      Directory baseTempDir, Directory baseSaveDir) {
+    final tempPath = join(baseTempDir.path, downloadItem.uid);
+    final tempDir = Directory(tempPath);
+    final tempFies = tempDir.listSync().map((o) => o as File).toList();
+    tempFies.sort(FileUtil.sortByFileName);
+    File fileToWrite = File(downloadItem.filePath);
+    if (fileToWrite.existsSync()) {
+      final newFilePath = FileUtil.getFilePath(
+        downloadItem.fileName,
+        baseSaveDir: baseSaveDir,
+        checkFileDuplicationOnly: true,
+      );
+      fileToWrite = File(newFilePath);
+    }
+    fileToWrite.createSync(recursive: true);
+    print("Creating file...");
+    for (var file in tempFies) {
+      final bytes = file.readAsBytesSync();
+      fileToWrite.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
+    }
+    final assembleSuccessful =
+        fileToWrite.lengthSync() == downloadItem.contentLength;
+    if (assembleSuccessful) {
+      // _connectionIsolates[downloadItem.id]?.values.forEach((isolate) {
+      //   isolate.kill();
+      // });
+      // tempDir.delete(recursive: true);
+    }
+    return assembleSuccessful;
+  }
+
 
   void onDownloadPressed() async {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {

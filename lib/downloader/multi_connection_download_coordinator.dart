@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:ui';
 
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
@@ -181,12 +180,12 @@ class MultiConnectionDownloadCoordinator {
     if (isTempWriteComplete && isAssembleEligible(data.downloadItem)) {
       downloadProgress.status = DownloadStatus.assembling;
       handlerChannel.sink.add(downloadProgress);
-      // final success = assembleFile(
-      //   data.downloadItem,
-      //   progress.baseTempDir,
-      //   data.baseSaveDir,
-      // );
-      // _setCompletionStatuses(success, downloadProgress);
+      final success = assembleFile(
+        data.downloadItem,
+        progress.baseTempDir,
+        data.baseSaveDir,
+      );
+      _setCompletionStatuses(success, downloadProgress);
     }
     _setConnectionProgresses(downloadProgress);
     handlerChannel.sink.add(downloadProgress);

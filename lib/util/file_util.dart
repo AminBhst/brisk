@@ -207,13 +207,18 @@ class FileUtil {
   static int sortByFileName(FileSystemEntity a, FileSystemEntity b) {
     final aName = basename(a.path);
     final bName = basename(b.path);
-    final aStartByte = aName.substring(0, aName.indexOf("-"));
-    final bStartByte = bName.substring(0, bName.indexOf("-"));
-    return int.parse(aStartByte).compareTo(int.parse(bStartByte));
+    final aStartByte = getStartByteFromTempFileName(aName);
+    final bStartByte = getStartByteFromTempFileName(bName);
+    return aStartByte.compareTo(bStartByte);
   }
 
   static int getStartByteFromTempFileName(String tempFileName) {
-    return int.parse(tempFileName.substring(0, tempFileName.indexOf("-")));
+    return int.parse(
+      tempFileName.substring(
+        tempFileName.indexOf("#") + 1,
+        tempFileName.indexOf("-"),
+      ),
+    );
   }
 
   static int getEndByteFromTempFileName(String fileName) {
