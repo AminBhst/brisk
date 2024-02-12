@@ -337,7 +337,7 @@ class HttpDownloadRequest {
       final prevFile = tempFiles[index - 1];
       final endByte =
           FileUtil.getEndByteFromTempFileName(basename(prevFile.path));
-      newBufferStartByte = endByte + 1;
+      newBufferStartByte = endByte;
     }
     tempFilesToDelete.forEach((file) {
       totalReceivedBytes = totalReceivedBytes - file.lengthSync();
@@ -358,14 +358,17 @@ class HttpDownloadRequest {
 
   List _cutBytes(File file, int tempStartByte) {
     final bytesBuffer = file.readAsBytesSync().buffer;
-    int bufferCutLength = this.endByte - tempStartByte + 2;
+    int bufferCutLength = this.endByte - tempStartByte + 1;
     print("FILE TO CUT : ${basename(file.path)}");
     print("THIS.ENDBYTE : ${this.endByte}");
     if (bufferCutLength == 0) {
       bufferCutLength = 1;
     }
     print("BUFFER CUT LEN : $bufferCutLength");
-    return [tempStartByte + bufferCutLength, file.openSync().readSync(bufferCutLength)];
+    return [
+      tempStartByte + bufferCutLength,
+      file.openSync().readSync(bufferCutLength)
+    ];
   }
 
   void _calculateTransferRate(List<int> chunk) {
@@ -484,12 +487,12 @@ class HttpDownloadRequest {
       "${segmentNumber}#${tempFileStartByte}-${tempFileEndByte}";
 
   /// The end byte of the buffer with respect to the target file (The file which will be built after download completes).
-  int get tempFileEndByte => tempFileStartByte + tempReceivedBytes -1;
+  int get tempFileEndByte => tempFileStartByte + tempReceivedBytes;
 
   /// The start byte of the buffer with respect to the target file
   int get tempFileStartByte => previousBufferEndByte == 0
       ? startByte
-      : startByte + previousBufferEndByte + 1;
+      : startByte + previousBufferEndByte;
 
   Directory get tempDirectory => Directory(join(
         baseTempDir.path,
