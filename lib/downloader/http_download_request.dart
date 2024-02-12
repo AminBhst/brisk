@@ -116,7 +116,7 @@ class HttpDownloadRequest {
     if (!connectionReset && startNotAllowed) return;
     // _runConnectionResetTimer();
 
-    initVars(connectionReset, progressCallback);
+    _init(connectionReset, progressCallback);
     _notifyChange();
 
     final request = buildDownloadRequest();
@@ -130,8 +130,7 @@ class HttpDownloadRequest {
     sendDownloadRequest(request);
   }
 
-  void initVars(
-      bool connectionReset, DownloadProgressCallback progressCallback) {
+  void _init(bool connectionReset, DownloadProgressCallback progressCallback) {
     detailsStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
     status = detailsStatus;
@@ -169,6 +168,12 @@ class HttpDownloadRequest {
     downloadProgress = 1;
     writeProgress = 1;
     detailsStatus = DownloadStatus.complete;
+  }
+
+  void _updateDownloadProgress() {
+    downloadProgress = totalReceivedBytes / segmentLength;
+    totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
+    downloadItem.progress = downloadProgress;
   }
 
   void _runConnectionResetTimer() {
@@ -245,15 +250,20 @@ class HttpDownloadRequest {
     }
     _calculateTransferRate(chunk);
     _calculateDynamicFlushThreshold();
-    downloadItem.progress = downloadProgress;
     buffer.add(chunk);
     _updateReceivedBytes(chunk);
-    downloadProgress = totalReceivedBytes / segmentLength;
-    totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
-    _notifyChange();
+    _updateDownloadProgress();
+    if (receivedBytesExceededEndByte) {
+      client.close();
+      _flushBuffer(sync: true);
+      _correctTempBytes();
+      return;
+    }
+
     if (tempReceivedBytes > _dynamicFlushThreshold) {
       _flushBuffer();
     }
+    _notifyChange();
   }
 
   /// Flushes the buffer containing the received bytes
@@ -263,7 +273,7 @@ class HttpDownloadRequest {
   /// in which they were received.
   /// The path for the temp files is determined as followed :
   /// [FileUtil.defaultTempFileDir]/[downloadItem.uid]
-  void _flushBuffer() {
+  void _flushBuffer({sync = false}) {
     if (buffer.isEmpty) return;
     final bytes = _writeToUin8List(tempReceivedBytes, buffer);
     _flushQueueCount++;
@@ -272,36 +282,32 @@ class HttpDownloadRequest {
       "${segmentNumber}#${tempFileStartByte}-${tempFileEndByte}",
     );
     previousBufferEndByte += bytes.lengthInBytes;
-    File(filePath).writeAsBytes(mode: FileMode.writeOnly, bytes).then((file) {
-      if (isWritePartCaughtUp && paused) {
-        _updateStatus("Download Paused");
-      }
-      totalWrittenBytes += file.lengthSync();
-      writeProgress = totalWrittenBytes / segmentLength;
-      if (writeProgress == 1) {
-        detailsStatus = DownloadStatus.complete;
-      }
-      _flushQueueComplete++;
-
-      final currentEndByte = startByte + totalReceivedBytes;
-      if (segmentNumber == 0) {
-        // print("CURRENT END : ${currentEndByte}");
-        // print("CURRENT START END :  ${startByte} - ${endByte}");
-        // print("TOTAL RECEIVED : ${totalReceivedBytes}");
-        // print("CONLEN : ${downloadItem.contentLength}");
-      }
-      if (segmentRefreshed && currentEndByte > endByte) {
-        print("STOPPING AND CORRECTING....");
-        _stopAndCorrectTempBytes();
-      }
-
-      _notifyChange();
-    });
+    if (sync) {
+      final file = File(filePath);
+      file.writeAsBytesSync(mode: FileMode.writeOnly, bytes);
+      _onTempFileWriteComplete(file);
+    } else {
+      File(filePath)
+          .writeAsBytes(mode: FileMode.writeOnly, bytes)
+          .then((file) => _onTempFileWriteComplete(file));
+    }
     _clearBuffer();
   }
 
-  void _stopAndCorrectTempBytes() {
-    client.close();
+  void _onTempFileWriteComplete(File file) {
+    if (isWritePartCaughtUp && paused) {
+      _updateStatus("Download Paused");
+    }
+    totalWrittenBytes += file.lengthSync();
+    writeProgress = totalWrittenBytes / segmentLength;
+    if (writeProgress == 1) {
+      detailsStatus = DownloadStatus.complete;
+    }
+    _flushQueueComplete++;
+    _notifyChange();
+  }
+
+  void _correctTempBytes() {
     final tempFiles = tempDirectory
         .listSync()
         .map((e) => e as File)
@@ -353,7 +359,6 @@ class HttpDownloadRequest {
     _setDownloadCompletionVars();
     _updateStatus(DownloadStatus.complete);
     _notifyChange();
-    print("CORRECT COMPLETE");
   }
 
   List _cutBytes(File file, int tempStartByte) {
@@ -504,6 +509,9 @@ class HttpDownloadRequest {
   // bool startButtonEnabled = false;
   bool get isStartButtonEnabled =>
       (isWritePartCaughtUp && paused) || downloadProgress == 0;
+
+  bool get receivedBytesExceededEndByte =>
+      segmentRefreshed && startByte + totalReceivedBytes > this.endByte;
 
   int get segmentLength => endByte == downloadItem.contentLength
       ? endByte - startByte
