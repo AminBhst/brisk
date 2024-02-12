@@ -269,7 +269,7 @@ class HttpDownloadRequest {
     _flushQueueCount++;
     final filePath = join(
       tempDirectory.path,
-      "${segmentNumber}#${tempFileStartByte}-${tempFileStartByte + bytes.lengthInBytes}",
+      "${segmentNumber}#${tempFileStartByte}-${tempFileEndByte}",
     );
     previousBufferEndByte += bytes.lengthInBytes;
     File(filePath).writeAsBytes(mode: FileMode.writeOnly, bytes).then((file) {
@@ -311,8 +311,10 @@ class HttpDownloadRequest {
     tempFiles.sort(FileUtil.sortByFileName);
     List<File> tempFilesToDelete = [];
     Uint8List? newBufferToWrite;
+    File? tempFileToCut;
     int? newBufferStartByte;
     downloadProgress = 1;
+    int? newName;
     for (var file in tempFiles) {
       final fileName = basename(file.path);
       final tempStartByte = FileUtil.getStartByteFromTempFileName(fileName);
@@ -321,10 +323,21 @@ class HttpDownloadRequest {
         tempFilesToDelete.add(file);
       }
       if (this.endByte < tempEndByte) {
+        tempFileToCut = file;
         newBufferStartByte = tempFileStartByte;
-        newBufferToWrite = _cutBytes(file, tempStartByte);
+        final cutBytes = _cutBytes(file, tempStartByte);
+        newName = cutBytes[0];
+        newBufferToWrite = cutBytes[1];
         tempFilesToDelete.add(file);
       }
+    }
+
+    if (tempFileToCut != null) {
+      final index = tempFiles.indexOf(tempFileToCut);
+      final prevFile = tempFiles[index - 1];
+      final endByte =
+          FileUtil.getEndByteFromTempFileName(basename(prevFile.path));
+      newBufferStartByte = endByte + 1;
     }
     tempFilesToDelete.forEach((file) {
       totalReceivedBytes = totalReceivedBytes - file.lengthSync();
@@ -333,7 +346,7 @@ class HttpDownloadRequest {
     tempFilesToDelete.forEach((file) => file.deleteSync());
     if (newBufferToWrite != null) {
       final newTempFilePath = join(tempDirectory.path,
-          "${segmentNumber}#${newBufferStartByte}-${this.endByte}");
+          "${segmentNumber}#${newBufferStartByte}-${newName}");
       File(newTempFilePath).writeAsBytesSync(newBufferToWrite);
       totalWrittenBytes = segmentLength;
     }
@@ -343,13 +356,16 @@ class HttpDownloadRequest {
     print("CORRECT COMPLETE");
   }
 
-  Uint8List _cutBytes(File file, int tempStartByte) {
+  List _cutBytes(File file, int tempStartByte) {
     final bytesBuffer = file.readAsBytesSync().buffer;
-    int bufferCutLength = this.endByte - tempStartByte;
+    int bufferCutLength = this.endByte - tempStartByte + 2;
+    print("FILE TO CUT : ${basename(file.path)}");
+    print("THIS.ENDBYTE : ${this.endByte}");
     if (bufferCutLength == 0) {
       bufferCutLength = 1;
     }
-    return bytesBuffer.asUint8List(0, bufferCutLength);
+    print("BUFFER CUT LEN : $bufferCutLength");
+    return [tempStartByte + bufferCutLength, file.openSync().readSync(bufferCutLength)];
   }
 
   void _calculateTransferRate(List<int> chunk) {
@@ -382,6 +398,7 @@ class HttpDownloadRequest {
     }
   }
 
+  /// TODO fix threshold = 2
   void _calculateDynamicFlushThreshold() {
     const double hundredMegaBytes = 104857600;
     _dynamicFlushThreshold = bytesTransferRate * 2.5 < hundredMegaBytes
@@ -467,13 +484,12 @@ class HttpDownloadRequest {
       "${segmentNumber}#${tempFileStartByte}-${tempFileEndByte}";
 
   /// The end byte of the buffer with respect to the target file (The file which will be built after download completes).
-  int get tempFileEndByte => tempReceivedBytes + previousBufferEndByte;
+  int get tempFileEndByte => tempFileStartByte + tempReceivedBytes -1;
 
   /// The start byte of the buffer with respect to the target file
-  /// TODO : Fix this BS
   int get tempFileStartByte => previousBufferEndByte == 0
       ? startByte
-      : startByte + previousBufferEndByte;
+      : startByte + previousBufferEndByte + 1;
 
   Directory get tempDirectory => Directory(join(
         baseTempDir.path,

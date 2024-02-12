@@ -141,6 +141,7 @@ class _TopMenuState extends State<TopMenu> {
     }
     final assembleSuccessful =
         fileToWrite.lengthSync() == downloadItem.contentLength;
+    print("SUCCESS ????????????????????????? ${assembleSuccessful} ::::  ${fileToWrite.lengthSync()} SHOULD BE ${downloadItem.contentLength}");
     if (assembleSuccessful) {
       // _connectionIsolates[downloadItem.id]?.values.forEach((isolate) {
       //   isolate.kill();
