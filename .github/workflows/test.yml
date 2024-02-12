@@ -1,0 +1,13 @@
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: brisk-latest
+    steps:
+      - name: Echo something
+        run: | 
+         echo "Hello world!"
+         ping -c4 ir.archive.ubuntu.com
+    
+        
+   
