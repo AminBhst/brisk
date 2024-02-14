@@ -122,7 +122,7 @@ class HttpDownloadRequest {
     final request = buildDownloadRequest();
     final isFinished = _setByteRangeHeader(request);
     if (isFinished) {
-      _setDownloadCompletionVars();
+      _setDownloadComplete();
       _notifyChange();
       return;
     }
@@ -151,29 +151,31 @@ class HttpDownloadRequest {
   void sendDownloadRequest(http.Request request) {
     try {
       var response = client.send(request);
-      response.asStream().listen((http.StreamedResponse streamedResponse) {
-        streamedResponse.stream.listen(
+      response.asStream().cast<http.StreamedResponse>().listen((response) {
+        response.stream.listen(
           _processChunk,
           onDone: _onDownloadComplete,
           onError: _onError,
         );
       });
     } catch (e) {
+      _onError(e);
       _notifyChange();
     }
   }
 
-  void _setDownloadCompletionVars() {
+  void _setDownloadComplete() {
     pauseButtonEnabled = true;
     downloadProgress = 1;
     writeProgress = 1;
     detailsStatus = DownloadStatus.complete;
+    totalDownloadProgress = segmentLength / downloadItem.contentLength;
   }
 
   void _updateDownloadProgress() {
     downloadProgress = totalReceivedBytes / segmentLength;
     totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
-    downloadItem.progress = downloadProgress;
+    _notifyChange();
   }
 
   void _runConnectionResetTimer() {
@@ -208,6 +210,7 @@ class HttpDownloadRequest {
     connectionResetTimer = null;
   }
 
+  /// TODO don't create a new obj every time
   void _notifyChange() {
     final data = DownloadProgress.loadFromHttpDownloadRequest(this);
     progressCallback!(data);
@@ -257,6 +260,8 @@ class HttpDownloadRequest {
       client.close();
       _flushBuffer(sync: true);
       _correctTempBytes();
+      _setDownloadComplete();
+      _notifyChange();
       return;
     }
 
@@ -289,7 +294,7 @@ class HttpDownloadRequest {
     } else {
       File(filePath)
           .writeAsBytes(mode: FileMode.writeOnly, bytes)
-          .then((file) => _onTempFileWriteComplete(file));
+          .then(_onTempFileWriteComplete);
     }
     _clearBuffer();
   }
@@ -308,19 +313,12 @@ class HttpDownloadRequest {
   }
 
   void _correctTempBytes() {
-    final tempFiles = tempDirectory
-        .listSync()
-        .map((e) => e as File)
-        .where((file) => basename(file.path).startsWith("${segmentNumber}#"))
-        .toList();
-
-    tempFiles.sort(FileUtil.sortByFileName);
+    final tempFiles = _getConnectionTempFilesSorted();
     List<File> tempFilesToDelete = [];
     Uint8List? newBufferToWrite;
     File? tempFileToCut;
     int? newBufferStartByte;
-    downloadProgress = 1;
-    int? newName;
+    int? newFileEndByte;
     for (var file in tempFiles) {
       final fileName = basename(file.path);
       final tempStartByte = FileUtil.getStartByteFromTempFileName(fileName);
@@ -331,18 +329,17 @@ class HttpDownloadRequest {
       if (this.endByte < tempEndByte) {
         tempFileToCut = file;
         newBufferStartByte = tempFileStartByte;
-        final cutBytes = _cutBytes(file, tempStartByte);
-        newName = cutBytes[0];
-        newBufferToWrite = cutBytes[1];
+        final bufferCutLength = _calculateBufferCutLength(tempStartByte);
+        newBufferToWrite = file.openSync().readSync(bufferCutLength);
+        newFileEndByte = tempFileStartByte + bufferCutLength;
         tempFilesToDelete.add(file);
       }
     }
 
     if (tempFileToCut != null) {
       final index = tempFiles.indexOf(tempFileToCut);
-      final prevFile = tempFiles[index - 1];
-      final endByte =
-          FileUtil.getEndByteFromTempFileName(basename(prevFile.path));
+      final prevFileName = basename(tempFiles.elementAt(index - 1).path);
+      final endByte = FileUtil.getEndByteFromTempFileName(prevFileName);
       newBufferStartByte = endByte;
     }
     tempFilesToDelete.forEach((file) {
@@ -351,29 +348,32 @@ class HttpDownloadRequest {
     totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
     tempFilesToDelete.forEach((file) => file.deleteSync());
     if (newBufferToWrite != null) {
-      final newTempFilePath = join(tempDirectory.path,
-          "${segmentNumber}#${newBufferStartByte}-${newName}");
+      final newTempFilePath = join(
+        tempDirectory.path,
+        "${segmentNumber}#${newBufferStartByte}-${newFileEndByte}",
+      );
       File(newTempFilePath).writeAsBytesSync(newBufferToWrite);
       totalWrittenBytes = segmentLength;
     }
-    _setDownloadCompletionVars();
-    _updateStatus(DownloadStatus.complete);
-    _notifyChange();
   }
 
-  List _cutBytes(File file, int tempStartByte) {
-    final bytesBuffer = file.readAsBytesSync().buffer;
+  List<File> _getConnectionTempFilesSorted() {
+    final tempFiles = tempDirectory
+        .listSync()
+        .map((e) => e as File)
+        .where((file) => basename(file.path).startsWith("${segmentNumber}#"))
+        .toList();
+
+    tempFiles.sort(FileUtil.sortByFileName);
+    return tempFiles;
+  }
+
+  int _calculateBufferCutLength(int tempStartByte) {
     int bufferCutLength = this.endByte - tempStartByte + 1;
-    print("FILE TO CUT : ${basename(file.path)}");
-    print("THIS.ENDBYTE : ${this.endByte}");
     if (bufferCutLength == 0) {
       bufferCutLength = 1;
     }
-    print("BUFFER CUT LEN : $bufferCutLength");
-    return [
-      tempStartByte + bufferCutLength,
-      file.openSync().readSync(bufferCutLength)
-    ];
+    return bufferCutLength;
   }
 
   void _calculateTransferRate(List<int> chunk) {
@@ -439,7 +439,7 @@ class HttpDownloadRequest {
 
   /// Flushes the remaining bytes in the buffer and completes the download.
   void _onDownloadComplete() {
-    if (paused) return;
+    if (paused || segmentRefreshed) return;
     bytesTransferRate = 0;
     downloadProgress = totalReceivedBytes / segmentLength;
     _flushBuffer();
@@ -471,6 +471,9 @@ class HttpDownloadRequest {
   void _updateReceivedBytes(List<int> chunk) {
     totalReceivedBytes += chunk.length;
     tempReceivedBytes += chunk.length;
+    if (receivedBytesExceededEndByte) {
+      totalReceivedBytes = segmentLength;
+    }
   }
 
   void _updateStatus(String status) {
