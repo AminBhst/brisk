@@ -385,8 +385,7 @@ class MultiConnectionDownloadCoordinator {
   /// statuses of active connections
   static void _setButtonAvailability(int id, DownloadProgress progress,
       int totalSegments, double totalProgress) {
-    if (_connectionProgresses[id] == null ||
-        _connectionProgresses[id]!.length != totalSegments) return;
+    if (_connectionProgresses[id] == null) return;
     final progresses = _connectionProgresses[id]!.values;
     if (totalProgress >= 1) {
       progress.pauseButtonEnabled = false;

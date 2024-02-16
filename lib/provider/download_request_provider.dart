@@ -56,7 +56,9 @@ class DownloadRequestProvider with ChangeNotifier {
         : 1;
 
     final connectionCount =
+        //TODO FIX THIS
         getExistingConnectionCount(downloadItem) ?? totalConnections;
+
     final isolatorArgs = DownloadIsolateArgs(
       command: command,
       downloadItem: downloadProgress.downloadItem,
