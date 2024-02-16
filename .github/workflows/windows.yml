@@ -1,4 +1,7 @@
-windows:
+on:
+  workflow_dispatch:
+jobs:
+  windows:
     runs-on: windows-latest
 
     steps:
