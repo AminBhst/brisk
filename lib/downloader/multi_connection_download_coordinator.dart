@@ -62,7 +62,7 @@ class MultiConnectionDownloadCoordinator {
       _connectionChannels[id]![0]
           ?.stream
           .cast<DownloadProgress>()
-          .listen((progress) {
+          .listen((DownloadProgress progress) {
         handleDownloadProgressUpdates(progress, data, handlerChannel);
       });
       // for (final channel in _connectionChannels[id]!.values) {
@@ -200,7 +200,9 @@ class MultiConnectionDownloadCoordinator {
       await _spawnDownloadIsolates(data, missingByteRanges);
       print(missingByteRanges);
     } else {
-      _connectionChannels[id]!.values.forEach((channel) {
+      print(_connectionChannels[id]!.values.length);
+      _connectionChannels[id]?.forEach((seg, channel) {
+        data.segmentNumber = seg;
         channel.sink.add(data);
       });
     }
