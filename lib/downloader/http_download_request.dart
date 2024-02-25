@@ -224,18 +224,27 @@ class HttpDownloadRequest {
   bool _setByteRangeHeader(http.Request request) {
     tempDirectory.createSync(recursive: true);
 
-    /// TODO FIX CALCULATE : no longer belongs to this single connection
-    final existingLength = FileUtil.calculateReceivedBytesSync(tempDirectory);
+    final newStartByte = getNewStartByte();
     request.headers.addAll(
-      {"Range": "bytes=$startByte-$endByte"},
+      {"Range": "bytes=$newStartByte-$endByte"},
     );
-    // downloadProgress = existingLength / segmentLength;
-    // writeProgress = downloadProgress;
-    // totalReceivedBytes = existingLength;
-    // totalWrittenBytes = existingLength;
-    // totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
+    final existingLength = newStartByte - this.startByte;
+    downloadProgress = existingLength / segmentLength;
+    writeProgress = downloadProgress;
+    totalReceivedBytes = existingLength;
+    totalWrittenBytes = existingLength;
+    totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
     _notifyChange();
     return startByte >= endByte;
+  }
+
+  int getNewStartByte() {
+    final tempFiles = _getConnectionTempFilesSorted();
+    if (tempFiles.isEmpty) {
+      return startByte;
+    }
+    final lastFileName = basename(tempFiles.last.path);
+    return FileUtil.getEndByteFromTempFileName(lastFileName);
   }
 
   /// Processes each data [chunk] in [streamedResponse].
