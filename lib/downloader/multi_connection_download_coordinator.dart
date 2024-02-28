@@ -195,7 +195,7 @@ class MultiConnectionDownloadCoordinator {
     final int id = data.downloadItem.id;
     _connectionChannels[id] ??= {};
     if (_connectionChannels[id]!.isEmpty) {
-      final missingByteRanges = _getMissingByteRanges(data);
+      final missingByteRanges = _findMissingByteRanges(data);
       print("=========== MISSING BYTE RANGES =========");
       print(missingByteRanges);
       await _spawnDownloadIsolates(data, missingByteRanges);
@@ -226,7 +226,7 @@ class MultiConnectionDownloadCoordinator {
 
   /// Analyzes the temp files and returns the missing temp byte ranges
   /// TODO handle if no missing bytes were found
-  static Map<int, int> _getMissingByteRanges(DownloadIsolateArgs data) {
+  static Map<int, int> _findMissingByteRanges(DownloadIsolateArgs data) {
     final contentLength = data.downloadItem.contentLength;
     List<File>? tempFiles;
     final tempDirPath = join(data.baseTempDir.path, data.downloadItem.uid);
@@ -426,7 +426,7 @@ class MultiConnectionDownloadCoordinator {
       return false;
     }
 
-    return _getMissingByteRanges(data).length == 0;
+    return _findMissingByteRanges(data).length == 0;
   }
 
   static double _calculateTotalConnectionsTransferRate(int id) {
