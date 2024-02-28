@@ -178,6 +178,7 @@ class HttpDownloadRequest {
     _notifyChange();
   }
 
+  // TODO USE THIS
   void _runConnectionResetTimer() {
     if (connectionResetTimer != null) return;
     connectionResetTimer = Timer.periodic(const Duration(seconds: 5), (_) {

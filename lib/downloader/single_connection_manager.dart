@@ -28,12 +28,12 @@ class SingleConnectionManager {
         _connections[id]![segmentNumber] = request;
       }
 
-      print("================= SINGLE ${segmentNumber} =================");
-      print("START BYTE : ${data.startByte}");
-      print("END BYTE : ${data.endByte}");
-      print("TOTAL LEN : ${request.downloadItem.contentLength}");
-      print("COMMAND : ${data.command}");
-      print("================= SINGLE ${segmentNumber} =================");
+      // print("================= SINGLE ${segmentNumber} =================");
+      // print("START BYTE : ${data.startByte}");
+      // print("END BYTE : ${data.endByte}");
+      // print("TOTAL LEN : ${request.downloadItem.contentLength}");
+      // print("COMMAND : ${data.command}");
+      // print("================= SINGLE ${segmentNumber} =================");
 
       switch (data.command) {
         case DownloadCommand.start:

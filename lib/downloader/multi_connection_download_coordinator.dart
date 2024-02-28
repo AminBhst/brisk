@@ -192,13 +192,13 @@ class MultiConnectionDownloadCoordinator {
   }
 
   static spawnOrSendToExistingDownloadIsolates(DownloadIsolateArgs data) async {
-    // final totalConnections = data.totalConnections;
     final int id = data.downloadItem.id;
     _connectionChannels[id] ??= {};
     if (_connectionChannels[id]!.isEmpty) {
       final missingByteRanges = _getMissingByteRanges(data);
-      await _spawnDownloadIsolates(data, missingByteRanges);
+      print("=========== MISSING BYTE RANGES =========");
       print(missingByteRanges);
+      await _spawnDownloadIsolates(data, missingByteRanges);
     } else {
       print(_connectionChannels[id]!.values.length);
       _connectionChannels[id]?.forEach((seg, channel) {
@@ -227,7 +227,8 @@ class MultiConnectionDownloadCoordinator {
   /// Analyzes the temp files and returns the missing temp byte ranges
   /// TODO handle if no missing bytes were found
   static Map<int, int> _getMissingByteRanges(DownloadIsolateArgs data) {
-    var tempFiles;
+    final contentLength = data.downloadItem.contentLength;
+    List<File>? tempFiles;
     final tempDirPath = join(data.baseTempDir.path, data.downloadItem.uid);
     final tempDir = Directory(tempDirPath);
     if (tempDir.existsSync()) {
@@ -241,7 +242,8 @@ class MultiConnectionDownloadCoordinator {
     tempFiles.sort(FileUtil.sortByFileName);
     String prevFileName = "";
     Map<int, int> missingBytes = {};
-    for (final tempFile in tempFiles) {
+    for (var i = 0; i < tempFiles.length; i++) {
+      final tempFile = tempFiles[i];
       final tempFileName = basename(tempFile.path);
       if (prevFileName == "") {
         prevFileName = tempFileName;
@@ -249,14 +251,19 @@ class MultiConnectionDownloadCoordinator {
       }
 
       final startByte = FileUtil.getStartByteFromTempFileName(tempFileName);
+      final endByte = FileUtil.getEndByteFromTempFileName(tempFileName);
       final prevEndByte = FileUtil.getEndByteFromTempFileName(prevFileName);
 
-      if (prevEndByte + 1 != startByte) {
-        final missingStartByte = prevEndByte + 1;
-        final missingEndByte = startByte - 1;
+      if (prevEndByte != startByte) {
+        final missingStartByte = prevEndByte;
+        final missingEndByte = startByte;
         missingBytes[missingStartByte] = missingEndByte;
       }
       prevFileName = tempFileName;
+
+      if (i == tempFiles.length - 1 && endByte != contentLength) {
+        missingBytes[endByte] = contentLength;
+      }
     }
     return missingBytes;
   }
