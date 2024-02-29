@@ -2,7 +2,7 @@ import 'dart:isolate';
 
 import 'package:brisk/constants/download_command.dart';
 import 'package:brisk/downloader/http_download_request.dart';
-import 'package:brisk/model/isolate/download_isolator_args.dart';
+import 'package:brisk/model/isolate/download_isolator_data.dart';
 import 'package:stream_channel/isolate_channel.dart';
 
 class SingleConnectionManager {
@@ -10,7 +10,8 @@ class SingleConnectionManager {
 
   static void handleSingleConnection(SendPort sendPort) async {
     final channel = IsolateChannel.connectSend(sendPort);
-    channel.stream.cast<DownloadIsolateArgs>().listen((data) {
+    channel.stream.cast<DownloadIsolateData>().listen((data) {
+      print("SEGGGGGG :::::::::: ${data.segmentNumber}");
       final id = data.downloadItem.id;
       _connections[id] ??= {};
       final segmentNumber = data.segmentNumber;
@@ -28,12 +29,12 @@ class SingleConnectionManager {
         _connections[id]![segmentNumber] = request;
       }
 
-      // print("================= SINGLE ${segmentNumber} =================");
-      // print("START BYTE : ${data.startByte}");
-      // print("END BYTE : ${data.endByte}");
-      // print("TOTAL LEN : ${request.downloadItem.contentLength}");
-      // print("COMMAND : ${data.command}");
-      // print("================= SINGLE ${segmentNumber} =================");
+      print("================= SINGLE ${segmentNumber} =================");
+      print("START BYTE : ${data.startByte}");
+      print("END BYTE : ${data.endByte}");
+      print("TOTAL LEN : ${request.downloadItem.contentLength}");
+      print("COMMAND : ${data.command}");
+      print("================= SINGLE ${segmentNumber} =================");
 
       switch (data.command) {
         case DownloadCommand.start:
