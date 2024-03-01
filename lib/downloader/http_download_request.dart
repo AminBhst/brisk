@@ -340,8 +340,11 @@ class HttpDownloadRequest {
         tempFileToCut = file;
         newBufferStartByte = tempFileStartByte;
         final bufferCutLength = _calculateBufferCutLength(tempStartByte);
+        print("====== BC ========");
+        print("BufferCutLen $bufferCutLength");
+        print("newStartByte $newBufferStartByte");
+        print("====== BC ========");
         newBufferToWrite = file.openSync().readSync(bufferCutLength);
-        newFileEndByte = tempFileStartByte + bufferCutLength;
         tempFilesToDelete.add(file);
       }
     }
@@ -349,18 +352,21 @@ class HttpDownloadRequest {
     if (tempFileToCut != null) {
       final index = tempFiles.indexOf(tempFileToCut);
       final prevFileName = basename(tempFiles.elementAt(index - 1).path);
-      final endByte = FileUtil.getEndByteFromTempFileName(prevFileName);
-      newBufferStartByte = endByte;
+      newBufferStartByte = FileUtil.getEndByteFromTempFileName(prevFileName);
     }
-    tempFilesToDelete.forEach((file) {
+
+    for (final file in tempFilesToDelete) {
       totalReceivedBytes = totalReceivedBytes - file.lengthSync();
-    });
+      file.deleteSync();
+    }
+
     totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
-    tempFilesToDelete.forEach((file) => file.deleteSync());
     if (newBufferToWrite != null) {
+      final newBufferEndByte =
+          newBufferStartByte! + newBufferToWrite.lengthInBytes;
       final newTempFilePath = join(
         tempDirectory.path,
-        "${segmentNumber}#${newBufferStartByte}-${newFileEndByte}",
+        "${segmentNumber}#${newBufferStartByte}-${newBufferEndByte}",
       );
       File(newTempFilePath).writeAsBytesSync(newBufferToWrite);
       totalWrittenBytes = segmentLength;
