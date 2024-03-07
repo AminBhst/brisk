@@ -18,12 +18,16 @@ jobs:
 
       - name: Install project dependencies
         run: flutter pub get
-      - name: Generate intermediates
-        run: flutter pub run build_runner build --delete-conflicting-outputs
+      # - name: Generate intermediates
+      #   run: flutter pub run build_runner build --delete-conflicting-outputs
       - name: Enable windows build
         run: flutter config --enable-windows-desktop
+      - name: test
+        run: |
+          msstore package .
+          dir
       - name: Build artifacts
-        run: flutter build windows --release
+        run: flutter build windows  # --release
       - name: Package Release
         uses: thedoctor0/zip-release@master
         with:
