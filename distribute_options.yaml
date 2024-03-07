@@ -11,4 +11,8 @@ releases:
         package:
           platform: linux
           target: rpm
-          
+      
+      - name: release-brisk-windows-exe
+        package:
+          platform: windows
+          target: exe
