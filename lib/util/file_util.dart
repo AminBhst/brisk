@@ -90,6 +90,7 @@ class FileUtil {
         file.existsSync();
   }
 
+  // TODO FIX add other types with two dots
   static String getRawFileName(String fileName) {
     return fileName.substring(
         0,
@@ -219,6 +220,14 @@ class FileUtil {
         tempFileName.indexOf("-"),
       ),
     );
+  }
+
+  static int getStartByteFromTempFile(File tempFile) {
+    return getStartByteFromTempFileName(basename(tempFile.path));
+  }
+
+  static int getEndByteFromTempFile(File tempFile) {
+    return getEndByteFromTempFileName(basename(tempFile.path));
   }
 
   static int getEndByteFromTempFileName(String fileName) {

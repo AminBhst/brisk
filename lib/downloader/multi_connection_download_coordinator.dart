@@ -152,7 +152,7 @@ class MultiConnectionDownloadCoordinator {
     final downloadId = progress.downloadItem.id;
     final lastCheck = last_ds_checks[downloadId];
     return lastCheck != null &&
-        lastCheck + 2000 < _nowMillis &&
+        lastCheck + 4000 < _nowMillis &&
         progress.totalDownloadProgress != 1 &&
         _connectionIsolates[downloadId] != null &&
         _connectionIsolates[downloadId]!.length < 2;

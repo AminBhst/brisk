@@ -119,14 +119,14 @@ class HttpDownloadRequest {
     _init(connectionReset, progressCallback);
     _notifyChange();
 
-    final request = buildDownloadRequest();
-    final isFinished = _setByteRangeHeader(request);
-    if (isFinished) {
+    if (_isDownloadCompleted()) {
+      print("DOWNLOAD COMPLETED ??!!!???!?!?!??!?!?!?!?!?!?!");
       _setDownloadComplete();
       _notifyChange();
       return;
     }
 
+    final request = buildDownloadRequest();
     sendDownloadRequest(request);
   }
 
@@ -145,6 +145,7 @@ class HttpDownloadRequest {
       "User-Agent":
           "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;"
     });
+    _setByteRangeHeader(request);
     return request;
   }
 
@@ -222,7 +223,7 @@ class HttpDownloadRequest {
   /// The length of the existing file is set to the start value and the TODO FIX DOC (SEGMENTED)
   /// content-length retrieved from the HEAD Request is set to the end value.
   /// returns whether the segment download has already been finished or not.
-  bool _setByteRangeHeader(http.Request request) {
+  void _setByteRangeHeader(http.Request request) {
     tempDirectory.createSync(recursive: true);
 
     final newStartByte = getNewStartByte();
@@ -236,11 +237,10 @@ class HttpDownloadRequest {
     totalWrittenBytes = existingLength;
     totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
     _notifyChange();
-    return startByte >= endByte;
   }
 
   int getNewStartByte() {
-    final tempFiles = _getConnectionTempFilesSorted();
+    final tempFiles = _getTempFilesSorted();
     if (tempFiles.isEmpty) {
       return startByte;
     }
@@ -323,12 +323,11 @@ class HttpDownloadRequest {
   }
 
   void _correctTempBytes() {
-    final tempFiles = _getConnectionTempFilesSorted();
+    final tempFiles = _getTempFilesSorted();
     List<File> tempFilesToDelete = [];
     Uint8List? newBufferToWrite;
     File? tempFileToCut;
     int? newBufferStartByte;
-    int? newFileEndByte;
     for (var file in tempFiles) {
       final fileName = basename(file.path);
       final tempStartByte = FileUtil.getStartByteFromTempFileName(fileName);
@@ -373,12 +372,48 @@ class HttpDownloadRequest {
     }
   }
 
-  List<File> _getConnectionTempFilesSorted() {
-    final tempFiles = tempDirectory
-        .listSync()
-        .map((e) => e as File)
-        .where((file) => basename(file.path).startsWith("${segmentNumber}#"))
+  bool _isDownloadCompleted() {
+    final tempFiles = _getTempFilesSorted(thisConnectionOnly: false)
+        .where(
+          (file) =>
+              FileUtil.getStartByteFromTempFile(file) >= this.startByte &&
+              FileUtil.getEndByteFromTempFile(file) <= this.endByte,
+        )
         .toList();
+
+    if (tempFiles.isEmpty) {
+      return false;
+    }
+
+    for (var i = 0; i < tempFiles.length; i++) {
+      if (i == 0) continue;
+      final file = tempFiles[i];
+      final prevFile = tempFiles[i - 1];
+      final fileStartByte = FileUtil.getStartByteFromTempFile(file);
+      final fileEndByte = FileUtil.getEndByteFromTempFile(file);
+      final prevFileEndByte = FileUtil.getEndByteFromTempFile(prevFile);
+      if (fileStartByte != prevFileEndByte) {
+        return false;
+      }
+      final isLastFile = i == tempFiles.length - 1;
+      if (isLastFile && fileEndByte != this.endByte) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  List<File> _getTempFilesSorted({bool thisConnectionOnly = true}) {
+    if (!tempDirectory.existsSync()) {
+      return List.empty();
+    }
+
+    var tempFiles = tempDirectory.listSync().map((e) => e as File).toList();
+    if (thisConnectionOnly) {
+      tempFiles = tempFiles
+          .where((file) => basename(file.path).startsWith("${segmentNumber}#"))
+          .toList();
+    }
 
     tempFiles.sort(FileUtil.sortByFileName);
     return tempFiles;
@@ -422,7 +457,7 @@ class HttpDownloadRequest {
     }
   }
 
-  /// TODO fix threshold = 2
+  /// TODO fix threshold = 2 && reduce default val
   void _calculateDynamicFlushThreshold() {
     const double hundredMegaBytes = 104857600;
     _dynamicFlushThreshold = bytesTransferRate * 2.5 < hundredMegaBytes
