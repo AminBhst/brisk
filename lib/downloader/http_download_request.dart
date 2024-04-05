@@ -120,7 +120,6 @@ class HttpDownloadRequest {
     _notifyChange();
 
     if (_isDownloadCompleted()) {
-      print("DOWNLOAD COMPLETED ??!!!???!?!?!??!?!?!?!?!?!?!");
       _setDownloadComplete();
       _notifyChange();
       return;
@@ -392,11 +391,13 @@ class HttpDownloadRequest {
       final fileStartByte = FileUtil.getStartByteFromTempFile(file);
       final fileEndByte = FileUtil.getEndByteFromTempFile(file);
       final prevFileEndByte = FileUtil.getEndByteFromTempFile(prevFile);
-      if (fileStartByte != prevFileEndByte) {
-        return false;
-      }
       final isLastFile = i == tempFiles.length - 1;
-      if (isLastFile && fileEndByte != this.endByte) {
+      if (isLastFile) {
+        print(
+            "LAST FILE END BYTE : $fileEndByte    this.endbyte= ${this.endByte}");
+      }
+      if ((fileStartByte != prevFileEndByte) ||
+          (isLastFile && fileEndByte != this.endByte)) {
         return false;
       }
     }
@@ -422,6 +423,7 @@ class HttpDownloadRequest {
   int _calculateBufferCutLength(int tempStartByte) {
     int bufferCutLength = this.endByte - tempStartByte + 1;
     if (bufferCutLength == 0) {
+      // TODO : This scenario MUST be investigated
       bufferCutLength = 1;
     }
     return bufferCutLength;
@@ -497,6 +499,7 @@ class HttpDownloadRequest {
     if (downloadProgress == 1 && isWritePartCaughtUp) {
       _updateStatus(DownloadStatus.complete);
       detailsStatus = DownloadStatus.complete;
+      downloadProgress = 1;
     }
     _notifyChange();
     client.close();
@@ -546,7 +549,8 @@ class HttpDownloadRequest {
       "${segmentNumber}#${tempFileStartByte}-${tempFileEndByte}";
 
   /// The end byte of the buffer with respect to the target file (The file which will be built after download completes).
-  int get tempFileEndByte => tempFileStartByte + tempReceivedBytes;
+  int get tempFileEndByte =>
+      startByte + previousBufferEndByte + tempReceivedBytes - 1;
 
   /// The start byte of the buffer with respect to the target file
   int get tempFileStartByte => previousBufferEndByte == 0
@@ -567,6 +571,9 @@ class HttpDownloadRequest {
   bool get receivedBytesExceededEndByte =>
       segmentRefreshed && startByte + totalReceivedBytes > this.endByte;
 
+  /// TODO FIX
+  /// TODO
+  ///TODO
   int get segmentLength => endByte == downloadItem.contentLength
       ? endByte - startByte
       : endByte - startByte + 1;
