@@ -28,7 +28,7 @@ As of version 1.3.0, Brisk supports [Browser Integration](https://github.com/Ami
 ## Linux Prerequisites
 
 ### keybinder-3
-- Debian/Ubuntu : ```keybinder-3.0```
+- Debian/Ubuntu : ```libkeybinder-3.0-0```
 - Fedora/RHEL/CentOS : ```keybinder3```
 - Arch Linux : ```libkeybinder3```
 
