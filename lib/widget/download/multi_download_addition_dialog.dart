@@ -63,7 +63,7 @@ class _MultiDownloadAdditionDialogState
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     RoundedOutlinedButton(
-                      width: 80,
+                      width: 100,
                       onPressed: () => Navigator.of(context).pop(),
                       borderColor: Colors.red,
                       text: "Cancel",
@@ -71,7 +71,7 @@ class _MultiDownloadAdditionDialogState
                     ),
                     const SizedBox(width: 10),
                     RoundedOutlinedButton(
-                      width: 80,
+                      width: 100,
                       onPressed: onAddPressed,
                       borderColor: Colors.green,
                       text: "Add",
