@@ -100,7 +100,11 @@ Future<FileInfo?> requestFileInfo(DownloadItem downloadItem,
       throw Exception({"Could not retrieve result from the given URL"});
     }
     downloadItem.contentLength = int.parse(headers["content-length"]!);
-    downloadItem.fileName = Uri.decodeComponent(downloadItem.fileName);
+    try {
+      downloadItem.fileName = Uri.decodeComponent(downloadItem.fileName);
+    } catch (e) {
+      downloadItem.fileName = utf8.decode(downloadItem.fileName.codeUnits);
+    }
     final supportsPause = checkDownloadPauseSupport(headers);
     final data = FileInfo(
       supportsPause,
