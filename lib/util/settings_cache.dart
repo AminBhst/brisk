@@ -18,6 +18,7 @@ class SettingsCache {
   static late bool launchOnStartUp;
   static late bool openDownloadProgressWindow;
   static late bool enableWindowToFront;
+  static late bool lowResourceMode;
   static late int extensionPort;
 
   /// File
@@ -46,6 +47,10 @@ class SettingsCache {
       "true",
     ],
     SettingOptions.launchOnStartUp.name: [
+      SettingType.general.name,
+      "false",
+    ],
+    SettingOptions.lowResourceMode.name: [
       SettingType.general.name,
       "false",
     ],
@@ -129,6 +134,9 @@ class SettingsCache {
         case SettingOptions.launchOnStartUp:
           launchOnStartUp = parseBool(value);
           break;
+        case SettingOptions.lowResourceMode:
+          lowResourceMode = parseBool(value);
+          break;
         case SettingOptions.openDownloadProgressWindow:
           openDownloadProgressWindow = parseBool(value);
           break;
@@ -193,6 +201,9 @@ class SettingsCache {
           break;
         case SettingOptions.launchOnStartUp:
           setting.value = parseBoolStr(SettingsCache.launchOnStartUp);
+          break;
+        case SettingOptions.lowResourceMode:
+          setting.value = parseBoolStr(SettingsCache.lowResourceMode);
           break;
         case SettingOptions.openDownloadProgressWindow:
           setting.value =

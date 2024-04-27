@@ -98,12 +98,15 @@ class HttpDownloadRequest {
 
   int connectionRetryTimeoutMillis;
 
+  bool lowResourceMode;
+
   HttpDownloadRequest({
     required this.downloadItem,
     required this.baseTempDir,
     required this.segmentNumber,
     required this.startByte,
     required this.endByte,
+    required this.lowResourceMode,
     required this.totalSegments,
     this.connectionRetryTimeoutMillis = 10000,
     this.maxConnectionRetryCount = -1,
@@ -322,10 +325,15 @@ class HttpDownloadRequest {
   }
 
   void _calculateDynamicFlushThreshold() {
-    const double hundredMegaBytes = 104857600;
-    _dynamicFlushThreshold = bytesTransferRate * 2.5 < hundredMegaBytes
+    const double tenMegaBytes = 10000000;
+    const double oneMegabyte = 1000000;
+    _dynamicFlushThreshold = bytesTransferRate * 2.5 < tenMegaBytes
         ? bytesTransferRate * 2.5
-        : hundredMegaBytes;
+        : tenMegaBytes;
+
+    if (lowResourceMode && _dynamicFlushThreshold > oneMegabyte) {
+      _dynamicFlushThreshold = 500000;
+    }
   }
 
   void pause(DownloadProgressCallback progressCallback) {

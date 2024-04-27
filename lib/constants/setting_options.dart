@@ -2,6 +2,7 @@ enum SettingOptions {
     notificationOnDownloadCompletion,
     notificationOnDownloadFailure,
     launchOnStartUp,
+    lowResourceMode,
     openDownloadProgressWindow,
     enableWindowToFront,
     extensionPort,
