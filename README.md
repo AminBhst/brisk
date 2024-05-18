@@ -66,5 +66,5 @@ flutter build macos|windows|linux
 If you have a feature request, please open an issue and explain it in details.
 
 ## Credits
-- GitHub Workflow: [AliML111](https://github.com/AliML111)
+- GitHub Actions : [AliML111](https://github.com/AliML111)
 - MacOS support : [Norman-w](https://github.com/Norman-w)
