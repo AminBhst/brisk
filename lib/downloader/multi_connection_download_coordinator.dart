@@ -7,6 +7,7 @@ import 'package:brisk/downloader/single_connection_manager.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
+import 'package:brisk/util/pair.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:path/path.dart';
@@ -120,10 +121,7 @@ class MultiConnectionDownloadCoordinator {
   /// Instead of sending a pause command and restarting the download with new segments,
   /// we can just use the length setter in uint8list to cut the temp file to the length that we need (MUCH MORE OPTIMIZED)
   static void _sendRefreshSegmentCommand(
-    DownloadProgress progress,
-    int startByte,
-    int endByte,
-  ) {
+      DownloadProgress progress, int startByte, int endByte) {
     final channels = _connectionChannels[progress.downloadItem.id];
     if (channels == null || channels.isEmpty) {
       return;
@@ -164,7 +162,7 @@ class MultiConnectionDownloadCoordinator {
     final int id = data.downloadItem.id;
     _connectionProgresses[id] ??= {};
     _connectionProgresses[id]![progress.segmentNumber] = progress;
-    double totalByteTransferRate = _calculateTotalConnectionsTransferRate(id);
+    double totalByteTransferRate = _calculateTotalTransferRate(id);
     final isTempWriteComplete = checkTempWriteCompletion(data);
     final totalProgress = _calculateTotalDownloadProgress(id);
     _calculateEstimatedRemaining(id, totalByteTransferRate);
@@ -187,12 +185,12 @@ class MultiConnectionDownloadCoordinator {
     if (isTempWriteComplete && isAssembleEligible(data.downloadItem)) {
       downloadProgress.status = DownloadStatus.assembling;
       handlerChannel.sink.add(downloadProgress);
-      final success = assembleFile(
-        data.downloadItem,
-        progress.baseTempDir,
-        data.baseSaveDir,
-      );
-      _setCompletionStatuses(success, downloadProgress);
+      // final success = assembleFile(
+      //   data.downloadItem,
+      //   progress.baseTempDir,
+      //   data.baseSaveDir,
+      // );
+      // _setCompletionStatuses(success, downloadProgress);
     }
     _setConnectionProgresses(downloadProgress);
     handlerChannel.sink.add(downloadProgress);
@@ -219,20 +217,22 @@ class MultiConnectionDownloadCoordinator {
     // }
   }
 
-  static _spawnDownloadIsolates(
-      DownloadIsolateData data, Map<int, int> missingByteRanges) async {
-    for (int i = 0; i < missingByteRanges.length; i++) {
-      print("SPAWNING CONNECTION ISOLATE I-$i");
+  static _spawnDownloadIsolates(DownloadIsolateData data,
+      Map<int, Pair<int, int>> missingByteRanges) async {
+    missingByteRanges.forEach((segmentNumber, missingBytes) async {
+      print("SPAWNING CONNECTION ISOLATE I-$segmentNumber");
       var newData = data.clone();
-      newData.startByte = missingByteRanges.keys.elementAt(i);
-      newData.endByte = missingByteRanges.values.elementAt(i);
-      await _spawnSingleDownloadIsolate(newData, i);
-    }
+      newData.startByte = missingBytes.first;
+      newData.endByte = missingBytes.second;
+      await _spawnSingleDownloadIsolate(newData, segmentNumber);
+    });
   }
 
   /// Analyzes the temp files and returns the missing temp byte ranges
+  /// returns Map<segmentNumber, Pair<startByte,endByte>>
   /// TODO handle if no missing bytes were found
-  static Map<int, int> _findMissingByteRanges(DownloadIsolateData data) {
+  static Map<int, Pair<int, int>> _findMissingByteRanges(
+      DownloadIsolateData data) {
     final contentLength = data.downloadItem.contentLength;
     List<File>? tempFiles;
     final tempDirPath = join(data.baseTempDir.path, data.downloadItem.uid);
@@ -242,12 +242,12 @@ class MultiConnectionDownloadCoordinator {
     }
 
     if (tempFiles == null || tempFiles.isEmpty) {
-      return {0: data.downloadItem.contentLength};
+      return {0: Pair(0, data.downloadItem.contentLength)};
     }
 
     tempFiles.sort(FileUtil.sortByFileName);
     String prevFileName = "";
-    Map<int, int> missingBytes = {};
+    Map<int, Pair<int, int>> missingBytes = {};
     for (var i = 0; i < tempFiles.length; i++) {
       final tempFile = tempFiles[i];
       final tempFileName = basename(tempFile.path);
@@ -259,16 +259,18 @@ class MultiConnectionDownloadCoordinator {
       final startByte = FileUtil.getStartByteFromTempFileName(tempFileName);
       final endByte = FileUtil.getEndByteFromTempFileName(tempFileName);
       final prevEndByte = FileUtil.getEndByteFromTempFileName(prevFileName);
+      final segmentNumber =
+          FileUtil.getSegmentNumberFromTempFileName(tempFileName);
 
-      if (prevEndByte != startByte) {
-        final missingStartByte = prevEndByte;
-        final missingEndByte = startByte;
-        missingBytes[missingStartByte] = missingEndByte;
+      if (prevEndByte + 1 != startByte) {
+        final missingStartByte = prevEndByte + 1;
+        final missingEndByte = startByte - 1;
+        missingBytes[segmentNumber] = Pair(missingStartByte, missingEndByte);
       }
       prevFileName = tempFileName;
 
       if (i == tempFiles.length - 1 && endByte != contentLength) {
-        missingBytes[endByte] = contentLength;
+        missingBytes[segmentNumber] = Pair(endByte, contentLength);
       }
     }
     return missingBytes;
@@ -428,14 +430,20 @@ class MultiConnectionDownloadCoordinator {
     final progresses = _connectionProgresses[data.downloadItem.id]!.values;
     final tempComplete =
         progresses.every((progress) => progress.writeProgress == 1);
+
+    progresses.forEach((prog) {
+      // print("WRITE PROG ${prog.segmentNumber} ::::::::: ${prog.writeProgress}");
+    });
     if (!tempComplete) {
       return false;
     }
 
+    final msng = _findMissingByteRanges(data);
+    print("MISSING BYTERANGE CHECK : ${msng}");
     return _findMissingByteRanges(data).length == 0;
   }
 
-  static double _calculateTotalConnectionsTransferRate(int id) {
+  static double _calculateTotalTransferRate(int id) {
     double sum = 0;
     _connectionProgresses[id]!.forEach((key, value) {
       sum += _connectionProgresses[id]![key]!.bytesTransferRate;

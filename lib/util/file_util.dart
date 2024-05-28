@@ -234,6 +234,10 @@ class FileUtil {
     return int.parse(fileName.substring(fileName.indexOf("-") + 1));
   }
 
+  static int getSegmentNumberFromTempFileName(String fileName) {
+    return int.parse(fileName.substring(0, fileName.indexOf("#")));
+  }
+
   static int fileNameToInt(FileSystemEntity file) {
     return int.parse(basename(file.path).toString());
   }
