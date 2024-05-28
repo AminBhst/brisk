@@ -13,7 +13,7 @@ Installation files for Windows and Linux are available
 at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 
 ## Browser Integration
-As of version 1.3.0, Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-extension) that allows for capturing downloads from the browser and adding them directly into the app.
+Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-extension) that allows for capturing downloads from the browser and adding them directly into the app.
 
 ### Installing The Browser Extension
 #### Chrome / Edge / Opera
