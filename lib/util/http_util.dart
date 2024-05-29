@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -131,38 +132,56 @@ Future<dynamic> checkLatestBriskRelease() async {
 
 // TODO Refactor and fix version check logic
 void checkForUpdate(BuildContext context) async {
-  var lastUpdateCheck = await HiveUtil.instance.settingBox.get(18);
+  var lastUpdateCheck = HiveUtil.getSetting(SettingOptions.lastUpdateCheck);
   if (lastUpdateCheck == null) {
     lastUpdateCheck = Setting(
-      name: "lastUpdateCheck",
+      name: SettingOptions.lastUpdateCheck.name,
       value: "0",
       settingType: SettingType.system.name,
     );
     await HiveUtil.instance.settingBox.add(lastUpdateCheck);
   }
   if (int.parse(lastUpdateCheck.value) + 86400000 >
-      DateTime.now().millisecondsSinceEpoch) return;
+      DateTime.now().millisecondsSinceEpoch) {
+    return;
+  }
 
   final json = await checkLatestBriskRelease();
-  if (json == null || json['tag_name'] == null) return;
-
-  String tagName = json['tag_name'];
-  tagName = tagName.replaceAll(".", "").replaceAll("v", "");
-  int latestVersion = int.parse(tagName);
-  final packageInfo = await PackageInfo.fromPlatform();
-  int currentVersion = int.parse(packageInfo.version.replaceAll(".", ""));
-  if (latestVersion > currentVersion) {
-    showDialog(
-      context: context,
-      builder: (context) => ConfirmationDialog(
-        title:
-            "New version of Brisk is available. Do you want to download the latest version?",
-        onConfirmPressed: () => launchUrlString(
-          "https://github.com/AminBhst/brisk/releases/latest",
-        ),
-      ),
-    );
-    lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
-    await HiveUtil.instance.settingBox.put(18, lastUpdateCheck);
+  if (json == null || json['tag_name'] == null) {
+    return;
   }
+
+  String latestVersion = (json['tag_name'] as String).replaceAll("v", "");
+  final packageInfo = await PackageInfo.fromPlatform();
+  if (!_isNewVersionAvailable(latestVersion, packageInfo)) {
+    return;
+  }
+  showDialog(
+    context: context,
+    builder: (context) => ConfirmationDialog(
+      title:
+          "New version of Brisk is available. Do you want to download the latest version?",
+      onConfirmPressed: () => launchUrlString(
+        "https://github.com/AminBhst/brisk/releases/latest",
+      ),
+    ),
+  );
+  lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
+  await lastUpdateCheck.save();
+}
+
+bool _isNewVersionAvailable(String latestVersion, PackageInfo packageInfo) {
+  final latestSplit = latestVersion.split(".");
+  final currentSplit = packageInfo.version.split(".");
+  for (int i = 0; i < latestSplit.length; i++) {
+    final splitVersion = int.parse(latestSplit[i]);
+    final splitCurrent = int.parse(currentSplit[i]);
+    if (splitVersion > splitCurrent) {
+      return true;
+    }
+    if (i == latestSplit.length - 1) {
+      return false;
+    }
+  }
+  return false;
 }
