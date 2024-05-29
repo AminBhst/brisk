@@ -141,10 +141,9 @@ void checkForUpdate(BuildContext context) async {
 
   String tagName = json['tag_name'];
   tagName = tagName.replaceAll(".", "").replaceAll("v", "");
-  int latestVersion = int.parse(tagName);
+  String latestVersion = (json['tag_name'] as String).replaceAll("v", "");
   final packageInfo = await PackageInfo.fromPlatform();
-  int currentVersion = int.parse(packageInfo.version.replaceAll(".", ""));
-  if (latestVersion > currentVersion) {
+  if (_isNewVersionAvailable(latestVersion, packageInfo)) {
     showDialog(
       context: context,
       builder: (context) => ConfirmationDialog(
@@ -158,4 +157,20 @@ void checkForUpdate(BuildContext context) async {
     lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
     await lastUpdateCheck.save();
   }
+}
+
+bool _isNewVersionAvailable(String latestVersion, PackageInfo packageInfo) {
+  final latestSplit = latestVersion.split(".");
+  final currentSplit = packageInfo.version.split(".");
+  for (int i = 0; i < latestSplit.length; i++) {
+    final splitVersion = int.parse(latestSplit[i]);
+    final splitCurrent = int.parse(currentSplit[i]);
+    if (splitVersion > splitCurrent) {
+      return true;
+    }
+    if (i == latestSplit.length - 1) {
+      return false;
+    }
+  }
+  return false;
 }
