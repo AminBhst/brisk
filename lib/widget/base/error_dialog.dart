@@ -33,9 +33,9 @@ class ErrorDialog extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                    height: 25,
-                    child:
-                        const Icon(Icons.warning_rounded, color: Colors.red)),
+                  height: 25,
+                  child: const Icon(Icons.warning_rounded, color: Colors.red),
+                ),
                 const SizedBox(width: 10),
                 if (title != null)
                   Text(
@@ -48,8 +48,9 @@ class ErrorDialog extends StatelessWidget {
               ],
             ),
             SizedBox(
-                height: textHeight,
-                child: Text(text, style: const TextStyle(color: Colors.red))),
+              height: textHeight,
+              child: Text(text, style: const TextStyle(color: Colors.red)),
+            ),
           ],
         ),
       ),
