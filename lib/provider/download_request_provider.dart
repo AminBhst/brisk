@@ -95,7 +95,7 @@ class DownloadRequestProvider with ChangeNotifier {
     final channel = IsolateChannel.connectReceive(rPort);
     final isolate = await Isolate.spawn(
       MultiConnectionDownloadCoordinator.startDownloadRequest,
-      rPort.sendPort,
+      rPort.sendPort, id
     );
     handlerIsolates[id] = isolate;
     handlerChannels[id] = channel;

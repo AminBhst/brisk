@@ -113,6 +113,7 @@ class HttpDownloadRequest {
   /// changed so that it calls notify listeners which can be used to display its live progress.
   void start(DownloadProgressCallback progressCallback,
       {bool connectionReset = false}) {
+    print("INSIDE START");
     if (!connectionReset && startNotAllowed) return;
     // _runConnectionResetTimer();
 
@@ -120,11 +121,13 @@ class HttpDownloadRequest {
     _notifyChange();
 
     if (_isDownloadCompleted()) {
+    print("DOWNLOAD IS COMPLETE");
       _setDownloadComplete();
       _notifyChange();
       return;
     }
 
+    print("Building request");
     final request = buildDownloadRequest();
     sendDownloadRequest(request);
   }
@@ -149,6 +152,7 @@ class HttpDownloadRequest {
   }
 
   void sendDownloadRequest(http.Request request) {
+    print("sending request");
     try {
       var response = client.send(request);
       response.asStream().cast<http.StreamedResponse>().listen((response) {

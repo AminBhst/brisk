@@ -36,6 +36,7 @@ class SingleConnectionManager {
 
       switch (data.command) {
         case DownloadCommand.start:
+          print("Starting download....");
           request.start(channel.sink.add);
           break;
         case DownloadCommand.pause:

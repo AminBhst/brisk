@@ -55,6 +55,7 @@ class DownloadAdditionUiUtil {
       }).onError(
         (e, s) {
           /// TODO Add log files
+          print(e);
           _cancelRequest(context);
           showDialog(
             context: context,

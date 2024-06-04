@@ -79,6 +79,7 @@ class BrowserExtensionServer {
 
   /// TODO add log file
   static onFileInfoRetrievalError(context) {
+    print("ER");
     Navigator.of(context).pop();
     showDialog(
       context: context,

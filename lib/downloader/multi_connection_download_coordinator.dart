@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -7,11 +8,12 @@ import 'package:brisk/downloader/single_connection_manager.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
+import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:brisk/util/pair.dart';
 import 'package:stream_channel/isolate_channel.dart';
-import 'package:stream_channel/stream_channel.dart';
 import 'package:path/path.dart';
 
+import '../model/stream_channel_wrapper.dart';
 import '../util/file_util.dart';
 import '../util/readability_util.dart';
 
@@ -23,10 +25,17 @@ import '../util/readability_util.dart';
 class MultiConnectionDownloadCoordinator {
   /// TODO : send pause command to isolates which are pending connection
 
+  static Timer? _dynamicConnectionManagerTimer = null;
+
   /// A map of all stream channels related to the running download requests
-  static final Map<int, Map<int, StreamChannel>> _connectionChannels = {};
+  static final Map<int, Map<int, IsolateChannelWrapper>> _connectionChannels =
+      {};
+
+  static final Map<int, IsolateChannelWrapper> handlerChannels = {};
 
   static final Map<int, Map<int, DownloadProgress>> _connectionProgresses = {};
+
+  static final Map<int, DownloadProgress> _downloadProgresses = {};
 
   static final Map<int, Map<int, Isolate>> _connectionIsolates = {};
 
@@ -46,43 +55,51 @@ class MultiConnectionDownloadCoordinator {
 
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
-  static void startDownloadRequest(SendPort sendPort) async {
-    final handlerChannel = IsolateChannel.connectSend(sendPort);
-    handlerChannel.stream.cast<DownloadIsolateData>().listen((data) async {
+  static void _runDynamicConnectionManagerTimer() {
+    _dynamicConnectionManagerTimer =
+        Timer.periodic(Duration(seconds: 3), (timer) {
+      runDynamicConnectionManager();
+    });
+  }
+
+  static void runDynamicConnectionManager() {
+    handlerChannels.forEach((downloadId, handlerChannel) {
+      final downloadProgress = _downloadProgresses[downloadId];
+      if (downloadProgress == null) {
+        return;
+      }
+      if (_shouldCreateNewConnections(downloadProgress)) {
+        _createNewConnection(downloadProgress, handlerChannel.channel);
+      }
+    });
+  }
+
+  static void startDownloadRequest(IsolateArgsPair<int> args) async {
+    final handlerChannel = IsolateChannel.connectSend(args.sendPort);
+    final channelWrapper = IsolateChannelWrapper(channel: handlerChannel);
+    handlerChannels[args.obj] = channelWrapper;
+    channelWrapper.listenToStream<DownloadIsolateData>((data) async {
       final downloadItem = data.downloadItem;
       final id = downloadItem.id;
-      final isListened = _connectionChannels[id] != null;
       _setSettings(data);
       if (isAssembledFileInvalid(downloadItem)) {
         final progress = reassembleFile(downloadItem, data.baseTempDir);
         handlerChannel.sink.add(progress);
         return;
       }
-      await sendToDownloadIsolates(data);
-      if (isListened) return;
-
-      for (final channel in _connectionChannels[id]!.values) {
-        channel.stream.cast<DownloadProgress>().listen((progress) {
+      await sendToDownloadIsolates(data, handlerChannel);
+      for (final wrapper in _connectionChannels[id]!.values) {
+        wrapper.listenToStream<DownloadProgress>((progress) {
           handleDownloadProgressUpdates(progress, data, handlerChannel);
         });
       }
-      // _connectionChannels[id]![0]
-      //     ?.stream
-      //     .cast<DownloadProgress>()
-      //     .listen((DownloadProgress progress) {
-      // });
-      // for (final channel in _connectionChannels[id]!.values) {
-      //   channel.stream.cast<DownloadProgress>().listen((progress) {
-      //     handleDownloadProgressUpdates(progress, data, handlerChannel);
-      //   });
-      // }
     });
   }
 
   /// TODO Remove
   static bool skip = false;
 
-  static _dynamicSegmentation(
+  static _createNewConnection(
       DownloadProgress progress, IsolateChannel handlerChannel) async {
     final downloadId = progress.downloadItem.id;
     last_ds_checks[downloadId] ??= _nowMillis;
@@ -109,13 +126,7 @@ class MultiConnectionDownloadCoordinator {
       startByte: segments.keys.elementAt(1),
       endByte: segments.values.elementAt(1),
     );
-    await _spawnSingleDownloadIsolate(data, 1);
-    _connectionChannels[downloadId]![1]
-        ?.stream
-        .cast<DownloadProgress>()
-        .listen((prog) {
-      handleDownloadProgressUpdates(prog, data, handlerChannel, false);
-    });
+    await _spawnSingleDownloadIsolate(data, 1, handlerChannel);
   }
 
   /// Instead of sending a pause command and restarting the download with new segments,
@@ -137,7 +148,7 @@ class MultiConnectionDownloadCoordinator {
       endByte: endByte,
       segmentNumber: 0,
     );
-    channels[0]!.sink.add(data);
+    channels[0]!.channel.sink.add(data);
   }
 
   static Map<int, int> _splitSegment(DownloadItemModel downloadItem) {
@@ -148,12 +159,13 @@ class MultiConnectionDownloadCoordinator {
 
   static bool _shouldCreateNewConnections(DownloadProgress progress) {
     final downloadId = progress.downloadItem.id;
-    final lastCheck = last_ds_checks[downloadId];
-    return lastCheck != null &&
-        lastCheck + 4000 < _nowMillis &&
+    // final lastCheck = last_ds_checks[downloadId];
+    return
+        // lastCheck != null &&
+        //   lastCheck + 4000 < _nowMillis &&
         progress.totalDownloadProgress != 1 &&
-        _connectionIsolates[downloadId] != null &&
-        _connectionIsolates[downloadId]!.length < 2;
+            _connectionIsolates[downloadId] != null &&
+            _connectionIsolates[downloadId]!.length < 2;
   }
 
   static void handleDownloadProgressUpdates(DownloadProgress progress,
@@ -179,12 +191,13 @@ class MultiConnectionDownloadCoordinator {
       totalProgress,
     );
     _setStatus(id, downloadProgress);
-    if (ds) {
-      await _dynamicSegmentation(downloadProgress, handlerChannel);
-    }
+    // if (ds) {
+    //   await _createNewConnection(downloadProgress, handlerChannel);
+    // }
     if (isTempWriteComplete && isAssembleEligible(data.downloadItem)) {
       downloadProgress.status = DownloadStatus.assembling;
       handlerChannel.sink.add(downloadProgress);
+      // TODO uncomment
       // final success = assembleFile(
       //   data.downloadItem,
       //   progress.baseTempDir,
@@ -193,38 +206,44 @@ class MultiConnectionDownloadCoordinator {
       // _setCompletionStatuses(success, downloadProgress);
     }
     _setConnectionProgresses(downloadProgress);
+    _downloadProgresses[id] = downloadProgress;
     handlerChannel.sink.add(downloadProgress);
   }
 
-  static sendToDownloadIsolates(DownloadIsolateData data) async {
+  static Future<void> sendToDownloadIsolates(
+      DownloadIsolateData data, IsolateChannel handlerChannel) async {
     final int id = data.downloadItem.id;
+    Completer<void> com = Completer();
     _connectionChannels[id] ??= {};
     if (_connectionChannels[id]!.isEmpty) {
       final missingByteRanges = _findMissingByteRanges(data);
       print("=========== MISSING BYTE RANGES =========");
       print(missingByteRanges);
-      await _spawnDownloadIsolates(data, missingByteRanges);
+      await _spawnDownloadIsolates(data, missingByteRanges, handlerChannel);
     } else {
       print("INSIDE ELSE ================");
       print(_connectionChannels[id]!.values.length);
-      _connectionChannels[id]?.forEach((seg, channel) {
+      _connectionChannels[id]?.forEach((seg, wrapper) {
         data.segmentNumber = seg;
-        channel.sink.add(data);
+        wrapper.channel.sink.add(data);
       });
     }
+    return com.complete();
     // if (missingByteRanges.length > totalConnections) {
     /// TODO This shouldn't really happen but just in case we should do sth about it
     // }
   }
 
-  static _spawnDownloadIsolates(DownloadIsolateData data,
-      Map<int, Pair<int, int>> missingByteRanges) async {
+  static _spawnDownloadIsolates(
+      DownloadIsolateData data,
+      Map<int, Pair<int, int>> missingByteRanges,
+      IsolateChannel handlerChannel) async {
     missingByteRanges.forEach((segmentNumber, missingBytes) async {
       print("SPAWNING CONNECTION ISOLATE I-$segmentNumber");
       var newData = data.clone();
       newData.startByte = missingBytes.first;
       newData.endByte = missingBytes.second;
-      await _spawnSingleDownloadIsolate(newData, segmentNumber);
+      await _spawnSingleDownloadIsolate(newData, segmentNumber, handlerChannel);
     });
   }
 
@@ -455,8 +474,8 @@ class MultiConnectionDownloadCoordinator {
   /// [errorsAreFatal] is set to false to prevent isolate from closing when a
   /// connection exception occurs. Otherwise, we wouldn't be able to reset the
   /// connection because the isolate would already be dead.
-  static _spawnSingleDownloadIsolate(
-      DownloadIsolateData data, int segmentNumber) async {
+  static _spawnSingleDownloadIsolate(DownloadIsolateData data,
+      int segmentNumber, IsolateChannel handlerChannel) async {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
     final downloadId = data.downloadItem.id;
@@ -467,12 +486,16 @@ class MultiConnectionDownloadCoordinator {
       rPort.sendPort,
       errorsAreFatal: false,
     );
-    print("SPAWNED $segmentNumber");
+    print("SPAWNED $segmentNumber for id $downloadId");
     channel.sink.add(data);
     _connectionIsolates[downloadId] ??= {};
     _connectionIsolates[downloadId]![segmentNumber] = isolate;
     _connectionChannels[downloadId] ??= {};
-    _connectionChannels[downloadId]![segmentNumber] = channel;
+    final streamChannel = IsolateChannelWrapper(channel: channel);
+    _connectionChannels[downloadId]![segmentNumber] = streamChannel;
+    streamChannel.listenToStream<DownloadProgress>((progress) {
+      handleDownloadProgressUpdates(progress, data, handlerChannel);
+    });
   }
 
   static void _setSettings(DownloadIsolateData data) {
