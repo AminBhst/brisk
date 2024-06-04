@@ -116,7 +116,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                   onPressed: onCancelPressed,
                   borderColor: Colors.red,
                   textColor: Colors.red,
-                  width: 80,
+                  width: 100,
                   text: "Cancel",
                 ),
                 const SizedBox(width: 50),
@@ -124,7 +124,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                   onPressed: onSavePressed,
                   borderColor: Colors.green,
                   textColor: Colors.green,
-                  width: 80,
+                  width: 100,
                   text: "Save",
                 )
               ],
