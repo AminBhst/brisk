@@ -13,7 +13,6 @@ import '../model/file_metadata.dart';
 import '../model/setting.dart';
 import '../widget/base/confirmation_dialog.dart';
 
-
 // Removed usage because of status 400 in google drive. also it doesn't seem necessary anyway
 const Map<String, String> contentType_MultiPartByteRanges = {
   'content-type': 'multipart/byteranges;'

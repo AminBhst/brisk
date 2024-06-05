@@ -13,7 +13,7 @@ import 'package:brisk/util/pair.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:path/path.dart';
 
-import '../util/isolate_channel_wrapper.dart';
+import '../model/stream_channel_wrapper.dart';
 import '../util/file_util.dart';
 import '../util/readability_util.dart';
 
@@ -22,7 +22,7 @@ import '../util/readability_util.dart';
 /// For each download item, [startDownloadRequest] will be called in a designated isolate spawned by the [DownloadRequestProvider].
 /// The coordinator will track the state of the download connections, retrieve and aggregate data such as the overall download speed and progress,
 /// manage the availability of pause/resume buttons and assemble the file when the all connections have finished receiving and writing their data.
-class ultiConnectionDownloadCoordinator {
+class MultiConnectionDownloadCoordinator {
   /// TODO : send pause command to isolates which are pending connection
 
   static Timer? _dynamicConnectionManagerTimer = null;
@@ -30,8 +30,6 @@ class ultiConnectionDownloadCoordinator {
   /// A map of all stream channels related to the running download requests
   static final Map<int, Map<int, IsolateChannelWrapper>> _connectionChannels =
       {};
-
-  static final Map<int, int> _activeDownloadIsolateCount = {};
 
   static final Map<int, IsolateChannelWrapper> handlerChannels = {};
 
@@ -58,13 +56,11 @@ class ultiConnectionDownloadCoordinator {
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
   static void _runDynamicConnectionManagerTimer() {
-    if (_dynamicConnectionManagerTimer == null) {
-      return;
-    }
-    _dynamicConnectionManagerTimer = Timer.periodic(
-      Duration(seconds: 3),
-      (timer) => runDynamicConnectionManager(),
-    );
+    if (_dynamicConnectionManagerTimer == null) return;
+    _dynamicConnectionManagerTimer =
+        Timer.periodic(Duration(seconds: 3), (timer) {
+      runDynamicConnectionManager();
+    });
   }
 
   static void runDynamicConnectionManager() {
@@ -111,7 +107,7 @@ class ultiConnectionDownloadCoordinator {
     skip = true;
     last_ds_checks[downloadId] = _nowMillis;
     final progress = _downloadProgresses[downloadId]!;
-    final segments = _getNewSegmentMap(progress.downloadItem);
+    final segments = _splitSegment(progress.downloadItem);
     print("SEGMENTS : ${segments}");
     _sendRefreshSegmentCommand(
       progress,
@@ -153,30 +149,11 @@ class ultiConnectionDownloadCoordinator {
     channels[0]!.channel.sink.add(data);
   }
 
-  static Map<int, int> _getNewSegmentMap(DownloadItemModel downloadItem) {
-    final contentLength = downloadItem.contentLength;
-    final activeIsolates = _activeDownloadIsolateCount[downloadItem.id]!;
-    final endOne = (contentLength / 2).floor();
-    if (activeIsolates == 1) {
-      return {
-        0: endOne,
-        endOne + 1: downloadItem.contentLength,
-      };
-    }
-
-    final endTwo = (endOne / 2).floor();
-    final endThree = ((contentLength - endOne + 1) / 2).floor() + endOne;
-    if (activeIsolates == 2) {
-      return {
-        0: endTwo,
-        endTwo + 1: endOne,
-        endOne + 1: endThree,
-        endThree + 1: contentLength,
-      };
-    }
+  static Map<int, int> _splitSegment(DownloadItemModel downloadItem) {
+    final isolates = _connectionIsolates[downloadItem.id];
+    final endOne = (downloadItem.contentLength / 2).floor();
+    return {0: endOne, endOne + 1: downloadItem.contentLength};
   }
-
-  static int _splitSegmentInHalf(int len) => (len / 2).floor();
 
   static bool _shouldCreateNewConnections(DownloadProgress progress) {
     final downloadId = progress.downloadItem.id;

@@ -10,6 +10,7 @@ import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
+import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/notification_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -95,7 +96,7 @@ class DownloadRequestProvider with ChangeNotifier {
     final channel = IsolateChannel.connectReceive(rPort);
     final isolate = await Isolate.spawn(
       MultiConnectionDownloadCoordinator.startDownloadRequest,
-      rPort.sendPort, id
+      IsolateArgsPair(rPort.sendPort, id)
     );
     handlerIsolates[id] = isolate;
     handlerChannels[id] = channel;
