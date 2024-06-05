@@ -13,7 +13,7 @@ import 'package:brisk/util/pair.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:path/path.dart';
 
-import '../model/stream_channel_wrapper.dart';
+import '../util/isolate_channel_wrapper.dart';
 import '../util/file_util.dart';
 import '../util/readability_util.dart';
 
