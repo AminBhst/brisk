@@ -49,7 +49,7 @@ String extractFileNameFromUrl(String url) {
 }
 
 bool isUrlValid(String url) {
-  return RegExp(urlRegex).hasMatch(url);
+  return Uri.tryParse(url)?.hasAbsolutePath ?? false;
 }
 
 List<int> calculateByteStartAndByteEnd(
