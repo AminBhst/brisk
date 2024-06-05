@@ -10,6 +10,7 @@ import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
+import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/notification_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -56,8 +57,8 @@ class DownloadRequestProvider with ChangeNotifier {
         : 1;
 
     final connectionCount =
-        //TODO FIX THIS
-        getExistingConnectionCount(downloadItem) ?? totalConnections;
+    //TODO FIX THIS
+    getExistingConnectionCount(downloadItem) ?? totalConnections;
 
     final isolatorArgs = DownloadIsolateData(
       command: command,
@@ -94,8 +95,8 @@ class DownloadRequestProvider with ChangeNotifier {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
     final isolate = await Isolate.spawn(
-      MultiConnectionDownloadCoordinator.startDownloadRequest,
-      rPort.sendPort, id
+        MultiConnectionDownloadCoordinator.startDownloadRequest,
+        IsolateArgsPair(rPort.sendPort, id)
     );
     handlerIsolates[id] = isolate;
     handlerChannels[id] = channel;
@@ -191,14 +192,14 @@ class DownloadRequestProvider with ChangeNotifier {
           ),
           "progress": PlutoCell(
             value:
-                convertPercentageNumberToReadableStr(e.downloadProgress * 100),
+            convertPercentageNumberToReadableStr(e.downloadProgress * 100),
           ),
           "status": PlutoCell(
             value: e.status == ""
                 ? (e.downloadItem.status == DownloadStatus.assembleComplete ||
-                        e.downloadItem.status == DownloadStatus.paused)
-                    ? e.downloadItem.status
-                    : ""
+                e.downloadItem.status == DownloadStatus.paused)
+                ? e.downloadItem.status
+                : ""
                 : e.status,
           ),
           "transfer_rate": PlutoCell(value: e.transferRate),
@@ -225,8 +226,8 @@ class DownloadRequestProvider with ChangeNotifier {
     PlutoGridUtil.cachedRows.clear();
     final requests = items
         .map((e) => DownloadProgress(
-            downloadItem: DownloadItemModel.fromDownloadItem(e),
-            downloadProgress: e.progress))
+        downloadItem: DownloadItemModel.fromDownloadItem(e),
+        downloadProgress: e.progress))
         .toList();
     final stateManager = PlutoGridUtil.plutoStateManager;
     stateManager?.removeAllRows();

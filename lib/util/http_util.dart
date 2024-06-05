@@ -34,7 +34,7 @@ String? extractFilenameFromHeaders(Map<String, String> headers) {
       filename = !tokens[i].contains('"')
           ? tokens[i].substring(tokens[i].indexOf("=") + 1, tokens[i].length)
           : tokens[i]
-              .substring(tokens[i].indexOf("=") + 2, tokens[i].length - 1);
+          .substring(tokens[i].indexOf("=") + 2, tokens[i].length - 1);
     }
   }
   return filename;
@@ -148,7 +148,7 @@ void checkForUpdate(BuildContext context) async {
       context: context,
       builder: (context) => ConfirmationDialog(
         title:
-            "New version of Brisk is available. Do you want to download the latest version?",
+        "New version of Brisk is available. Do you want to download the latest version?",
         onConfirmPressed: () => launchUrlString(
           "https://github.com/AminBhst/brisk/releases/latest",
         ),

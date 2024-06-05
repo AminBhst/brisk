@@ -29,7 +29,9 @@ class MultiConnectionDownloadCoordinator {
 
   /// A map of all stream channels related to the running download requests
   static final Map<int, Map<int, IsolateChannelWrapper>> _connectionChannels =
-      {};
+  {};
+
+  static final Map<int, int> _activeDownloadIsolateCount = {};
 
   static final Map<int, IsolateChannelWrapper> handlerChannels = {};
 
@@ -56,10 +58,13 @@ class MultiConnectionDownloadCoordinator {
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
   static void _runDynamicConnectionManagerTimer() {
-    _dynamicConnectionManagerTimer =
-        Timer.periodic(Duration(seconds: 3), (timer) {
-      runDynamicConnectionManager();
-    });
+    if (_dynamicConnectionManagerTimer == null) {
+      return;
+    }
+    _dynamicConnectionManagerTimer = Timer.periodic(
+      Duration(seconds: 3),
+          (timer) => runDynamicConnectionManager(),
+    );
   }
 
   static void runDynamicConnectionManager() {
@@ -69,7 +74,7 @@ class MultiConnectionDownloadCoordinator {
         return;
       }
       if (_shouldCreateNewConnections(downloadProgress)) {
-        _createNewConnection(downloadProgress, handlerChannel.channel);
+        _createNewConnection(downloadId);
       }
     });
   }
@@ -78,6 +83,7 @@ class MultiConnectionDownloadCoordinator {
     final handlerChannel = IsolateChannel.connectSend(args.sendPort);
     final channelWrapper = IsolateChannelWrapper(channel: handlerChannel);
     handlerChannels[args.obj] = channelWrapper;
+    _runDynamicConnectionManagerTimer();
     channelWrapper.listenToStream<DownloadIsolateData>((data) async {
       final downloadItem = data.downloadItem;
       final id = downloadItem.id;
@@ -99,17 +105,13 @@ class MultiConnectionDownloadCoordinator {
   /// TODO Remove
   static bool skip = false;
 
-  static _createNewConnection(
-      DownloadProgress progress, IsolateChannel handlerChannel) async {
-    final downloadId = progress.downloadItem.id;
+  static _createNewConnection(int downloadId) async {
     last_ds_checks[downloadId] ??= _nowMillis;
-    if (!_shouldCreateNewConnections(progress) || skip) {
-      return;
-    }
 
     skip = true;
     last_ds_checks[downloadId] = _nowMillis;
-    final segments = _splitSegment(progress.downloadItem);
+    final progress = _downloadProgresses[downloadId]!;
+    final segments = _getNewSegmentMap(progress.downloadItem);
     print("SEGMENTS : ${segments}");
     _sendRefreshSegmentCommand(
       progress,
@@ -126,7 +128,7 @@ class MultiConnectionDownloadCoordinator {
       startByte: segments.keys.elementAt(1),
       endByte: segments.values.elementAt(1),
     );
-    await _spawnSingleDownloadIsolate(data, 1, handlerChannel);
+    await _spawnSingleDownloadIsolate(data, 1);
   }
 
   /// Instead of sending a pause command and restarting the download with new segments,
@@ -151,21 +153,40 @@ class MultiConnectionDownloadCoordinator {
     channels[0]!.channel.sink.add(data);
   }
 
-  static Map<int, int> _splitSegment(DownloadItemModel downloadItem) {
-    final isolates = _connectionIsolates[downloadItem.id];
-    final endOne = (downloadItem.contentLength / 2).floor();
-    return {0: endOne, endOne + 1: downloadItem.contentLength};
+  static Map<int, int> _getNewSegmentMap(DownloadItemModel downloadItem) {
+    final contentLength = downloadItem.contentLength;
+    final activeIsolates = _activeDownloadIsolateCount[downloadItem.id]!;
+    final endOne = (contentLength / 2).floor();
+    if (activeIsolates == 1) {
+      return {
+        0: endOne,
+        endOne + 1: downloadItem.contentLength,
+      };
+    }
+
+    final endTwo = (endOne / 2).floor();
+    final endThree = ((contentLength - endOne + 1) / 2).floor() + endOne;
+    if (activeIsolates == 2) {
+      return {
+        0: endTwo,
+        endTwo + 1: endOne,
+        endOne + 1: endThree,
+        endThree + 1: contentLength,
+      };
+    }
   }
+
+  static int _splitSegmentInHalf(int len) => (len / 2).floor();
 
   static bool _shouldCreateNewConnections(DownloadProgress progress) {
     final downloadId = progress.downloadItem.id;
     // final lastCheck = last_ds_checks[downloadId];
     return
-        // lastCheck != null &&
-        //   lastCheck + 4000 < _nowMillis &&
-        progress.totalDownloadProgress != 1 &&
-            _connectionIsolates[downloadId] != null &&
-            _connectionIsolates[downloadId]!.length < 2;
+      // lastCheck != null &&
+      //   lastCheck + 4000 < _nowMillis &&
+      progress.totalDownloadProgress != 1 &&
+          _connectionIsolates[downloadId] != null &&
+          _connectionIsolates[downloadId]!.length < 2;
   }
 
   static void handleDownloadProgressUpdates(DownloadProgress progress,
@@ -243,7 +264,7 @@ class MultiConnectionDownloadCoordinator {
       var newData = data.clone();
       newData.startByte = missingBytes.first;
       newData.endByte = missingBytes.second;
-      await _spawnSingleDownloadIsolate(newData, segmentNumber, handlerChannel);
+      await _spawnSingleDownloadIsolate(newData, segmentNumber);
     });
   }
 
@@ -279,7 +300,7 @@ class MultiConnectionDownloadCoordinator {
       final endByte = FileUtil.getEndByteFromTempFileName(tempFileName);
       final prevEndByte = FileUtil.getEndByteFromTempFileName(prevFileName);
       final segmentNumber =
-          FileUtil.getSegmentNumberFromTempFileName(tempFileName);
+      FileUtil.getSegmentNumberFromTempFileName(tempFileName);
 
       if (prevEndByte + 1 != startByte) {
         final missingStartByte = prevEndByte + 1;
@@ -358,7 +379,7 @@ class MultiConnectionDownloadCoordinator {
       int id, DownloadProgress downloadProgress, double totalProgress) {
     if (completionEstimations[id] == null) return;
     downloadProgress.estimatedRemaining =
-        totalProgress >= 1 ? "" : completionEstimations[id]!;
+    totalProgress >= 1 ? "" : completionEstimations[id]!;
   }
 
   static int _tempTime = _nowMillis;
@@ -382,7 +403,7 @@ class MultiConnectionDownloadCoordinator {
     final seconds = ((((remainingSec % 31536000) % 86400) % 3600) % 60).floor();
     if (days >= 1) {
       estimatedRemaining =
-          '$days Days, $hours Hours, $minutes Minutes, $seconds Seconds';
+      '$days Days, $hours Hours, $minutes Minutes, $seconds Seconds';
     } else if (hours >= 1) {
       estimatedRemaining = '$hours Hours, $minutes Minutes, $seconds Seconds';
     } else if (minutes >= 1) {
@@ -448,7 +469,7 @@ class MultiConnectionDownloadCoordinator {
   static bool checkTempWriteCompletion(DownloadIsolateData data) {
     final progresses = _connectionProgresses[data.downloadItem.id]!.values;
     final tempComplete =
-        progresses.every((progress) => progress.writeProgress == 1);
+    progresses.every((progress) => progress.writeProgress == 1);
 
     progresses.forEach((prog) {
       // print("WRITE PROG ${prog.segmentNumber} ::::::::: ${prog.writeProgress}");
@@ -474,8 +495,8 @@ class MultiConnectionDownloadCoordinator {
   /// [errorsAreFatal] is set to false to prevent isolate from closing when a
   /// connection exception occurs. Otherwise, we wouldn't be able to reset the
   /// connection because the isolate would already be dead.
-  static _spawnSingleDownloadIsolate(DownloadIsolateData data,
-      int segmentNumber, IsolateChannel handlerChannel) async {
+  static _spawnSingleDownloadIsolate(
+      DownloadIsolateData data, int segmentNumber) async {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
     final downloadId = data.downloadItem.id;
@@ -493,6 +514,7 @@ class MultiConnectionDownloadCoordinator {
     _connectionChannels[downloadId] ??= {};
     final streamChannel = IsolateChannelWrapper(channel: channel);
     _connectionChannels[downloadId]![segmentNumber] = streamChannel;
+    final handlerChannel = handlerChannels[downloadId]!.channel;
     streamChannel.listenToStream<DownloadProgress>((progress) {
       handleDownloadProgressUpdates(progress, data, handlerChannel);
     });
