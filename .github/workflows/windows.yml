@@ -1,6 +1,11 @@
 name: Windows
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Enter a tag for this release'
+        required: true
+        type: string
 jobs:
   windows:
     runs-on: windows-latest
@@ -35,9 +40,9 @@ jobs:
           dir
           dir .\dist
 
-      - name: Upload artifact 
-        uses: actions/upload-artifact@v4.3.3
-        with:
-          name: brisk-windows
-          path: Brisk-${{ inputs.tag }}-windows-x86_64.exe
-          retention-days: 1
+      # - name: Upload artifact 
+      #   uses: actions/upload-artifact@v4.3.3
+      #   with:
+      #     name: brisk-windows
+      #     path: Brisk-${{ inputs.tag }}-windows-x86_64.exe
+      #     retention-days: 1
