@@ -43,21 +43,8 @@ jobs:
       
       - name: Enable linux-desktop for flutter
         run: flutter config --enable-linux-desktop
-
-      - name: Cache the dependencies
-        id: pub-cache
-        uses: actions/cache@v4.0.0
-        with:
-          path: /opt/hostedtoolcache/flutter/stable-3.16.9-x64/.pub-cache 
-          key: | 
-           flutter-brisk-dependencies-${{ hashFiles('pubspec.lock') }}
-           flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
-          restore-keys: |
-           flutter-brisk-dependencies-${{ hashFiles('pubspec.lock') }}
-           flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
       
       - name: Get dependencies
-        if: ${{ steps.pub-cache.outputs.cache-hit != 'true' }}
         run: flutter pub get
 
       - name: Start the build process
@@ -126,7 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [Build-tarball, Build-package]
     permissions:
-      contents: write
+      contents: read
     steps:
 
       - name: Donwload artifact tarball
@@ -140,12 +127,13 @@ jobs:
           name: brisk-package
 
       - name: Release the changes
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2.0.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ inputs.tag }} 
-          # body: ${{ inputs.Release_note }} 
+          body: ./.github/release.md 
+          #${{ inputs.Release_note }} 
           files: |
            ./Brisk-${{ inputs.tag }}-linux-x86_64.rpm
            ./Brisk-${{ inputs.tag }}-linux-x86_64.deb
