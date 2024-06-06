@@ -62,13 +62,15 @@ jobs:
         run: flutter build linux
          
       - name: Compress the release file
-        run: tar -cvJf Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
+        run:  /usr/bin/tar --posix -cf Brisk-${{ inputs.tag }}-linux-x86_64.tar.tzst -P -C build/linux/x64/release/bundle/ --use-compress-program zstdmt .
+      #   run: tar -cvJf Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
 
       - name: Upload artifact 
         uses: actions/upload-artifact@v4.0.0
         with:
           name: brisk
-          path: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
+          path: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.tzst
+          #path: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
           retention-days: 1
 
   Release:
@@ -90,7 +92,8 @@ jobs:
         with:
           tag_name: ${{ inputs.tag }} 
           body: Test version!
-          files: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
+          files: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.tzst
+          #files: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
 
   # Cleanup:
   #   needs:
