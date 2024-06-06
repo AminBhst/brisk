@@ -16,6 +16,39 @@ on:
       #   type: string
 
 jobs:
+  Build-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: read 
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.16.9"
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' 
+          architecture: x64
+          
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Install project dependencies
+        run: |
+         flutter pub get
+         dart pub global activate flutter_distributor
+         
+      - name: Generate intermediates
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+        
+      - name: Enable windows build
+        run: flutter config --enable-windows-desktop
+        
+      - name: change name of .exe
+        run: Get-ChildItem -Path . -Filter "*.exe" -File | Move-Item -Destination Brisk-${{ inputs.tag }}-windows-x86_64.exe
+        
   Build-tarball:
     runs-on: ubuntu-latest
     permissions:
