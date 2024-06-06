@@ -39,9 +39,9 @@ jobs:
         
       - name: change name of .exe
         run: |
-          Get-ChildItem -Path . -Filter "*.exe" -File | Move-Item -Destination Brisk-${{ inputs.tag }}-windows-x86_64.exe
+          Get-ChildItem -Path . -Filter "*.exe" -File | Move-Item -Destination .\Brisk-${{ inputs.tag }}-windows-x86_64.exe
           dir
-          dir .\dist
+          dir .\dist\1.4.6+15\
 
       # - name: Upload artifact 
       #   uses: actions/upload-artifact@v4.3.3
