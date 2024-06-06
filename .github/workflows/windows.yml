@@ -4,7 +4,8 @@ on:
 jobs:
   windows:
     runs-on: windows-latest
-
+    permissions:
+      contents: read 
     steps:
       - uses: actions/checkout@v3
       - name: Install flutter
@@ -16,33 +17,27 @@ jobs:
           cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
           cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' 
           architecture: x64
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
-
+        
       - name: Install project dependencies
         run: |
          flutter pub get
          dart pub global activate flutter_distributor
-         #choco install visualstudio2022professional --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US"
          
       - name: Generate intermediates
         run: flutter pub run build_runner build --delete-conflicting-outputs
+        
       - name: Enable windows build
         run: flutter config --enable-windows-desktop
-     
-      - name: Build artifacts
-        run: flutter_distributor package --platform windows --targets exe
-      - name: Package Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          filename: brisk-${{github.ref_name}}-windows.zip
-          directory: build/windows/runner/Release
+        
+      - name: change name of .exe
+        run: |
+          Get-ChildItem -Path . -Filter "*.exe" -File | Move-Item -Destination Brisk-${{ inputs.tag }}-windows-x86_64.exe
+          dir
+          dir .\dist
 
-      - name: Release to github
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifact 
+        uses: actions/upload-artifact@v4.3.3
         with:
-          tag_name: ${{github.ref_name}}
-          files: build/windows/runner/Release/brisk-${{github.ref_name}}-windows.zip
+          name: brisk-windows
+          path: Brisk-${{ inputs.tag }}-windows-x86_64.exe
+          retention-days: 1
