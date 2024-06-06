@@ -51,7 +51,7 @@ jobs:
         run: flutter build linux
          
       - name: Compress the release file
-        run: tar -cvJf Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
+        run: tar -cJf Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
 
       - name: Upload artifact 
         uses: actions/upload-artifact@v4.3.3
@@ -101,6 +101,9 @@ jobs:
       
       - name: change the rpm name
         run: find ./ -name *.rpm -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.rpm \;
+
+      - name: change the rpm name
+        run: find ./ -name *.zip -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.zip \;
           
       - name: Upload artifact 
         uses: actions/upload-artifact@v4.3.3
@@ -140,6 +143,7 @@ jobs:
           files: |
            ./Brisk-${{ inputs.tag }}-linux-x86_64.rpm
            ./Brisk-${{ inputs.tag }}-linux-x86_64.deb
+           ./Brisk-${{ inputs.tag }}-linux-x86_64.zip
            ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
 
       
