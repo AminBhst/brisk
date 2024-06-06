@@ -43,7 +43,7 @@ dependencies:
   csv: ^5.1.1
   flutter_local_notifications: ^16.3.2
   uuid: ^3.0.7
-  windows_notification: ^1.0.0
+  windows_notification: ^1.2.0
   url_launcher: ^6.2.4
   window_manager: ^0.3.7
   hive_flutter: ^1.1.0
