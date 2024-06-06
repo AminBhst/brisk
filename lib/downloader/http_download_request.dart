@@ -337,6 +337,7 @@ class HttpDownloadRequest {
       final tempEndByte = FileUtil.getEndByteFromTempFileName(fileName);
       if (this.endByte < tempStartByte) {
         tempFilesToDelete.add(file);
+        continue;
       }
       if (this.endByte < tempEndByte) {
         tempFileToCut = file;
