@@ -1,4 +1,4 @@
-name: Linux package-release
+name: package release
 
 on:
 
@@ -48,6 +48,14 @@ jobs:
         
       - name: change name of .exe
         run: Get-ChildItem -Path . -Filter "*.exe" -File | Move-Item -Destination Brisk-${{ inputs.tag }}-windows-x86_64.exe
+        
+      - name: Upload artifact 
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: brisk-windows
+          path: Brisk-${{ inputs.tag }}-windows-x86_64.exe
+          retention-days: 1
+
         
   Build-tarball:
     runs-on: ubuntu-latest
@@ -147,7 +155,7 @@ jobs:
 
   Release:
     runs-on: ubuntu-latest
-    needs: [Build-tarball, Build-package]
+    needs: [Build-tarball, Build-package, Build-windows]
     permissions:
       contents: write
     steps:
@@ -165,6 +173,11 @@ jobs:
         with:
           name: brisk-package
 
+      - name: Donwload artifact package
+        uses: actions/download-artifact@v4.1.0
+        with:
+          name: brisk-windows
+
       - name: Release the changes
         uses: softprops/action-gh-release@v2.0.5
         env:
@@ -178,6 +191,6 @@ jobs:
            ./Brisk-${{ inputs.tag }}-linux-x86_64.deb
            ./Brisk-${{ inputs.tag }}-linux-x86_64.zip
            ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
-
+           ./Brisk-${{ inputs.tag }}-windows-x86_64.exe
       
  
