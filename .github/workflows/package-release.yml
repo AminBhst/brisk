@@ -50,11 +50,11 @@ jobs:
         with:
           path: /opt/hostedtoolcache/flutter/stable-3.16.9-x64/.pub-cache 
           key: | 
-           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.lock') }}
-           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
+           flutter-brisk-dependencies-${{ hashFiles('pubspec.lock') }}
+           flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
           restore-keys: |
-           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.lock') }}
-           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
+           flutter-brisk-dependencies-${{ hashFiles('pubspec.lock') }}
+           flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
       
       - name: Get dependencies
         if: ${{ steps.pub-cache.outputs.cache-hit != 'true' }}
@@ -129,10 +129,15 @@ jobs:
       contents: write
     steps:
 
-      - name: Donwload artifact rpm
+      - name: Donwload artifact tarball
         uses: actions/download-artifact@v4.1.0
-        # with:
-        #   name: brisk
+        with:
+          name: brisk-tarball
+
+      - name: Donwload artifact package
+        uses: actions/download-artifact@v4.1.0
+        with:
+          name: brisk-package
 
       - name: Release the changes
         uses: softprops/action-gh-release@v1
