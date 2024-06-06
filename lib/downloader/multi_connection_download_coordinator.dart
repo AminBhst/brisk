@@ -34,6 +34,7 @@ class MultiConnectionDownloadCoordinator {
 
   /// Settings
   static late Directory baseSaveDir;
+  static late bool lowResourceMode;
 
   static void startDownloadRequest(SendPort sendPort) async {
     final handlerChannel = IsolateChannel.connectSend(sendPort);
@@ -90,7 +91,23 @@ class MultiConnectionDownloadCoordinator {
       _setCompletionStatuses(success, downloadProgress);
     }
     _setConnectionProgresses(downloadProgress);
-    handlerChannel.sink.add(downloadProgress);
+    notifyChange(handlerChannel, downloadProgress);
+  }
+
+  static int _prevNotifyChangeTime = _nowMillis;
+
+  static void notifyChange(IsolateChannel channel, DownloadProgress progress) {
+    if (shouldSkipNotifyChange(progress)) {
+      return;
+    }
+    channel.sink.add(progress);
+    _prevNotifyChangeTime = _nowMillis;
+  }
+
+  static bool shouldSkipNotifyChange(DownloadProgress progress) {
+    return progress.status != DownloadStatus.paused &&
+        lowResourceMode &&
+        _prevNotifyChangeTime + 150 > _nowMillis;
   }
 
   static Future<void> spawnOrSendToExistingDownloadIsolates(
@@ -284,13 +301,16 @@ class MultiConnectionDownloadCoordinator {
     final isolateArgs = HandleSingleConnectionArgs(
       totalSegments: totalSegments,
       segmentNumber: segmentNumber,
+      lowResourceMode: args.lowResourceMode,
       maxConnectionRetryCount: args.maxConnectionRetryCount,
       connectionRetryTimeout: args.connectionRetryTimeout,
       sendPort: rPort.sendPort,
     );
     final isolate = await Isolate.spawn<HandleSingleConnectionArgs>(
-        SingleConnectionManager.handleSingleConnection, isolateArgs,
-        errorsAreFatal: false);
+      SingleConnectionManager.handleSingleConnection,
+      isolateArgs,
+      errorsAreFatal: false,
+    );
     _connectionIsolates[downloadId] ??= {};
     _connectionIsolates[downloadId]![segmentNumber] = isolate;
     _connectionChannels[downloadId] ??= {};
@@ -301,6 +321,7 @@ class MultiConnectionDownloadCoordinator {
 
   static void _setSettings(DownloadIsolateArgs data) {
     baseSaveDir = data.baseSaveDir;
+    lowResourceMode = data.lowResourceMode;
   }
 
   static bool isAssembledFileInvalid(DownloadItemModel downloadItem) {

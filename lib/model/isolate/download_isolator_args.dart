@@ -10,6 +10,7 @@ class DownloadIsolateArgs {
   final int maxConnectionRetryCount;
   final int connectionRetryTimeout;
   final Directory baseSaveDir;
+  final bool lowResourceMode;
   DownloadCommand command;
   DownloadItemModel downloadItem;
   Directory baseTempDir;
@@ -19,6 +20,7 @@ class DownloadIsolateArgs {
     required this.downloadItem,
     required this.baseTempDir,
     required this.totalConnections,
+    required this.lowResourceMode,
     required this.baseSaveDir,
     this.connectionRetryTimeout = 10,
     this.maxConnectionRetryCount = -1,

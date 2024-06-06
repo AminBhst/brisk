@@ -89,8 +89,10 @@ class PlutoGridUtil {
     if (selectedRows == null) return;
     for (var row in selectedRows) {
       final id = row.cells["id"]!.value;
+      _stateManager?.setRowChecked(row, false);
       operation(id, row);
     }
+    _stateManager?.notifyListeners();
   }
 
   static PlutoGridStateManager? get plutoStateManager => _stateManager;

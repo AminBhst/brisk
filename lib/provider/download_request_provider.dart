@@ -62,6 +62,7 @@ class DownloadRequestProvider with ChangeNotifier {
       downloadItem: downloadProgress.downloadItem,
       baseTempDir: SettingsCache.temporaryDir,
       baseSaveDir: SettingsCache.saveDir,
+      lowResourceMode: SettingsCache.lowResourceMode,
       totalConnections: connectionCount,
       connectionRetryTimeout: SettingsCache.connectionRetryTimeout * 1000,
       maxConnectionRetryCount: SettingsCache.connectionRetryCount,

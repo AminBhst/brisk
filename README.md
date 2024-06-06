@@ -13,7 +13,7 @@ Installation files for Windows and Linux are available
 at [Github Releases](https://github.com/AminBhst/brisk/releases/)
 
 ## Browser Integration
-As of version 1.3.0, Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-extension) that allows for capturing downloads from the browser and adding them directly into the app.
+Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-extension) that allows for capturing downloads from the browser and adding them directly into the app.
 
 ### Installing The Browser Extension
 #### Chrome / Edge / Opera
@@ -25,13 +25,17 @@ As of version 1.3.0, Brisk supports [Browser Integration](https://github.com/Ami
 [link-firefox]: https://addons.mozilla.org/en-US/firefox/addon/brisk/
 
 [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox.svg" width="48" alt="Firefox" valign="middle">][link-firefox]
-## Prerequisites
+## Linux Prerequisites
 
-On Linux, make sure you have [keybinder-3](https://github.com/kupferlauncher/keybinder) installed.
-
-- Debian/Ubuntu : ```keybinder-3.0```
+### keybinder-3
+- Debian/Ubuntu : ```libkeybinder-3.0-0```
 - Fedora/RHEL/CentOS : ```keybinder3```
 - Arch Linux : ```libkeybinder3```
+
+### appindicator3-0.1
+- Debian/Ubuntu : ```libayatana-appindicator3-dev```
+- Fedora/RHEL/CentOS : ```libappindicator-gtk3-devel```
+- Arch Linux : ```libappindicator-gtk3```
 
 ## Features
 
@@ -57,10 +61,10 @@ flutter build macos|windows|linux
 
 - Dynamic file segmentation for highest download speed
 - Download speed limiter
-- System tray
+- Download Scheduling
 
 If you have a feature request, please open an issue and explain it in details.
 
 ## Credits
-
+- GitHub Actions : [AliML111](https://github.com/AliML111)
 - MacOS support : [Norman-w](https://github.com/Norman-w)

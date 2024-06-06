@@ -1,3 +1,4 @@
+import 'package:brisk/constants/app_closure_behaviour.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:brisk/widget/setting/base/switch_setting.dart';
 import 'package:flutter/material.dart';
@@ -19,24 +20,30 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
   static const dropDownAddStr = "Add new";
   static const dropDownUpdateUrlSTr = "Update URL";
 
+  static const dropDownExitStr = "Exit";
+  static const dropDownMinimizeToTrayStr = "Minimize to tray";
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return SettingsGroup(
+      height: 300,
       title: "Behaviour",
       children: [
-        // SwitchSetting(
-        //   text: "Launch on startup",
-        //   switchValue: SettingsCache.launchOnStartUp,
-        //   // onChanged: (val) =>
-        //   //     setState(() => SettingsCache.launchOnStartUp = val),
-        // ),
-        // SwitchSetting(
-        //   text: "Minimize to tray on close",
-        //   switchValue: SettingsCache.minimizeToTrayOnClose,
-        //   // onChanged: (val) =>
-        //   //     setState(() => SettingsCache.minimizeToTrayOnClose = val),
-        // ),
+        SwitchSetting(
+          text: "Launch at startup",
+          switchValue: SettingsCache.launchOnStartUp,
+          onChanged: (val) =>
+              setState(() => SettingsCache.launchOnStartUp = val),
+        ),
+        const SizedBox(height: 5),
+        SwitchSetting(
+          text: "Low Resource Mode",
+          switchValue: SettingsCache.lowResourceMode,
+          onChanged: (val) =>
+              setState(() => SettingsCache.lowResourceMode = val),
+        ),
+        const SizedBox(height: 5),
         SwitchSetting(
           text: "Open download progress window when a new download starts",
           switchValue: SettingsCache.openDownloadProgressWindow,
@@ -48,9 +55,27 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
           dropDownWidth: size.width * 0.2,
           textWidth: size.width * 0.15,
           dropDownItemTextWidth: size.width * 0.17,
-          value: _actionToDropDownTxt(SettingsCache.fileDuplicationBehaviour),
+          value: _appClosureActionToDropDownTxt(
+            SettingsCache.appClosureBehaviour,
+          ),
+          text: "App closure behaviour",
+          onChanged: _onAppClosureDropDownChanged,
+          items: const [
+            dropDownMinimizeToTrayStr,
+            dropDownExitStr,
+            dropDownAskStr,
+          ],
+        ),
+        const SizedBox(height: 5),
+        DropDownSetting(
+          dropDownWidth: size.width * 0.2,
+          textWidth: size.width * 0.15,
+          dropDownItemTextWidth: size.width * 0.17,
+          value: _fileDuplicationActionToDropDownTxt(
+            SettingsCache.fileDuplicationBehaviour,
+          ),
           text: "Duplicate download action",
-          onChanged: _onDropDownChanged,
+          onChanged: _onFileDuplicationDropDownChanged,
           items: const [
             dropDownAddStr,
             dropDownUpdateUrlSTr,
@@ -62,7 +87,8 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
     );
   }
 
-  String _actionToDropDownTxt(FileDuplicationBehaviour behaviour) {
+  String _fileDuplicationActionToDropDownTxt(
+      FileDuplicationBehaviour behaviour) {
     switch (behaviour) {
       case FileDuplicationBehaviour.ask:
         return dropDownAskStr;
@@ -75,13 +101,43 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
     }
   }
 
-  void _onDropDownChanged(String? value) {
+  String _appClosureActionToDropDownTxt(AppClosureBehaviour behaviour) {
+    switch (behaviour) {
+      case AppClosureBehaviour.ask:
+        return dropDownAskStr;
+      case AppClosureBehaviour.exit:
+        return dropDownExitStr;
+      case AppClosureBehaviour.minimizeToTray:
+        return dropDownMinimizeToTrayStr;
+    }
+  }
+
+  void _onFileDuplicationDropDownChanged(String? value) {
     if (value == null || value.isEmpty) return;
-    final behaviour = _dropDownTxtToBehaviour(value);
+    final behaviour = _fileDuplicationDropDownTxtToBehaviour(value);
     setState(() => SettingsCache.fileDuplicationBehaviour = behaviour);
   }
 
-  FileDuplicationBehaviour _dropDownTxtToBehaviour(String txt) {
+  void _onAppClosureDropDownChanged(String? value) {
+    if (value == null || value.isEmpty) return;
+    final behaviour = _appClosureDropDownTxtToBehaviour(value);
+    setState(() => SettingsCache.appClosureBehaviour = behaviour);
+  }
+
+  AppClosureBehaviour _appClosureDropDownTxtToBehaviour(String txt) {
+    switch (txt) {
+      case dropDownAskStr:
+        return AppClosureBehaviour.ask;
+      case dropDownExitStr:
+        return AppClosureBehaviour.exit;
+      case dropDownMinimizeToTrayStr:
+        return AppClosureBehaviour.minimizeToTray;
+      default:
+        return AppClosureBehaviour.ask;
+    }
+  }
+
+  FileDuplicationBehaviour _fileDuplicationDropDownTxtToBehaviour(String txt) {
     switch (txt) {
       case dropDownAskStr:
         return FileDuplicationBehaviour.ask;

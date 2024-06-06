@@ -14,10 +14,12 @@ class HandleSingleConnectionArgs extends BaseIsolateArgs {
   final int totalSegments;
   final int maxConnectionRetryCount;
   final int connectionRetryTimeout;
+  final bool lowResourceMode;
 
   HandleSingleConnectionArgs({
     required this.segmentNumber,
     required this.totalSegments,
+    required this.lowResourceMode,
     required super.sendPort,
     required this.maxConnectionRetryCount,
     required this.connectionRetryTimeout,

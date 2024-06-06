@@ -35,7 +35,8 @@ class DownloadAdditionUiUtil {
         context: context,
         builder: (_) => const ErrorDialog(
           width: 30,
-          height: 45,
+          height: 40,
+          textHeight: 15,
           title: 'Invalid URL',
         ),
       );

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -12,11 +13,6 @@ import '../db/hive_util.dart';
 import '../model/file_metadata.dart';
 import '../model/setting.dart';
 import '../widget/base/confirmation_dialog.dart';
-
-const urlRegex = '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]'
-    '+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]'
-    '{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]'
-    '+\.[^\s]{2,})';
 
 // Removed usage because of status 400 in google drive. also it doesn't seem necessary anyway
 const Map<String, String> contentType_MultiPartByteRanges = {
@@ -53,7 +49,7 @@ String extractFileNameFromUrl(String url) {
 }
 
 bool isUrlValid(String url) {
-  return RegExp(urlRegex).hasMatch(url);
+  return Uri.tryParse(url)?.hasAbsolutePath ?? false;
 }
 
 List<int> calculateByteStartAndByteEnd(
@@ -100,7 +96,11 @@ Future<FileInfo?> requestFileInfo(DownloadItem downloadItem,
       throw Exception({"Could not retrieve result from the given URL"});
     }
     downloadItem.contentLength = int.parse(headers["content-length"]!);
-    downloadItem.fileName = Uri.decodeComponent(downloadItem.fileName);
+    try {
+      downloadItem.fileName = Uri.decodeComponent(downloadItem.fileName);
+    } catch (e) {
+      downloadItem.fileName = utf8.decode(downloadItem.fileName.codeUnits);
+    }
     final supportsPause = checkDownloadPauseSupport(headers);
     final data = FileInfo(
       supportsPause,
@@ -127,38 +127,56 @@ Future<dynamic> checkLatestBriskRelease() async {
 
 // TODO Refactor and fix version check logic
 void checkForUpdate(BuildContext context) async {
-  var lastUpdateCheck = await HiveUtil.instance.settingBox.get(18);
+  var lastUpdateCheck = HiveUtil.getSetting(SettingOptions.lastUpdateCheck);
   if (lastUpdateCheck == null) {
     lastUpdateCheck = Setting(
-      name: "lastUpdateCheck",
+      name: SettingOptions.lastUpdateCheck.name,
       value: "0",
       settingType: SettingType.system.name,
     );
     await HiveUtil.instance.settingBox.add(lastUpdateCheck);
   }
   if (int.parse(lastUpdateCheck.value) + 86400000 >
-      DateTime.now().millisecondsSinceEpoch) return;
+      DateTime.now().millisecondsSinceEpoch) {
+    return;
+  }
 
   final json = await checkLatestBriskRelease();
-  if (json == null || json['tag_name'] == null) return;
-
-  String tagName = json['tag_name'];
-  tagName = tagName.replaceAll(".", "").replaceAll("v", "");
-  int latestVersion = int.parse(tagName);
-  final packageInfo = await PackageInfo.fromPlatform();
-  int currentVersion = int.parse(packageInfo.version.replaceAll(".", ""));
-  if (latestVersion > currentVersion) {
-    showDialog(
-      context: context,
-      builder: (context) => ConfirmationDialog(
-        title:
-            "New version of Brisk is available. Do you want to download the latest version?",
-        onConfirmPressed: () => launchUrlString(
-          "https://github.com/AminBhst/brisk/releases/latest",
-        ),
-      ),
-    );
-    lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
-    await HiveUtil.instance.settingBox.put(18, lastUpdateCheck);
+  if (json == null || json['tag_name'] == null) {
+    return;
   }
+
+  String latestVersion = (json['tag_name'] as String).replaceAll("v", "");
+  final packageInfo = await PackageInfo.fromPlatform();
+  if (!_isNewVersionAvailable(latestVersion, packageInfo)) {
+    return;
+  }
+  showDialog(
+    context: context,
+    builder: (context) => ConfirmationDialog(
+      title:
+          "New version of Brisk is available. Do you want to download the latest version?",
+      onConfirmPressed: () => launchUrlString(
+        "https://github.com/AminBhst/brisk/releases/latest",
+      ),
+    ),
+  );
+  lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
+  await lastUpdateCheck.save();
+}
+
+bool _isNewVersionAvailable(String latestVersion, PackageInfo packageInfo) {
+  final latestSplit = latestVersion.split(".");
+  final currentSplit = packageInfo.version.split(".");
+  for (int i = 0; i < latestSplit.length; i++) {
+    final splitVersion = int.parse(latestSplit[i]);
+    final splitCurrent = int.parse(currentSplit[i]);
+    if (splitVersion > splitCurrent) {
+      return true;
+    }
+    if (i == latestSplit.length - 1) {
+      return false;
+    }
+  }
+  return false;
 }

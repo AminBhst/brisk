@@ -26,6 +26,7 @@ class SingleConnectionManager {
           request = HttpDownloadRequest(
             downloadItem: data.downloadItem,
             baseTempDir: data.baseTempDir,
+            lowResourceMode: data.lowResourceMode,
             segmentNumber: segmentNumber,
             startByte: startEndByte[0],
             endByte: startEndByte[1],
