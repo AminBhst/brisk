@@ -43,6 +43,25 @@ jobs:
       - name: Enable linux-desktop for flutter
         run: flutter config --enable-linux-desktop && export PATH="$PATH":"$HOME/.pub-cache/bin"
       
+      - name: Cache the dependencies
+        id: pub-cache
+        uses: actions/cache@v4.0.0
+        with:
+          path: /opt/hostedtoolcache/flutter/stable-3.16.9-x64/.pub-cache 
+          key: | 
+           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.lock') }}
+           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.lock') }}
+           ${{ runner.os }}-flutter-brisk-dependencies-${{ hashFiles('pubspec.yaml') }}
+      
+      - name: Get dependencies
+        if: ${{ steps.pub-cache.outputs.cache-hit != 'true' }}
+        run: flutter pub get
+
+      - name: Start the build process for tarball
+        run: flutter build linux
+
       - name: Install flutter_distributor
         run: dart pub global activate flutter_distributor
 
@@ -54,22 +73,18 @@ jobs:
 
       - name: change the deb name
         run: find ./ -name *.deb -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.deb \;
-
-      - name: Upload artifact deb
-        uses: actions/upload-artifact@v4.0.0
-        with:
-          name: deb
-          path: ./Brisk-${{ inputs.tag }}-linux-x86_64.deb
-          retention-days: 1
       
       - name: change the rpm name
         run: find ./ -name *.rpm -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.rpm \;
 
-      - name: Upload artifact rpm
+      - name: Compress the release file for tarball
+        run: tar -cvJf Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
+          
+      - name: Upload artifact 
         uses: actions/upload-artifact@v4.0.0
         with:
-          name: rpm
-          path: ./Brisk-${{ inputs.tag }}-linux-x86_64.rpm
+          name: brisk
+          path: ./Brisk-${{ inputs.tag }}-linux-x86_64.*
           retention-days: 1
 
   Release:
@@ -78,16 +93,11 @@ jobs:
     permissions:
       contents: write
     steps:
-    
-      - name: Donwload artifact deb
-        uses: actions/download-artifact@v4.1.0
-        with:
-          name: deb
 
       - name: Donwload artifact rpm
         uses: actions/download-artifact@v4.1.0
         with:
-          name: rpm
+          name: brisk
 
       - name: Release the changes
         uses: softprops/action-gh-release@v1
@@ -99,6 +109,7 @@ jobs:
           files: |
            ./Brisk-${{ inputs.tag }}-linux-x86_64.rpm
            ./Brisk-${{ inputs.tag }}-linux-x86_64.deb
+           ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
 
       
  
