@@ -7,9 +7,9 @@ jobs:
     permissions:
       contents: read 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.1.5
       - name: Install flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@v2.14.0
         with:
           flutter-version: "3.16.9"
           channel: 'stable'
@@ -34,7 +34,8 @@ jobs:
 
       - name: Extract Version from Tag
         id: extract_version
-        run: 'Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" |  ForEach-Object { $matches[1] }'
+        run: |
+          Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" |  ForEach-Object { $matches[1] }
         
       - name: change name of .exe
         run: |
