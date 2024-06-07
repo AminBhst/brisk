@@ -15,7 +15,7 @@ jobs:
           Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -Encoding UTF8 | ForEach-Object{ $_.Matches.Groups[1].Value }
       
       - name: Extract Version from pubspec.yaml test
-        run: echo ${{ steps.extract_version.outputs.Object }}
+        run: echo ${{ steps.extract_version.outputs.stdout }}
           
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0
