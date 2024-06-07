@@ -1,4 +1,4 @@
-name: Linux Release
+name: Linux Release Test
 
 on:
   # push:
