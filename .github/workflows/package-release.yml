@@ -144,12 +144,12 @@ jobs:
       - name: Donwload artifact package
         uses: actions/download-artifact@v4.1.0
         with:
-          name: brisk-package
+          name: brisk-*
 
-      - name: Donwload artifact package
-        uses: actions/download-artifact@v4.1.0
-        with:
-          name: brisk-windows
+      # - name: Donwload artifact package
+      #   uses: actions/download-artifact@v4.1.0
+      #   with:
+      #     name: brisk-windows
 
       - name: Release the changes
         uses: softprops/action-gh-release@v2.0.5
