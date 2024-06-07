@@ -12,12 +12,3 @@ releases:
           platform: linux
           target: rpm
 
-      - name: release-brisk-linux-zip
-        package:
-          platform: linux
-          target: zip
-      
-      # - name: release-brisk-windows-exe
-      #   package:
-      #     platform: windows
-      #     target: exe
