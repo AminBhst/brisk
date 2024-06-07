@@ -9,11 +9,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.5
       
-      - name: Extract Version from Tag
+      - name: Extract Version from pubspec.yaml
         id: extract_version
         run: |
           Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -Encoding UTF8 | ForEach-Object{ $_.Matches.Groups[1].Value }
-          echo ${{ steps.extract_version.outputs }}
+      
+      - name: Extract Version from pubspec.yaml test
+        run: echo ${{ steps.extract_version.outputs }}
           
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0
