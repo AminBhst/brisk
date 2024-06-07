@@ -58,6 +58,9 @@ jobs:
         
       - name: Enable windows build
         run: flutter config --enable-windows-desktop
+
+      - name: Build artifacts
+        run: flutter_distributor package --platform windows --targets exe
         
       - name: change name of .exe
         run: Get-ChildItem -Recurse -Path .\dist\ -Filter "*.exe" -File | Move-Item -Destination .\Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
