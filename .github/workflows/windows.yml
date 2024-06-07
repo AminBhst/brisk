@@ -2,7 +2,7 @@ name: Windows
 on:
   workflow_dispatch:
 jobs:
-  windows:
+  version:
     runs-on: windows-latest
     permissions:
       contents: read 
@@ -15,8 +15,21 @@ jobs:
            $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
            echo version=$VERSION >> $env:GITHUB_OUTPUT
            
+  windows:
+    runs-on: windows-latest
+    permissions:
+      contents: read 
+    steps:
+      - uses: actions/checkout@v4.1.5
+      
+      # - name: Extract Version from pubspec.yaml
+      #   id: extract_version
+      #   run: |
+      #      $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
+      #      echo version=$VERSION >> $env:GITHUB_OUTPUT
+           
       - name: Extract Version from pubspec.yaml test
-        run: echo ${{ steps.extract_version.outputs.version }}
+        run: echo ${{ jobs.version.outputs.steps.extract_version.outputs.version }}
           
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0
