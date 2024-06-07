@@ -29,7 +29,7 @@ Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-e
 
 ### keybinder-3
 - Debian/Ubuntu : ```libkeybinder-3.0-0```
-- Fedora/RHEL/CentOS : ```keybinder3```
+- Fedora/RHEL/CentOS : ```libayatana-appindicator-gtk3```
 - Arch Linux : ```libkeybinder3```
 
 ### appindicator3-0.1
