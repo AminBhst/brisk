@@ -3,12 +3,12 @@ name: package release
 on:
 
   workflow_dispatch:
-    inputs:
+    # inputs:
     
-      tag:
-        description: 'Enter a tag for this release'
-        required: true
-        type: string
+    #   tag:
+    #     description: 'Enter a tag for this release'
+    #     required: true
+    #     type: string
         
       # Release_note:
       #   description: 'Enter your release notes'
@@ -16,10 +16,26 @@ on:
       #   type: string
 
 jobs:
+  version:
+    runs-on: windows-latest
+    permissions:
+      contents: read 
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4.1.5
+      
+      - name: Extract Version from pubspec.yaml
+        id: extract_version
+        run: |
+           $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
+           echo version=$VERSION >> $env:GITHUB_OUTPUT
+           
   Build-windows:
     runs-on: windows-latest
     permissions:
       contents: read 
+    needs: version
     steps:
       - uses: actions/checkout@v3
       - name: Install flutter
@@ -42,21 +58,15 @@ jobs:
         
       - name: Enable windows build
         run: flutter config --enable-windows-desktop
-
-      - name: Extract Version from pubspec.yaml
-        id: extract_version
-        run: |
-           $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
-           echo version=$VERSION >> $env:GITHUB_OUTPUT
         
       - name: change name of .exe
-        run: Get-ChildItem -Recurse -Path .\dist\ -Filter "*.exe" -File | Move-Item -Destination .\Brisk-v${{ steps.extract_version.outputs.version }}-windows-x86_64.exe
+        run: Get-ChildItem -Recurse -Path .\dist\ -Filter "*.exe" -File | Move-Item -Destination .\Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
         
       - name: Upload artifact 
         uses: actions/upload-artifact@v4.3.3
         with:
           name: brisk-windows
-          path: Brisk-v${{ steps.extract_version.outputs.version }}-windows-x86_64.exe
+          path: Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
           retention-days: 1
 
         
@@ -64,6 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read 
+    needs: version
     steps:
     
       - name: Checkout the code
@@ -95,19 +106,20 @@ jobs:
         run: flutter build linux
          
       - name: Compress the release file
-        run: tar -cJf Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
+        run: tar -cJf Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
 
       - name: Upload artifact 
         uses: actions/upload-artifact@v4.3.3
         with:
           name: brisk-tarball
-          path: ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
+          path: ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz
           retention-days: 1
 
   Build-package:
     runs-on: ubuntu-latest
     permissions:
       contents: read 
+    needs: version
     steps:
     
       - name: Checkout the code
@@ -141,19 +153,19 @@ jobs:
         run: find ./dist -name brisk* -execdir mv {} ../../ \;
 
       - name: change the deb name
-        run: find ./ -name *.deb -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.deb \;
+        run: find ./ -name *.deb -execdir mv {} Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.deb \;
       
       - name: change the rpm name
-        run: find ./ -name *.rpm -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.rpm \;
+        run: find ./ -name *.rpm -execdir mv {} Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.rpm \;
 
       - name: change the rpm name
-        run: find ./ -name *.zip -execdir mv {} Brisk-${{ inputs.tag }}-linux-x86_64.zip \;
+        run: find ./ -name *.zip -execdir mv {} Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.zip \;
           
       - name: Upload artifact 
         uses: actions/upload-artifact@v4.3.3
         with:
           name: brisk-package
-          path: ./Brisk-${{ inputs.tag }}-linux-x86_64.*
+          path: ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.*
           retention-days: 1
 
   Release:
@@ -190,10 +202,10 @@ jobs:
           body_path: ./.github/release.md 
           #body: ${{ inputs.Release_note }} 
           files: |
-           ./Brisk-${{ inputs.tag }}-linux-x86_64.rpm
-           ./Brisk-${{ inputs.tag }}-linux-x86_64.deb
-           ./Brisk-${{ inputs.tag }}-linux-x86_64.zip
-           ./Brisk-${{ inputs.tag }}-linux-x86_64.tar.xz
-           ./Brisk-${{ inputs.tag }}-windows-x86_64.exe
+           ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.rpm
+           ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.deb
+           ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.zip
+           ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz
+           ./Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
       
  
