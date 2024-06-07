@@ -12,10 +12,11 @@ jobs:
       - name: Extract Version from pubspec.yaml
         id: extract_version
         run: |
-          Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -Encoding UTF8 | ForEach-Object{ $_.Matches.Groups[1].Value }
-      
+           $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
+           echo version=$VERSION >> $env:GITHUB_OUTPUT
+           
       - name: Extract Version from pubspec.yaml test
-        run: echo ${{ steps.extract_version.outputs.stdout }}
+        run: echo ${{ steps.extract_version.outputs.version }}
           
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0
