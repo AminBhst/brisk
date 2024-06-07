@@ -14,7 +14,7 @@ requires:
   - keybinder3-doc
   - keybinder3
   - keybinder3-devel
-  - libappindicator-gtk3-devel
+  - libayatana-appindicator-gtk3
 
 keywords:
   - Brisk
