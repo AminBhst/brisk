@@ -30,7 +30,7 @@ jobs:
       #      echo version=$VERSION >> $env:GITHUB_OUTPUT
            
       - name: Extract Version from pubspec.yaml test
-        run: echo ${{ jobs.version.outputs.steps.extract_version.outputs.version }}
+        run: echo ${{ needs.version.outputs.steps.extract_version.outputs.version }}
           
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0
