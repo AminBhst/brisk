@@ -37,9 +37,9 @@ jobs:
       contents: read 
     needs: version
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.1.5
       - name: Install flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@v2.14.0
         with:
           flutter-version: "3.16.9"
           channel: 'stable'
