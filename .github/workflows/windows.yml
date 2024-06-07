@@ -39,7 +39,7 @@ jobs:
         
       - name: change name of .exe
         run: |
-          Get-ChildItem -Path . -Filter "*.exe" -File | Move-Item -Destination .\Brisk-${{ inputs.tag }}-windows-x86_64.exe
+          Get-ChildItem -Recurse -Path .\dist\ -Filter "*.exe" -File | Move-Item -Destination .\Brisk-${{ inputs.tag }}-windows-x86_64.exe
           dir
           dir .\dist\1.4.6+15\
 
