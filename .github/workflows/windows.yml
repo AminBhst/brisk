@@ -8,6 +8,12 @@ jobs:
       contents: read 
     steps:
       - uses: actions/checkout@v4.1.5
+      
+      - name: Extract Version from Tag
+        id: extract_version
+        run: |
+          Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -Encoding UTF8 |  ForEach-Object { $matches[1] }
+          echo ${{ steps.extract_version.outputs }}
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0
         with:
@@ -32,11 +38,7 @@ jobs:
       - name: Build artifacts
         run: flutter_distributor package --platform windows --targets exe
 
-      - name: Extract Version from Tag
-        id: extract_version
-        run: |
-          Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" |  ForEach-Object { $matches[1] }
-        
+      
       - name: change name of .exe
         run: |
           Get-ChildItem -Recurse -Path .\dist\ -Filter "*.exe" -File | Move-Item -Destination .\Brisk-${{ steps.extract_version.outputs }}-windows-x86_64.exe
