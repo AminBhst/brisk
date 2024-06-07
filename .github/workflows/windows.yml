@@ -1,11 +1,6 @@
 name: Windows
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Enter a tag for this release'
-        required: true
-        type: string
 jobs:
   windows:
     runs-on: windows-latest
