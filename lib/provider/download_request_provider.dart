@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:brisk/constants/download_command.dart';
+import 'package:brisk/downloader/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
-import 'package:brisk/downloader/multi_connection_download_coordinator.dart';
+import 'package:brisk/downloader/multi_connection_download_handler.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/download_item.dart';
@@ -95,7 +95,7 @@ class DownloadRequestProvider with ChangeNotifier {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
     final isolate = await Isolate.spawn(
-        MultiConnectionDownloadCoordinator.startDownloadRequest,
+        MultiConnectionDownloadHandler.startDownloadRequest,
         IsolateArgsPair(rPort.sendPort, id)
     );
     handlerIsolates[id] = isolate;

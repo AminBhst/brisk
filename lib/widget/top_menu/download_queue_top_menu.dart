@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/download_command.dart';
+import '../../downloader/download_command.dart';
 import '../../constants/download_status.dart';
 import '../../db/hive_util.dart';
 import '../../provider/download_request_provider.dart';

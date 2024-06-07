@@ -1,11 +1,10 @@
-
 import 'package:stream_channel/isolate_channel.dart';
 
-class IsolateChannelWrapper {
+class IsolateChannelProxy {
   final IsolateChannel channel;
   bool _isListened = false;
 
-  IsolateChannelWrapper({
+  IsolateChannelProxy({
     required this.channel,
   });
 
@@ -16,6 +15,9 @@ class IsolateChannelWrapper {
     channel.stream.cast<T>().listen((event) {
       this._isListened = true;
       callback.call(event);
+      onEventReceived(event);
     });
   }
+
+  void onEventReceived(event) {}
 }

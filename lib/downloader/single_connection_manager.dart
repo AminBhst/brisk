@@ -1,6 +1,6 @@
 import 'dart:isolate';
 
-import 'package:brisk/constants/download_command.dart';
+import 'package:brisk/downloader/download_command.dart';
 import 'package:brisk/downloader/http_download_request.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
 import 'package:stream_channel/isolate_channel.dart';

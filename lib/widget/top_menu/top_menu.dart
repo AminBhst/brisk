@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:brisk/constants/download_command.dart';
+import 'package:brisk/downloader/download_command.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:path/path.dart';
