@@ -1,4 +1,5 @@
 import 'package:brisk/downloader/segment.dart';
+import 'package:brisk/util/pair.dart';
 
 class DownloadSegments {
   int contentLength = 0;
@@ -20,12 +21,20 @@ class DownloadSegments {
     return segmentList;
   }
 
-  void updateSegment() {
+  void split() {
     List<Segment> newSegments = [];
     for (var segment in segments) {
       final splitByte = ((segment.endByte - segment.startByte) / 2).floor();
-      final segOne = Segment(segment.startByte, splitByte);
-      final segTwo = Segment(splitByte + 1, segment.endByte);
+      Segment segOne;
+      Segment segTwo;
+      if (segment.startByte > splitByte) {
+        final endByte = splitByte + segment.startByte;
+        segOne = Segment(segment.startByte, endByte);
+        segTwo = Segment(endByte + 1, segment.endByte);
+      } else {
+        segOne = Segment(segment.startByte, splitByte);
+        segTwo = Segment(splitByte + 1, segment.endByte);
+      }
       newSegments.add(segOne);
       newSegments.add(segTwo);
     }

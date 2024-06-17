@@ -24,6 +24,7 @@ class DownloadProgress {
   int segmentLength;
   late Directory baseTempDir;
   String detailsStatus;
+  String message;
 
   DownloadProgress({
     required this.downloadItem,
@@ -43,6 +44,7 @@ class DownloadProgress {
     this.segmentLength = 0,
     this.detailsStatus = "",
     this.totalSegments = 0,
+    this.message = "",
   });
 
   factory DownloadProgress.loadFromHttpDownloadRequest(

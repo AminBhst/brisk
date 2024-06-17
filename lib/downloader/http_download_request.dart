@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk/model/download_item_model.dart';
+import 'package:brisk/downloader/internal_messages.dart';
 import 'package:brisk/model/download_progress.dart';
 import '../constants/types.dart';
 import '../util/file_util.dart';
@@ -121,7 +122,7 @@ class HttpDownloadRequest {
     _notifyChange();
 
     if (_isDownloadCompleted()) {
-    print("DOWNLOAD IS COMPLETE");
+      print("DOWNLOAD IS COMPLETE");
       _setDownloadComplete();
       _notifyChange();
       return;
@@ -216,8 +217,9 @@ class HttpDownloadRequest {
   }
 
   /// TODO don't create a new obj every time
-  void _notifyChange() {
+  void _notifyChange({String message = ""}) {
     final data = DownloadProgress.loadFromHttpDownloadRequest(this);
+    data.message = message;
     progressCallback!(data);
   }
 
@@ -485,6 +487,10 @@ class HttpDownloadRequest {
   }
 
   void refreshSegment(int startByte, int endByte) {
+    if (downloadProgress >= 1) {
+      _notifyChange(message: MESSAGE_OUT_DATED_REFRESH);
+      return;
+    }
     segmentRefreshed = true;
     this.startByte = startByte;
     this.endByte = endByte;

@@ -62,7 +62,7 @@ class MultiConnectionDownloadHandler {
       return;
     }
     _dynamicConnectionManagerTimer = Timer.periodic(
-      Duration(seconds: 4),
+      Duration(seconds: 2),
       (timer) => runDynamicConnectionManager(),
     );
   }
@@ -95,7 +95,7 @@ class MultiConnectionDownloadHandler {
       }
       await sendToDownloadIsolates(data, handlerChannel);
       for (final channel in _downloadChannels[id]!.connectionChannels.values) {
-        channel.listenToStream<DownloadProgress>(handleProgressUpdates);
+        channel.listenToStream<DownloadProgress>(_handleProgressUpdates);
       }
     });
   }
@@ -105,31 +105,34 @@ class MultiConnectionDownloadHandler {
     if (progress == null) {
       return;
     }
-
-    final segmentList =
-        DownloadSegments.init(progress.downloadItem.contentLength);
-    final segments = _getNewSegmentMap(progress.downloadItem);
+    final mainChannel = _downloadChannels[downloadId]!;
+    _downloadChannels[downloadId]!.segments?.split();
+    List<Segment> segments = List.from(mainChannel.segments!.segments);
     if (segments.isEmpty) {
       return;
     }
-    final List<Segment> segmentationArray = [];
-    print("SEGMENTS : ${segments}");
-    final mainChannel = _downloadChannels[downloadId]!;
+    segments.forEach((element) {
+      print(
+          "************************* NEW SEGMENTS ******************************");
+      print("**** START : ${element.startByte}");
+      print("**** END : ${element.endByte}");
+      print("************************************************************");
+    });
+
     mainChannel.connectionChannels.forEach((segNum, connectionChannel) {
-      final startByte = segments.keys
-          .where((startByte) => connectionChannel.startByte == startByte)
+      final connSegment = segments
+          .where((seg) => connectionChannel.startByte == seg.startByte)
           .firstOrNull;
-      if (startByte == null) {
+      if (connSegment == null) {
         return;
       }
-      final endByte = segments[startByte]!;
-      _sendRefreshSegmentCommand(downloadId, segNum, startByte, endByte);
-      segments.remove(startByte);
+      _sendRefreshSegmentCommand(downloadId, segNum, connSegment);
+      segments.remove(connSegment);
     });
+
     print("Segments after deletion  ${segments}");
-    for (int i = 0; i < segments.length; i++) {
-      final startByte = segments.keys.elementAt(i);
-      final endByte = segments.values.elementAt(i);
+
+    for (final seg in segments) {
       final maxSegNum = getNewSegmentNumber(downloadId);
       print("Max segnum : $maxSegNum");
       final data = DownloadIsolateData(
@@ -138,8 +141,8 @@ class MultiConnectionDownloadHandler {
         baseTempDir: baseTempDir,
         totalConnections: totalConnections,
         baseSaveDir: baseSaveDir,
-        startByte: startByte,
-        endByte: endByte,
+        startByte: seg.startByte,
+        endByte: seg.endByte,
       );
       await _spawnSingleDownloadIsolate(data, maxSegNum);
     }
@@ -151,7 +154,7 @@ class MultiConnectionDownloadHandler {
   /// Instead of sending a pause command and restarting the download with new segments,
   /// we can just use the length setter in uint8list to cut the temp file to the length that we need (MUCH MORE OPTIMIZED)
   static void _sendRefreshSegmentCommand(
-      int downloadId, int segmentNumber, int startByte, int endByte) {
+      int downloadId, int segmentNumber, Segment segment) {
     final mainChannel = _downloadChannels[downloadId];
     if (mainChannel == null || mainChannel.connectionChannels.isEmpty) {
       return;
@@ -163,8 +166,8 @@ class MultiConnectionDownloadHandler {
       totalConnections: totalConnections,
       downloadItem: _downloadProgresses[downloadId]!.downloadItem,
       baseTempDir: baseSaveDir,
-      startByte: startByte,
-      endByte: endByte,
+      startByte: segment.startByte,
+      endByte: segment.endByte,
       segmentNumber: segmentNumber,
     );
 
@@ -183,21 +186,25 @@ class MultiConnectionDownloadHandler {
     });
   }
 
+  // TODO take estimation into account
   static bool _shouldCreateNewConnections(DownloadProgress progress) {
     final downloadId = progress.downloadItem.id;
+    print(" ^^^^^^^^^^^^^^^ TOTAL PROG : ${progress.totalDownloadProgress}");
     // final lastCheck = last_ds_checks[downloadId];
+    final connectionChannels =
+        _downloadChannels[downloadId]?.connectionChannels;
     return
         // lastCheck != null &&
         //   lastCheck + 4000 < _nowMillis &&
-        progress.totalDownloadProgress != 1 &&
-            _connectionIsolates[downloadId] != null &&
-            _connectionIsolates[downloadId]!.length < totalConnections;
+        progress.totalDownloadProgress < 1 &&
+            connectionChannels != null &&
+            connectionChannels.length < totalConnections;
   }
 
   // TODO implement
   static void validateTempFilesIntegrity() {}
 
-  static void handleProgressUpdates(DownloadProgress progress) async {
+  static void _handleProgressUpdates(DownloadProgress progress) async {
     final downloadChannel = _downloadChannels[progress.downloadItem.id]!;
     final int id = progress.downloadItem.id;
     _connectionProgresses[id] ??= {};
@@ -209,15 +216,11 @@ class MultiConnectionDownloadHandler {
     final downloadProgress = DownloadProgress(
       downloadItem: progress.downloadItem,
       downloadProgress: totalProgress,
+      totalDownloadProgress: totalProgress,
       transferRate: convertByteTransferRateToReadableStr(totalByteTransferRate),
     );
-    _setEstimation(id, downloadProgress, totalProgress);
-    _setButtonAvailability(
-      id,
-      downloadProgress,
-      totalConnections,
-      totalProgress,
-    );
+    _setEstimation(downloadProgress, totalProgress);
+    _setButtonAvailability(downloadProgress, totalProgress);
     _setStatus(id, downloadProgress);
     // if (ds) {
     //   await _createNewConnection(downloadProgress, handlerChannel);
@@ -381,10 +384,11 @@ class MultiConnectionDownloadHandler {
   }
 
   static void _setEstimation(
-      int id, DownloadProgress downloadProgress, double totalProgress) {
-    if (completionEstimations[id] == null) return;
+      DownloadProgress downloadProgress, double totalProgress) {
+    final downloadId = downloadProgress.downloadItem.id;
+    if (completionEstimations[downloadId] == null) return;
     downloadProgress.estimatedRemaining =
-        totalProgress >= 1 ? "" : completionEstimations[id]!;
+        totalProgress >= 1 ? "" : completionEstimations[downloadId]!;
   }
 
   static int _tempTime = _nowMillis;
@@ -445,10 +449,11 @@ class MultiConnectionDownloadHandler {
 
   /// Sets the availability for start and pause buttons based on all the
   /// statuses of active connections
-  static void _setButtonAvailability(int id, DownloadProgress progress,
-      int totalSegments, double totalProgress) {
-    if (_connectionProgresses[id] == null) return;
-    final progresses = _connectionProgresses[id]!.values;
+  static void _setButtonAvailability(
+      DownloadProgress progress, double totalProgress) {
+    final downloadId = progress.downloadItem.id;
+    if (_connectionProgresses[downloadId] == null) return;
+    final progresses = _connectionProgresses[downloadId]!.values;
     if (totalProgress >= 1) {
       progress.pauseButtonEnabled = false;
       progress.startButtonEnabled = false;
@@ -488,6 +493,7 @@ class MultiConnectionDownloadHandler {
     return _findMissingByteRanges(downloadItem).length == 0;
   }
 
+  // TODO fix bug
   static double _calculateTotalTransferRate(int id) {
     double sum = 0;
     _connectionProgresses[id]!.forEach((key, value) {
@@ -532,7 +538,7 @@ class MultiConnectionDownloadHandler {
     _downloadChannels[downloadId]!
         .setConnectionChannel(segmentNumber, connChannel);
 
-    connChannel.listenToStream<DownloadProgress>(handleProgressUpdates);
+    connChannel.listenToStream<DownloadProgress>(_handleProgressUpdates);
   }
 
   static void _setSettings(DownloadIsolateData data) {
