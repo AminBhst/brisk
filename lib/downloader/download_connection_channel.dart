@@ -9,6 +9,7 @@ class DownloadConnectionChannel extends IsolateChannelWrapper {
   double progress = 0;
   int segmentLength = 0;
   DownloadItemModel? downloadItem;
+  String? message;
   DownloadConnectionChannel({
     required super.channel,
     required this.segmentNumber,
@@ -25,5 +26,6 @@ class DownloadConnectionChannel extends IsolateChannelWrapper {
     this.progress = event.downloadProgress;
     this.segmentLength = event.segmentLength;
     this.downloadItem = event.downloadItem;
+    this.message = event.message;
   }
 }

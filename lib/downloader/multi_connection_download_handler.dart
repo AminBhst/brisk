@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:brisk/downloader/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/downloader/download_connection_channel.dart';
+import 'package:brisk/downloader/internal_messages.dart';
 import 'package:brisk/downloader/main_download_channel.dart';
 import 'package:brisk/downloader/segment.dart';
 import 'package:brisk/downloader/download_segments.dart';
@@ -62,8 +63,8 @@ class MultiConnectionDownloadHandler {
       return;
     }
     _dynamicConnectionManagerTimer = Timer.periodic(
-      Duration(seconds: 2),
-      (timer) => runDynamicConnectionManager(),
+      Duration(seconds: 1),
+      (_) => runDynamicConnectionManager(),
     );
   }
 
@@ -120,32 +121,32 @@ class MultiConnectionDownloadHandler {
     });
 
     mainChannel.connectionChannels.forEach((segNum, connectionChannel) {
-      final connSegment = segments
+      final connSegment = mainChannel.segments!.segments
           .where((seg) => connectionChannel.startByte == seg.startByte)
           .firstOrNull;
       if (connSegment == null) {
         return;
       }
       _sendRefreshSegmentCommand(downloadId, segNum, connSegment);
-      segments.remove(connSegment);
+      mainChannel.segments!.segments.remove(connSegment);
     });
 
     print("Segments after deletion  ${segments}");
 
-    for (final seg in segments) {
-      final maxSegNum = getNewSegmentNumber(downloadId);
-      print("Max segnum : $maxSegNum");
-      final data = DownloadIsolateData(
-        command: DownloadCommand.start,
-        downloadItem: progress.downloadItem,
-        baseTempDir: baseTempDir,
-        totalConnections: totalConnections,
-        baseSaveDir: baseSaveDir,
-        startByte: seg.startByte,
-        endByte: seg.endByte,
-      );
-      await _spawnSingleDownloadIsolate(data, maxSegNum);
-    }
+    // for (final seg in segments) {
+    //   final maxSegNum = getNewSegmentNumber(downloadId);
+    //   print("Max segnum : $maxSegNum");
+    //   final data = DownloadIsolateData(
+    //     command: DownloadCommand.start,
+    //     downloadItem: progress.downloadItem,
+    //     baseTempDir: baseTempDir,
+    //     totalConnections: totalConnections,
+    //     baseSaveDir: baseSaveDir,
+    //     startByte: seg.startByte,
+    //     endByte: seg.endByte,
+    //   );
+    //   await _spawnSingleDownloadIsolate(data, maxSegNum);
+    // }
   }
 
   static int getNewSegmentNumber(int id) =>
@@ -209,6 +210,9 @@ class MultiConnectionDownloadHandler {
     final int id = progress.downloadItem.id;
     _connectionProgresses[id] ??= {};
     _connectionProgresses[id]![progress.segmentNumber] = progress;
+    if (progress.message == VALID_REFRESH_SEGMENT) {
+      createConnection(progress);
+    }
     double totalByteTransferRate = _calculateTotalTransferRate(id);
     final isTempWriteComplete = checkTempWriteCompletion(progress.downloadItem);
     final totalProgress = _calculateTotalDownloadProgress(id);
@@ -222,9 +226,6 @@ class MultiConnectionDownloadHandler {
     _setEstimation(downloadProgress, totalProgress);
     _setButtonAvailability(downloadProgress, totalProgress);
     _setStatus(id, downloadProgress);
-    // if (ds) {
-    //   await _createNewConnection(downloadProgress, handlerChannel);
-    // }
     if (isTempWriteComplete && isAssembleEligible(progress.downloadItem)) {
       downloadProgress.status = DownloadStatus.assembling;
       downloadChannel.channel.sink.add(downloadProgress);
@@ -239,6 +240,26 @@ class MultiConnectionDownloadHandler {
     _setConnectionProgresses(downloadProgress);
     _downloadProgresses[id] = downloadProgress;
     downloadChannel.channel.sink.add(downloadProgress);
+  }
+
+  static void createConnection(DownloadProgress progress) async {
+    final id = progress.downloadItem.id;
+    final mainChannel = _downloadChannels[id]!;
+    List<Segment> segments = List.from(mainChannel.segments!.segments);
+    for (final seg in segments) {
+      final maxSegNum = getNewSegmentNumber(id);
+      print("Max segnum : $maxSegNum");
+      final data = DownloadIsolateData(
+        command: DownloadCommand.start,
+        downloadItem: progress.downloadItem,
+        baseTempDir: baseTempDir,
+        totalConnections: totalConnections,
+        baseSaveDir: baseSaveDir,
+        startByte: seg.startByte,
+        endByte: seg.endByte,
+      );
+      await _spawnSingleDownloadIsolate(data, maxSegNum);
+    }
   }
 
   static Future<void> sendToDownloadIsolates(

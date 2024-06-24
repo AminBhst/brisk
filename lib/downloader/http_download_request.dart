@@ -153,7 +153,6 @@ class HttpDownloadRequest {
   }
 
   void sendDownloadRequest(http.Request request) {
-    print("sending request");
     try {
       var response = client.send(request);
       response.asStream().cast<http.StreamedResponse>().listen((response) {
@@ -277,6 +276,7 @@ class HttpDownloadRequest {
       _correctTempBytes();
       _setDownloadComplete();
       _notifyChange();
+      // segmentRefreshed = false;
       return;
     }
 
@@ -338,6 +338,7 @@ class HttpDownloadRequest {
       final tempStartByte = FileUtil.getStartByteFromTempFileName(fileName);
       final tempEndByte = FileUtil.getEndByteFromTempFileName(fileName);
       if (this.endByte < tempStartByte) {
+        print("THROAWAY FILE : ${tempEndByte - tempStartByte}");
         tempFilesToDelete.add(file);
         continue;
       }
@@ -346,6 +347,8 @@ class HttpDownloadRequest {
         newBufferStartByte = tempFileStartByte;
         final bufferCutLength = _calculateBufferCutLength(tempStartByte);
         print("====== BC ========");
+        print(
+            "THROWAWAY BYTES : ${tempEndByte - (tempStartByte + bufferCutLength)}");
         print("BufferCutLen $bufferCutLength");
         print("newStartByte $newBufferStartByte");
         print("====== BC ========");
@@ -488,12 +491,13 @@ class HttpDownloadRequest {
 
   void refreshSegment(int startByte, int endByte) {
     if (downloadProgress >= 1) {
-      _notifyChange(message: MESSAGE_OUT_DATED_REFRESH);
+      _notifyChange(message: INVALID_REFRESH_SEGMENT);
       return;
     }
     segmentRefreshed = true;
     this.startByte = startByte;
     this.endByte = endByte;
+    _notifyChange(message: VALID_REFRESH_SEGMENT);
   }
 
   void _clearBuffer() {
@@ -536,9 +540,9 @@ class HttpDownloadRequest {
   void _updateReceivedBytes(List<int> chunk) {
     totalReceivedBytes += chunk.length;
     tempReceivedBytes += chunk.length;
-    if (receivedBytesExceededEndByte) {
-      totalReceivedBytes = segmentLength;
-    }
+    // if (receivedBytesExceededEndByte) {
+    //   totalReceivedBytes = segmentLength;
+    // }
   }
 
   void _updateStatus(String status) {
