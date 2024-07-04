@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:brisk/downloader/download_command.dart';
+import 'package:brisk/download_engine/download_command.dart';
 
 import '../download_item_model.dart';
 

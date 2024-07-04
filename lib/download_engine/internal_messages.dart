@@ -1,0 +1,3 @@
+enum InternalMessage {
+  INVALID_REFRESH_SEGMENT, VALID_REFRESH_SEGMENT
+}

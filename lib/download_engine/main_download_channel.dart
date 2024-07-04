@@ -1,9 +1,9 @@
-import 'package:brisk/downloader/download_connection_channel.dart';
-import 'package:brisk/downloader/download_segments.dart';
-import 'package:brisk/downloader/isolate_channel_wrapper.dart';
+import 'package:brisk/download_engine/download_connection_channel.dart';
+import 'package:brisk/download_engine/download_segments.dart';
+import 'package:brisk/download_engine/isolate_channel_wrapper.dart';
 
 class MainDownloadChannel extends IsolateChannelWrapper {
-  DownloadSegments? segments;
+  DownloadSegments? downloadSegments;
 
   Map<int, DownloadConnectionChannel> connectionChannels = {};
 

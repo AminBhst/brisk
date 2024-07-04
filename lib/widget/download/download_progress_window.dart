@@ -1,4 +1,4 @@
-import 'package:brisk/downloader/download_command.dart';
+import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';

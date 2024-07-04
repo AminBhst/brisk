@@ -1,7 +1,7 @@
 import 'dart:isolate';
 
-import 'package:brisk/downloader/download_command.dart';
-import 'package:brisk/downloader/http_download_request.dart';
+import 'package:brisk/download_engine/download_command.dart';
+import 'package:brisk/download_engine/http_download_request.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
 import 'package:stream_channel/isolate_channel.dart';
 
@@ -54,7 +54,7 @@ class SingleConnectionManager {
           _connections[id]?.clear();
           break;
         case DownloadCommand.refreshSegment:
-          request.refreshSegment(data.startByte!, data.endByte!);
+          request.refreshSegment();
           break;
       }
     });

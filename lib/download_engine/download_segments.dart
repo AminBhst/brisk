@@ -1,4 +1,4 @@
-import 'package:brisk/downloader/segment.dart';
+import 'package:brisk/download_engine/segment.dart';
 
 class DownloadSegments {
   int contentLength = 0;

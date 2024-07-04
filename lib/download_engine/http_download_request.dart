@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
+import 'package:brisk/download_engine/connection_segment_message.dart';
 import 'package:brisk/model/download_item_model.dart';
-import 'package:brisk/downloader/internal_messages.dart';
+import 'package:brisk/download_engine/internal_messages.dart';
 import 'package:brisk/model/download_progress.dart';
 import '../constants/types.dart';
 import '../util/file_util.dart';
@@ -114,21 +116,18 @@ class HttpDownloadRequest {
   /// changed so that it calls notify listeners which can be used to display its live progress.
   void start(DownloadProgressCallback progressCallback,
       {bool connectionReset = false}) {
-    print("INSIDE START");
     if (!connectionReset && startNotAllowed) return;
-    // _runConnectionResetTimer();
+    // _runConnectionResetTimer(); // TODO uncomment
 
     _init(connectionReset, progressCallback);
-    _notifyChange();
+    _notifyProgress();
 
     if (_isDownloadCompleted()) {
-      print("DOWNLOAD IS COMPLETE");
       _setDownloadComplete();
-      _notifyChange();
+      _notifyProgress();
       return;
     }
 
-    print("Building request");
     final request = buildDownloadRequest();
     sendDownloadRequest(request);
   }
@@ -154,7 +153,7 @@ class HttpDownloadRequest {
 
   void sendDownloadRequest(http.Request request) {
     try {
-      var response = client.send(request);
+      final response = client.send(request);
       response.asStream().cast<http.StreamedResponse>().listen((response) {
         response.stream.listen(
           _processChunk,
@@ -164,7 +163,7 @@ class HttpDownloadRequest {
       });
     } catch (e) {
       _onError(e);
-      _notifyChange();
+      _notifyProgress();
     }
   }
 
@@ -179,7 +178,7 @@ class HttpDownloadRequest {
   void _updateDownloadProgress() {
     downloadProgress = totalReceivedBytes / segmentLength;
     totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
-    _notifyChange();
+    _notifyProgress();
   }
 
   // TODO USE THIS
@@ -207,7 +206,7 @@ class HttpDownloadRequest {
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
     _updateStatus(status);
     detailsStatus = status;
-    _notifyChange();
+    _notifyProgress();
   }
 
   void _cancelConnectionResetTimer() {
@@ -216,9 +215,8 @@ class HttpDownloadRequest {
   }
 
   /// TODO don't create a new obj every time
-  void _notifyChange({String message = ""}) {
+  void _notifyProgress() {
     final data = DownloadProgress.loadFromHttpDownloadRequest(this);
-    data.message = message;
     progressCallback!(data);
   }
 
@@ -240,7 +238,7 @@ class HttpDownloadRequest {
     totalReceivedBytes = existingLength;
     totalWrittenBytes = existingLength;
     totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
-    _notifyChange();
+    _notifyProgress();
   }
 
   int getNewStartByte() {
@@ -261,7 +259,7 @@ class HttpDownloadRequest {
     lastResponseTimeMillis = _nowMillis;
     pauseButtonEnabled = downloadItem.supportsPause;
     detailsStatus = transferRate;
-    _notifyChange();
+    _notifyProgress();
     if (downloadProgress == 1 && !isWritePartCaughtUp) {
       _updateStatus("Download Complete");
     }
@@ -275,15 +273,15 @@ class HttpDownloadRequest {
       _flushBuffer(sync: true);
       _correctTempBytes();
       _setDownloadComplete();
-      _notifyChange();
-      // segmentRefreshed = false;
+      _notifyProgress();
+      segmentRefreshed = false;
       return;
     }
 
     if (tempReceivedBytes > _dynamicFlushThreshold) {
       _flushBuffer();
     }
-    _notifyChange();
+    _notifyProgress();
   }
 
   /// Flushes the buffer containing the received bytes
@@ -324,7 +322,7 @@ class HttpDownloadRequest {
       detailsStatus = DownloadStatus.complete;
     }
     _flushQueueComplete++;
-    _notifyChange();
+    _notifyProgress();
   }
 
   void _correctTempBytes() {
@@ -345,12 +343,10 @@ class HttpDownloadRequest {
       if (this.endByte < tempEndByte) {
         tempFileToCut = file;
         newBufferStartByte = tempFileStartByte;
-        final bufferCutLength = _calculateBufferCutLength(tempStartByte);
+        final bufferCutLength = this.endByte - tempStartByte + 1;
         print("====== BC ========");
-        print(
-            "THROWAWAY BYTES : ${tempEndByte - (tempStartByte + bufferCutLength)}");
-        print("BufferCutLen $bufferCutLength");
-        print("newStartByte $newBufferStartByte");
+        final throwAwayBytes = tempEndByte - (tempStartByte + bufferCutLength);
+        print("THROWAWAY BYTES : $throwAwayBytes");
         print("====== BC ========");
         newBufferToWrite = file.openSync().readSync(bufferCutLength);
         tempFilesToDelete.add(file);
@@ -360,25 +356,27 @@ class HttpDownloadRequest {
     if (tempFileToCut != null) {
       final index = tempFiles.indexOf(tempFileToCut);
       final prevFileName = basename(tempFiles.elementAt(index - 1).path);
-      newBufferStartByte = FileUtil.getEndByteFromTempFileName(prevFileName);
+      newBufferStartByte =
+          FileUtil.getEndByteFromTempFileName(prevFileName); //TODO +1 ?????
     }
 
     for (final file in tempFilesToDelete) {
-      totalReceivedBytes = totalReceivedBytes - file.lengthSync();
+      totalReceivedBytes -= file.lengthSync();
       file.deleteSync();
     }
 
-    totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
     if (newBufferToWrite != null) {
       final newBufferEndByte =
-          newBufferStartByte! + newBufferToWrite.lengthInBytes;
+          newBufferStartByte! + newBufferToWrite.lengthInBytes - 1;
       final newTempFilePath = join(
         tempDirectory.path,
         "${segmentNumber}#${newBufferStartByte}-${newBufferEndByte}",
       );
       File(newTempFilePath).writeAsBytesSync(newBufferToWrite);
+      totalReceivedBytes += newBufferToWrite.lengthInBytes;
       totalWrittenBytes = segmentLength;
     }
+    totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
   }
 
   bool _isDownloadCompleted() {
@@ -402,10 +400,6 @@ class HttpDownloadRequest {
       final fileEndByte = FileUtil.getEndByteFromTempFile(file);
       final prevFileEndByte = FileUtil.getEndByteFromTempFile(prevFile);
       final isLastFile = i == tempFiles.length - 1;
-      if (isLastFile) {
-        print(
-            "LAST FILE END BYTE : $fileEndByte    this.endbyte= ${this.endByte}");
-      }
       if ((fileStartByte != prevFileEndByte) ||
           (isLastFile && fileEndByte != this.endByte)) {
         return false;
@@ -428,15 +422,6 @@ class HttpDownloadRequest {
 
     tempFiles.sort(FileUtil.sortByFileName);
     return tempFiles;
-  }
-
-  int _calculateBufferCutLength(int tempStartByte) {
-    int bufferCutLength = this.endByte - tempStartByte + 1;
-    if (bufferCutLength == 0) {
-      // TODO : This scenario MUST be investigated
-      bufferCutLength = 1;
-    }
-    return bufferCutLength;
   }
 
   void _calculateTransferRate(List<int> chunk) {
@@ -486,19 +471,42 @@ class HttpDownloadRequest {
     detailsStatus = DownloadStatus.paused;
     client.close();
     pauseButtonEnabled = false;
-    _notifyChange();
+    _notifyProgress();
   }
 
-  void refreshSegment(int startByte, int endByte) {
-    if (downloadProgress >= 1) {
-      _notifyChange(message: INVALID_REFRESH_SEGMENT);
+  // TODO : Optimize this by sending valid segment startByte and endbyte to (Can I ???)
+  void refreshSegment() {
+    print("()()()()()() REFRESH ()()(()()()()())");
+    print("()()()()()() Start : $startByte ()()(()()()()())");
+    print("()()()()()() End : $endByte ()()(()()()()())");
+    print("()()()()()() TotalReceive : $totalReceivedBytes ()()(()()()()())");
+    print("()()()()()() REFRESH ()()(()()()()())");
+    final prevEndByte = this.endByte;
+    final newEndByte = _newValidRefreshSegmentEndByte;
+    if (newEndByte < 0 || segmentRefreshed) {
       return;
     }
+    this.endByte = newEndByte;
+    final message = ConnectionSegmentMessage(
+      downloadItem: downloadItem,
+      internalMessage: InternalMessage.VALID_REFRESH_SEGMENT,
+      validStartByte: this.endByte + 1,
+      validEndByte: prevEndByte,
+    );
+    print(
+        "VALID_REFRESH_SEGMENT:::: ${message.validStartByte} - ${message.validEndByte}");
     segmentRefreshed = true;
-    this.startByte = startByte;
-    this.endByte = endByte;
-    _notifyChange(message: VALID_REFRESH_SEGMENT);
+    progressCallback!(message);
+    return;
   }
+
+  // int get _newValidRefreshSegmentEndByte =>
+  //     ((this.endByte - totalReceivedBytes) / 2).floor();
+
+  int get _newValidRefreshSegmentEndByte =>
+      ((this.endByte - (this.startByte + totalReceivedBytes)) / 2).floor() +
+      this.startByte +
+      totalReceivedBytes;
 
   void _clearBuffer() {
     buffer = [];
@@ -507,23 +515,25 @@ class HttpDownloadRequest {
 
   /// Flushes the remaining bytes in the buffer and completes the download.
   void _onDownloadComplete() {
-    if (paused || segmentRefreshed) return;
+    if (paused) return;
     bytesTransferRate = 0;
     downloadProgress = totalReceivedBytes / segmentLength;
-    _flushBuffer();
-    if (downloadProgress == 1 && isWritePartCaughtUp) {
-      _updateStatus(DownloadStatus.complete);
-      detailsStatus = DownloadStatus.complete;
-      downloadProgress = 1;
-    }
-    _notifyChange();
+    _flushBuffer(sync: true);
+    print(
+        "&&&&&&&&&& Download Progress $downloadProgress   CAUGHT UP ? $isWritePartCaughtUp");
+    // if (downloadProgress == 1 && isWritePartCaughtUp) {
+    _updateStatus(DownloadStatus.complete);
+    detailsStatus = DownloadStatus.complete;
+    // }
+    _notifyProgress();
+    segmentRefreshed = false;
     client.close();
   }
 
   void _onError(dynamic error) {
     client.close();
     _clearBuffer();
-    _notifyChange();
+    _notifyProgress();
   }
 
   Uint8List _writeToUin8List(int length, List<List<int>> chunks) {
@@ -540,9 +550,6 @@ class HttpDownloadRequest {
   void _updateReceivedBytes(List<int> chunk) {
     totalReceivedBytes += chunk.length;
     tempReceivedBytes += chunk.length;
-    // if (receivedBytesExceededEndByte) {
-    //   totalReceivedBytes = segmentLength;
-    // }
   }
 
   void _updateStatus(String status) {
@@ -591,7 +598,7 @@ class HttpDownloadRequest {
   ///TODO
   int get segmentLength => endByte == downloadItem.contentLength
       ? endByte - startByte
-      : endByte - startByte + 1;
+      : endByte - startByte;
 
   bool get connectionRetryAllowed =>
       lastResponseTimeMillis + connectionRetryTimeoutMillis < _nowMillis &&

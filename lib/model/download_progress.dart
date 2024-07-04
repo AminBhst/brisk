@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:brisk/model/download_item_model.dart';
 
-import '../downloader/http_download_request.dart';
+import '../download_engine/http_download_request.dart';
 
 class DownloadProgress {
   List<DownloadProgress> connectionProgresses = [];

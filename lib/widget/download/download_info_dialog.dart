@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
-import '../../downloader/download_command.dart';
+import '../../download_engine/download_command.dart';
 import '../../model/download_item.dart';
 import 'download_progress_window.dart';
 

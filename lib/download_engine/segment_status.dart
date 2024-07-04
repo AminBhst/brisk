@@ -1,0 +1,3 @@
+enum SegmentStatus {
+  INITIAL, REFRESH_REQUESTED, REFRESHED, ASSIGNED
+}
