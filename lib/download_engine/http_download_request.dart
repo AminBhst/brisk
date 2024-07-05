@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 import 'package:brisk/download_engine/connection_segment_message.dart';
 import 'package:brisk/model/download_item_model.dart';
@@ -357,7 +356,7 @@ class HttpDownloadRequest {
       final index = tempFiles.indexOf(tempFileToCut);
       final prevFileName = basename(tempFiles.elementAt(index - 1).path);
       newBufferStartByte =
-          FileUtil.getEndByteFromTempFileName(prevFileName); //TODO +1 ?????
+          FileUtil.getEndByteFromTempFileName(prevFileName);
     }
 
     for (final file in tempFilesToDelete) {
@@ -474,8 +473,7 @@ class HttpDownloadRequest {
     _notifyProgress();
   }
 
-  // TODO : Optimize this by sending valid segment startByte and endbyte to (Can I ???)
-  void refreshSegment() {
+  void requestRefreshSegment() {
     print("()()()()()() REFRESH ()()(()()()()())");
     print("()()()()()() Start : $startByte ()()(()()()()())");
     print("()()()()()() End : $endByte ()()(()()()()())");
@@ -500,8 +498,6 @@ class HttpDownloadRequest {
     return;
   }
 
-  // int get _newValidRefreshSegmentEndByte =>
-  //     ((this.endByte - totalReceivedBytes) / 2).floor();
 
   int get _newValidRefreshSegmentEndByte =>
       ((this.endByte - (this.startByte + totalReceivedBytes)) / 2).floor() +
@@ -518,6 +514,7 @@ class HttpDownloadRequest {
     if (paused) return;
     bytesTransferRate = 0;
     downloadProgress = totalReceivedBytes / segmentLength;
+    totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
     _flushBuffer(sync: true);
     print(
         "&&&&&&&&&& Download Progress $downloadProgress   CAUGHT UP ? $isWritePartCaughtUp");

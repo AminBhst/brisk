@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
@@ -8,18 +7,15 @@ import 'package:brisk/download_engine/connection_segment_message.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/download_engine/download_connection_channel.dart';
-import 'package:brisk/download_engine/internal_messages.dart';
 import 'package:brisk/download_engine/main_download_channel.dart';
 import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/download_engine/download_segments.dart';
-import 'package:brisk/download_engine/segment_status.dart';
 import 'package:brisk/download_engine/single_connection_manager.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:brisk/model/isolate/settings.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:path/path.dart';
 
@@ -31,6 +27,7 @@ import '../util/readability_util.dart';
 /// For each download item, [startDownloadRequest] will be called in a designated isolate spawned by the [DownloadRequestProvider].
 /// The coordinator will track the state of the download connections, retrieve and aggregate data such as the overall download speed and progress,
 /// manage the availability of pause/resume buttons and assemble the file when the all connections have finished receiving and writing their data.
+// TODO Use a single engine isolate instead of engine isolates per download
 class HttpDownloadEngine {
   /// TODO : send pause command to isolates which are pending connection
 
@@ -68,13 +65,12 @@ class HttpDownloadEngine {
     }
     _dynamicConnectionManagerTimer = Timer.periodic(
       Duration(seconds: 2),
-      (_) => runDynamicConnectionManager(),
+      (_) => _runDynamicConnectionManager(),
     );
   }
 
   // TODO remove
-  static bool well = false;
-  static void runDynamicConnectionManager() {
+  static void _runDynamicConnectionManager() {
     _downloadChannels.forEach((downloadId, handlerChannel) {
       final downloadProgress = _downloadProgresses[downloadId];
       if (downloadProgress == null) {
@@ -87,20 +83,26 @@ class HttpDownloadEngine {
   }
 
   static void startDownloadRequest(IsolateArgsPair<int> args) async {
-    final handlerChannel = IsolateChannel.connectSend(args.sendPort);
-    final mainChannel = MainDownloadChannel(channel: handlerChannel);
+    final providerChannel = IsolateChannel.connectSend(args.sendPort);
+    final mainChannel = MainDownloadChannel(channel: providerChannel);
     _downloadChannels[args.obj] = mainChannel;
     _runDynamicConnectionManagerTimer();
     mainChannel.listenToStream<DownloadIsolateData>((data) async {
+      if (data.command == DownloadCommand.pause) {
+        _dynamicConnectionManagerTimer?.cancel();
+      }
+      if (data.command == DownloadCommand.start) {
+        _runDynamicConnectionManagerTimer();
+      }
       final downloadItem = data.downloadItem;
       final id = downloadItem.id;
       _setSettings(data);
       if (isAssembledFileInvalid(downloadItem)) {
         final progress = reassembleFile(downloadItem, data.baseTempDir);
-        handlerChannel.sink.add(progress);
+        providerChannel.sink.add(progress);
         return;
       }
-      await sendToDownloadIsolates(data, handlerChannel);
+      await sendToDownloadIsolates(data, providerChannel);
       for (final channel in _downloadChannels[id]!.connectionChannels.values) {
         channel.listenToStream(_handleMessages);
       }
@@ -108,35 +110,6 @@ class HttpDownloadEngine {
   }
 
   static _refreshConnectionSegments(int downloadId) async {
-    // print("*************** SENDING REFRESH SEGMENT ************************");
-    // final progress = _downloadProgresses[downloadId];
-    // if (progress == null) {
-    //   return;
-    // }
-    // final mainChannel = _downloadChannels[downloadId]!;
-    // _downloadChannels[downloadId]!.downloadSegments?.split();
-    // List<Segment> segments = List.from(mainChannel.downloadSegments!.segments);
-    // if (segments.isEmpty) {
-    //   return;
-    // }
-    // // segments.forEach((element) {
-    // //   print("******************* NEW SEGMENTS **************************");
-    // //   print("**** START : ${element.startByte}");
-    // //   print("**** END : ${element.endByte}");
-    // //   print("************************************************************");
-    // // });
-    //
-    // mainChannel.connectionChannels
-    //     .forEach((connectionNumber, connectionChannel) {
-    //   final connSegment = mainChannel.downloadSegments!.segments
-    //       .where((seg) => connectionChannel.startByte == seg.startByte)
-    //       .firstOrNull;
-    //   if (connSegment == null) {
-    //     return;
-    //   }
-    //   connSegment.status = SegmentStatus.REFRESH_REQUESTED;
-    //   _sendRefreshSegmentCommand(downloadId, connectionNumber, connSegment);
-    // });
     print("*************** SENDING REFRESH SEGMENT ************************");
     final progress = _downloadProgresses[downloadId];
     if (progress == null) {
@@ -154,7 +127,6 @@ class HttpDownloadEngine {
       );
       connChann.channel.sink.add(data);
     });
-    well = true;
   }
 
   static int _getNewSegmentNumber(int id) =>
@@ -245,7 +217,7 @@ class HttpDownloadEngine {
     );
     _setEstimation(downloadProgress, totalProgress);
     _setButtonAvailability(downloadProgress, totalProgress);
-    _setStatus(id, downloadProgress);
+    _setStatus(id, downloadProgress); // TODO broken
     if (isTempWriteComplete && isAssembleEligible(progress.downloadItem)) {
       downloadProgress.status = DownloadStatus.assembling;
       downloadChannel.channel.sink.add(downloadProgress);
@@ -265,7 +237,6 @@ class HttpDownloadEngine {
   static void createConnection(ConnectionSegmentMessage message) async {
     final id = message.downloadItem.id;
     final newSegNum = _getNewSegmentNumber(id);
-    print("|||||||||||||||||||||||||| New Segment Number : $newSegNum ||||||||||||||||||||||||||||||");
     final data = DownloadIsolateData(
       command: DownloadCommand.start,
       downloadItem: message.downloadItem,
@@ -275,7 +246,8 @@ class HttpDownloadEngine {
       startByte: message.validStartByte,
       endByte: message.validEndByte,
     );
-    print("############ Creating Conn : ${message.validStartByte} - ${message.validEndByte} #############");
+    print(
+        "############ Creating Conn : ${message.validStartByte} - ${message.validEndByte} #############");
     await _spawnSingleDownloadIsolate(data, newSegNum);
   }
 
@@ -292,8 +264,6 @@ class HttpDownloadEngine {
       print(byteRangeMap);
       await _spawnDownloadIsolates(data, byteRangeMap);
     } else {
-      print("INSIDE ELSE ================");
-      // print(_downloadChannels[id]!.values.length);
       _downloadChannels[id]?.connectionChannels.forEach((seg, conn) {
         data.segmentNumber = seg;
         conn.channel.sink.add(data);
@@ -308,7 +278,6 @@ class HttpDownloadEngine {
   static _spawnDownloadIsolates(
       DownloadIsolateData data, Map<int, Segment> missingByteRanges) async {
     missingByteRanges.forEach((segmentNumber, missingBytes) async {
-      print("SPAWNING CONNECTION ISOLATE I-$segmentNumber");
       var newData = data.clone();
       newData.startByte = missingBytes.startByte;
       newData.endByte = missingBytes.endByte;

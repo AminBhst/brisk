@@ -25,8 +25,8 @@ import '../util/settings_cache.dart';
 
 class DownloadRequestProvider with ChangeNotifier {
   Map<int, DownloadProgress> downloads = {};
-  Map<int, StreamChannel?> handlerChannels = {};
-  Map<int, Isolate?> handlerIsolates = {};
+  Map<int, StreamChannel?> engineChannels = {};
+  Map<int, Isolate?> engineIsolates = {};
 
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
@@ -42,8 +42,9 @@ class DownloadRequestProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Temp variable used to compare the last time the download item was updated to
   /// now in milliseconds in order to update every n seconds.
+  /// Temp variable used to compare the last time the download item was updated to
+  // TODO remove: Implement a custom update Queue
   int _previousUpdateTime = _nowMillis;
 
   void executeDownloadCommand(int id, DownloadCommand command) async {
@@ -51,7 +52,7 @@ class DownloadRequestProvider with ChangeNotifier {
     downloadProgress ??= await _addDownloadProgress(id);
     final downloadItem = downloadProgress.downloadItem;
     if (checkDownloadCompletion(downloadItem)) return;
-    StreamChannel? channel = handlerChannels[id];
+    StreamChannel? channel = engineChannels[id];
     final totalConnections = downloadProgress.downloadItem.supportsPause
         ? SettingsCache.connectionsNumber
         : 1;
@@ -60,6 +61,7 @@ class DownloadRequestProvider with ChangeNotifier {
     //TODO FIX THIS
     getExistingConnectionCount(downloadItem) ?? totalConnections;
 
+    // TODO use settings obj
     final isolatorArgs = DownloadIsolateData(
       command: command,
       downloadItem: downloadProgress.downloadItem,
@@ -98,8 +100,8 @@ class DownloadRequestProvider with ChangeNotifier {
         HttpDownloadEngine.startDownloadRequest,
         IsolateArgsPair(rPort.sendPort, id)
     );
-    handlerIsolates[id] = isolate;
-    handlerChannels[id] = channel;
+    engineIsolates[id] = isolate;
+    engineChannels[id] = channel;
     return channel;
   }
 
@@ -147,9 +149,9 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   void _killIsolateConnection(int id) {
-    handlerChannels[id] = null;
-    handlerIsolates[id]?.kill();
-    handlerIsolates[id] = null;
+    engineChannels[id] = null;
+    engineIsolates[id]?.kill();
+    engineIsolates[id] = null;
   }
 
   /// Updates the download request based on the incoming progress from handler isolate every 6 seconds
@@ -217,7 +219,7 @@ class DownloadRequestProvider with ChangeNotifier {
   void notifyAllListeners(DownloadProgress progress) {
     // if (_tmpTime + 90 > _nowMillis) return;
     // _tmpTime = _nowMillis;
-    if (handlerChannels[progress.downloadItem.id] == null) return;
+    if (engineChannels[progress.downloadItem.id] == null) return;
     notifyListeners();
     PlutoGridUtil.updateRowCells(progress);
   }

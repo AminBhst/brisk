@@ -54,7 +54,7 @@ class SingleConnectionManager {
           _connections[id]?.clear();
           break;
         case DownloadCommand.refreshSegment:
-          request.refreshSegment();
+          request.requestRefreshSegment();
           break;
       }
     });
