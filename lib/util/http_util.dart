@@ -123,7 +123,7 @@ Future<dynamic> checkLatestBriskRelease() async {
 
 // TODO Refactor and fix version check logic
 void checkForUpdate(BuildContext context) async {
-  var lastUpdateCheck = await HiveUtil.instance.settingBox.get(18);
+  var lastUpdateCheck = await HiveUtil.instance.settingBox.get(18); // Todo fix
   if (lastUpdateCheck == null) {
     lastUpdateCheck = Setting(
       name: "lastUpdateCheck",
