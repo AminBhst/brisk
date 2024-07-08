@@ -11,7 +11,6 @@ class SingleConnectionManager {
   static void handleSingleConnection(SendPort sendPort) async {
     final channel = IsolateChannel.connectSend(sendPort);
     channel.stream.cast<DownloadIsolateData>().listen((data) {
-      print("SEGGGGGG :::::::::: ${data.segmentNumber}");
       final id = data.downloadItem.id;
       _connections[id] ??= {};
       final segmentNumber = data.segmentNumber;
