@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/util/file_extensions.dart';
@@ -246,5 +247,12 @@ class FileUtil {
     final subDir = _fileTypeToFolderName(detectFileType(fileName));
     final filePath = join(SettingsCache.saveDir.path, subDir, fileName);
     return File(filePath).existsSync();
+  }
+
+  static Uint8List readSync(File file, int count) {
+    final fileOpen = file.openSync();
+    final result = fileOpen.readSync(count);
+    fileOpen.closeSync();
+    return result;
   }
 }
