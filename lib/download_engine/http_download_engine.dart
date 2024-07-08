@@ -110,7 +110,6 @@ class HttpDownloadEngine {
   }
 
   static _refreshConnectionSegments(int downloadId) async {
-    print("*************** SENDING REFRESH SEGMENT ************************");
     final progress = _downloadProgresses[downloadId];
     if (progress == null) {
       return;

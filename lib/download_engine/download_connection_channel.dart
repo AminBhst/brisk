@@ -11,6 +11,7 @@ class DownloadConnectionChannel extends IsolateChannelWrapper {
   int segmentLength = 0;
   DownloadItemModel? downloadItem;
   String? message;
+
   DownloadConnectionChannel({
     required super.channel,
     required this.segmentNumber,
