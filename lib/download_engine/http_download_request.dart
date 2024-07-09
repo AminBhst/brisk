@@ -317,13 +317,13 @@ class HttpDownloadRequest {
     );
     previousBufferEndByte += bytes.lengthInBytes;
     // if (sync) {
-    //   final file = File(filePath);
-    //   file.writeAsBytesSync(mode: FileMode.writeOnly, bytes);
-    //   _onTempFileWriteComplete(file);
+      final file = File(filePath);
+      file.writeAsBytesSync(mode: FileMode.writeOnly, bytes);
+      _onTempFileWriteComplete(file);
     // } else {
-      File(filePath)
-          .writeAsBytes(mode: FileMode.writeOnly, bytes)
-          .then(_onTempFileWriteComplete);
+    //   File(filePath)
+    //       .writeAsBytes(mode: FileMode.writeOnly, bytes)
+    //       .then(_onTempFileWriteComplete);
     // }
     _clearBuffer();
   }
@@ -361,8 +361,7 @@ class HttpDownloadRequest {
         newBufferStartByte = tempStartByte;
         final bufferCutLength = this.endByte - tempStartByte + 1;
         final throwAwayBytes = tempEndByte - (tempStartByte + bufferCutLength);
-        // newBufferToWrite = FileUtil.readSync(file, bufferCutLength);
-        FileUtil.readSync(file, bufferCutLength);
+        newBufferToWrite = FileUtil.readSync(file, bufferCutLength);
         tempFilesToDelete.add(file);
       }
     }
