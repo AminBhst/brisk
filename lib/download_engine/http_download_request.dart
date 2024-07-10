@@ -85,6 +85,7 @@ class HttpDownloadRequest {
 
   bool segmentRefreshed = false;
 
+  /// TODO rename to connectionNumber
   int segmentNumber;
 
   int previousBufferEndByte = 0;
@@ -300,13 +301,10 @@ class HttpDownloadRequest {
     // segmentRefreshed = false;
   }
 
-  /// Flushes the buffer containing the received bytes
-  /// to the disk.
-  ///
-  /// all flush operations write temp files with their name corresponding to the order
-  /// in which they were received.
-  /// The path for the temp files is determined as followed :
-  /// [FileUtil.defaultTempFileDir]/[downloadItem.uid]
+  /// Flushes the buffer containing the received bytes to the disk.
+  /// all flush operations write temp files with connection number and
+  /// their corresponding byte ranges
+  /// e.g. 0#100-2500 => connectionNumber#startByte-endByte
   void _flushBuffer() {
     if (buffer.isEmpty) return;
     final bytes = _writeToUin8List(tempReceivedBytes, buffer);
@@ -316,15 +314,9 @@ class HttpDownloadRequest {
       "${segmentNumber}#${tempFileStartByte}-${tempFileEndByte}",
     );
     previousBufferEndByte += bytes.lengthInBytes;
-    // if (sync) {
-      final file = File(filePath);
-      file.writeAsBytesSync(mode: FileMode.writeOnly, bytes);
-      _onTempFileWriteComplete(file);
-    // } else {
-    //   File(filePath)
-    //       .writeAsBytes(mode: FileMode.writeOnly, bytes)
-    //       .then(_onTempFileWriteComplete);
-    // }
+    final file = File(filePath);
+    file.writeAsBytesSync(mode: FileMode.writeOnly, bytes);
+    _onTempFileWriteComplete(file);
     _clearBuffer();
   }
 
@@ -364,12 +356,6 @@ class HttpDownloadRequest {
         newBufferToWrite = FileUtil.readSync(file, bufferCutLength);
         tempFilesToDelete.add(file);
       }
-    }
-
-    if (tempFileToCut != null) {
-      final index = tempFiles.indexOf(tempFileToCut);
-      final prevFileName = basename(tempFiles.elementAt(index - 1).path);
-      newBufferStartByte = FileUtil.getEndByteFromTempFileName(prevFileName);
     }
 
     for (final file in tempFilesToDelete) {
