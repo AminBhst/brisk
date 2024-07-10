@@ -98,7 +98,7 @@ class HttpDownloadEngine {
       final id = downloadItem.id;
       _setSettings(data);
       if (isAssembledFileInvalid(downloadItem)) {
-        final progress = reassembleFile(downloadItem, data.baseTempDir);
+        final progress = reassembleFile(downloadItem);
         providerChannel.sink.add(progress);
         return;
       }
@@ -221,11 +221,7 @@ class HttpDownloadEngine {
       downloadProgress.status = DownloadStatus.assembling;
       downloadChannel.channel.sink.add(downloadProgress);
       // TODO uncomment
-      // final success = assembleFile(
-      //   data.downloadItem,
-      //   progress.baseTempDir,
-      //   data.baseSaveDir,
-      // );
+      // final success = assembleFile(progress.downloadItem);
       // _setCompletionStatuses(success, downloadProgress);
     }
     _setConnectionProgresses(downloadProgress);
@@ -338,8 +334,7 @@ class HttpDownloadEngine {
 
   /// Writes all the file parts inside the temp folder into one file therefore
   /// creating the final downloaded file.
-  static bool assembleFile(DownloadItemModel downloadItem,
-      Directory baseTempDir, Directory baseSaveDir) {
+  static bool assembleFile(DownloadItemModel downloadItem) {
     final tempPath = join(baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final tempFies = tempDir.listSync().map((o) => o as File).toList();
@@ -570,11 +565,9 @@ class HttpDownloadEngine {
         assembledFile.lengthSync() != downloadItem.contentLength;
   }
 
-  static DownloadProgress reassembleFile(
-      DownloadItemModel downloadItem, Directory baseTempDir) {
+  static DownloadProgress reassembleFile(DownloadItemModel downloadItem) {
     File(downloadItem.filePath).deleteSync();
-
-    final success = assembleFile(downloadItem, baseTempDir, baseSaveDir);
+    final success = assembleFile(downloadItem);
     final status = success
         ? DownloadStatus.assembleComplete
         : DownloadStatus.assembleFailed;
