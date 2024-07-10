@@ -352,15 +352,12 @@ class HttpDownloadRequest {
         tempFileToCut = file;
         newBufferStartByte = tempStartByte;
         final bufferCutLength = this.endByte - tempStartByte + 1;
-        final throwAwayBytes = tempEndByte - (tempStartByte + bufferCutLength);
         newBufferToWrite = FileUtil.readSync(file, bufferCutLength);
         tempFilesToDelete.add(file);
       }
     }
 
     for (final file in tempFilesToDelete) {
-      print("FILE TO DELETE LENSYN : ${file.lengthSync()}");
-      print("FILE TO DELETE : ${basename(file.path)}");
       totalReceivedBytes -= file.lengthSync();
       file.deleteSync();
     }
