@@ -51,6 +51,17 @@ class FileUtil {
     return completer.future;
   }
 
+  // static doooo() {
+  //   final dir = Directory("C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp\\70cc3727-2fc2-4a99-b14a-ebce138c8e22");
+  //   final list = dir.listSync();
+  //   list.sort(FileUtil.sortByByteRanges);
+  //   for (var value in list) {
+  //     value = value as File;
+  //     print("${basename(value.path)} Size : ${value.lengthSync()}");
+  //
+  //   }
+  // }
+
   static String getFilePath(String fileName,
       {Directory? baseSaveDir, bool checkFileDuplicationOnly = false}) {
     final saveDir = baseSaveDir ?? SettingsCache.saveDir;
@@ -110,7 +121,7 @@ class FileUtil {
       Directory(join(path, 'Other'))
     ];
     for (var dir in dirs) {
-      await dir.create();
+      dir.createSync();
     }
   }
 
@@ -206,7 +217,7 @@ class FileUtil {
     }
   }
 
-  static int sortByFileName(FileSystemEntity a, FileSystemEntity b) {
+  static int sortByByteRanges(FileSystemEntity a, FileSystemEntity b) {
     final aName = basename(a.path);
     final bName = basename(b.path);
     final aStartByte = getStartByteFromTempFileName(aName);

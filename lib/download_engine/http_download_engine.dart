@@ -296,7 +296,7 @@ class HttpDownloadEngine {
       return {0: Segment(0, downloadItem.contentLength)};
     }
 
-    tempFiles.sort(FileUtil.sortByFileName);
+    tempFiles.sort(FileUtil.sortByByteRanges);
     String prevFileName = "";
     Map<int, Segment> missingBytes = {};
     for (var i = 0; i < tempFiles.length; i++) {
@@ -338,7 +338,7 @@ class HttpDownloadEngine {
     final tempPath = join(baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final tempFies = tempDir.listSync().map((o) => o as File).toList();
-    tempFies.sort(FileUtil.sortByFileName);
+    tempFies.sort(FileUtil.sortByByteRanges);
     File fileToWrite = File(downloadItem.filePath);
     if (fileToWrite.existsSync()) {
       final newFilePath = FileUtil.getFilePath(

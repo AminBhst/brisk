@@ -123,7 +123,7 @@ class _TopMenuState extends State<TopMenu> {
     final tempPath = join(baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final tempFies = tempDir.listSync().map((o) => o as File).toList();
-    tempFies.sort(FileUtil.sortByFileName);
+    tempFies.sort(FileUtil.sortByByteRanges);
     File fileToWrite = File(downloadItem.filePath);
     if (fileToWrite.existsSync()) {
       final newFilePath = FileUtil.getFilePath(

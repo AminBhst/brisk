@@ -245,12 +245,12 @@ class HttpDownloadRequest {
   }
 
   int getNewStartByte() {
-    final tempFiles = _getTempFilesSorted();
+    final tempFiles = _getTempFilesSorted(thisConnectionOnly: true);
     if (tempFiles.isEmpty) {
       return startByte;
     }
     final lastFileName = basename(tempFiles.last.path);
-    return FileUtil.getEndByteFromTempFileName(lastFileName);
+    return FileUtil.getEndByteFromTempFileName(lastFileName) + 1;
   }
 
   void _processChunk(List<int> chunk) {
@@ -417,7 +417,7 @@ class HttpDownloadRequest {
           .toList();
     }
 
-    tempFiles.sort(FileUtil.sortByFileName);
+    tempFiles.sort(FileUtil.sortByByteRanges);
     return tempFiles;
   }
 
