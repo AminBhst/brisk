@@ -28,6 +28,7 @@ import '../util/readability_util.dart';
 /// The coordinator will track the state of the download connections, retrieve and aggregate data such as the overall download speed and progress,
 /// manage the availability of pause/resume buttons and assemble the file when the all connections have finished receiving and writing their data.
 // TODO Use a single engine isolate instead of engine isolates per download
+// TODO Write engine unit tests
 class HttpDownloadEngine {
   /// TODO : send pause command to isolates which are pending connection
 
@@ -115,6 +116,8 @@ class HttpDownloadEngine {
       return;
     }
     final mainChannel = _downloadChannels[downloadId]!;
+    if (mainChannel.downloadSegments == null) return;
+    mainChannel.downloadSegments!.split();
     mainChannel.connectionChannels.forEach((connNum, connChann) {
       final data = DownloadIsolateData(
         command: DownloadCommand.refreshSegment,
@@ -156,17 +159,17 @@ class HttpDownloadEngine {
   }
 
   // TODO What is this?!
-  static void removeCompletedSegments(int id, Map<int, int> segmentmap) {
-    final mainChannel = _downloadChannels[id]!;
-    mainChannel.connectionChannels.forEach((segmentNumber, connectionChannel) {
-      final endByte = segmentmap[connectionChannel.startByte];
-      if (endByte != null &&
-          endByte == connectionChannel.endByte &&
-          connectionChannel.progress >= 100) {
-        segmentmap.remove(connectionChannel.startByte);
-      }
-    });
-  }
+  // static void removeCompletedSegments(int id, Map<int, int> segmentmap) {
+  //   final mainChannel = _downloadChannels[id]!;
+  //   mainChannel.connectionChannels.forEach((segmentNumber, connectionChannel) {
+  //     final endByte = segmentmap[connectionChannel.startByte];
+  //     if (endByte != null &&
+  //         endByte == connectionChannel.endByte &&
+  //         connectionChannel.progress >= 100) {
+  //       segmentmap.remove(connectionChannel.startByte);
+  //     }
+  //   });
+  // }
 
   // TODO take estimation into account
   static bool _shouldCreateNewConnections(DownloadProgress progress) {
@@ -533,8 +536,7 @@ class HttpDownloadEngine {
     final connChannel = DownloadConnectionChannel(
       channel: channel,
       segmentNumber: segmentNumber,
-      startByte: data.startByte!,
-      endByte: data.endByte!,
+      segment: Segment(data.startByte!, data.endByte!),
     );
 
     _downloadChannels[downloadId]!

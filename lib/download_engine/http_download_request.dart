@@ -257,7 +257,7 @@ class HttpDownloadRequest {
     try {
       _doProcessChunk(chunk);
     } catch (e) {
-      print(e);
+      print(e); // TODO Add to log files
       client.close();
       _clearBuffer();
     }
@@ -481,7 +481,7 @@ class HttpDownloadRequest {
     print("S$segmentNumber this.endByte = ${this.endByte}");
     print("S$segmentNumber prevEndByte = ${prevEndByte}");
     final newEndByte = _newValidRefreshSegmentEndByte;
-    if (newEndByte < 0 || segmentRefreshed) {
+    if (newEndByte < 0) {
       return;
     }
     this.endByte = newEndByte;
