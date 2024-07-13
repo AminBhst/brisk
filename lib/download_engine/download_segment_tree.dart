@@ -12,11 +12,8 @@ class DownloadSegmentTree {
   }
 
   void split() {
-    SegmentNode node = root;
-    while (node.left != null) {
-      node = node.left!;
-    }
-    splitSegmentNode(node, isLeftLeaf: true);
+    SegmentNode node = getLowestLevelLeftNode();
+    splitSegmentNode(node, isLeftNode: true);
     if (node == root) return;
 
     int nodeConnNumber = 2;
@@ -32,7 +29,15 @@ class DownloadSegmentTree {
     }
   }
 
-  void splitSegmentNode(SegmentNode node, {isLeftLeaf = false}) {
+  SegmentNode getLowestLevelLeftNode() {
+    SegmentNode node = root;
+    while (node.left != null) {
+      node = node.left!;
+    }
+    return node;
+  }
+
+  void splitSegmentNode(SegmentNode node, {isLeftNode = false}) {
     final nodeSegment = node.segment;
     final splitByte =
         ((nodeSegment.endByte - nodeSegment.startByte) / 2).floor();
@@ -49,7 +54,7 @@ class DownloadSegmentTree {
     node.right = SegmentNode(segment: segRight);
     node.left = SegmentNode(segment: segLeft);
     node.left!.rightNeighbor = node.right;
-    if (isLeftLeaf) {
+    if (isLeftNode) {
       node.left!.connectionNumber = 0;
       node.right!.connectionNumber = 1;
     }
