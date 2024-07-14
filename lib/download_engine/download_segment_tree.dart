@@ -7,7 +7,7 @@ import 'package:brisk/download_engine/segment.dart';
 /// the tree is further broken down into smaller segments, each associated with
 /// a download connection.
 ///
-/// An example visual Representation of the tree:
+/// An example visual representation of the tree:
 ///               [0    -     1000] ===============> (initial)
 ///                /             \
 ///          [0-500]-------------[501-1000] ========> (First [split] call)
