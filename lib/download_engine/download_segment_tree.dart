@@ -24,8 +24,8 @@ class DownloadSegmentTree {
 
   /// In cases where the tree is built around a previously-
   /// existing download, due to the possibility of having multiple missing byte-ranges
-  /// (e.g. [500-1000], [4000-7000], [9000-14000]) we may have multiple root nodes,
-  /// each representing a missing byte range.
+  /// (e.g. [500-1000], [4000-7000], [9000-14000]) we may have multiple root-
+  /// nodes (connected through [rightNeighbor]), each representing a missing byte range.
   factory DownloadSegmentTree.fromByteRanges(List<Segment> segments) {
     final tree = DownloadSegmentTree(
       SegmentNode(segment: segments.first),
