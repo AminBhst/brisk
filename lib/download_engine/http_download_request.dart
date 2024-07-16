@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk/download_engine/connection_segment_message.dart';
+import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/download_engine/internal_messages.dart';
 import 'package:brisk/model/download_progress.dart';
@@ -83,7 +84,7 @@ class HttpDownloadRequest {
 
   int endByte;
 
-  bool segmentRefreshed = false;
+  // bool segmentRefreshed = false;
 
   /// TODO rename to connectionNumber
   int segmentNumber;
@@ -471,39 +472,39 @@ class HttpDownloadRequest {
     _notifyProgress();
   }
 
-  void requestRefreshSegment() {
-    print("()()()()()() REFRESH ()()(()()()()())");
-    print("()()()()()() Start : $startByte ()()(()()()()())");
-    print("()()()()()() End : $endByte ()()(()()()()())");
-    print("()()()()()() TotalReceive : $totalReceivedBytes ()()(()()()()())");
-    print("()()()()()() REFRESH ()()(()()()()())");
+  void requestRefreshSegment(Segment segment) {
     final prevEndByte = this.endByte;
-    print("S$segmentNumber this.endByte = ${this.endByte}");
-    print("S$segmentNumber prevEndByte = ${prevEndByte}");
-    final newEndByte = _newValidRefreshSegmentEndByte;
-    if (newEndByte < 0) {
-      return;
-    }
-    this.endByte = newEndByte;
     final message = ConnectionSegmentMessage(
       downloadItem: downloadItem,
-      internalMessage: InternalMessage.VALID_REFRESH_SEGMENT,
-      validStartByte: this.endByte + 1,
-      validEndByte: prevEndByte,
+      requestedSegment: segment,
     );
-    print("S$segmentNumber this.endByte = ${this.endByte}");
-    print("S$segmentNumber prevEndByte = ${prevEndByte}");
-    print(
-        "VALID_REFRESH_SEGMENT:::: ${message.validStartByte} - ${message.validEndByte}");
-    segmentRefreshed = true;
+    if (this.startByte + totalReceivedBytes >= segment.endByte) {
+      message.internalMessage = InternalMessage.OVERLAPPING_REFRESH_SEGMENT;
+      final newEndByte = _newValidRefreshSegmentEndByte;
+      if (newEndByte >= 0) {
+        this.endByte = newEndByte;
+        message.validStartByte = this.endByte + 1;
+        message.validEndByte = prevEndByte;
+      } else {
+        message.internalMessage = InternalMessage.REFRESH_SEGMENT_REFUSED;
+      }
+      progressCallback!.call(message);
+      return;
+    }
+    this.endByte = segment.endByte;
+    message.internalMessage = InternalMessage.REFRESH_SEGMENT_SUCCESS;
+    // segmentRefreshed = true;
     progressCallback!(message);
     return;
   }
 
-  int get _newValidRefreshSegmentEndByte =>
-      ((this.endByte - (this.startByte + totalReceivedBytes)) / 2).floor() +
-      this.startByte +
-      totalReceivedBytes;
+  int get _newValidRefreshSegmentEndByte {
+    final splitByte =
+        ((this.endByte - (this.startByte + totalReceivedBytes)) / 2).floor();
+    return splitByte <= 0
+        ? -1
+        : splitByte + this.startByte + totalReceivedBytes;
+  }
 
   void _clearBuffer() {
     buffer = [];
@@ -599,7 +600,8 @@ class HttpDownloadRequest {
       (isWritePartCaughtUp && paused) || downloadProgress == 0;
 
   bool get receivedBytesExceededEndByte =>
-      segmentRefreshed && startByte + totalReceivedBytes > this.endByte;
+      // segmentRefreshed &&
+      startByte + totalReceivedBytes > this.endByte;
 
   /// TODO FIX
   /// TODO

@@ -24,7 +24,6 @@ class DownloadConnectionChannel extends IsolateChannelWrapper {
     if (!(event is DownloadProgress)) {
       return;
     }
-    event = event as DownloadProgress;
     this.progress = event.downloadProgress;
     this.segmentLength = event.segmentLength;
     this.downloadItem = event.downloadItem;

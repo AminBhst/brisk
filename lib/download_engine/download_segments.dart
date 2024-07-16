@@ -3,6 +3,7 @@ import 'package:brisk/download_engine/segment.dart';
 class DownloadSegments {
   int contentLength = 0;
   List<Segment> segments = [];
+  List<Segment> tempSegments = [];
 
   DownloadSegments();
 
@@ -20,7 +21,7 @@ class DownloadSegments {
     return segmentList;
   }
 
-  void split() {
+  void tempSplit() {
     List<Segment> newSegments = [];
     for (var segment in segments) {
       final splitByte = ((segment.endByte - segment.startByte) / 2).floor();
@@ -37,6 +38,6 @@ class DownloadSegments {
       newSegments.add(segOne);
       newSegments.add(segTwo);
     }
-    this.segments = newSegments;
+    this.tempSegments = newSegments;
   }
 }

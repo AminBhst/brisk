@@ -172,10 +172,32 @@ class SegmentNode {
   int connectionNumber;
   SegmentStatus segmentStatus;
 
+  void removeChildren() {
+    this.rightChild = null;
+    this.leftChild = null;
+  }
+
+  SegmentNode? getChildByDirection(NodeRelationDirection direction) {
+    if (direction == NodeRelationDirection.RIGHT) {
+      return this.rightChild;
+    } else if (direction == NodeRelationDirection.LEFT) {
+      return this.leftChild;
+    }
+    return null;
+  }
+
   SegmentNode({
     required this.segment,
     this.connectionNumber = 0,
     this.parent,
     this.segmentStatus = SegmentStatus.INITIAL,
   });
+}
+
+enum NodeRelationDirection { RIGHT, LEFT }
+
+enum NodeRelationshipType {
+  CHILD,
+  NEIGHBOR,
+  PARENT
 }

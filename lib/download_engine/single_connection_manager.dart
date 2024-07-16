@@ -28,21 +28,20 @@ class SingleConnectionManager {
     });
   }
 
-
   static void handleSingleConnection(SendPort sendPort) async {
     final channel = IsolateChannel.connectSend(sendPort);
     channel.stream.cast<DownloadIsolateData>().listen((data) {
       final id = data.downloadItem.id;
       _connections[id] ??= {};
-      final segmentNumber = data.segmentNumber;
+      final segmentNumber = data.connectionNumber;
       HttpDownloadRequest? request = _connections[id]![segmentNumber!];
       setTrackedCommand(data, channel);
       if (request == null) {
         request = HttpDownloadRequest(
           downloadItem: data.downloadItem,
           baseTempDir: data.baseTempDir,
-          startByte: data.startByte!,
-          endByte: data.endByte!,
+          startByte: data.segment!.startByte,
+          endByte: data.segment!.endByte,
           segmentNumber: segmentNumber,
           connectionRetryTimeoutMillis: data.connectionRetryTimeout,
           maxConnectionRetryCount: data.maxConnectionRetryCount,
@@ -50,11 +49,9 @@ class SingleConnectionManager {
         _connections[id]![segmentNumber] = request;
       }
 
-      print("SINGLE::$segmentNumber  START BYTE : ${data.startByte}");
-      print("SINGLE::$segmentNumber END BYTE : ${data.endByte}");
+      print("SINGLE::$segmentNumber   Segment : ${data.segment}");
       print(
-          "SINGLE::$segmentNumber TOTAL LEN : ${request.downloadItem
-              .contentLength}");
+          "SINGLE::$segmentNumber TOTAL LEN : ${request.downloadItem.contentLength}");
       print("SINGLE::$segmentNumber COMMAND : ${data.command}");
 
       executeCommand(data, channel);
@@ -63,7 +60,7 @@ class SingleConnectionManager {
 
   static void executeCommand(DownloadIsolateData data, IsolateChannel channel) {
     final id = data.downloadItem.id;
-    final segmentNumber = data.segmentNumber;
+    final segmentNumber = data.connectionNumber;
     final request = _connections[id]![segmentNumber]!;
     switch (data.command) {
       case DownloadCommand.start:
@@ -73,7 +70,7 @@ class SingleConnectionManager {
       case DownloadCommand.pause:
         request.pause(channel.sink.add);
         break;
-      case DownloadCommand.clearConnections:
+      case DownloadCommand.clearConnections: // TODO add sink.close()
         _connections[id]?.clear();
         break;
       case DownloadCommand.cancel:
@@ -85,15 +82,15 @@ class SingleConnectionManager {
         _connections[id]?.clear();
         break;
       case DownloadCommand.refreshSegment:
-        request.requestRefreshSegment();
+        request.requestRefreshSegment(data.segment!);
         break;
     }
   }
 
-  static void setTrackedCommand(DownloadIsolateData data,
-      IsolateChannel channel) {
+  static void setTrackedCommand(
+      DownloadIsolateData data, IsolateChannel channel) {
     final id = data.downloadItem.id;
-    final segmentNumber = data.segmentNumber!;
+    final segmentNumber = data.connectionNumber!;
     final trackedCommand = TrackedDownloadCommand.create(data.command, channel);
     _trackedCommands[data.downloadItem.id] ??= {};
     _trackedCommands[id]![segmentNumber] = trackedCommand;
@@ -101,6 +98,4 @@ class SingleConnectionManager {
       _latestDownloadCommands[id] = trackedCommand;
     }
   }
-
-
 }
