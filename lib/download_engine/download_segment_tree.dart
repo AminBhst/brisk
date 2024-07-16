@@ -1,4 +1,5 @@
 import 'package:brisk/download_engine/segment.dart';
+import 'package:brisk/download_engine/segment_status.dart';
 
 /// A tree implementation of download segments. Used for dynamic segmentation
 /// of the download byte ranges associated with their designated connections.
@@ -8,13 +9,17 @@ import 'package:brisk/download_engine/segment.dart';
 /// a download connection.
 ///
 /// An example visual representation of the tree:
+///
 ///               [0    -     1000] ===============> (initial)
 ///                /             \
+///               /               \
 ///          [0-500]-------------[501-1000] ========> (First [split] call)
 ///         /      \            /        \
+///        /        \          /          \
 ///     [0-250]--[251-500]---[501-750]--[751-1000] ==> (Second [split] call)
 class DownloadSegmentTree {
   SegmentNode root;
+  int maxConnectionNumber = 0;
 
   DownloadSegmentTree(this.root);
 
@@ -36,8 +41,9 @@ class DownloadSegmentTree {
     var node = tree.root;
     for (int i = 1; i < segments.length; i++) {
       final segment = segments[i];
-      node.rightNeighbor = SegmentNode(segment: segment);
+      node.rightNeighbor = SegmentNode(segment: segment, connectionNumber: i);
       node = node.rightNeighbor!;
+      tree.maxConnectionNumber = i;
     }
     return tree;
   }
@@ -46,16 +52,13 @@ class DownloadSegmentTree {
   void split() {
     SegmentNode node = lowestLevelLeftNode;
     splitSegmentNode(node, isLeftNode: true);
-    if (node == root) return;
-
-    int nodeConnNumber = 2;
+    if (node == root) {
+      return;
+    }
     SegmentNode? currentNeighbor = node.rightNeighbor!;
     while (currentNeighbor != null) {
       splitSegmentNode(currentNeighbor);
-      node.right!.rightNeighbor = currentNeighbor.left;
-      currentNeighbor.left!.connectionNumber = nodeConnNumber;
-      ++nodeConnNumber;
-      currentNeighbor.right!.connectionNumber = nodeConnNumber;
+      node.rightChild!.rightNeighbor = currentNeighbor.leftChild;
       node = currentNeighbor;
       currentNeighbor = currentNeighbor.rightNeighbor;
     }
@@ -63,21 +66,64 @@ class DownloadSegmentTree {
 
   SegmentNode get lowestLevelLeftNode {
     SegmentNode node = root;
-    while (node.left != null) {
-      node = node.left!;
+    while (node.leftChild != null) {
+      node = node.leftChild!;
     }
     return node;
   }
 
-  List<SegmentNode> get lowestLevelNodes {
-    var node = lowestLevelLeftNode;
-    var nodes = [node];
-    while (node.rightNeighbor != null) {
-      nodes.add(node.rightNeighbor!);
-      node = node.rightNeighbor!;
+  SegmentNode? findNode(Segment segment) {
+    for (final rootNode in getAllSameLevelNodes(root)) {
+      final node = findNodeRecursive(segment, rootNode);
+      if (node == null) {
+        continue;
+      }
+      return node;
+    }
+    return null;
+  }
+
+  SegmentNode? findNodeRecursive(Segment segment, SegmentNode node) {
+    final nodes = getAllSameLevelNodes(node);
+    final result = nodes.where((s) => s.segment == segment).toList();
+    if (result.isNotEmpty) {
+      return result.first;
+    }
+    if (node.leftChild == null) {
+      for (final node in nodes) {
+        if (node.leftChild == null) {
+          continue;
+        }
+        final result = findNodeRecursive(segment, node.leftChild!);
+        if (result != null) {
+          return result;
+        }
+      }
+      return null;
+    }
+    return findNodeRecursive(segment, node.leftChild!);
+  }
+
+  List<SegmentNode> getAllSameLevelNodes(SegmentNode node) {
+    var currentNode = getSameLevelLeftNode(node);
+    var nodes = [currentNode];
+    while (currentNode.rightNeighbor != null) {
+      currentNode = currentNode.rightNeighbor!;
+      nodes.add(currentNode);
     }
     return nodes;
   }
+
+  SegmentNode getSameLevelLeftNode(SegmentNode node) {
+    var currentNode = node;
+    while (node.leftNeighbor != null) {
+      currentNode = node.leftNeighbor!;
+    }
+    return currentNode;
+  }
+
+  List<SegmentNode> get lowestLevelNodes =>
+      getAllSameLevelNodes(lowestLevelLeftNode);
 
   /// Returns the lowest level segments, i.e.
   List<Segment> get currentSegment =>
@@ -86,7 +132,10 @@ class DownloadSegmentTree {
   void splitSegmentNode(SegmentNode node, {isLeftNode = false}) {
     final nodeSegment = node.segment;
     final splitByte =
-        ((nodeSegment.endByte - nodeSegment.startByte) / 2).floor();
+    ((nodeSegment.endByte - nodeSegment.startByte) / 2).floor();
+    if (splitByte <= 0) {
+      return;
+    }
     Segment segLeft;
     Segment segRight;
     if (nodeSegment.startByte > splitByte) {
@@ -97,28 +146,36 @@ class DownloadSegmentTree {
       segLeft = Segment(nodeSegment.startByte, splitByte);
       segRight = Segment(splitByte + 1, nodeSegment.endByte);
     }
-    node.right = SegmentNode(segment: segRight);
-    node.left = SegmentNode(segment: segLeft);
-    node.left!.rightNeighbor = node.right;
-    if (isLeftNode) {
-      node.left!.connectionNumber = 0;
-      node.right!.connectionNumber = 1;
-    }
+    node.rightChild = SegmentNode(segment: segRight, parent: node);
+    node.leftChild = SegmentNode(segment: segLeft, parent: node);
+    node.leftChild!.rightNeighbor = node.rightChild;
+    node.rightChild!.leftNeighbor = node.leftChild;
+    node.leftChild!.connectionNumber = node.connectionNumber;
+    this.maxConnectionNumber++;
+    node.rightChild!.connectionNumber = maxConnectionNumber;
   }
 }
 
 /// [SegmentNode] Represents a segment node in the tree.
 /// [segment] The segment containing startByte and endByte
-/// [right] : The child node on the right-side
-/// [left] : The child node on the left-side
+/// [rightChild] : The child node on the right-side
+/// [leftChild] : The child node on the left-side
 /// [rightNeighbor] : The neighbor node residing on the same level as {this} node
 /// [connectionNumber] : The connection number that this segment node is assigned to
 class SegmentNode {
   Segment segment;
-  SegmentNode? left;
-  SegmentNode? right;
+  SegmentNode? rightChild;
+  SegmentNode? leftChild;
   SegmentNode? rightNeighbor;
+  SegmentNode? leftNeighbor;
+  SegmentNode? parent;
   int connectionNumber;
+  SegmentStatus segmentStatus;
 
-  SegmentNode({required this.segment, this.connectionNumber = 0});
+  SegmentNode({
+    required this.segment,
+    this.connectionNumber = 0,
+    this.parent,
+    this.segmentStatus = SegmentStatus.INITIAL,
+  });
 }
