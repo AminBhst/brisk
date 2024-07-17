@@ -11,7 +11,7 @@ import 'package:brisk/download_engine/internal_messages.dart';
 import 'package:brisk/download_engine/main_download_channel.dart';
 import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/download_engine/segment_status.dart';
-import 'package:brisk/download_engine/single_connection_manager.dart';
+import 'package:brisk/download_engine/connection_invoker.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
@@ -69,7 +69,7 @@ class HttpDownloadEngine {
       return;
     }
     _dynamicConnectionManagerTimer = Timer.periodic(
-      Duration(seconds: 2),
+      Duration(seconds: 4),
       (_) => _runDynamicConnectionManager(),
     );
   }
@@ -130,6 +130,7 @@ class HttpDownloadEngine {
           .firstOrNull;
       if (relatedSegmentNode == null) {
         // TODO log condition
+        print("FATAL!!!!!!!");
         return;
       }
       final data = DownloadIsolateData(
@@ -142,36 +143,50 @@ class HttpDownloadEngine {
         segment: relatedSegmentNode.segment,
       );
       relatedSegmentNode.segmentStatus = SegmentStatus.REFRESH_REQUESTED;
-      mainChannel.segmentTree!.lowestLevelNodes.forEach((element) {
-        print("SegmentStatus:::::::::::: ${element.segmentStatus}");
-      });
+      ++iii;
       connectionChannel.sendMessage(data);
     });
   }
 
   // TODO take estimation into account
+  static int iii = 1;
+
+  /// TODO remove
   static bool _shouldCreateNewConnections(DownloadProgress progress) {
     final downloadId = progress.downloadItem.id;
     print(" ^^^^^^^^^^^^^^^ TOTAL PROG : ${progress.totalDownloadProgress}");
     final connectionChannels =
         _downloadChannels[downloadId]?.connectionChannels;
 
-    final allSegmentsAssigned = _downloadChannels[downloadId]!
+    final nodes = _downloadChannels[downloadId]!
+        .segmentTree
+        ?.lowestLevelNodes
+        .map((e) => e.segment)
+        .toList();
+
+    print(nodes);
+    print(
+        "MAX CONNECTION : ${_downloadChannels[downloadId]!.segmentTree!.maxConnectionNumber}");
+
+    final pendingSegmentExists = _downloadChannels[downloadId]!
             .segmentTree
             ?.lowestLevelNodes // TODO fix
-            .all((s) => s.segmentStatus == SegmentStatus.ASSIGNED) ??
+            .any((s) => s.segmentStatus == SegmentStatus.REFRESH_REQUESTED) ??
         true;
 
-    return allSegmentsAssigned &&
-        progress.totalDownloadProgress < 1 &&
+    print("Conn Len : ${connectionChannels!.length}");
+    return !pendingSegmentExists &&
+        // progress.totalDownloadProgress < 1 &&
+        iii <= 8 &&
         connectionChannels != null &&
-        connectionChannels.length < totalConnections;
+        connectionChannels.length <
+            totalConnections; // TODO this sometimes fails
   }
 
   // TODO implement
   static void validateTempFilesIntegrity() {}
 
-  static void _handleMessages(dynamic message) async {
+  static void _handleMessages(message) async {
     if (message is DownloadProgress) {
       _handleProgressUpdates(message);
     }
@@ -212,7 +227,21 @@ class HttpDownloadEngine {
       print("Failed to find requested segment node! Fatal!");
       return;
     }
-    node.segment = Segment(message.validStartByte, message.validEndByte);
+    node.segment = Segment(
+      message.refreshedStartByte,
+      message.refreshedEndByte,
+    );
+    node.segmentStatus = SegmentStatus.REFRESHED;
+    final newConnectionNode = node.parent!.rightChild!;
+    newConnectionNode.segment = Segment(
+      message.validNewStartByte,
+      message.validNewEndByte,
+    );
+    _createDownloadConnection(
+      message.downloadItem,
+      newConnectionNode.segment,
+      newConnectionNode.connectionNumber,
+    );
   }
 
   static void _handleRefreshSegmentSuccess(ConnectionSegmentMessage message) {
@@ -221,22 +250,16 @@ class HttpDownloadEngine {
       print("Failed to find segment node. FATAL!");
       return;
     }
-    node.parent!.segmentStatus = SegmentStatus.OUT_DATED;
-    var nodeDirection;
-    if (node.parent!.leftChild == node) {
-      nodeDirection = NodeRelationDirection.RIGHT;
-    } else if (node.parent!.rightChild == node) {
-      nodeDirection = NodeRelationDirection.LEFT;
-    } else {
-      print("Target node not found based on parent node. FATAL!");
-      return;
-    }
-    final connectionNode = node.parent!.getChildByDirection(nodeDirection)!;
+    final parent = node.parent!;
+    parent.segmentStatus = SegmentStatus.OUT_DATED;
+    final connectionNode = parent.rightChild!;
+    print("Creating connection................");
     _createDownloadConnection(
       message.downloadItem,
       connectionNode.segment,
       connectionNode.connectionNumber,
     );
+    parent.leftChild!.segmentStatus = SegmentStatus.REFRESHED;
     connectionNode.segmentStatus = SegmentStatus.ASSIGNED;
   }
 
@@ -573,7 +596,7 @@ class HttpDownloadEngine {
     data.connectionNumber = segmentNumber;
     print("Data.segmentNumber = ${data.connectionNumber}");
     final isolate = await Isolate.spawn(
-      SingleConnectionManager.handleSingleConnection,
+      ConnectionInvoker.handleSingleConnection,
       rPort.sendPort,
       errorsAreFatal: false,
     );

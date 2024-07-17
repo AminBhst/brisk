@@ -6,14 +6,18 @@ class ConnectionSegmentMessage {
   DownloadItemModel downloadItem;
   InternalMessage? internalMessage;
   Segment requestedSegment;
-  int? validStartByte;
-  int? validEndByte;
+  int? validNewStartByte;
+  int? validNewEndByte;
+  int? refreshedStartByte;
+  int? refreshedEndByte;
 
   ConnectionSegmentMessage({
     required this.downloadItem,
     required this.requestedSegment,
     this.internalMessage,
-    this.validStartByte,
-    this.validEndByte,
+    this.validNewStartByte,
+    this.validNewEndByte,
+    this.refreshedStartByte,
+    this.refreshedEndByte,
   });
 }

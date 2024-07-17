@@ -64,7 +64,7 @@ class DownloadProgress {
       totalReceivedBytes: request.totalReceivedBytes,
       segmentLength: request.segmentLength,
       detailsStatus: request.detailsStatus,
-      segmentNumber: request.segmentNumber,
+      segmentNumber: request.connectionNumber,
     );
     downloadProgress.baseTempDir = request.baseTempDir;
     return downloadProgress;

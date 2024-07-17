@@ -87,7 +87,7 @@ class HttpDownloadRequest {
   // bool segmentRefreshed = false;
 
   /// TODO rename to connectionNumber
-  int segmentNumber;
+  int connectionNumber;
 
   int previousBufferEndByte = 0;
 
@@ -107,7 +107,7 @@ class HttpDownloadRequest {
     required this.baseTempDir,
     required this.startByte,
     required this.endByte,
-    required this.segmentNumber,
+    required this.connectionNumber,
     this.connectionRetryTimeoutMillis = 10000,
     this.maxConnectionRetryCount = -1,
   });
@@ -312,7 +312,7 @@ class HttpDownloadRequest {
     _flushQueueCount++;
     final filePath = join(
       tempDirectory.path,
-      "${segmentNumber}#${tempFileStartByte}-${tempFileEndByte}",
+      "${connectionNumber}#${tempFileStartByte}-${tempFileEndByte}",
     );
     previousBufferEndByte += bytes.lengthInBytes;
     final file = File(filePath);
@@ -368,7 +368,7 @@ class HttpDownloadRequest {
           newBufferStartByte! + newBufferToWrite.lengthInBytes - 1;
       final newTempFilePath = join(
         tempDirectory.path,
-        "${segmentNumber}#${newBufferStartByte}-${newBufferEndByte}",
+        "${connectionNumber}#${newBufferStartByte}-${newBufferEndByte}",
       );
       File(newTempFilePath).writeAsBytesSync(newBufferToWrite);
       totalReceivedBytes += newBufferToWrite.lengthInBytes;
@@ -414,7 +414,7 @@ class HttpDownloadRequest {
     var tempFiles = tempDirectory.listSync().map((e) => e as File).toList();
     if (thisConnectionOnly) {
       tempFiles = tempFiles
-          .where((file) => basename(file.path).startsWith("${segmentNumber}#"))
+          .where((file) => basename(file.path).startsWith("${connectionNumber}#"))
           .toList();
     }
 
@@ -474,6 +474,9 @@ class HttpDownloadRequest {
 
   void requestRefreshSegment(Segment segment) {
     final prevEndByte = this.endByte;
+    if (connectionNumber == 0) {
+      print("Debug");
+    }
     final message = ConnectionSegmentMessage(
       downloadItem: downloadItem,
       requestedSegment: segment,
@@ -483,8 +486,10 @@ class HttpDownloadRequest {
       final newEndByte = _newValidRefreshSegmentEndByte;
       if (newEndByte >= 0) {
         this.endByte = newEndByte;
-        message.validStartByte = this.endByte + 1;
-        message.validEndByte = prevEndByte;
+        message.validNewStartByte = this.endByte + 1;
+        message.validNewEndByte = prevEndByte;
+        message.refreshedStartByte = this.startByte;
+        message.refreshedEndByte = this.endByte;
       } else {
         message.internalMessage = InternalMessage.REFRESH_SEGMENT_REFUSED;
       }
@@ -493,6 +498,9 @@ class HttpDownloadRequest {
     }
     this.endByte = segment.endByte;
     message.internalMessage = InternalMessage.REFRESH_SEGMENT_SUCCESS;
+    message.refreshedStartByte = this.startByte;
+    message.refreshedEndByte = this.endByte;
+    print("DownloadRequest RSS = ${message.internalMessage}");
     // segmentRefreshed = true;
     progressCallback!(message);
     return;
@@ -516,7 +524,7 @@ class HttpDownloadRequest {
     if (paused) return;
     bytesTransferRate = 0;
     downloadProgress = totalReceivedBytes / segmentLength;
-    print("**************************** I-$segmentNumber ******************");
+    print("**************************** I-$connectionNumber ******************");
     print("my download prog : $downloadProgress");
     print("total rec : $totalReceivedBytes");
     print("Seg len : $segmentLength");
@@ -577,7 +585,7 @@ class HttpDownloadRequest {
 
   /// e.g. 0#0-50, 0#51-150, 1#151-400 and so on...
   String get tempFileName =>
-      "${segmentNumber}#${tempFileStartByte}-${tempFileEndByte}";
+      "${connectionNumber}#${tempFileStartByte}-${tempFileEndByte}";
 
   /// The end byte of the buffer with respect to the target file (The file which will be built after download completes).
   int get tempFileEndByte =>
@@ -601,7 +609,7 @@ class HttpDownloadRequest {
 
   bool get receivedBytesExceededEndByte =>
       // segmentRefreshed &&
-      startByte + totalReceivedBytes > this.endByte;
+      startByte + totalReceivedBytes > this.endByte; // TODO what if equals
 
   /// TODO FIX
   /// TODO

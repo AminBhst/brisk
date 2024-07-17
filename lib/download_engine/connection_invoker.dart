@@ -6,7 +6,7 @@ import 'package:brisk/download_engine/http_download_request.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
 import 'package:stream_channel/isolate_channel.dart';
 
-class SingleConnectionManager {
+class ConnectionInvoker {
   static final Map<int, Map<int, HttpDownloadRequest>> _connections = {};
 
   static final Map<int, Map<int, TrackedDownloadCommand>> _trackedCommands = {};
@@ -33,8 +33,8 @@ class SingleConnectionManager {
     channel.stream.cast<DownloadIsolateData>().listen((data) {
       final id = data.downloadItem.id;
       _connections[id] ??= {};
-      final segmentNumber = data.connectionNumber;
-      HttpDownloadRequest? request = _connections[id]![segmentNumber!];
+      final connectionNumber = data.connectionNumber;
+      HttpDownloadRequest? request = _connections[id]![connectionNumber!];
       setTrackedCommand(data, channel);
       if (request == null) {
         request = HttpDownloadRequest(
@@ -42,17 +42,17 @@ class SingleConnectionManager {
           baseTempDir: data.baseTempDir,
           startByte: data.segment!.startByte,
           endByte: data.segment!.endByte,
-          segmentNumber: segmentNumber,
+          connectionNumber: connectionNumber,
           connectionRetryTimeoutMillis: data.connectionRetryTimeout,
           maxConnectionRetryCount: data.maxConnectionRetryCount,
         );
-        _connections[id]![segmentNumber] = request;
+        _connections[id]![connectionNumber] = request;
       }
 
-      print("SINGLE::$segmentNumber   Segment : ${data.segment}");
+      print("SINGLE::$connectionNumber   Segment : ${data.segment}");
       print(
-          "SINGLE::$segmentNumber TOTAL LEN : ${request.downloadItem.contentLength}");
-      print("SINGLE::$segmentNumber COMMAND : ${data.command}");
+          "SINGLE::$connectionNumber TOTAL LEN : ${request.downloadItem.contentLength}");
+      print("SINGLE::$connectionNumber COMMAND : ${data.command}");
 
       executeCommand(data, channel);
     });

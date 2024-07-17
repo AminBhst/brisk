@@ -132,7 +132,7 @@ class DownloadSegmentTree {
   void splitSegmentNode(SegmentNode node, {isLeftNode = false}) {
     final nodeSegment = node.segment;
     final splitByte =
-    ((nodeSegment.endByte - nodeSegment.startByte) / 2).floor();
+        ((nodeSegment.endByte - nodeSegment.startByte) / 2).floor();
     if (splitByte <= 0) {
       return;
     }
@@ -186,6 +186,19 @@ class SegmentNode {
     return null;
   }
 
+  NodeRelationDirection? findChildDirection(SegmentNode child) {
+    var nodeDirection;
+    if (this.leftChild == child) {
+      nodeDirection = NodeRelationDirection.LEFT;
+    } else if (this.rightChild == child) {
+      nodeDirection = NodeRelationDirection.RIGHT;
+    } else {
+      print("Target node not found based on parent node. FATAL!");
+      return null;
+    }
+    return nodeDirection;
+  }
+
   SegmentNode({
     required this.segment,
     this.connectionNumber = 0,
@@ -194,10 +207,15 @@ class SegmentNode {
   });
 }
 
-enum NodeRelationDirection { RIGHT, LEFT }
-
-enum NodeRelationshipType {
-  CHILD,
-  NEIGHBOR,
-  PARENT
+enum NodeRelationDirection {
+  RIGHT,
+  LEFT,
 }
+
+extension NodeRelationDirectionExtension on NodeRelationDirection {
+  NodeRelationDirection get opposite => this == NodeRelationDirection.LEFT
+      ? NodeRelationDirection.RIGHT
+      : NodeRelationDirection.LEFT;
+}
+
+enum NodeRelationshipType { CHILD, NEIGHBOR, PARENT }
