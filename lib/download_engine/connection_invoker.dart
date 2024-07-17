@@ -28,7 +28,7 @@ class ConnectionInvoker {
     });
   }
 
-  static void handleSingleConnection(SendPort sendPort) async {
+  static void invokeConnection(SendPort sendPort) async {
     final channel = IsolateChannel.connectSend(sendPort);
     channel.stream.cast<DownloadIsolateData>().listen((data) {
       final id = data.downloadItem.id;

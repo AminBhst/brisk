@@ -596,7 +596,7 @@ class HttpDownloadEngine {
     data.connectionNumber = segmentNumber;
     print("Data.segmentNumber = ${data.connectionNumber}");
     final isolate = await Isolate.spawn(
-      ConnectionInvoker.handleSingleConnection,
+      ConnectionInvoker.invokeConnection,
       rPort.sendPort,
       errorsAreFatal: false,
     );
