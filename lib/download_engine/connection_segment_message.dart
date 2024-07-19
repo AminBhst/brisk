@@ -1,6 +1,6 @@
 import 'package:brisk/download_engine/internal_messages.dart';
 import 'package:brisk/download_engine/segment.dart';
-import 'package:brisk/model/download_item_model.dart';
+import 'package:brisk/download_engine/download_item_model.dart';
 
 class ConnectionSegmentMessage {
   DownloadItemModel downloadItem;

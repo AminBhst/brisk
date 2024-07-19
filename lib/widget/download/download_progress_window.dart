@@ -5,7 +5,7 @@ import 'package:brisk/widget/base/closable_window.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../model/download_progress.dart';
+import '../../download_engine/download_progress.dart';
 
 class DownloadProgressWindow extends StatefulWidget {
   final int downloadId;
