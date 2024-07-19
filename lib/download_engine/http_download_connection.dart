@@ -12,7 +12,7 @@ import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 import '../constants/download_status.dart';
 
-class HttpDownloadRequest {
+class HttpDownloadConnection {
   /// Buffer containing the received bytes
   List<List<int>> buffer = [];
 
@@ -95,7 +95,7 @@ class HttpDownloadRequest {
 
   int connectionRetryTimeoutMillis;
 
-  HttpDownloadRequest({
+  HttpDownloadConnection({
     required this.downloadItem,
     required this.baseTempDir,
     required this.startByte,

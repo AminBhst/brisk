@@ -1,13 +1,13 @@
 import 'dart:io';
 
-class Settings {
+class DownloadSettings {
   final Directory baseSaveDir;
   final Directory baseTempDir;
   final int totalConnections;
   final int connectionRetryTimeout;
   final int maxConnectionRetryCount;
 
-  Settings({
+  DownloadSettings({
     required this.baseSaveDir,
     required this.baseTempDir,
     required this.totalConnections,

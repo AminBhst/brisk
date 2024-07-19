@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:brisk/download_engine/download_command.dart';
-import 'package:brisk/download_engine/http_download_request.dart';
+import 'package:brisk/download_engine/http_download_connection.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 
-class DownloadRequestInvoker {
-  static final Map<int, Map<int, HttpDownloadRequest>> _connections = {};
+class DownloadConnectionInvoker {
+  static final Map<int, Map<int, HttpDownloadConnection>> _connections = {};
 
   static final Map<int, Map<int, TrackedDownloadCommand>> _trackedCommands = {};
 
@@ -38,17 +38,17 @@ class DownloadRequestInvoker {
     });
   }
 
-  static void invokeRequest(SendPort sendPort) async {
+  static void invokeConnection(SendPort sendPort) async {
     final channel = IsolateChannel.connectSend(sendPort);
     channel.stream.cast<DownloadIsolateData>().listen((data) {
       final id = data.downloadItem.id;
       _connections[id] ??= {};
       final connectionNumber = data.connectionNumber;
-      HttpDownloadRequest? request = _connections[id]![connectionNumber!];
+      HttpDownloadConnection? request = _connections[id]![connectionNumber!];
       _setStopCommandTracker(data, channel);
       setTrackedCommand(data, channel);
       if (request == null) {
-        request = HttpDownloadRequest(
+        request = HttpDownloadConnection(
           downloadItem: data.downloadItem,
           baseTempDir: data.baseTempDir,
           startByte: data.segment!.startByte,

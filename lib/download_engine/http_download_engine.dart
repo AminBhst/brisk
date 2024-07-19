@@ -7,16 +7,16 @@ import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/download_engine/download_connection_channel.dart';
 import 'package:brisk/download_engine/download_segment_tree.dart';
+import 'package:brisk/download_engine/download_settings.dart';
 import 'package:brisk/download_engine/internal_messages.dart';
 import 'package:brisk/download_engine/main_download_channel.dart';
 import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/download_engine/segment_status.dart';
-import 'package:brisk/download_engine/download_request_invoker.dart';
+import 'package:brisk/download_engine/download_connection_invoker.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
-import 'package:brisk/model/isolate/settings.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:path/path.dart';
@@ -52,7 +52,7 @@ class HttpDownloadEngine {
   static Timer? _dynamicConnectionManagerTimer = null;
 
   /// Settings
-  static late Settings settings; // TODO use settings object instead
+  static late DownloadSettings settings; // TODO use settings object instead
 
   static late Directory baseSaveDir;
   static late Directory baseTempDir;
@@ -595,7 +595,7 @@ class HttpDownloadEngine {
     data.connectionNumber = segmentNumber;
     print("Data.segmentNumber = ${data.connectionNumber}");
     final isolate = await Isolate.spawn(
-      DownloadRequestInvoker.invokeRequest,
+      DownloadConnectionInvoker.invokeConnection,
       rPort.sendPort,
       errorsAreFatal: false,
     );
@@ -628,7 +628,7 @@ class HttpDownloadEngine {
     maxConnectionRetryCount = data.maxConnectionRetryCount;
     totalConnections = data.totalConnections;
 
-    settings = Settings(
+    settings = DownloadSettings(
       baseSaveDir: data.baseSaveDir,
       baseTempDir: data.baseTempDir,
       totalConnections: data.totalConnections,
