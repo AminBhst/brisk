@@ -10,7 +10,7 @@ import 'package:brisk/download_engine/http_download_engine.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/download_item.dart';
-import 'package:brisk/model/isolate/download_isolator_data.dart';
+import 'package:brisk/download_engine/download_isolate_data.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/notification_util.dart';
@@ -58,16 +58,12 @@ class DownloadRequestProvider with ChangeNotifier {
         ? SettingsCache.connectionsNumber
         : 1;
 
-    final connectionCount =
-        //TODO FIX THIS
-        getExistingConnectionCount(downloadItem) ?? totalConnections;
-
-    // TODO use settings obj
-    final isolatorArgs = DownloadIsolateData(
+    final data = DownloadIsolateData(
       command: command,
       downloadItem: downloadProgress.downloadItem,
       settings: DownloadSettings.fromSettingsCache(),
     );
+    data.settings.totalConnections = totalConnections;
     if (channel == null) {
       channel = await _spawnDownloadEngineIsolate(id);
       if (command == DownloadCommand.cancel) return;
@@ -75,7 +71,7 @@ class DownloadRequestProvider with ChangeNotifier {
           .cast<DownloadProgress>()
           .listen((progress) => _listenToEngineChannel(progress, id));
     }
-    channel.sink.add(isolatorArgs);
+    channel.sink.add(data);
   }
 
   bool checkDownloadCompletion(DownloadItemModel downloadItem) {

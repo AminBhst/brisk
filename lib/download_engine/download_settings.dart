@@ -4,7 +4,7 @@ import 'package:brisk/util/settings_cache.dart';
 
 class DownloadSettings extends ConnectionSettings {
   final Directory baseSaveDir;
-  final int totalConnections;
+  int totalConnections;
 
   DownloadSettings({
     required this.baseSaveDir,

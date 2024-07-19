@@ -3,7 +3,7 @@ import 'dart:isolate';
 
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/http_download_connection.dart';
-import 'package:brisk/model/isolate/download_isolator_data.dart';
+import 'package:brisk/download_engine/download_isolate_data.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';

@@ -15,7 +15,7 @@ import 'package:brisk/download_engine/segment_status.dart';
 import 'package:brisk/download_engine/download_connection_invoker.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
-import 'package:brisk/model/isolate/download_isolator_data.dart';
+import 'package:brisk/download_engine/download_isolate_data.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
