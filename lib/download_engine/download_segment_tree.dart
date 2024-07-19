@@ -20,6 +20,7 @@ import 'package:brisk/download_engine/segment_status.dart';
 class DownloadSegmentTree {
   SegmentNode root;
   int maxConnectionNumber = 0;
+  late final lowestLevelNodes = [root];
 
   DownloadSegmentTree(this.root);
 
@@ -122,8 +123,8 @@ class DownloadSegmentTree {
     return currentNode;
   }
 
-  List<SegmentNode> get lowestLevelNodes =>
-      getAllSameLevelNodes(lowestLevelLeftNode);
+  // List<SegmentNode> get lowestLevelNodes =>
+  //     getAllSameLevelNodes(lowestLevelLeftNode);
 
   /// Returns the lowest level segments, i.e.
   List<Segment> get currentSegment =>
@@ -153,6 +154,10 @@ class DownloadSegmentTree {
     node.leftChild!.connectionNumber = node.connectionNumber;
     this.maxConnectionNumber++;
     node.rightChild!.connectionNumber = maxConnectionNumber;
+    final nodeIndex = lowestLevelNodes.indexOf(node);
+    lowestLevelNodes.removeAt(nodeIndex);
+    lowestLevelNodes.insert(nodeIndex, node.leftChild!);
+    lowestLevelNodes.insert(nodeIndex + 1, node.rightChild!);
   }
 }
 
