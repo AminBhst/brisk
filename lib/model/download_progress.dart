@@ -20,15 +20,14 @@ class DownloadProgress {
   double assembleProgress;
   bool startButtonEnabled;
   bool pauseButtonEnabled;
-  int segmentNumber;
+  int connectionNumber;
   int segmentLength;
-  late Directory baseTempDir;
   String detailsStatus;
   String message;
 
   DownloadProgress({
     required this.downloadItem,
-    this.segmentNumber = 0,
+    this.connectionNumber = 0,
     this.downloadProgress = 0,
     this.transferRate = "",
     this.status = "",
@@ -65,9 +64,8 @@ class DownloadProgress {
       totalReceivedBytes: request.totalReceivedBytes,
       segmentLength: request.segmentLength,
       detailsStatus: request.detailsStatus,
-      segmentNumber: request.connectionNumber,
+      connectionNumber: request.connectionNumber,
     );
-    downloadProgress.baseTempDir = request.baseTempDir;
     return downloadProgress;
   }
 }

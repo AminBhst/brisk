@@ -5,6 +5,7 @@ import 'dart:isolate';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/download_engine/download_settings.dart';
 import 'package:brisk/download_engine/http_download_engine.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
@@ -58,18 +59,14 @@ class DownloadRequestProvider with ChangeNotifier {
         : 1;
 
     final connectionCount =
-    //TODO FIX THIS
-    getExistingConnectionCount(downloadItem) ?? totalConnections;
+        //TODO FIX THIS
+        getExistingConnectionCount(downloadItem) ?? totalConnections;
 
     // TODO use settings obj
     final isolatorArgs = DownloadIsolateData(
       command: command,
       downloadItem: downloadProgress.downloadItem,
-      baseTempDir: SettingsCache.temporaryDir,
-      baseSaveDir: SettingsCache.saveDir,
-      totalConnections: connectionCount,
-      connectionRetryTimeout: SettingsCache.connectionRetryTimeout * 1000,
-      maxConnectionRetryCount: SettingsCache.connectionRetryCount,
+      settings: DownloadSettings.fromSettingsCache(),
     );
     if (channel == null) {
       channel = await _spawnDownloadEngineIsolate(id);
@@ -96,10 +93,8 @@ class DownloadRequestProvider with ChangeNotifier {
   Future<StreamChannel> _spawnDownloadEngineIsolate(int id) async {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
-    final isolate = await Isolate.spawn(
-        HttpDownloadEngine.startDownloadRequest,
-        IsolateArgsPair(rPort.sendPort, id)
-    );
+    final isolate = await Isolate.spawn(HttpDownloadEngine.startDownloadRequest,
+        IsolateArgsPair(rPort.sendPort, id));
     engineIsolates[id] = isolate;
     engineChannels[id] = channel;
     return channel;
@@ -194,14 +189,14 @@ class DownloadRequestProvider with ChangeNotifier {
           ),
           "progress": PlutoCell(
             value:
-            convertPercentageNumberToReadableStr(e.downloadProgress * 100),
+                convertPercentageNumberToReadableStr(e.downloadProgress * 100),
           ),
           "status": PlutoCell(
             value: e.status == ""
                 ? (e.downloadItem.status == DownloadStatus.assembleComplete ||
-                e.downloadItem.status == DownloadStatus.paused)
-                ? e.downloadItem.status
-                : ""
+                        e.downloadItem.status == DownloadStatus.paused)
+                    ? e.downloadItem.status
+                    : ""
                 : e.status,
           ),
           "transfer_rate": PlutoCell(value: e.transferRate),
@@ -228,8 +223,8 @@ class DownloadRequestProvider with ChangeNotifier {
     PlutoGridUtil.cachedRows.clear();
     final requests = items
         .map((e) => DownloadProgress(
-        downloadItem: DownloadItemModel.fromDownloadItem(e),
-        downloadProgress: e.progress))
+            downloadItem: DownloadItemModel.fromDownloadItem(e),
+            downloadProgress: e.progress))
         .toList();
     final stateManager = PlutoGridUtil.plutoStateManager;
     stateManager?.removeAllRows();

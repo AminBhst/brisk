@@ -50,12 +50,10 @@ class DownloadConnectionInvoker {
       if (request == null) {
         request = HttpDownloadConnection(
           downloadItem: data.downloadItem,
-          baseTempDir: data.baseTempDir,
           startByte: data.segment!.startByte,
           endByte: data.segment!.endByte,
           connectionNumber: connectionNumber,
-          connectionRetryTimeoutMillis: data.connectionRetryTimeout,
-          maxConnectionRetryCount: data.maxConnectionRetryCount,
+          settings: data.settings,
         );
         _connections[id]![connectionNumber] = request;
       }

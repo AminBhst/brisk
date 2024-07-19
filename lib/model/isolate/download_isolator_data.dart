@@ -1,29 +1,19 @@
-import 'dart:io';
-
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/segment.dart';
-
-import '../download_item_model.dart';
+import 'package:brisk/model/download_item_model.dart';
+import 'package:brisk/download_engine/download_settings.dart';
 
 class DownloadIsolateData {
-  int totalConnections;
   int? connectionNumber;
-  final int maxConnectionRetryCount;
-  final int connectionRetryTimeout;
-  final Directory baseSaveDir;
   DownloadCommand command;
   DownloadItemModel downloadItem;
-  Directory baseTempDir;
   Segment? segment;
+  DownloadSettings settings;
 
   DownloadIsolateData({
     required this.command,
     required this.downloadItem,
-    required this.baseTempDir,
-    required this.totalConnections,
-    required this.baseSaveDir,
-    this.connectionRetryTimeout = 10000,
-    this.maxConnectionRetryCount = -1,
+    required this.settings,
     this.connectionNumber,
     this.segment,
   });
@@ -32,13 +22,9 @@ class DownloadIsolateData {
     return DownloadIsolateData(
       command: this.command,
       downloadItem: this.downloadItem,
-      baseTempDir: this.baseTempDir,
-      totalConnections: totalConnections,
-      baseSaveDir: this.baseSaveDir,
-      connectionRetryTimeout: this.connectionRetryTimeout,
-      maxConnectionRetryCount: this.maxConnectionRetryCount,
       segment: this.segment,
       connectionNumber: this.connectionNumber,
+      settings: this.settings,
     );
   }
 }

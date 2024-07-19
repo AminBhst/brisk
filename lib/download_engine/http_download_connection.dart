@@ -6,11 +6,12 @@ import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/download_engine/internal_messages.dart';
 import 'package:brisk/model/download_progress.dart';
-import '../constants/types.dart';
-import '../util/file_util.dart';
+import 'package:brisk/constants/types.dart';
+import 'package:brisk/util/file_util.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
-import '../constants/download_status.dart';
+import 'package:brisk/constants/download_status.dart';
+import 'package:brisk/download_engine/download_settings.dart';
 
 class HttpDownloadConnection {
   /// Buffer containing the received bytes
@@ -71,8 +72,6 @@ class HttpDownloadConnection {
 
   DownloadItemModel downloadItem;
 
-  final Directory baseTempDir;
-
   /// Callback method used to update the engine on the current progress of the download
   DownloadProgressCallback? progressCallback;
 
@@ -91,20 +90,16 @@ class HttpDownloadConnection {
 
   int _retryCount = 0;
 
-  int maxConnectionRetryCount;
-
-  int connectionRetryTimeoutMillis;
-
   bool _isWritingTempFile = false;
+
+  ConnectionSettings settings;
 
   HttpDownloadConnection({
     required this.downloadItem,
-    required this.baseTempDir,
     required this.startByte,
     required this.endByte,
     required this.connectionNumber,
-    this.connectionRetryTimeoutMillis = 10000,
-    this.maxConnectionRetryCount = -1,
+    required this.settings,
   });
 
   /// Starts the download request.
@@ -592,7 +587,7 @@ class HttpDownloadConnection {
       : startByte + previousBufferEndByte;
 
   Directory get tempDirectory => Directory(join(
-        baseTempDir.path,
+        settings.baseTempDir.path,
         downloadItem.uid.toString(),
       ));
 
@@ -614,11 +609,12 @@ class HttpDownloadConnection {
 
   /// TODO what if it's writing???
   bool get connectionRetryAllowed =>
-      lastResponseTimeMillis + connectionRetryTimeoutMillis < _nowMillis &&
+      lastResponseTimeMillis + settings.connectionRetryTimeout < _nowMillis &&
       !_isWritingTempFile &&
       status != DownloadStatus.paused &&
       status != DownloadStatus.complete &&
       detailsStatus != DownloadStatus.canceled &&
       detailsStatus != DownloadStatus.complete &&
-      (_retryCount < maxConnectionRetryCount || maxConnectionRetryCount == -1);
+      (_retryCount < settings.maxConnectionRetryCount ||
+          settings.maxConnectionRetryCount == -1);
 }

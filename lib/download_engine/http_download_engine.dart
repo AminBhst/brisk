@@ -35,6 +35,7 @@ import '../util/readability_util.dart';
 /// TODO send pause command to isolates which are pending connection
 /// TODO what if when we're still awaiting a segment refresh response from a connection, a refresh command is sent again! We should have a flag for each segment node
 /// TODO add automatic bug report for fatal errors in the engine
+/// TODO handle the case when a download is initially started using, for example, 8 connections, it is paused, then on the next start, it starts with only one connection
 class HttpDownloadEngine {
   /// A map of all stream channels related to the running download requests
   static final Map<int, MainDownloadChannel> _downloadChannels = {};
@@ -51,16 +52,7 @@ class HttpDownloadEngine {
 
   static Timer? _dynamicConnectionManagerTimer = null;
 
-  /// Settings
-  static late DownloadSettings settings; // TODO use settings object instead
-
-  static late Directory baseSaveDir;
-  static late Directory baseTempDir;
-  static late int totalConnections;
-  static late int connectionRetryTimeout;
-  static late int maxConnectionRetryCount;
-
-  // static final Map<int, int> totalConnections = {};
+  static late DownloadSettings downloadSettings;
 
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
@@ -93,7 +85,7 @@ class HttpDownloadEngine {
     _downloadChannels[args.obj] = mainChannel;
     _runDynamicConnectionManagerTimer();
     mainChannel.listenToStream<DownloadIsolateData>((data) async {
-      _setSettings(data);
+      downloadSettings = data.settings;
       _setConnectionManagerTimer(data);
       final downloadItem = data.downloadItem;
       final id = downloadItem.id;
@@ -139,16 +131,15 @@ class HttpDownloadEngine {
       }
       final data = DownloadIsolateData(
         command: DownloadCommand.refreshSegment,
-        baseSaveDir: baseSaveDir,
-        totalConnections: totalConnections,
         downloadItem: _downloadProgresses[downloadId]!.downloadItem,
-        baseTempDir: baseSaveDir,
         connectionNumber: connectionNum,
         segment: relatedSegmentNode.segment,
+        settings: downloadSettings,
       );
       relatedSegmentNode.segmentStatus = SegmentStatus.REFRESH_REQUESTED;
       _downloadChannels[downloadId]?.createdConnections++;
-      print("CREATED:::: ${_downloadChannels[downloadId]?.createdConnections++}");
+      print(
+          "CREATED:::: ${_downloadChannels[downloadId]?.createdConnections++}");
       connectionChannel.sendMessage(data);
     });
   }
@@ -168,7 +159,7 @@ class HttpDownloadEngine {
     print("Conn Len : ${connectionChannels!.length}");
     return !pendingSegmentExists &&
         progress.totalDownloadProgress < 1 &&
-        mainChannel!.createdConnections <= totalConnections;
+        mainChannel!.createdConnections <= downloadSettings.totalConnections;
   }
 
   // TODO implement
@@ -261,7 +252,7 @@ class HttpDownloadEngine {
     final downloadChannel = _downloadChannels[progress.downloadItem.id]!;
     final int id = progress.downloadItem.id;
     _connectionProgresses[id] ??= {};
-    _connectionProgresses[id]![progress.segmentNumber] = progress;
+    _connectionProgresses[id]![progress.connectionNumber] = progress;
     double totalByteTransferRate = _calculateTotalTransferRate(id);
     final isTempWriteComplete = checkTempWriteCompletion(progress.downloadItem);
     final totalProgress = _calculateTotalDownloadProgress(id);
@@ -295,11 +286,7 @@ class HttpDownloadEngine {
     final data = DownloadIsolateData(
       command: DownloadCommand.startInitial,
       downloadItem: downloadItem,
-      baseTempDir: baseTempDir,
-      totalConnections: totalConnections,
-      connectionRetryTimeout: connectionRetryTimeout,
-      maxConnectionRetryCount: maxConnectionRetryCount,
-      baseSaveDir: baseSaveDir,
+      settings: downloadSettings,
       segment: segment,
     );
     await _spawnSingleDownloadIsolate(data, connectionNumber);
@@ -358,7 +345,10 @@ class HttpDownloadEngine {
   ) {
     final contentLength = downloadItem.contentLength;
     List<File>? tempFiles;
-    final tempDirPath = join(baseTempDir.path, downloadItem.uid);
+    final tempDirPath = join(
+      downloadSettings.baseTempDir.path,
+      downloadItem.uid,
+    );
     final tempDir = Directory(tempDirPath);
     if (tempDir.existsSync()) {
       tempFiles = tempDir.listSync().map((o) => o as File).toList();
@@ -407,7 +397,7 @@ class HttpDownloadEngine {
   /// Writes all the file parts inside the temp folder into one file therefore
   /// creating the final downloaded file.
   static bool assembleFile(DownloadItemModel downloadItem) {
-    final tempPath = join(baseTempDir.path, downloadItem.uid);
+    final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final tempFies = tempDir.listSync().map((o) => o as File).toList();
     tempFies.sort(FileUtil.sortByByteRanges);
@@ -415,7 +405,7 @@ class HttpDownloadEngine {
     if (fileToWrite.existsSync()) {
       final newFilePath = FileUtil.getFilePath(
         downloadItem.fileName,
-        baseSaveDir: baseSaveDir,
+        baseSaveDir: downloadSettings.baseSaveDir,
         checkFileDuplicationOnly: true,
       );
       fileToWrite = File(newFilePath);
@@ -619,22 +609,6 @@ class HttpDownloadEngine {
         .setConnectionChannel(segmentNumber, connChannel);
 
     connChannel.listenToStream(_handleMessages);
-  }
-
-  static void _setSettings(DownloadIsolateData data) {
-    baseSaveDir = data.baseSaveDir;
-    baseTempDir = data.baseTempDir;
-    connectionRetryTimeout = data.connectionRetryTimeout;
-    maxConnectionRetryCount = data.maxConnectionRetryCount;
-    totalConnections = data.totalConnections;
-
-    settings = DownloadSettings(
-      baseSaveDir: data.baseSaveDir,
-      baseTempDir: data.baseTempDir,
-      totalConnections: data.totalConnections,
-      connectionRetryTimeout: data.connectionRetryTimeout,
-      maxConnectionRetryCount: data.maxConnectionRetryCount,
-    );
   }
 
   static bool isAssembledFileInvalid(DownloadItemModel downloadItem) {
