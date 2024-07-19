@@ -95,6 +95,8 @@ class HttpDownloadConnection {
 
   int connectionRetryTimeoutMillis;
 
+  bool _isWritingTempFile = false;
+
   HttpDownloadConnection({
     required this.downloadItem,
     required this.baseTempDir,
@@ -190,6 +192,7 @@ class HttpDownloadConnection {
 
   void resetConnection() {
     client.close();
+    totalReceivedBytes = totalReceivedBytes - tempReceivedBytes;
     _clearBuffer();
     _dynamicFlushThreshold = double.infinity;
     start(progressCallback!, connectionReset: true);
@@ -303,6 +306,7 @@ class HttpDownloadConnection {
   /// e.g. 0#100-2500 => connectionNumber#startByte-endByte
   void _flushBuffer() {
     if (buffer.isEmpty) return;
+    _isWritingTempFile = true;
     final bytes = _writeToUin8List(tempReceivedBytes, buffer);
     final filePath = join(
       tempDirectory.path,
@@ -324,6 +328,7 @@ class HttpDownloadConnection {
     if (writeProgress == 1) {
       detailsStatus = DownloadStatus.complete;
     }
+    _isWritingTempFile = false;
     _notifyProgress();
   }
 
@@ -610,6 +615,7 @@ class HttpDownloadConnection {
   /// TODO what if it's writing???
   bool get connectionRetryAllowed =>
       lastResponseTimeMillis + connectionRetryTimeoutMillis < _nowMillis &&
+      !_isWritingTempFile &&
       status != DownloadStatus.paused &&
       status != DownloadStatus.complete &&
       detailsStatus != DownloadStatus.canceled &&
