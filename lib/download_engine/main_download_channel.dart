@@ -7,7 +7,7 @@ class MainDownloadChannel extends IsolateChannelWrapper {
 
   Map<int, DownloadConnectionChannel> connectionChannels = {};
 
-  int createdConnections = 1;
+  int createdConnections = 1; // TODO actually it only counts the number of refresh requests
 
   void setConnectionChannel(int connNum, DownloadConnectionChannel channel) {
     this.connectionChannels[connNum] = channel;
