@@ -16,8 +16,8 @@ class IsolateChannelWrapper {
     if (_isListened) {
       return;
     }
+    this._isListened = true;
     channel.stream.cast<T>().listen((event) {
-      this._isListened = true;
       callback.call(event);
       onEventReceived(event);
     });
