@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 enum DownloadCommand {
   start,
   pause,
+  startInitial,
   refreshSegment,
   cancel,
   forceCancel,

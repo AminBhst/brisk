@@ -4,37 +4,48 @@ import 'dart:isolate';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/http_download_request.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
+import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
+import 'package:stream_channel/stream_channel.dart';
 
-class ConnectionInvoker {
+class DownloadRequestInvoker {
   static final Map<int, Map<int, HttpDownloadRequest>> _connections = {};
 
   static final Map<int, Map<int, TrackedDownloadCommand>> _trackedCommands = {};
 
   static final Map<int, TrackedDownloadCommand> _latestDownloadCommands = {};
 
+  static final Map<int, Pair<bool, StreamChannel>> stopCommandTrackerMap = {};
+
   static Timer? _commandTrackerTimer;
 
   /// TODO : Check if it's a new connection (doesn't exist in the map) ignore it as a reference for commands
-  static void runCommandTrackerTimer() {
+  static void _runCommandTrackerTimer() {
     _commandTrackerTimer = Timer.periodic(Duration(milliseconds: 500), (_) {
       _connections.forEach((downloadId, connections) {
-        final firstConn = connections[0];
-        if (firstConn == null) return;
-        final command = _trackedCommands[downloadId];
-        if (command == null) return;
-        // command
+        final shouldSignalStop =
+            stopCommandTrackerMap[downloadId]?.first ?? true;
+        final channel = stopCommandTrackerMap[downloadId]?.second;
+        if (!shouldSignalStop) {
+          return;
+        }
+        _connections[downloadId]?.forEach((_, request) {
+          if (!request.paused) {
+            request.pause(channel?.sink.add);
+          }
+        });
       });
     });
   }
 
-  static void invokeConnection(SendPort sendPort) async {
+  static void invokeRequest(SendPort sendPort) async {
     final channel = IsolateChannel.connectSend(sendPort);
     channel.stream.cast<DownloadIsolateData>().listen((data) {
       final id = data.downloadItem.id;
       _connections[id] ??= {};
       final connectionNumber = data.connectionNumber;
       HttpDownloadRequest? request = _connections[id]![connectionNumber!];
+      _setStopCommandTracker(data, channel);
       setTrackedCommand(data, channel);
       if (request == null) {
         request = HttpDownloadRequest(
@@ -48,23 +59,35 @@ class ConnectionInvoker {
         );
         _connections[id]![connectionNumber] = request;
       }
-
-      print("SINGLE::$connectionNumber   Segment : ${data.segment}");
-      print(
-          "SINGLE::$connectionNumber TOTAL LEN : ${request.downloadItem.contentLength}");
-      print("SINGLE::$connectionNumber COMMAND : ${data.command}");
-
-      executeCommand(data, channel);
+      _executeCommand(data, channel);
     });
   }
 
-  static void executeCommand(DownloadIsolateData data, IsolateChannel channel) {
+  static void _setStopCommandTracker(
+    DownloadIsolateData data,
+    StreamChannel channel,
+  ) {
+    final id = data.downloadItem.id;
+    if (data.command == DownloadCommand.pause) {
+      stopCommandTrackerMap[id] = Pair(true, channel);
+      _runCommandTrackerTimer();
+    } else if (data.command == DownloadCommand.start) {
+      stopCommandTrackerMap[id] = Pair(false, channel);
+      _commandTrackerTimer?.cancel();
+      _commandTrackerTimer = null;
+    }
+  }
+
+  static void _executeCommand(
+    DownloadIsolateData data,
+    IsolateChannel channel,
+  ) {
     final id = data.downloadItem.id;
     final segmentNumber = data.connectionNumber;
     final request = _connections[id]![segmentNumber]!;
     switch (data.command) {
+      case DownloadCommand.startInitial:
       case DownloadCommand.start:
-        print("Starting download....");
         request.start(channel.sink.add);
         break;
       case DownloadCommand.pause:
@@ -88,9 +111,15 @@ class ConnectionInvoker {
   }
 
   static void setTrackedCommand(
-      DownloadIsolateData data, IsolateChannel channel) {
+    DownloadIsolateData data,
+    IsolateChannel channel,
+  ) {
     final id = data.downloadItem.id;
     final segmentNumber = data.connectionNumber!;
+    if (_connections[id]!.isNotEmpty &&
+        data.command == DownloadCommand.startInitial) {
+      return;
+    }
     final trackedCommand = TrackedDownloadCommand.create(data.command, channel);
     _trackedCommands[data.downloadItem.id] ??= {};
     _trackedCommands[id]![segmentNumber] = trackedCommand;
