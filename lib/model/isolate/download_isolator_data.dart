@@ -22,7 +22,7 @@ class DownloadIsolateData {
     required this.baseTempDir,
     required this.totalConnections,
     required this.baseSaveDir,
-    this.connectionRetryTimeout = 10,
+    this.connectionRetryTimeout = 10000,
     this.maxConnectionRetryCount = -1,
     this.connectionNumber,
     this.segment,
