@@ -48,7 +48,8 @@ class DownloadProgress {
   });
 
   factory DownloadProgress.loadFromHttpDownloadRequest(
-      HttpDownloadRequest request) {
+    HttpDownloadRequest request,
+  ) {
     final downloadProgress = DownloadProgress(
       downloadProgress: request.downloadProgress,
       transferRate: request.transferRate,
