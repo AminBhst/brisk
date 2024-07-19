@@ -69,8 +69,12 @@ class DownloadAdditionUiUtil {
     });
   }
 
-  static void addDownload(DownloadItem item, FileInfo fileInfo,
-      BuildContext context, bool additionalPop) {
+  static void addDownload(
+    DownloadItem item,
+    FileInfo fileInfo,
+    BuildContext context,
+    bool additionalPop,
+  ) {
     item.supportsPause = fileInfo.supportsPause;
     item.contentLength = fileInfo.contentLength;
     item.fileName = fileInfo.fileName;
@@ -81,7 +85,8 @@ class DownloadAdditionUiUtil {
       final behaviour = SettingsCache.fileDuplicationBehaviour;
       switch (behaviour) {
         case FileDuplicationBehaviour.ask:
-          showAskDuplicationActionDialog(context, item, additionalPop, fileInfo);
+          showAskDuplicationActionDialog(
+              context, item, additionalPop, fileInfo);
           break;
         case FileDuplicationBehaviour.skip:
           _skipDownload(context, additionalPop);
@@ -90,7 +95,8 @@ class DownloadAdditionUiUtil {
           showDownloadInfoDialog(context, item, additionalPop);
           break;
         case FileDuplicationBehaviour.updateUrl:
-          _onUpdateUrlPressed(false, context, fileInfo, showUpdatedSnackbar: true);
+          _onUpdateUrlPressed(false, context, fileInfo,
+              showUpdatedSnackbar: true);
           break;
       }
     } else {
@@ -176,7 +182,7 @@ class DownloadAdditionUiUtil {
     );
   }
 
-  static void _onUpdateUrlPressed(bool pop,context, FileInfo fileInfo,
+  static void _onUpdateUrlPressed(bool pop, context, FileInfo fileInfo,
       {bool showUpdatedSnackbar = false}) async {
     if (pop) {
       Navigator.of(context).pop();
