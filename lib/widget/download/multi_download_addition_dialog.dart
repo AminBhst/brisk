@@ -2,7 +2,7 @@ import 'package:brisk/constants/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/download_engine/download_item_model.dart';
-import 'package:brisk/download_engine/download_progress.dart';
+import 'package:brisk/download_engine/download_progress_message.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/readability_util.dart';
@@ -91,7 +91,7 @@ class _MultiDownloadAdditionDialogState
     for (final item in downloadItems.toSet()) {
       await HiveUtil.instance.addDownloadItem(item);
       widget.provider.insertRows([
-        DownloadProgress(downloadItem: DownloadItemModel.fromDownloadItem(item))
+        DownloadProgressMessage(downloadItem: DownloadItemModel.fromDownloadItem(item))
       ]);
     }
     if (!mounted) return;

@@ -1,6 +1,6 @@
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/download_item_model.dart';
-import 'package:brisk/download_engine/download_progress.dart';
+import 'package:brisk/download_engine/download_progress_message.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
@@ -226,7 +226,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
     final request = widget.downloadItem;
     await HiveUtil.instance.addDownloadItem(request);
     provider.insertRows([
-      DownloadProgress(
+      DownloadProgressMessage(
           downloadItem: DownloadItemModel.fromDownloadItem(request))
     ]);
     if (!mounted) return;

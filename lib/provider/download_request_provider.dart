@@ -8,9 +8,9 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/download_settings.dart';
 import 'package:brisk/download_engine/http_download_engine.dart';
 import 'package:brisk/download_engine/download_item_model.dart';
-import 'package:brisk/download_engine/download_progress.dart';
+import 'package:brisk/download_engine/download_progress_message.dart';
 import 'package:brisk/model/download_item.dart';
-import 'package:brisk/download_engine/download_isolate_data.dart';
+import 'package:brisk/download_engine/download_isolate_message.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/notification_util.dart';
@@ -25,19 +25,19 @@ import '../util/readability_util.dart';
 import '../util/settings_cache.dart';
 
 class DownloadRequestProvider with ChangeNotifier {
-  Map<int, DownloadProgress> downloads = {};
+  Map<int, DownloadProgressMessage> downloads = {};
   Map<int, StreamChannel?> engineChannels = {};
   Map<int, Isolate?> engineIsolates = {};
 
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
   void addRequest(DownloadItem item) {
-    final progress = DownloadProgress(
+    final progress = DownloadProgressMessage(
       downloadItem: DownloadItemModel.fromDownloadItem(item),
     );
     downloads.addAll({item.key!: progress});
     insertRows([
-      DownloadProgress(downloadItem: DownloadItemModel.fromDownloadItem(item))
+      DownloadProgressMessage(downloadItem: DownloadItemModel.fromDownloadItem(item))
     ]);
     PlutoGridUtil.plutoStateManager?.notifyListeners();
     notifyListeners();
@@ -49,7 +49,7 @@ class DownloadRequestProvider with ChangeNotifier {
   int _previousUpdateTime = _nowMillis;
 
   void executeDownloadCommand(int id, DownloadCommand command) async {
-    DownloadProgress? downloadProgress = downloads[id];
+    DownloadProgressMessage? downloadProgress = downloads[id];
     downloadProgress ??= await _addDownloadProgress(id);
     final downloadItem = downloadProgress.downloadItem;
     if (checkDownloadCompletion(downloadItem)) return;
@@ -58,7 +58,7 @@ class DownloadRequestProvider with ChangeNotifier {
         ? SettingsCache.connectionsNumber
         : 1;
 
-    final data = DownloadIsolateData(
+    final data = DownloadIsolateMessage(
       command: command,
       downloadItem: downloadProgress.downloadItem,
       settings: DownloadSettings.fromSettingsCache(),
@@ -68,7 +68,7 @@ class DownloadRequestProvider with ChangeNotifier {
       channel = await _spawnDownloadEngineIsolate(id);
       if (command == DownloadCommand.cancel) return;
       channel.stream
-          .cast<DownloadProgress>()
+          .cast<DownloadProgressMessage>()
           .listen((progress) => _listenToEngineChannel(progress, id));
     }
     channel.sink.add(data);
@@ -96,7 +96,7 @@ class DownloadRequestProvider with ChangeNotifier {
     return channel;
   }
 
-  void _listenToEngineChannel(DownloadProgress progress, int id) {
+  void _listenToEngineChannel(DownloadProgressMessage progress, int id) {
     downloads[id] = progress;
     _handleNotification(progress);
     final downloadItem = progress.downloadItem;
@@ -112,7 +112,7 @@ class DownloadRequestProvider with ChangeNotifier {
     }
   }
 
-  void _handleNotification(DownloadProgress progress) {
+  void _handleNotification(DownloadProgressMessage progress) {
     if (progress.assembleProgress == 1 &&
         SettingsCache.notificationOnDownloadCompletion) {
       NotificationUtil.showNotification(
@@ -129,13 +129,13 @@ class DownloadRequestProvider with ChangeNotifier {
     }
   }
 
-  Future<DownloadProgress> _addDownloadProgress(int id) async {
+  Future<DownloadProgressMessage> _addDownloadProgress(int id) async {
     final downloadItem = HiveUtil.instance.downloadItemsBox.get(id)!;
     downloads.addAll({
-      id: DownloadProgress(
+      id: DownloadProgressMessage(
           downloadItem: DownloadItemModel.fromDownloadItem(downloadItem))
     });
-    return DownloadProgress(
+    return DownloadProgressMessage(
         downloadItem: DownloadItemModel.fromDownloadItem(downloadItem));
   }
 
@@ -146,7 +146,7 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   /// Updates the download request based on the incoming progress from handler isolate every 6 seconds
-  void _updateDownloadRequest(DownloadProgress progress, DownloadItem item) {
+  void _updateDownloadRequest(DownloadProgressMessage progress, DownloadItem item) {
     final status = progress.status;
     if (isUpdateEligible(status)) {
       item.progress = progress.downloadProgress;
@@ -165,14 +165,14 @@ class DownloadRequestProvider with ChangeNotifier {
         status == DownloadStatus.paused;
   }
 
-  void insertRows(List<DownloadProgress> progressData) {
+  void insertRows(List<DownloadProgressMessage> progressData) {
     final stateManager = PlutoGridUtil.plutoStateManager;
     final rows = stateManager?.rows;
     final lastIndex = rows!.isNotEmpty ? rows.last.sortIdx : -1;
     stateManager?.insertRows(lastIndex + 1, buildRows(progressData));
   }
 
-  List<PlutoRow> buildRows(List<DownloadProgress> progressData) {
+  List<PlutoRow> buildRows(List<DownloadProgressMessage> progressData) {
     return progressData.map((e) {
       if (downloads[e.downloadItem.id] != null) {
         e = downloads[e.downloadItem.id]!;
@@ -207,7 +207,7 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   // int _tmpTime = _nowMillis;
-  void notifyAllListeners(DownloadProgress progress) {
+  void notifyAllListeners(DownloadProgressMessage progress) {
     // if (_tmpTime + 90 > _nowMillis) return;
     // _tmpTime = _nowMillis;
     if (engineChannels[progress.downloadItem.id] == null) return;
@@ -218,7 +218,7 @@ class DownloadRequestProvider with ChangeNotifier {
   Future<void> fetchRows(List<DownloadItem> items) async {
     PlutoGridUtil.cachedRows.clear();
     final requests = items
-        .map((e) => DownloadProgress(
+        .map((e) => DownloadProgressMessage(
             downloadItem: DownloadItemModel.fromDownloadItem(e),
             downloadProgress: e.progress))
         .toList();

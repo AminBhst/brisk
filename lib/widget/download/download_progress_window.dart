@@ -5,7 +5,7 @@ import 'package:brisk/widget/base/closable_window.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../download_engine/download_progress.dart';
+import '../../download_engine/download_progress_message.dart';
 
 class DownloadProgressWindow extends StatefulWidget {
   final int downloadId;
@@ -270,7 +270,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                 color: const Color.fromRGBO(45, 45, 45, 1),
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: Selector<DownloadRequestProvider, List<DownloadProgress>>(
+              child: Selector<DownloadRequestProvider, List<DownloadProgressMessage>>(
                 selector: (_, provider) =>
                     provider.downloads[widget.downloadId]!.connectionProgresses,
                 builder: (_, progresses, __) {

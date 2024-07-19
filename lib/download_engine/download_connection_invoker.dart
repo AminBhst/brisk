@@ -3,7 +3,7 @@ import 'dart:isolate';
 
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/http_download_connection.dart';
-import 'package:brisk/download_engine/download_isolate_data.dart';
+import 'package:brisk/download_engine/download_isolate_message.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
@@ -40,7 +40,7 @@ class DownloadConnectionInvoker {
 
   static void invokeConnection(SendPort sendPort) async {
     final channel = IsolateChannel.connectSend(sendPort);
-    channel.stream.cast<DownloadIsolateData>().listen((data) {
+    channel.stream.cast<DownloadIsolateMessage>().listen((data) {
       final id = data.downloadItem.id;
       _connections[id] ??= {};
       final connectionNumber = data.connectionNumber;
@@ -62,7 +62,7 @@ class DownloadConnectionInvoker {
   }
 
   static void _setStopCommandTracker(
-    DownloadIsolateData data,
+    DownloadIsolateMessage data,
     StreamChannel channel,
   ) {
     final id = data.downloadItem.id;
@@ -77,16 +77,19 @@ class DownloadConnectionInvoker {
   }
 
   static void _executeCommand(
-    DownloadIsolateData data,
+    DownloadIsolateMessage data,
     IsolateChannel channel,
   ) {
     final id = data.downloadItem.id;
     final segmentNumber = data.connectionNumber;
     final request = _connections[id]![segmentNumber]!;
     switch (data.command) {
-      case DownloadCommand.startInitial:
+      case DownloadCommand.start_Initial:
       case DownloadCommand.start:
         request.start(channel.sink.add);
+        break;
+      case DownloadCommand.start_ReuseConnection:
+        request.start(channel.sink.add, reinitializeClient: false);
         break;
       case DownloadCommand.pause:
         request.pause(channel.sink.add);
@@ -103,19 +106,22 @@ class DownloadConnectionInvoker {
         _connections[id]?.clear();
         break;
       case DownloadCommand.refreshSegment:
-        request.requestRefreshSegment(data.segment!);
+        request.refreshSegment(data.segment!);
+        break;
+      case DownloadCommand.refreshSegment_reuseConnection:
+        request.refreshSegment(data.segment!, reuseConnection: true);
         break;
     }
   }
 
   static void setTrackedCommand(
-    DownloadIsolateData data,
+    DownloadIsolateMessage data,
     IsolateChannel channel,
   ) {
     final id = data.downloadItem.id;
     final segmentNumber = data.connectionNumber!;
     if (_connections[id]!.isNotEmpty &&
-        data.command == DownloadCommand.startInitial) {
+        data.command == DownloadCommand.start_Initial) {
       return;
     }
     final trackedCommand = TrackedDownloadCommand.create(data.command, channel);

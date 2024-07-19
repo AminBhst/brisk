@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:brisk/constants/download_status.dart';
-import 'package:brisk/download_engine/download_progress.dart';
+import 'package:brisk/download_engine/download_progress_message.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
@@ -11,7 +11,7 @@ class PlutoGridUtil {
   static Timer? cacheClearTimer;
   static final List<PlutoRow> cachedRows = [];
 
-  static void updateRowCells(DownloadProgress progress) {
+  static void updateRowCells(DownloadProgressMessage progress) {
     final id = progress.downloadItem.id;
     final row = findCachedRow(id) ?? findRowById(id);
     if (row == null) return;

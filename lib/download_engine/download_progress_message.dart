@@ -1,11 +1,12 @@
 import 'dart:io';
 
+import 'package:brisk/download_engine/connection_details.dart';
 import 'package:brisk/download_engine/download_item_model.dart';
 
 import 'http_download_connection.dart';
 
-class DownloadProgress {
-  List<DownloadProgress> connectionProgresses = [];
+class DownloadProgressMessage {
+  List<DownloadProgressMessage> connectionProgresses = [];
   DownloadItemModel downloadItem;
   int totalSegments;
   double downloadProgress;
@@ -25,7 +26,7 @@ class DownloadProgress {
   String detailsStatus;
   String message;
 
-  DownloadProgress({
+  DownloadProgressMessage({
     required this.downloadItem,
     this.connectionNumber = 0,
     this.downloadProgress = 0,
@@ -46,10 +47,10 @@ class DownloadProgress {
     this.message = "",
   });
 
-  factory DownloadProgress.loadFromHttpDownloadRequest(
+  factory DownloadProgressMessage.loadFromHttpDownloadRequest(
     HttpDownloadConnection request,
   ) {
-    final downloadProgress = DownloadProgress(
+    final downloadProgress = DownloadProgressMessage(
       downloadProgress: request.downloadProgress,
       transferRate: request.transferRate,
       status: request.status,

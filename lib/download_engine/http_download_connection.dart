@@ -5,7 +5,7 @@ import 'package:brisk/download_engine/connection_segment_message.dart';
 import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/download_engine/download_item_model.dart';
 import 'package:brisk/download_engine/internal_messages.dart';
-import 'package:brisk/download_engine/download_progress.dart';
+import 'package:brisk/download_engine/download_progress_message.dart';
 import 'package:brisk/constants/types.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:path/path.dart';
@@ -108,11 +108,12 @@ class HttpDownloadConnection {
   void start(
     DownloadProgressCallback progressCallback, {
     bool connectionReset = false,
+    bool reinitializeClient = true,
   }) {
     if (!connectionReset && startNotAllowed) return;
     _runConnectionResetTimer();
 
-    _init(connectionReset, progressCallback);
+    _init(connectionReset, progressCallback, reinitializeClient);
     _notifyProgress();
 
     if (_isDownloadCompleted()) {
@@ -125,22 +126,24 @@ class HttpDownloadConnection {
     sendDownloadRequest(request);
   }
 
-  void _init(bool connectionReset, DownloadProgressCallback progressCallback) {
+  void _init(
+    bool connectionReset,
+    DownloadProgressCallback progressCallback,
+    bool reinitializeClient,
+  ) {
     detailsStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
     status = detailsStatus;
     this.progressCallback = progressCallback;
-    client = http.Client();
+    if (reinitializeClient) {
+      client = http.Client();
+    }
     paused = false;
   }
 
   http.Request buildDownloadRequest() {
     final request = http.Request('GET', Uri.parse(downloadItem.downloadUrl));
-    request.headers.addAll({
-      "User-Agent":
-          "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;"
-    });
-    _setByteRangeHeader(request);
+    _setRequestHeaders(request);
     return request;
   }
 
@@ -210,7 +213,7 @@ class HttpDownloadConnection {
 
   /// TODO don't create a new obj every time
   void _notifyProgress() {
-    final data = DownloadProgress.loadFromHttpDownloadRequest(this);
+    final data = DownloadProgressMessage.loadFromHttpDownloadRequest(this);
     progressCallback!(data);
   }
 
@@ -219,16 +222,16 @@ class HttpDownloadConnection {
   /// The length of the existing file is set to the start value and the TODO FIX DOC (SEGMENTED)
   /// content-length retrieved from the HEAD Request is set to the end value.
   /// returns whether the segment download has already been finished or not.
-  void _setByteRangeHeader(http.Request request) {
+  void _setRequestHeaders(http.Request request) {
     tempDirectory.createSync(recursive: true);
-
     final newStartByte = getNewStartByte();
-    request.headers.addAll(
-      {
-        "Range": "bytes=$newStartByte-$endByte",
-        // "Keep-Alive": "timeout=5, max=1"
-      },
-    );
+    request.headers.addAll({
+      "Range": "bytes=$newStartByte-$endByte",
+      "Keep-Alive": "timeout=5, max=1",
+      // TODO handle request time-out response (We should reinitialize client)
+      "User-Agent":
+          "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;",
+    });
     final existingLength = newStartByte - this.startByte;
     downloadProgress = existingLength / segmentLength;
     writeProgress = downloadProgress;
@@ -466,14 +469,12 @@ class HttpDownloadConnection {
     _notifyProgress();
   }
 
-  void requestRefreshSegment(Segment segment) {
+  void refreshSegment(Segment segment, {bool reuseConnection = false}) {
     final prevEndByte = this.endByte;
-    if (connectionNumber == 0) {
-      print("Debug");
-    }
     final message = ConnectionSegmentMessage(
       downloadItem: downloadItem,
       requestedSegment: segment,
+      reuseConnection: reuseConnection,
     );
     if (this.startByte + totalReceivedBytes >= segment.endByte) {
       message.internalMessage = InternalMessage.OVERLAPPING_REFRESH_SEGMENT;
@@ -518,20 +519,11 @@ class HttpDownloadConnection {
     if (paused) return;
     bytesTransferRate = 0;
     downloadProgress = totalReceivedBytes / segmentLength;
-    print(
-        "**************************** I-$connectionNumber ******************");
-    print("my download prog : $downloadProgress");
-    print("total rec : $totalReceivedBytes");
-    print("Seg len : $segmentLength");
-    print("Con len : ${downloadItem.contentLength}");
-    print("******************************************************************");
-
     totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
     _flushBuffer();
     _updateStatus(DownloadStatus.complete);
     detailsStatus = DownloadStatus.complete;
     _notifyProgress();
-    client.close();
   }
 
   void _onError(dynamic error, [dynamic s]) {
@@ -565,7 +557,7 @@ class HttpDownloadConnection {
   }
 
   bool get startNotAllowed =>
-      (paused && _isWritingTempFile)||
+      (paused && _isWritingTempFile) ||
       (!paused && downloadProgress > 0) ||
       downloadItem.status == DownloadStatus.complete ||
       status == DownloadStatus.complete ||

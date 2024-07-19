@@ -3,14 +3,13 @@ import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/download_engine/download_item_model.dart';
 import 'package:brisk/download_engine/download_settings.dart';
 
-class DownloadIsolateData {
+class DownloadIsolateMessage {
   int? connectionNumber;
   DownloadCommand command;
   DownloadItemModel downloadItem;
   Segment? segment;
   DownloadSettings settings;
-
-  DownloadIsolateData({
+  DownloadIsolateMessage({
     required this.command,
     required this.downloadItem,
     required this.settings,
@@ -18,8 +17,8 @@ class DownloadIsolateData {
     this.segment,
   });
 
-  DownloadIsolateData clone() {
-    return DownloadIsolateData(
+  DownloadIsolateMessage clone() {
+    return DownloadIsolateMessage(
       command: this.command,
       downloadItem: this.downloadItem,
       segment: this.segment,
