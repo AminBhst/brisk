@@ -72,11 +72,11 @@ class DownloadRequestProvider with ChangeNotifier {
       maxConnectionRetryCount: SettingsCache.connectionRetryCount,
     );
     if (channel == null) {
-      channel = await _spawnCoordinatorIsolate(id);
+      channel = await _spawnDownloadEngineIsolate(id);
       if (command == DownloadCommand.cancel) return;
       channel.stream
           .cast<DownloadProgress>()
-          .listen((progress) => _listenToHandlerChannel(progress, id));
+          .listen((progress) => _listenToEngineChannel(progress, id));
     }
     channel.sink.add(isolatorArgs);
   }
@@ -93,7 +93,7 @@ class DownloadRequestProvider with ChangeNotifier {
     return tempDir.existsSync() ? tempDir.listSync().length : null;
   }
 
-  Future<StreamChannel> _spawnCoordinatorIsolate(int id) async {
+  Future<StreamChannel> _spawnDownloadEngineIsolate(int id) async {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
     final isolate = await Isolate.spawn(
@@ -105,7 +105,7 @@ class DownloadRequestProvider with ChangeNotifier {
     return channel;
   }
 
-  void _listenToHandlerChannel(DownloadProgress progress, int id) {
+  void _listenToEngineChannel(DownloadProgress progress, int id) {
     downloads[id] = progress;
     _handleNotification(progress);
     final downloadItem = progress.downloadItem;
