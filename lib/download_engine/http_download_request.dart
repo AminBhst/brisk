@@ -61,32 +61,25 @@ class HttpDownloadRequest {
   // static const _staticFlushThreshold = 524288;
   double _dynamicFlushThreshold = 52428800;
 
-  int _flushQueueCount = 0;
-  int _flushQueueComplete = 0;
-
   double writeProgress = 0;
-  bool isWritingFilePart = false;
 
   /// Determines if the user is permitted to hit the pause button or not.
   /// In order to prevent issues (mostly regarding [startButtonEnabled] property),
   /// the user is only permitted to hit the pause button only once before hitting
   /// the resume button.
-  bool pauseButtonEnabled = false;
+  bool pauseButtonEnabled = true;
 
   DownloadItemModel downloadItem;
 
   final Directory baseTempDir;
 
-  /// Callback method used to update the handler isolate on the current progress of the download
+  /// Callback method used to update the engine on the current progress of the download
   DownloadProgressCallback? progressCallback;
 
   int startByte;
 
   int endByte;
 
-  // bool segmentRefreshed = false;
-
-  /// TODO rename to connectionNumber
   int connectionNumber;
 
   int previousBufferEndByte = 0;
@@ -115,10 +108,12 @@ class HttpDownloadRequest {
   /// Starts the download request.
   /// [progressCallback] is used to let the provider know that the values are
   /// changed so that it calls notify listeners which can be used to display its live progress.
-  void start(DownloadProgressCallback progressCallback,
-      {bool connectionReset = false}) {
+  void start(
+    DownloadProgressCallback progressCallback, {
+    bool connectionReset = false,
+  }) {
     if (!connectionReset && startNotAllowed) return;
-    // _runConnectionResetTimer(); // TODO uncomment
+    _runConnectionResetTimer();
 
     _init(connectionReset, progressCallback);
     _notifyProgress();
@@ -274,7 +269,7 @@ class HttpDownloadRequest {
     pauseButtonEnabled = downloadItem.supportsPause;
     detailsStatus = transferRate;
     _notifyProgress();
-    if (downloadProgress == 1 && !isWritePartCaughtUp) {
+    if (downloadProgress == 1) {
       _updateStatus("Download Complete");
     }
     _calculateTransferRate(chunk);
@@ -309,7 +304,6 @@ class HttpDownloadRequest {
   void _flushBuffer() {
     if (buffer.isEmpty) return;
     final bytes = _writeToUin8List(tempReceivedBytes, buffer);
-    _flushQueueCount++;
     final filePath = join(
       tempDirectory.path,
       "${connectionNumber}#${tempFileStartByte}-${tempFileEndByte}",
@@ -322,7 +316,7 @@ class HttpDownloadRequest {
   }
 
   void _onTempFileWriteComplete(File file) {
-    if (isWritePartCaughtUp && paused) {
+    if (paused) {
       _updateStatus("Download Paused");
     }
     totalWrittenBytes += file.lengthSync();
@@ -330,7 +324,6 @@ class HttpDownloadRequest {
     if (writeProgress == 1) {
       detailsStatus = DownloadStatus.complete;
     }
-    _flushQueueComplete++;
     _notifyProgress();
   }
 
@@ -338,7 +331,6 @@ class HttpDownloadRequest {
     final tempFiles = _getTempFilesSorted();
     List<File> tempFilesToDelete = [];
     Uint8List? newBufferToWrite;
-    File? tempFileToCut;
     int? newBufferStartByte;
     for (var file in tempFiles) {
       final fileName = basename(file.path);
@@ -350,7 +342,6 @@ class HttpDownloadRequest {
         continue;
       }
       if (this.endByte < tempEndByte) {
-        tempFileToCut = file;
         newBufferStartByte = tempStartByte;
         final bufferCutLength = this.endByte - tempStartByte + 1;
         newBufferToWrite = FileUtil.readSync(file, bufferCutLength);
@@ -414,7 +405,8 @@ class HttpDownloadRequest {
     var tempFiles = tempDirectory.listSync().map((e) => e as File).toList();
     if (thisConnectionOnly) {
       tempFiles = tempFiles
-          .where((file) => basename(file.path).startsWith("${connectionNumber}#"))
+          .where(
+              (file) => basename(file.path).startsWith("${connectionNumber}#"))
           .toList();
     }
 
@@ -460,10 +452,12 @@ class HttpDownloadRequest {
         : hundredMegaBytes;
   }
 
-  void pause(DownloadProgressCallback progressCallback) {
+  void pause(DownloadProgressCallback? progressCallback) {
     paused = true;
     _cancelConnectionResetTimer();
-    this.progressCallback = progressCallback;
+    if (progressCallback != null) {
+      this.progressCallback = progressCallback;
+    }
     _flushBuffer();
     _updateStatus(DownloadStatus.paused);
     detailsStatus = DownloadStatus.paused;
@@ -524,7 +518,8 @@ class HttpDownloadRequest {
     if (paused) return;
     bytesTransferRate = 0;
     downloadProgress = totalReceivedBytes / segmentLength;
-    print("**************************** I-$connectionNumber ******************");
+    print(
+        "**************************** I-$connectionNumber ******************");
     print("my download prog : $downloadProgress");
     print("total rec : $totalReceivedBytes");
     print("Seg len : $segmentLength");
@@ -533,14 +528,9 @@ class HttpDownloadRequest {
 
     totalDownloadProgress = totalReceivedBytes / downloadItem.contentLength;
     _flushBuffer();
-    print(
-        "&&&&&&&&&& Download Progress $downloadProgress   CAUGHT UP ? $isWritePartCaughtUp");
-    // if (downloadProgress == 1 && isWritePartCaughtUp) {
     _updateStatus(DownloadStatus.complete);
     detailsStatus = DownloadStatus.complete;
-    // }
     _notifyProgress();
-    // segmentRefreshed = false;
     client.close();
   }
 
@@ -575,7 +565,7 @@ class HttpDownloadRequest {
   }
 
   bool get startNotAllowed =>
-      (paused && !isWritePartCaughtUp) ||
+      paused ||
       (!paused && downloadProgress > 0) ||
       downloadItem.status == DownloadStatus.complete ||
       status == DownloadStatus.complete ||
@@ -604,8 +594,7 @@ class HttpDownloadRequest {
   /// Determines if the user is permitted to hit the start (Resume) button or not
   /// for further information refer to docs for [isWritePartCaughtUp]
   // bool startButtonEnabled = false;
-  bool get isStartButtonEnabled =>
-      (isWritePartCaughtUp && paused) || downloadProgress == 0;
+  bool get isStartButtonEnabled => paused || downloadProgress == 0;
 
   bool get receivedBytesExceededEndByte =>
       // segmentRefreshed &&
@@ -618,19 +607,12 @@ class HttpDownloadRequest {
       ? this.endByte - this.startByte
       : this.endByte - this.startByte;
 
+  /// TODO what if it's writing???
   bool get connectionRetryAllowed =>
       lastResponseTimeMillis + connectionRetryTimeoutMillis < _nowMillis &&
       status != DownloadStatus.paused &&
       status != DownloadStatus.complete &&
       detailsStatus != DownloadStatus.canceled &&
       detailsStatus != DownloadStatus.complete &&
-      isWritePartCaughtUp &&
       (_retryCount < maxConnectionRetryCount || maxConnectionRetryCount == -1);
-
-  /// In order for download's play/pause functionality to work, the total received
-  /// bytes must be calculated and be used for the resume request header. Therefore,
-  /// before the resume request is send, the user has to wait for all part write operations
-  /// to complete so that the value calculated for the total received bytes is valid.
-  /// This method determines if the part write operation is caught up to the current download progress.
-  bool get isWritePartCaughtUp => _flushQueueComplete == _flushQueueCount;
 }
