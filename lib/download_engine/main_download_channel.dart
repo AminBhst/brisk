@@ -7,6 +7,8 @@ class MainDownloadChannel extends IsolateChannelWrapper {
 
   Map<int, DownloadConnectionChannel> connectionChannels = {};
 
+  int createdConnections = 1;
+
   void setConnectionChannel(int connNum, DownloadConnectionChannel channel) {
     this.connectionChannels[connNum] = channel;
   }

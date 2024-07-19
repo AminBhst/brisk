@@ -11,7 +11,7 @@ import 'package:brisk/download_engine/internal_messages.dart';
 import 'package:brisk/download_engine/main_download_channel.dart';
 import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/download_engine/segment_status.dart';
-import 'package:brisk/download_engine/connection_invoker.dart';
+import 'package:brisk/download_engine/download_request_invoker.dart';
 import 'package:brisk/model/download_item_model.dart';
 import 'package:brisk/model/download_progress.dart';
 import 'package:brisk/model/isolate/download_isolator_data.dart';
@@ -93,16 +93,10 @@ class HttpDownloadEngine {
     _downloadChannels[args.obj] = mainChannel;
     _runDynamicConnectionManagerTimer();
     mainChannel.listenToStream<DownloadIsolateData>((data) async {
-      if (data.command == DownloadCommand.pause) {
-        _dynamicConnectionManagerTimer?.cancel();
-        _dynamicConnectionManagerTimer = null;
-      }
-      if (data.command == DownloadCommand.start) {
-        _runDynamicConnectionManagerTimer();
-      }
+      _setSettings(data);
+      _setConnectionManagerTimer(data);
       final downloadItem = data.downloadItem;
       final id = downloadItem.id;
-      _setSettings(data);
       if (isAssembledFileInvalid(downloadItem)) {
         final progress = reassembleFile(downloadItem);
         mainChannel.sendMessage(progress);
@@ -113,6 +107,16 @@ class HttpDownloadEngine {
         channel.listenToStream(_handleMessages);
       }
     });
+  }
+
+  static void _setConnectionManagerTimer(DownloadIsolateData data) {
+    if (data.command == DownloadCommand.pause) {
+      _dynamicConnectionManagerTimer?.cancel();
+      _dynamicConnectionManagerTimer = null;
+    }
+    if (data.command == DownloadCommand.start) {
+      _runDynamicConnectionManagerTimer();
+    }
   }
 
   static _refreshConnectionSegments(int downloadId) async {
@@ -143,44 +147,28 @@ class HttpDownloadEngine {
         segment: relatedSegmentNode.segment,
       );
       relatedSegmentNode.segmentStatus = SegmentStatus.REFRESH_REQUESTED;
-      ++iii;
+      _downloadChannels[downloadId]?.createdConnections++;
+      print("CREATED:::: ${_downloadChannels[downloadId]?.createdConnections++}");
       connectionChannel.sendMessage(data);
     });
   }
 
   // TODO take estimation into account
-  static int iii = 1;
-
-  /// TODO remove
   static bool _shouldCreateNewConnections(DownloadProgress progress) {
     final downloadId = progress.downloadItem.id;
-    print(" ^^^^^^^^^^^^^^^ TOTAL PROG : ${progress.totalDownloadProgress}");
-    final connectionChannels =
-        _downloadChannels[downloadId]?.connectionChannels;
-
-    final nodes = _downloadChannels[downloadId]!
-        .segmentTree
-        ?.lowestLevelNodes
-        .map((e) => e.segment)
-        .toList();
-
-    print(nodes);
-    print(
-        "MAX CONNECTION : ${_downloadChannels[downloadId]!.segmentTree!.maxConnectionNumber}");
-
+    print("^^^^^^^^^^^^^^^ TOTAL PROG : ${progress.totalDownloadProgress}");
+    final mainChannel = _downloadChannels[downloadId];
+    final connectionChannels = mainChannel?.connectionChannels;
     final pendingSegmentExists = _downloadChannels[downloadId]!
             .segmentTree
-            ?.lowestLevelNodes // TODO fix
+            ?.lowestLevelNodes
             .any((s) => s.segmentStatus == SegmentStatus.REFRESH_REQUESTED) ??
         true;
 
     print("Conn Len : ${connectionChannels!.length}");
     return !pendingSegmentExists &&
-        // progress.totalDownloadProgress < 1 &&
-        iii <= 8 &&
-        connectionChannels != null &&
-        connectionChannels.length <
-            totalConnections; // TODO this sometimes fails
+        progress.totalDownloadProgress < 1 &&
+        mainChannel!.createdConnections <= totalConnections;
   }
 
   // TODO implement
@@ -305,10 +293,12 @@ class HttpDownloadEngine {
     int connectionNumber,
   ) async {
     final data = DownloadIsolateData(
-      command: DownloadCommand.start,
+      command: DownloadCommand.startInitial,
       downloadItem: downloadItem,
       baseTempDir: baseTempDir,
       totalConnections: totalConnections,
+      connectionRetryTimeout: connectionRetryTimeout,
+      maxConnectionRetryCount: maxConnectionRetryCount,
       baseSaveDir: baseSaveDir,
       segment: segment,
     );
@@ -316,12 +306,15 @@ class HttpDownloadEngine {
   }
 
   static Future<void> sendToDownloadIsolates(
-      DownloadIsolateData data, IsolateChannel handlerChannel) async {
+    DownloadIsolateData data,
+    IsolateChannel handlerChannel,
+  ) async {
     final int id = data.downloadItem.id;
     Completer<void> completer = Completer();
     if (_downloadChannels[id]!.connectionChannels.isEmpty) {
       final byteRangeMap = _findMissingByteRanges(
-          data.downloadItem); // TODO Fix segment tree impl
+        data.downloadItem,
+      ); // TODO Fix segment tree impl
       final ranges = byteRangeMap.values.toList();
 
       /// TODO handle
@@ -332,10 +325,11 @@ class HttpDownloadEngine {
           DownloadSegmentTree.fromByteRanges(ranges);
       print("=========== MISSING BYTE RANGES =========");
       print(byteRangeMap);
+      data.command = DownloadCommand.startInitial;
       await _spawnDownloadIsolates(data);
     } else {
-      _downloadChannels[id]?.connectionChannels.forEach((seg, connection) {
-        data.connectionNumber = seg;
+      _downloadChannels[id]?.connectionChannels.forEach((connNum, connection) {
+        data.connectionNumber = connNum;
         connection.sendMessage(data);
       });
     }
@@ -530,7 +524,9 @@ class HttpDownloadEngine {
   /// Sets the availability for start and pause buttons based on all the
   /// statuses of active connections
   static void _setButtonAvailability(
-      DownloadProgress progress, double totalProgress) {
+    DownloadProgress progress,
+    double totalProgress,
+  ) {
     final downloadId = progress.downloadItem.id;
     if (_connectionProgresses[downloadId] == null) return;
     final progresses = _connectionProgresses[downloadId]!.values;
@@ -538,12 +534,15 @@ class HttpDownloadEngine {
       progress.pauseButtonEnabled = false;
       progress.startButtonEnabled = false;
     } else {
-      final unfinishedConnections = progresses
-          .where((element) => element.detailsStatus != DownloadStatus.complete);
-      progress.pauseButtonEnabled =
-          unfinishedConnections.every((c) => c.pauseButtonEnabled);
-      progress.startButtonEnabled =
-          unfinishedConnections.every((c) => c.startButtonEnabled);
+      final unfinishedConnections = progresses.where(
+        (p) => p.detailsStatus != DownloadStatus.complete,
+      );
+      progress.pauseButtonEnabled = unfinishedConnections.every(
+        (c) => c.pauseButtonEnabled,
+      );
+      progress.startButtonEnabled = unfinishedConnections.every(
+        (c) => c.startButtonEnabled,
+      );
     }
   }
 
@@ -596,7 +595,7 @@ class HttpDownloadEngine {
     data.connectionNumber = segmentNumber;
     print("Data.segmentNumber = ${data.connectionNumber}");
     final isolate = await Isolate.spawn(
-      ConnectionInvoker.invokeConnection,
+      DownloadRequestInvoker.invokeRequest,
       rPort.sendPort,
       errorsAreFatal: false,
     );
