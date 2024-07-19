@@ -565,7 +565,7 @@ class HttpDownloadConnection {
   }
 
   bool get startNotAllowed =>
-      paused ||
+      (paused && _isWritingTempFile)||
       (!paused && downloadProgress > 0) ||
       downloadItem.status == DownloadStatus.complete ||
       status == DownloadStatus.complete ||
