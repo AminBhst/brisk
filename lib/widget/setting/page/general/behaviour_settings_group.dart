@@ -28,7 +28,7 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
     final size = MediaQuery.of(context).size;
     return SettingsGroup(
       height: 300,
-      title: "Behaviour",
+      title: "Behavior",
       children: [
         SwitchSetting(
           text: "Launch at startup",
@@ -51,7 +51,7 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
           value: _appClosureActionToDropDownTxt(
             SettingsCache.appClosureBehaviour,
           ),
-          text: "App closure behaviour",
+          text: "App closure behavior",
           onChanged: _onAppClosureDropDownChanged,
           items: const [
             dropDownMinimizeToTrayStr,
