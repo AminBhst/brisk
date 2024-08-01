@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'package:brisk/download_engine/http_client/base_http_client_wrapper.dart';
 import 'package:brisk/download_engine/segment.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -14,15 +15,19 @@ String testFilePath = path.join(
   "Mozilla.Firefox.zip",
 );
 
-class MockHttpClient {
+/// A mock client that behaves like a server and serves a local file in a streaming
+/// fashion. Used for the development of the download engine.
+class MockHttpClient extends BaseHttpClientWrapper {
+  bool _closed = false;
 
-  static MockClient build() {
-    return MockClient.streaming((request, bodyStream) => _handler(request));
+  MockClient build() {
+    super.client = MockClient.streaming(
+      (request, _) => _handleRequest(request),
+    );
+    return super.client as MockClient;
   }
 
-  static Future<http.StreamedResponse> _handler(
-    http.BaseRequest request,
-  ) async {
+  Future<http.StreamedResponse> _handleRequest(http.BaseRequest request) async {
     final file = File(testFilePath);
     if (!file.existsSync()) {
       // return http.Response('File not found', 404);
@@ -42,22 +47,9 @@ class MockHttpClient {
       // return http.Response('Invalid Range', 416);
     }
 
-    final length = segment.endByte - segment.startByte + 1;
     final bytes = fileBytes.sublist(segment.startByte, segment.endByte);
     final byteStream = _mockDownloadStream(bytes);
-
-    final headers = {
-      'Range': 'bytes=${segment.startByte}-${segment.endByte}',
-      'Content-Length': length.toString(),
-    };
-
-
-    return http.StreamedResponse(
-      byteStream,
-      206,
-      headers: headers,
-    );
-
+    return http.StreamedResponse(byteStream, 206);
   }
 
   static Segment? _parseRangeHeader(String rangeHeader, int totalLength) {
@@ -91,49 +83,39 @@ class MockHttpClient {
     return Segment(start, end);
   }
 
-  static Stream<List<int>> _mockDownloadStream(List<int> bytes) async* {
+  /// Yields the file bytes in a random delayed fashion, simulating how a real
+  /// download stream works
+  Stream<List<int>> _mockDownloadStream(List<int> bytes) async* {
     final random = Random();
-    final chunkSize = 8191; // Number of bytes to emit at a time
+    final chunkSize = 12000;
     for (int i = 0; i < bytes.length; i += chunkSize) {
+      if (this._closed) {
+        break;
+      }
       final end = (i + chunkSize < bytes.length) ? i + chunkSize : bytes.length;
       yield bytes.sublist(i, end);
-      // Simulate a random delay
-      final delay = Duration(
-        milliseconds: 100,
-      ); // Random delay between 0 and 500 ms
+      final rand = random.nextInt(500);
+      if (rand % 3 != 0 || rand % 2 != 0) continue;
+      final delay = Duration(milliseconds: 100);
       await Future.delayed(delay);
     }
+    yield [];
   }
 
-
-  // static Future<List<int>> _mockDownloadStream(List<int> bytes) async {
-  //   final random = Random();
-  //   final chunkSize = 8191; // Number of bytes to emit at a time
-  //   final completer = Completer();
-  //   for (int i = 0; i < bytes.length; i += chunkSize) {
-  //     final end = (i + chunkSize < bytes.length) ? i + chunkSize : bytes.length;
-  //     final byteList = bytes.sublist(i, end);
-  //     // Simulate a random delay
-  //     final delay = Duration(
-  //       milliseconds: 100,
-  //     ); // Random delay between 0 and 500 ms
-  //     await Future.delayed(delay);
-  //     return completer.complete(byteList);
-  //   }
-  // }
-
+  @override
+  void close() {
+    this._closed = true;
+  }
 }
 
 // void main() async {
-//   final client = MockHttpClient(testFilePath);
+//   // final client = MockHttpClient.build();
 //   // Example: Requesting the byte range 0-99
 //   final request = http.Request('GET', Uri.parse('http://example.com'))
 //     ..headers['Range'] = 'bytes=0-65945577';
-//
 //   final response = await client.send(request);
-//
-//   print(response.headers);
 //   await for (final bytes in response.stream) {
 //     print(bytes); // Print or process the bytes from the specified range
+//     client.close();
 //   }
 // }

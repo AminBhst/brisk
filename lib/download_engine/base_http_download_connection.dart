@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk/download_engine/connection_segment_message.dart';
+import 'package:brisk/download_engine/http_client/base_http_client_wrapper.dart';
 import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/download_engine/download_item_model.dart';
 import 'package:brisk/download_engine/internal_messages.dart';
@@ -55,7 +56,7 @@ abstract class BaseHttpDownloadConnection {
   /// calculate and update transfer rate every 0.7 seconds
   static const int _transferRateCalculationWindowMillis = 700;
 
-  late http.Client client;
+  late BaseHttpClientWrapper clientWrapper;
 
   /// Threshold is currently only dynamically decided (4 times the byte transfer rate per second -
   /// and less than 100MB)
@@ -158,7 +159,7 @@ abstract class BaseHttpDownloadConnection {
     status = detailsStatus;
     this.progressCallback = progressCallback;
     // if (!reuseConnection) {
-    client = buildClient();
+    clientWrapper = buildClientWrapper();
     // }
     paused = false;
   }
@@ -172,7 +173,7 @@ abstract class BaseHttpDownloadConnection {
 
   void sendDownloadRequest(http.Request request) {
     try {
-      final response = client.send(request);
+      final response = clientWrapper.client.send(request);
       response.asStream().cast<http.StreamedResponse>().listen((response) {
         response.stream.listen(
           _processChunk,
@@ -212,7 +213,7 @@ abstract class BaseHttpDownloadConnection {
   }
 
   void resetConnection() {
-    client.close();
+    clientWrapper.close();
     totalReceivedBytes = totalReceivedBytes - tempReceivedBytes;
     _clearBuffer();
     _dynamicFlushThreshold = double.infinity;
@@ -220,7 +221,7 @@ abstract class BaseHttpDownloadConnection {
   }
 
   void cancel({bool failure = false}) {
-    client.close();
+    clientWrapper.close();
     _cancelConnectionResetTimer();
     _clearBuffer();
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
@@ -282,7 +283,7 @@ abstract class BaseHttpDownloadConnection {
       _doProcessChunk(chunk);
     } catch (e) {
       print("$e ======>>>>> $connectionNumber"); // TODO Add to log files
-      client.close();
+      clientWrapper.close();
       _clearBuffer();
     }
   }
@@ -292,6 +293,7 @@ abstract class BaseHttpDownloadConnection {
   /// flushed to the disk. This process continues until the download has been
   /// finished. The buffer will be emptied after each flush
   void _doProcessChunk(List<int> chunk) {
+    if (chunk.isEmpty) return;
     _updateStatus(DownloadStatus.downloading);
     lastResponseTimeMillis = _nowMillis;
     pauseButtonEnabled = downloadItem.supportsPause;
@@ -317,7 +319,7 @@ abstract class BaseHttpDownloadConnection {
   }
 
   void _onByteExceeded() {
-    client.close();
+    clientWrapper.close();
     _flushBuffer();
     _correctTempBytes();
     _setDownloadComplete();
@@ -501,7 +503,7 @@ abstract class BaseHttpDownloadConnection {
     _flushBuffer();
     _updateStatus(DownloadStatus.paused);
     detailsStatus = DownloadStatus.paused;
-    client.close();
+    clientWrapper.close();
     pauseButtonEnabled = false;
     _notifyProgress();
   }
@@ -572,7 +574,7 @@ abstract class BaseHttpDownloadConnection {
 
   void _onError(dynamic error, [dynamic s]) {
     try {
-      client.close();
+      clientWrapper.close();
     } catch (e) {}
     _clearBuffer();
     _notifyProgress();
@@ -635,7 +637,7 @@ abstract class BaseHttpDownloadConnection {
 
   /// The abstract buildClient method used for implementations of download connections.
   /// namely, [HttpDownloadConnection] and [MockHttpDownloadConnection]
-  http.Client buildClient();
+  BaseHttpClientWrapper buildClientWrapper();
 
   /// Determines if the user is permitted to hit the start (Resume) button or not
   /// for further information refer to docs for [isWritePartCaughtUp]

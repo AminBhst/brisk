@@ -136,7 +136,7 @@ class HttpDownloadEngine {
 
   static void _startEngineTimers() {
     _startDynamicConnectionSpawnerTimer();
-    _startDynamicConnectionReuseTimer();
+    // _startDynamicConnectionReuseTimer();
   }
 
   /// TODO add to ignore list instead of canceling the entire timer
@@ -357,8 +357,8 @@ class HttpDownloadEngine {
     downloadChannel.sendMessage(downloadProgress);
     if (progress.completionSignal) {
       print("----> Got completion signal for conn num ${progress.connectionNumber}");
-      _addToReuseQueue(progress);
-      _setSegmentComplete(progress);
+      // _addToReuseQueue(progress);
+      // _setSegmentComplete(progress);
     }
   }
 
