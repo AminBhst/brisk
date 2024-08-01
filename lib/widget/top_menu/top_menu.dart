@@ -1,7 +1,12 @@
 import 'dart:io';
 
+import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/download_engine/mock/mock_http_client.dart';
+import 'package:brisk/model/download_item.dart';
+import 'package:brisk/model/file_metadata.dart';
+import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:path/path.dart';
 import 'package:brisk/download_engine/download_item_model.dart';
@@ -54,6 +59,13 @@ class _TopMenuState extends State<TopMenu> {
               title: 'Add URL',
               icon: const Icon(Icons.add_rounded, color: Colors.white),
             ),
+          ),
+          TopMenuButton(
+            /// TODO comment in production
+            onTap: () => onMockDownloadPressed(context),
+            title: 'Mock',
+            icon: const Icon(Icons.not_started_outlined, color: Colors.white),
+            onHoverColor: Colors.green,
           ),
           TopMenuButton(
             onTap: onDownloadPressed,
@@ -109,7 +121,8 @@ class _TopMenuState extends State<TopMenu> {
             onTap: () {
               final dlitem = HiveUtil.instance.downloadItemsBox.getAt(0);
               final itemModel = DownloadItemModel.fromDownloadItem(dlitem!);
-              assembleFile(itemModel, SettingsCache.temporaryDir, SettingsCache.saveDir);
+              assembleFile(
+                  itemModel, SettingsCache.temporaryDir, SettingsCache.saveDir);
               print("DONE");
             },
           ),
@@ -141,7 +154,8 @@ class _TopMenuState extends State<TopMenu> {
     }
     final assembleSuccessful =
         fileToWrite.lengthSync() == downloadItem.contentLength;
-    print("SUCCESS ????????????????????????? ${assembleSuccessful} ::::  ${fileToWrite.lengthSync()} SHOULD BE ${downloadItem.contentLength}");
+    print(
+        "SUCCESS ????????????????????????? ${assembleSuccessful} ::::  ${fileToWrite.lengthSync()} SHOULD BE ${downloadItem.contentLength}");
     if (assembleSuccessful) {
       // _connectionIsolates[downloadItem.id]?.values.forEach((isolate) {
       //   isolate.kill();
@@ -151,6 +165,19 @@ class _TopMenuState extends State<TopMenu> {
     return assembleSuccessful;
   }
 
+  void onMockDownloadPressed(BuildContext context) async {
+    final item = DownloadItem.fromUrl(mockDownloadUrl);
+    item.contentLength = 65945577;
+    item.fileName = "Mozilla.Firefox.zip";
+    item.fileType = DLFileType.compressed.name;
+    item.supportsPause = true;
+    final fileInfo = FileInfo(
+      item.supportsPause,
+      item.fileName,
+      item.contentLength,
+    );
+    DownloadAdditionUiUtil.addDownload(item, fileInfo, context, false);
+  }
 
   void onDownloadPressed() async {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {

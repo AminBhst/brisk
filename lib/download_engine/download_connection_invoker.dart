@@ -4,12 +4,16 @@ import 'dart:isolate';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/http_download_connection.dart';
 import 'package:brisk/download_engine/download_isolate_message.dart';
+import 'package:brisk/download_engine/mock/mock_http_client.dart';
+import 'package:brisk/download_engine/mock/mock_http_download_connection.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 
+import 'base_http_download_connection.dart';
+
 class DownloadConnectionInvoker {
-  static final Map<int, Map<int, HttpDownloadConnection>> _connections = {};
+  static final Map<int, Map<int, BaseHttpDownloadConnection>> _connections = {};
 
   static final Map<int, Map<int, TrackedDownloadCommand>> _trackedCommands = {};
 
@@ -44,21 +48,39 @@ class DownloadConnectionInvoker {
       final id = data.downloadItem.id;
       _connections[id] ??= {};
       final connectionNumber = data.connectionNumber;
-      HttpDownloadConnection? request = _connections[id]![connectionNumber!];
+      BaseHttpDownloadConnection? conn = _connections[id]![connectionNumber!];
       _setStopCommandTracker(data, channel);
       setTrackedCommand(data, channel);
-      if (request == null) {
-        request = HttpDownloadConnection(
-          downloadItem: data.downloadItem,
-          startByte: data.segment!.startByte,
-          endByte: data.segment!.endByte,
-          connectionNumber: connectionNumber,
-          settings: data.settings,
-        );
-        _connections[id]![connectionNumber] = request;
+      if (conn == null) {
+        conn = _buildDownloadConnection(data);
+        _connections[id]![connectionNumber] = conn;
+      }
+      if (data.command == DownloadCommand.start_ReuseConnection) {
+        conn.startByte = data.segment!.startByte;
+        conn.endByte = data.segment!.endByte;
       }
       _executeCommand(data, channel);
     });
+  }
+
+  static BaseHttpDownloadConnection _buildDownloadConnection(
+    DownloadIsolateMessage data,
+  ) {
+    return data.downloadItem.downloadUrl == mockDownloadUrl
+        ? MockHttpDownloadConnection(
+            downloadItem: data.downloadItem,
+            startByte: data.segment!.startByte,
+            endByte: data.segment!.endByte,
+            connectionNumber: data.connectionNumber!,
+            settings: data.settings,
+          )
+        : HttpDownloadConnection(
+            downloadItem: data.downloadItem,
+            startByte: data.segment!.startByte,
+            endByte: data.segment!.endByte,
+            connectionNumber: data.connectionNumber!,
+            settings: data.settings,
+          );
   }
 
   static void _setStopCommandTracker(
@@ -68,7 +90,7 @@ class DownloadConnectionInvoker {
     final id = data.downloadItem.id;
     if (data.command == DownloadCommand.pause) {
       stopCommandTrackerMap[id] = Pair(true, channel);
-      _runCommandTrackerTimer();
+      // _runCommandTrackerTimer();
     } else if (data.command == DownloadCommand.start) {
       stopCommandTrackerMap[id] = Pair(false, channel);
       _commandTrackerTimer?.cancel();
@@ -89,7 +111,7 @@ class DownloadConnectionInvoker {
         request.start(channel.sink.add);
         break;
       case DownloadCommand.start_ReuseConnection:
-        request.start(channel.sink.add, reinitializeClient: false);
+        request.start(channel.sink.add, reuseConnection: true);
         break;
       case DownloadCommand.pause:
         request.pause(channel.sink.add);

@@ -1,13 +1,17 @@
+import 'dart:collection';
+
 import 'package:brisk/download_engine/download_connection_channel.dart';
 import 'package:brisk/download_engine/download_segment_tree.dart';
 import 'package:brisk/download_engine/isolate_channel_wrapper.dart';
 
-/// The download channel that is listened by [DownloadRequestProvider]
+/// The download channel listened by [DownloadRequestProvider]
 class MainDownloadChannel extends IsolateChannelWrapper {
   DownloadSegmentTree? segmentTree;
 
-  /// Connection channels that are listened by [DownloadConnectionInvoker]
+  /// Connection channels listened by [DownloadConnectionInvoker]
   Map<int, DownloadConnectionChannel> connectionChannels = {};
+
+  Queue<DownloadConnectionChannel> connectionReuseQueue = Queue();
 
   int createdConnections = 1; // TODO actually it only counts the number of refresh requests
 

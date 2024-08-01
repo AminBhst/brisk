@@ -51,16 +51,15 @@ class FileUtil {
     return completer.future;
   }
 
-  // static doooo() {
-  //   final dir = Directory("C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp\\70cc3727-2fc2-4a99-b14a-ebce138c8e22");
-  //   final list = dir.listSync();
-  //   list.sort(FileUtil.sortByByteRanges);
-  //   for (var value in list) {
-  //     value = value as File;
-  //     print("${basename(value.path)} Size : ${value.lengthSync()}");
-  //
-  //   }
-  // }
+  static doooo() {
+    final dir = Directory("C:\\Users\\RyeWell\\AppData\\Local\\Temp\\Brisk\\9335c3c8-b3d4-4cd4-a8fd-aa023d55b4eb");
+    final list = dir.listSync();
+    list.sort(FileUtil.sortByByteRanges);
+    for (var value in list) {
+      value = value as File;
+      print("${basename(value.path)} Size : ${value.lengthSync()}");
+    }
+  }
 
   static String getFilePath(String fileName,
       {Directory? baseSaveDir, bool checkFileDuplicationOnly = false}) {

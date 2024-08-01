@@ -1,5 +1,6 @@
 import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/download_engine/segment_status.dart';
+import 'package:dartx/dartx.dart';
 
 /// A tree implementation of download segments. Used for dynamic segmentation
 /// of the download byte ranges associated with their designated connections.
@@ -52,12 +53,16 @@ class DownloadSegmentTree {
   /// Splits and breaks down the lowest level nodes to new download segments
   void split() {
     SegmentNode node = lowestLevelLeftNode;
-    splitSegmentNode(node, isLeftNode: true);
+    splitSegmentNode(node);
     if (node == root) {
       return;
     }
     SegmentNode? currentNeighbor = node.rightNeighbor!;
     while (currentNeighbor != null) {
+      if (currentNeighbor.segmentStatus == SegmentStatus.COMPLETE) {
+        currentNeighbor = currentNeighbor.rightNeighbor;
+        continue;
+      }
       splitSegmentNode(currentNeighbor);
       node.rightChild!.rightNeighbor = currentNeighbor.leftChild;
       node = currentNeighbor;
@@ -123,6 +128,10 @@ class DownloadSegmentTree {
     return currentNode;
   }
 
+  List<SegmentNode>? get inUseNodes => lowestLevelNodes
+      .filter((node) => node.segmentStatus == SegmentStatus.IN_USE)
+      .toList();
+
   // List<SegmentNode> get lowestLevelNodes =>
   //     getAllSameLevelNodes(lowestLevelLeftNode);
 
@@ -130,7 +139,7 @@ class DownloadSegmentTree {
   List<Segment> get currentSegment =>
       lowestLevelNodes.map((e) => e.segment).toList();
 
-  void splitSegmentNode(SegmentNode node, {isLeftNode = false}) {
+  void splitSegmentNode(SegmentNode node, {setConnectionNumber = true}) {
     final nodeSegment = node.segment;
     final splitByte =
         ((nodeSegment.endByte - nodeSegment.startByte) / 2).floor();
@@ -152,9 +161,14 @@ class DownloadSegmentTree {
     node.leftChild!.rightNeighbor = node.rightChild;
     node.rightChild!.leftNeighbor = node.leftChild;
     node.leftChild!.connectionNumber = node.connectionNumber;
-    this.maxConnectionNumber++;
-    node.rightChild!.connectionNumber = maxConnectionNumber;
-    final nodeIndex = lowestLevelNodes.indexOf(node);
+    if (setConnectionNumber) {
+      this.maxConnectionNumber++;
+      node.rightChild!.connectionNumber = maxConnectionNumber;
+    }
+    final nodeIndex = lowestLevelNodes.indexWhere(
+      (s) => s.segment == node.segment,
+    );
+    node.setLastUpdateMillis();
     lowestLevelNodes.removeAt(nodeIndex);
     lowestLevelNodes.insert(nodeIndex, node.leftChild!);
     lowestLevelNodes.insert(nodeIndex + 1, node.rightChild!);
@@ -176,10 +190,15 @@ class SegmentNode {
   SegmentNode? parent;
   int connectionNumber;
   SegmentStatus segmentStatus;
+  int lastUpdateMillis = DateTime.now().millisecondsSinceEpoch;
 
   void removeChildren() {
     this.rightChild = null;
     this.leftChild = null;
+  }
+
+  void setLastUpdateMillis() {
+    this.lastUpdateMillis = DateTime.now().millisecondsSinceEpoch;
   }
 
   SegmentNode? getChildByDirection(NodeRelationDirection direction) {
