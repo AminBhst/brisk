@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:brisk/download_engine/download_command.dart';
-import 'package:brisk/constants/download_status.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/download_settings.dart';
 import 'package:brisk/download_engine/http_download_engine.dart';

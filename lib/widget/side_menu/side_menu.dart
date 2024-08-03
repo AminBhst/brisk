@@ -1,4 +1,4 @@
-import 'package:brisk/constants/download_status.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/settings_provider.dart';

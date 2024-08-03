@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:brisk/constants/download_status.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/download_progress_message.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:pluto_grid/pluto_grid.dart';

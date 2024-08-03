@@ -4,7 +4,7 @@ import 'dart:isolate';
 
 import 'package:brisk/download_engine/connection_segment_message.dart';
 import 'package:brisk/download_engine/download_command.dart';
-import 'package:brisk/constants/download_status.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/download_connection_channel.dart';
 import 'package:brisk/download_engine/download_segment_tree.dart';
 import 'package:brisk/download_engine/download_settings.dart';
@@ -150,7 +150,12 @@ class HttpDownloadEngine {
     }
   }
 
+  static int aa = 1;
+
   static _refreshConnectionSegments(int downloadId) async {
+    if (aa == 3) {
+      print("asdasd");
+    }
     final progress = _downloadProgresses[downloadId];
     if (progress == null) {
       return;
@@ -158,6 +163,12 @@ class HttpDownloadEngine {
     final mainChannel = _downloadChannels[downloadId]!;
     if (mainChannel.segmentTree == null) return;
     mainChannel.segmentTree!.split();
+    final nodes = mainChannel.segmentTree!.lowestLevelNodes;
+    print("======================== SEGMENT TREE =========================");
+    nodes.forEach((node) {
+      print(node.segment);
+    });
+    print("======================== SEGMENT TREE =========================");
     final segmentNodes = mainChannel.segmentTree!.lowestLevelNodes;
     mainChannel.connectionChannels.forEach((connectionNum, connectionChannel) {
       final relatedSegmentNode = segmentNodes
@@ -181,6 +192,7 @@ class HttpDownloadEngine {
       print("CREATED:::: ${_downloadChannels[downloadId]?.createdConnections}");
       connectionChannel.sendMessage(data);
     });
+    ++aa;
   }
 
   // TODO take estimation into account

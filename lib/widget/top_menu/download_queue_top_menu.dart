@@ -8,7 +8,7 @@ import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
 
 import '../../download_engine/download_command.dart';
-import '../../constants/download_status.dart';
+import '../../download_engine/download_status.dart';
 import '../../db/hive_util.dart';
 import '../../provider/download_request_provider.dart';
 import '../../provider/pluto_grid_util.dart';

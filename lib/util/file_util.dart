@@ -52,7 +52,8 @@ class FileUtil {
   }
 
   static doooo() {
-    final dir = Directory("C:\\Users\\RyeWell\\AppData\\Local\\Temp\\Brisk\\9335c3c8-b3d4-4cd4-a8fd-aa023d55b4eb");
+    print("=================================================");
+    final dir = Directory("C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp\\34c62fe6-8202-471f-8cfc-f1250de21793");
     final list = dir.listSync();
     list.sort(FileUtil.sortByByteRanges);
     for (var value in list) {

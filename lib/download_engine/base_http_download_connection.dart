@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk/download_engine/connection_segment_message.dart';
-import 'package:brisk/download_engine/http_client/base_http_client_wrapper.dart';
 import 'package:brisk/download_engine/segment.dart';
 import 'package:brisk/download_engine/download_item_model.dart';
 import 'package:brisk/download_engine/internal_messages.dart';
@@ -11,7 +10,7 @@ import 'package:brisk/constants/types.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
-import 'package:brisk/constants/download_status.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/download_settings.dart';
 
 abstract class BaseHttpDownloadConnection {
@@ -56,7 +55,7 @@ abstract class BaseHttpDownloadConnection {
   /// calculate and update transfer rate every 0.7 seconds
   static const int _transferRateCalculationWindowMillis = 700;
 
-  late BaseHttpClientWrapper clientWrapper;
+  late http.Client client;
 
   /// Threshold is currently only dynamically decided (4 times the byte transfer rate per second -
   /// and less than 100MB)
@@ -107,10 +106,10 @@ abstract class BaseHttpDownloadConnection {
   /// [progressCallback] is used to let the provider know that the values are
   /// changed so that it calls notify listeners which can be used to display its live progress.
   void start(
-      DownloadProgressCallback progressCallback, {
-        bool connectionReset = false,
-        bool reuseConnection = false,
-      }) {
+    DownloadProgressCallback progressCallback, {
+    bool connectionReset = false,
+    bool reuseConnection = false,
+  }) {
     try {
       if (reuseConnection) {
         _resetStatus();
@@ -134,7 +133,7 @@ abstract class BaseHttpDownloadConnection {
 
       final request = buildDownloadRequest();
       sendDownloadRequest(request);
-    } catch(e) {
+    } catch (e) {
       print("Failed to start");
       print(e);
     }
@@ -150,16 +149,16 @@ abstract class BaseHttpDownloadConnection {
   }
 
   void _init(
-      bool connectionReset,
-      DownloadProgressCallback progressCallback,
-      bool reuseConnection,
-      ) {
+    bool connectionReset,
+    DownloadProgressCallback progressCallback,
+    bool reuseConnection,
+  ) {
     detailsStatus =
-    connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
+        connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
     status = detailsStatus;
     this.progressCallback = progressCallback;
     // if (!reuseConnection) {
-    clientWrapper = buildClientWrapper();
+    client = buildClient();
     // }
     paused = false;
   }
@@ -173,7 +172,7 @@ abstract class BaseHttpDownloadConnection {
 
   void sendDownloadRequest(http.Request request) {
     try {
-      final response = clientWrapper.client.send(request);
+      final response = client.send(request);
       response.asStream().cast<http.StreamedResponse>().listen((response) {
         response.stream.listen(
           _processChunk,
@@ -213,7 +212,7 @@ abstract class BaseHttpDownloadConnection {
   }
 
   void resetConnection() {
-    clientWrapper.close();
+    client.close();
     totalReceivedBytes = totalReceivedBytes - tempReceivedBytes;
     _clearBuffer();
     _dynamicFlushThreshold = double.infinity;
@@ -221,7 +220,7 @@ abstract class BaseHttpDownloadConnection {
   }
 
   void cancel({bool failure = false}) {
-    clientWrapper.close();
+    client.close();
     _cancelConnectionResetTimer();
     _clearBuffer();
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
@@ -250,13 +249,14 @@ abstract class BaseHttpDownloadConnection {
   void _setRequestHeaders(http.Request request) {
     tempDirectory.createSync(recursive: true);
     print("Getting new start byte now");
-    final newStartByte = getNewStartByte();
+    // final newStartByte = getNewStartByte();
+    final newStartByte = this.startByte; // TODO Fix
     request.headers.addAll({
       "Range": "bytes=$newStartByte-$endByte",
       "Keep-Alive": "timeout=5, max=1",
       // TODO handle request time-out response (We should reinitialize client)
       "User-Agent":
-      "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;",
+          "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;",
     });
     final existingLength = newStartByte - this.startByte;
     downloadProgress = existingLength / segmentLength;
@@ -278,12 +278,10 @@ abstract class BaseHttpDownloadConnection {
 
   void _processChunk(List<int> chunk) {
     try {
-      print("Processing chunk::::");
-      print("${chunk.length}");
       _doProcessChunk(chunk);
     } catch (e) {
       print("$e ======>>>>> $connectionNumber"); // TODO Add to log files
-      clientWrapper.close();
+      client.close();
       _clearBuffer();
     }
   }
@@ -299,7 +297,8 @@ abstract class BaseHttpDownloadConnection {
     pauseButtonEnabled = downloadItem.supportsPause;
     detailsStatus = transferRate;
     _notifyProgress();
-    if (downloadProgress == 1) { // TODO WTF is this???
+    if (downloadProgress == 1) {
+      // TODO WTF is this???
       _updateStatus("Download Complete");
     }
     _calculateTransferRate(chunk);
@@ -319,7 +318,7 @@ abstract class BaseHttpDownloadConnection {
   }
 
   void _onByteExceeded() {
-    clientWrapper.close();
+    client.close();
     _flushBuffer();
     _correctTempBytes();
     _setDownloadComplete();
@@ -404,9 +403,9 @@ abstract class BaseHttpDownloadConnection {
     final tempFiles = _getTempFilesSorted(thisConnectionOnly: false)
         .where(
           (file) =>
-      FileUtil.getStartByteFromTempFile(file) >= this.startByte &&
-          FileUtil.getEndByteFromTempFile(file) <= this.endByte,
-    )
+              FileUtil.getStartByteFromTempFile(file) >= this.startByte &&
+              FileUtil.getEndByteFromTempFile(file) <= this.endByte,
+        )
         .toList();
 
     if (tempFiles.isEmpty) {
@@ -503,7 +502,7 @@ abstract class BaseHttpDownloadConnection {
     _flushBuffer();
     _updateStatus(DownloadStatus.paused);
     detailsStatus = DownloadStatus.paused;
-    clientWrapper.close();
+    client.close();
     pauseButtonEnabled = false;
     _notifyProgress();
   }
@@ -531,6 +530,10 @@ abstract class BaseHttpDownloadConnection {
       if (segment.startByte != this.startByte) {
         message.internalMessage = InternalMessage.REFRESH_SEGMENT_REFUSED;
       }
+      if (message.internalMessage ==
+          InternalMessage.OVERLAPPING_REFRESH_SEGMENT) {
+        print("OVERLAPPING DETECTED FOR CONN NUM $connectionNumber");
+      }
       progressCallback!.call(message);
       return;
     }
@@ -546,7 +549,7 @@ abstract class BaseHttpDownloadConnection {
 
   int get _newValidRefreshSegmentEndByte {
     final splitByte =
-    ((this.endByte - (this.startByte + totalReceivedBytes)) / 2).floor();
+        ((this.endByte - (this.startByte + totalReceivedBytes)) / 2).floor();
     return splitByte <= 0
         ? -1
         : splitByte + this.startByte + totalReceivedBytes;
@@ -574,7 +577,7 @@ abstract class BaseHttpDownloadConnection {
 
   void _onError(dynamic error, [dynamic s]) {
     try {
-      clientWrapper.close();
+      client.close();
     } catch (e) {}
     _clearBuffer();
     _notifyProgress();
@@ -631,13 +634,13 @@ abstract class BaseHttpDownloadConnection {
       : startByte + previousBufferEndByte;
 
   Directory get tempDirectory => Directory(join(
-    settings.baseTempDir.path,
-    downloadItem.uid.toString(),
-  ));
+        settings.baseTempDir.path,
+        downloadItem.uid.toString(),
+      ));
 
   /// The abstract buildClient method used for implementations of download connections.
   /// namely, [HttpDownloadConnection] and [MockHttpDownloadConnection]
-  BaseHttpClientWrapper buildClientWrapper();
+  http.Client buildClient();
 
   /// Determines if the user is permitted to hit the start (Resume) button or not
   /// for further information refer to docs for [isWritePartCaughtUp]
@@ -646,7 +649,7 @@ abstract class BaseHttpDownloadConnection {
 
   bool get receivedBytesExceededEndByte =>
       // segmentRefreshed &&
-  startByte + totalReceivedBytes > this.endByte; // TODO what if equals
+      startByte + totalReceivedBytes > this.endByte; // TODO what if equals
 
   /// TODO FIX
   /// TODO
@@ -656,11 +659,11 @@ abstract class BaseHttpDownloadConnection {
   /// TODO what if it's writing???
   bool get connectionRetryAllowed =>
       lastResponseTimeMillis + settings.connectionRetryTimeout < _nowMillis &&
-          !_isWritingTempFile &&
-          status != DownloadStatus.paused &&
-          status != DownloadStatus.complete &&
-          detailsStatus != DownloadStatus.canceled &&
-          detailsStatus != DownloadStatus.complete &&
-          (_retryCount < settings.maxConnectionRetryCount ||
-              settings.maxConnectionRetryCount == -1);
+      !_isWritingTempFile &&
+      status != DownloadStatus.paused &&
+      status != DownloadStatus.complete &&
+      detailsStatus != DownloadStatus.canceled &&
+      detailsStatus != DownloadStatus.complete &&
+      (_retryCount < settings.maxConnectionRetryCount ||
+          settings.maxConnectionRetryCount == -1);
 }

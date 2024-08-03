@@ -1,4 +1,4 @@
-import 'package:brisk/constants/download_status.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/download_engine/download_item_model.dart';
