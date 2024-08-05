@@ -23,7 +23,11 @@ class MockHttpClientProxy implements BaseClient {
 
   MockHttpClientProxy();
 
-  void build() {
+  factory MockHttpClientProxy.build() {
+    return MockHttpClientProxy().._buildClient();
+  }
+
+  void _buildClient() {
     this.client = MockClient.streaming(_handleRequest);
   }
 
@@ -39,7 +43,9 @@ class MockHttpClientProxy implements BaseClient {
     final totalLength = fileBytes.length;
     final rangeHeader = request.headers['Range']!;
     final segment = _parseRangeHeader(rangeHeader, totalLength);
-    final bytes = fileBytes.sublist(segment.startByte, segment.endByte);
+    final endByte =
+        (segment.endByte < totalLength) ? segment.endByte + 1 : totalLength;
+    final bytes = fileBytes.sublist(segment.startByte, endByte);
     final byteStream = _mockDownloadStream(bytes);
     return StreamedResponse(byteStream, 206);
   }
@@ -59,7 +65,6 @@ class MockHttpClientProxy implements BaseClient {
     final random = Random();
     final chunkSize = 12001;
     for (int i = 0; i < bytes.length; i += chunkSize) {
-      print("THIS.CLOSED : ${this._closed}");
       if (this._closed) {
         break;
       }

@@ -53,7 +53,7 @@ class FileUtil {
 
   static doooo() {
     print("=================================================");
-    final dir = Directory("C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp\\34c62fe6-8202-471f-8cfc-f1250de21793");
+    final dir = Directory("C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp\\a384cc88-943a-4fcb-83eb-93a5798222ef");
     final list = dir.listSync();
     list.sort(FileUtil.sortByByteRanges);
     for (var value in list) {

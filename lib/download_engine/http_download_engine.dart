@@ -231,12 +231,15 @@ class HttpDownloadEngine {
   static void _handleSegmentMessage(ConnectionSegmentMessage message) {
     switch (message.internalMessage) {
       case InternalMessage.REFRESH_SEGMENT_SUCCESS:
+        print("INSIDE REFRESH SEGMENT SUCCESS");
         _handleRefreshSegmentSuccess(message);
         break;
       case InternalMessage.OVERLAPPING_REFRESH_SEGMENT:
+        print("INSIDE OVERLAPPING");
         _handleOverlappingSegment(message);
         break;
       case InternalMessage.REFRESH_SEGMENT_REFUSED:
+        print("INSIDE REFUSED");
         _handleRefreshSegmentRefused(message);
         break;
       default:

@@ -158,7 +158,7 @@ abstract class BaseHttpDownloadConnection {
     status = detailsStatus;
     this.progressCallback = progressCallback;
     // if (!reuseConnection) {
-    client = buildClient();
+    initClient();
     // }
     paused = false;
   }
@@ -320,6 +320,7 @@ abstract class BaseHttpDownloadConnection {
   void _onByteExceeded() {
     client.close();
     _flushBuffer();
+    print("Correcting temp bytes for conn $connectionNumber");
     _correctTempBytes();
     _setDownloadComplete();
     _notifyProgress();
@@ -530,6 +531,8 @@ abstract class BaseHttpDownloadConnection {
       if (segment.startByte != this.startByte) {
         message.internalMessage = InternalMessage.REFRESH_SEGMENT_REFUSED;
       }
+
+      // TODO remove
       if (message.internalMessage ==
           InternalMessage.OVERLAPPING_REFRESH_SEGMENT) {
         print("OVERLAPPING DETECTED FOR CONN NUM $connectionNumber");
@@ -618,6 +621,14 @@ abstract class BaseHttpDownloadConnection {
     return isAllowed && !connectionReset;
   }
 
+  /// The abstract buildClient method used for implementations of download connections.
+  /// namely, [HttpDownloadConnection] and [MockHttpDownloadConnection]
+  http.Client buildClient();
+
+  void initClient() {
+    this.client = buildClient();
+  }
+
   int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
   /// e.g. 0#0-50, 0#51-150, 1#151-400 and so on...
@@ -638,25 +649,14 @@ abstract class BaseHttpDownloadConnection {
         downloadItem.uid.toString(),
       ));
 
-  /// The abstract buildClient method used for implementations of download connections.
-  /// namely, [HttpDownloadConnection] and [MockHttpDownloadConnection]
-  http.Client buildClient();
-
   /// Determines if the user is permitted to hit the start (Resume) button or not
-  /// for further information refer to docs for [isWritePartCaughtUp]
-  // bool startButtonEnabled = false;
   bool get isStartButtonEnabled => paused || downloadProgress == 0;
 
   bool get receivedBytesExceededEndByte =>
-      // segmentRefreshed &&
       startByte + totalReceivedBytes > this.endByte; // TODO what if equals
 
-  /// TODO FIX
-  /// TODO
-  ///TODO
   int get segmentLength => this.endByte - this.startByte + 1;
 
-  /// TODO what if it's writing???
   bool get connectionRetryAllowed =>
       lastResponseTimeMillis + settings.connectionRetryTimeout < _nowMillis &&
       !_isWritingTempFile &&
