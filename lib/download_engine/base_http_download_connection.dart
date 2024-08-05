@@ -13,6 +13,10 @@ import 'package:http/http.dart' as http;
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/download_settings.dart';
 
+/// The base class of Http Download connection is a client-agnostic implementation
+/// that makes use of the abstract method [buildClient] to initialize the client.
+/// The current implementations include [MockHttpDownloadConnection] and
+/// [HttpDownloadConnection]
 abstract class BaseHttpDownloadConnection {
   /// Buffer containing the received bytes
   List<List<int>> buffer = [];
