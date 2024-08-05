@@ -43,11 +43,16 @@ class MockHttpClientProxy implements BaseClient {
     final totalLength = fileBytes.length;
     final rangeHeader = request.headers['Range']!;
     final segment = _parseRangeHeader(rangeHeader, totalLength);
-    final endByte =
-        (segment.endByte < totalLength) ? segment.endByte + 1 : totalLength;
-    final bytes = fileBytes.sublist(segment.startByte, endByte);
+    final bytes = fileBytes.sublist(
+      segment.startByte,
+      ensureInclusiveEndByte(segment, totalLength),
+    );
     final byteStream = _mockDownloadStream(bytes);
     return StreamedResponse(byteStream, 206);
+  }
+
+  int ensureInclusiveEndByte(Segment segment, int totalLength) {
+    return (segment.endByte < totalLength) ? segment.endByte + 1 : totalLength;
   }
 
   static Segment _parseRangeHeader(String rangeHeader, int totalLength) {
