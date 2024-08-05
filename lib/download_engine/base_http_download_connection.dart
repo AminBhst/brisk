@@ -59,6 +59,7 @@ abstract class BaseHttpDownloadConnection {
   /// calculate and update transfer rate every 0.7 seconds
   static const int _transferRateCalculationWindowMillis = 700;
 
+  /// The client used to make http requests
   late http.Client client;
 
   /// Threshold is currently only dynamically decided (4 times the byte transfer rate per second -
