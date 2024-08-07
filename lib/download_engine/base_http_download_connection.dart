@@ -151,6 +151,7 @@ abstract class BaseHttpDownloadConnection {
     totalReceivedBytes = 0;
     status = DownloadStatus.connecting;
     detailsStatus = DownloadStatus.connecting;
+    previousBufferEndByte = 0;
   }
 
   void _init(
