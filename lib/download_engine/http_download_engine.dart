@@ -336,7 +336,7 @@ class HttpDownloadEngine {
   static SegmentNode? findSegmentNode(ConnectionSegmentMessage message) {
     final id = message.downloadItem.id;
     final tree = _downloadChannels[id]!.segmentTree!;
-    return tree.findNode(message.requestedSegment);
+    return tree.searchNode(message.requestedSegment);
   }
 
   static void _handleProgressUpdates(DownloadProgressMessage progress) {
@@ -385,7 +385,7 @@ class HttpDownloadEngine {
   static void _setSegmentComplete(DownloadProgressMessage progress) {
     final downloadId = progress.downloadItem.id;
     final tree = _downloadChannels[downloadId]!.segmentTree!;
-    final node = tree.findNode(progress.segment!);
+    final node = tree.searchNode(progress.segment!);
     node!.segmentStatus = SegmentStatus.COMPLETE;
   }
 

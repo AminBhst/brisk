@@ -78,36 +78,25 @@ class DownloadSegmentTree {
     return node;
   }
 
-  SegmentNode? findNode(Segment segment) {
-    for (final rootNode in getAllSameLevelNodes(root)) {
-      final node = findNodeRecursive(segment, rootNode);
-      if (node == null) {
-        continue;
-      }
-      return node;
-    }
-    return null;
+  SegmentNode? searchNode(Segment targetSegment) {
+    return _searchNodeRecursive(targetSegment, root);
   }
 
-  SegmentNode? findNodeRecursive(Segment segment, SegmentNode node) {
-    final nodes = getAllSameLevelNodes(node);
-    final result = nodes.where((s) => s.segment == segment).toList();
-    if (result.isNotEmpty) {
-      return result.first;
-    }
-    if (node.leftChild == null) {
-      for (final node in nodes) {
-        if (node.leftChild == null) {
-          continue;
-        }
-        final result = findNodeRecursive(segment, node.leftChild!);
-        if (result != null) {
-          return result;
-        }
-      }
+  SegmentNode? _searchNodeRecursive(Segment targetSegment, SegmentNode? currentNode) {
+    if (currentNode == null) {
       return null;
     }
-    return findNodeRecursive(segment, node.leftChild!);
+    if (targetSegment == currentNode.segment) {
+      return currentNode;
+    }
+    final currentStart = currentNode.segment.startByte;
+    final currentEnd = currentNode.segment.endByte;
+    final middle = currentStart + ((currentEnd - currentStart) / 2).floor();
+    if (middle >= targetSegment.startByte) {
+      return _searchNodeRecursive(targetSegment, currentNode.leftChild);
+    } else if (middle < targetSegment.startByte) {
+      return _searchNodeRecursive(targetSegment, currentNode.rightChild);
+    }
   }
 
   List<SegmentNode> getAllSameLevelNodes(SegmentNode node) {
