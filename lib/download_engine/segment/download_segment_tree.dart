@@ -97,6 +97,7 @@ class DownloadSegmentTree {
     } else if (middle < targetSegment.startByte) {
       return _searchNodeRecursive(targetSegment, currentNode.rightChild);
     }
+    return null;
   }
 
   List<SegmentNode> getAllSameLevelNodes(SegmentNode node) {
