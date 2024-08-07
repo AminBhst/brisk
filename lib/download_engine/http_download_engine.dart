@@ -498,8 +498,7 @@ class HttpDownloadEngine {
     final id = data.downloadItem.id;
     final segmentTree = _downloadChannels[id]!.segmentTree!;
     segmentTree.lowestLevelNodes.forEach((segmentNode) {
-      var newData = data.clone();
-      newData.segment = segmentNode.segment;
+      var newData = data.clone()..segment = segmentNode.segment;
       segmentNode.segmentStatus = SegmentStatus.IN_USE;
       _spawnSingleDownloadIsolate(newData, segmentNode.connectionNumber);
     });
