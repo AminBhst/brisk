@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:brisk/download_engine/base_http_download_connection.dart';
 import 'package:brisk/download_engine/connection_segment_message.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/download_status.dart';
@@ -142,7 +143,7 @@ class HttpDownloadEngine {
       }
       await sendToDownloadIsolates(data, providerChannel);
       for (final channel in _downloadChannels[id]!.connectionChannels.values) {
-        channel.listenToStream(_handleMessages);
+        channel.listenToStream(_handleConnectionMessages);
       }
     });
   }
@@ -222,7 +223,8 @@ class HttpDownloadEngine {
     throw UnimplementedError();
   }
 
-  static void _handleMessages(message) async {
+  /// Handles the messages coming from [BaseHttpDownloadConnection]
+  static void _handleConnectionMessages(message) async {
     if (message is DownloadProgressMessage) {
       _handleProgressUpdates(message);
     }
@@ -776,7 +778,7 @@ class HttpDownloadEngine {
     _downloadChannels[downloadId]!
         .setConnectionChannel(connectionNumber, connectionChannel);
 
-    connectionChannel.listenToStream(_handleMessages);
+    connectionChannel.listenToStream(_handleConnectionMessages);
   }
 
   static bool isAssembledFileInvalid(DownloadItemModel downloadItem) {
