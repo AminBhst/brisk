@@ -103,6 +103,7 @@ class HttpDownloadEngine {
   static void _runDynamicConnectionReuse() {
     _downloadChannels.forEach((downloadId, handlerChannel) {
       final queue = handlerChannel.connectionReuseQueue;
+      print("shouldCreate? ${_shouldCreateNewConnections(downloadId)}");
       if (queue.isEmpty || _shouldCreateNewConnections(downloadId)) {
         return;
       }
@@ -136,7 +137,7 @@ class HttpDownloadEngine {
 
   static void _startEngineTimers() {
     _startDynamicConnectionSpawnerTimer();
-    // _startDynamicConnectionReuseTimer();
+    _startDynamicConnectionReuseTimer();
   }
 
   /// TODO add to ignore list instead of canceling the entire timer
@@ -207,13 +208,9 @@ class HttpDownloadEngine {
             .any((s) => s.segmentStatus == SegmentStatus.REFRESH_REQUESTED) ??
         true;
 
-    print("Conn Len : ${connectionChannels!.length}");
-    print("PENDING EXISTS : $pendingSegmentExists");
     return !pendingSegmentExists &&
         progress.totalDownloadProgress < 1 &&
         mainChannel!.createdConnections < downloadSettings.totalConnections;
-
-    /// TODO still bugs out
   }
 
   // TODO implement
@@ -282,7 +279,7 @@ class HttpDownloadEngine {
     );
     _createDownloadConnection(
       message.downloadItem,
-      newConnectionNode.segment,
+      newConnectionNode,
       newConnectionNode.connectionNumber,
     );
     newConnectionNode.setLastUpdateMillis();
@@ -305,10 +302,11 @@ class HttpDownloadEngine {
         connectionNode.connectionNumber,
         connectionNode.segment,
       );
+      connectionNode.segmentStatus = SegmentStatus.IN_USE;
     } else {
       _createDownloadConnection(
         message.downloadItem,
-        connectionNode.segment,
+        connectionNode,
         connectionNode.connectionNumber,
       );
     }
@@ -372,8 +370,8 @@ class HttpDownloadEngine {
     downloadChannel.sendMessage(downloadProgress);
     if (progress.completionSignal) {
       print("----> Got completion signal for conn num ${progress.connectionNumber}");
-      // _addToReuseQueue(progress);
-      // _setSegmentComplete(progress);
+      _addToReuseQueue(progress);
+      _setSegmentComplete(progress);
     }
   }
 
@@ -439,16 +437,17 @@ class HttpDownloadEngine {
 
   static void _createDownloadConnection(
     DownloadItemModel downloadItem,
-    Segment segment,
+    SegmentNode segmentNode,
     int connectionNumber,
   ) async {
     final data = DownloadIsolateMessage(
       command: DownloadCommand.start_Initial,
       downloadItem: downloadItem,
       settings: downloadSettings,
-      segment: segment,
+      segment: segmentNode.segment,
     );
     await _spawnSingleDownloadIsolate(data, connectionNumber);
+    segmentNode.segmentStatus = SegmentStatus.IN_USE;
   }
 
   static Future<void> sendToDownloadIsolates(
