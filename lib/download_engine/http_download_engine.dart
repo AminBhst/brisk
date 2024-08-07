@@ -59,12 +59,21 @@ class HttpDownloadEngine {
 
   static Timer? _dynamicConnectionSpawnerTimer = null;
 
+  /// The list of download IDs that should be ignored for dynamic connection spawn.
+  /// This is used to prevent adding new connections when the user has stopped
+  /// the download before all download connections have been spawned. In the
+  /// mentioned situation, if dynamic connection spawn is not prevented,
+  /// new connections will be added on the fly despite the download being in a
+  /// paused state.
+  static final List<int> _dynamicConnectionSpawnerIgnoreList = [];
+
   static Timer? _dynamicConnectionReuseTimer = null;
 
   static late DownloadSettings downloadSettings;
 
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
+  /// Adds download connections on the fly
   static void _runDynamicConnectionSpawner() {
     _downloadChannels.forEach((downloadId, handlerChannel) {
       final downloadProgress = _downloadProgresses[downloadId];
@@ -77,6 +86,9 @@ class HttpDownloadEngine {
     });
   }
 
+  /// Manages connection reuse which allows for completed connections to receive
+  /// the remaining bytes of other connections, thus keeping the maximum number
+  /// of connections active throughout the entirety of the download.
   static void _startDynamicConnectionReuseTimer() {
     if (_dynamicConnectionReuseTimer != null) {
       return;
@@ -120,7 +132,7 @@ class HttpDownloadEngine {
     _startEngineTimers();
     mainChannel.listenToStream<DownloadIsolateMessage>((data) async {
       downloadSettings = data.settings;
-      _setConnectionManagerTimer(data);
+      _setConnectionSpawnIgnoreList(data);
       final downloadItem = data.downloadItem;
       final id = downloadItem.id;
       if (isAssembledFileInvalid(downloadItem)) {
@@ -140,23 +152,16 @@ class HttpDownloadEngine {
     _startDynamicConnectionReuseTimer();
   }
 
-  /// TODO add to ignore list instead of canceling the entire timer
-  static void _setConnectionManagerTimer(DownloadIsolateMessage data) {
+  static void _setConnectionSpawnIgnoreList(DownloadIsolateMessage data) {
     if (data.command == DownloadCommand.pause) {
-      _dynamicConnectionSpawnerTimer?.cancel();
-      _dynamicConnectionSpawnerTimer = null;
+      _dynamicConnectionSpawnerIgnoreList.add(data.downloadItem.id);
     }
     if (data.command == DownloadCommand.start) {
-      _startDynamicConnectionSpawnerTimer();
+      _dynamicConnectionSpawnerIgnoreList.remove(data.downloadItem.id);
     }
   }
 
-  static int aa = 1;
-
   static _refreshConnectionSegments(int downloadId) async {
-    if (aa == 3) {
-      print("asdasd");
-    }
     final progress = _downloadProgresses[downloadId];
     if (progress == null) {
       return;
@@ -193,7 +198,6 @@ class HttpDownloadEngine {
       print("CREATED:::: ${_downloadChannels[downloadId]?.createdConnections}");
       connectionChannel.sendMessage(data);
     });
-    ++aa;
   }
 
   // TODO take estimation into account
@@ -201,7 +205,6 @@ class HttpDownloadEngine {
     final progress = _downloadProgresses[downloadId]!;
     print("^^^^^^^^^^^^^^^ TOTAL PROG : ${progress.totalDownloadProgress}");
     final mainChannel = _downloadChannels[downloadId];
-    final connectionChannels = mainChannel?.connectionChannels;
     final pendingSegmentExists = _downloadChannels[downloadId]!
             .segmentTree
             ?.lowestLevelNodes
@@ -210,11 +213,14 @@ class HttpDownloadEngine {
 
     return !pendingSegmentExists &&
         progress.totalDownloadProgress < 1 &&
-        mainChannel!.createdConnections < downloadSettings.totalConnections;
+        mainChannel!.createdConnections < downloadSettings.totalConnections &&
+        !_dynamicConnectionSpawnerIgnoreList.contains(downloadId);
   }
 
   // TODO implement
-  static void validateTempFilesIntegrity() {}
+  static bool validateTempFilesIntegrity() {
+    throw UnimplementedError();
+  }
 
   static void _handleMessages(message) async {
     if (message is DownloadProgressMessage) {
@@ -369,7 +375,8 @@ class HttpDownloadEngine {
     _downloadProgresses[downloadId] = downloadProgress;
     downloadChannel.sendMessage(downloadProgress);
     if (progress.completionSignal) {
-      print("----> Got completion signal for conn num ${progress.connectionNumber}");
+      print(
+          "----> Got completion signal for conn num ${progress.connectionNumber}");
       _addToReuseQueue(progress);
       _setSegmentComplete(progress);
     }
@@ -413,6 +420,7 @@ class HttpDownloadEngine {
     segmentTree.splitSegmentNode(targetNode!, setConnectionNumber: false);
     if (targetNode.leftChild == null || targetNode.rightChild == null) {
       print("Failed to segment new node");
+
       /// TODO retry with a different node (has to stop at some point tho)
       return;
     }
