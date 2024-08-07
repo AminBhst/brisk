@@ -16,6 +16,9 @@ String testFilePath = path.join(
   "Mozilla.Firefox.zip",
 );
 
+/// A mock http client that serves a local file while mimicking the volatility
+/// of a real network  connection. This proxy object is used to develop and test
+/// the download engine without making real http connections.
 class MockHttpClientProxy implements BaseClient {
   late Client client;
 
@@ -37,7 +40,7 @@ class MockHttpClientProxy implements BaseClient {
   ) async {
     final file = File(testFilePath);
     if (!file.existsSync()) {
-      // return http.Response('File not found', 404);
+      throw Exception("File not found");
     }
     final fileBytes = file.readAsBytesSync();
     final totalLength = fileBytes.length;
