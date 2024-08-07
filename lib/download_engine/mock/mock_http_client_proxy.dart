@@ -17,7 +17,7 @@ String testFilePath = path.join(
 );
 
 /// A mock http client that serves a local file while mimicking the volatility
-/// of a real network  connection. This proxy object is used to develop and test
+/// of a real network connection. This proxy object is used to develop and test
 /// the download engine without making real http connections.
 class MockHttpClientProxy implements BaseClient {
   late Client client;
