@@ -6,7 +6,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
 import 'package:path/path.dart' as path;
-import 'package:brisk/download_engine/segment.dart';
+import 'package:brisk/download_engine/segment/segment.dart';
 
 const mockDownloadUrl = 'http://brisk.mock';
 

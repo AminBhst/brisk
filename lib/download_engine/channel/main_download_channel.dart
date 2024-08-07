@@ -1,8 +1,8 @@
 import 'dart:collection';
 
-import 'package:brisk/download_engine/download_connection_channel.dart';
-import 'package:brisk/download_engine/download_segment_tree.dart';
-import 'package:brisk/download_engine/isolate_channel_wrapper.dart';
+import 'package:brisk/download_engine/channel/download_connection_channel.dart';
+import 'package:brisk/download_engine/segment/download_segment_tree.dart';
+import 'package:brisk/download_engine/util/isolate_channel_wrapper.dart';
 
 /// The download channel listened by [DownloadRequestProvider]
 class MainDownloadChannel extends IsolateChannelWrapper {

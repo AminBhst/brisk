@@ -2,21 +2,21 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:brisk/download_engine/base_http_download_connection.dart';
-import 'package:brisk/download_engine/connection_segment_message.dart';
+import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
+import 'package:brisk/download_engine/message/connection_segment_message.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/download_status.dart';
-import 'package:brisk/download_engine/download_connection_channel.dart';
-import 'package:brisk/download_engine/download_segment_tree.dart';
+import 'package:brisk/download_engine/channel/download_connection_channel.dart';
+import 'package:brisk/download_engine/segment/download_segment_tree.dart';
 import 'package:brisk/download_engine/download_settings.dart';
-import 'package:brisk/download_engine/internal_messages.dart';
-import 'package:brisk/download_engine/main_download_channel.dart';
-import 'package:brisk/download_engine/segment.dart';
-import 'package:brisk/download_engine/segment_status.dart';
-import 'package:brisk/download_engine/download_connection_invoker.dart';
-import 'package:brisk/download_engine/download_item_model.dart';
-import 'package:brisk/download_engine/download_progress_message.dart';
-import 'package:brisk/download_engine/download_isolate_message.dart';
+import 'package:brisk/download_engine/message/internal_messages.dart';
+import 'package:brisk/download_engine/channel/main_download_channel.dart';
+import 'package:brisk/download_engine/segment/segment.dart';
+import 'package:brisk/download_engine/segment/segment_status.dart';
+import 'package:brisk/download_engine/connection/download_connection_invoker.dart';
+import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:brisk/download_engine/message/download_progress_message.dart';
+import 'package:brisk/download_engine/message/download_isolate_message.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
@@ -787,6 +787,7 @@ class HttpDownloadEngine {
         assembledFile.lengthSync() != downloadItem.contentLength;
   }
 
+  /// TODO should notify the progress while building the file instead of when the file has already been built
   static DownloadProgressMessage reassembleFile(
     DownloadItemModel downloadItem,
   ) {

@@ -1,6 +1,6 @@
 import 'package:brisk/db/hive_util.dart';
-import 'package:brisk/download_engine/download_item_model.dart';
-import 'package:brisk/download_engine/download_progress_message.dart';
+import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';

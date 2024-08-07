@@ -7,10 +7,10 @@ import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/download_settings.dart';
 import 'package:brisk/download_engine/http_download_engine.dart';
-import 'package:brisk/download_engine/download_item_model.dart';
-import 'package:brisk/download_engine/download_progress_message.dart';
+import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/model/download_item.dart';
-import 'package:brisk/download_engine/download_isolate_message.dart';
+import 'package:brisk/download_engine/message/download_isolate_message.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/notification_util.dart';
@@ -146,7 +146,8 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   /// Updates the download request based on the incoming progress from handler isolate every 6 seconds
-  void _updateDownloadRequest(DownloadProgressMessage progress, DownloadItem item) {
+  void _updateDownloadRequest(
+      DownloadProgressMessage progress, DownloadItem item) {
     final status = progress.status;
     if (isUpdateEligible(status)) {
       item.progress = progress.downloadProgress;
@@ -172,6 +173,7 @@ class DownloadRequestProvider with ChangeNotifier {
     stateManager?.insertRows(lastIndex + 1, buildRows(progressData));
   }
 
+  /// TODO this shouldn't be in the provider. Move to [PlutoGridUtil]
   List<PlutoRow> buildRows(List<DownloadProgressMessage> progressData) {
     return progressData.map((e) {
       if (downloads[e.downloadItem.id] != null) {

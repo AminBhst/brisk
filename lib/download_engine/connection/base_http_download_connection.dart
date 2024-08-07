@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:brisk/download_engine/connection_segment_message.dart';
-import 'package:brisk/download_engine/segment.dart';
-import 'package:brisk/download_engine/download_item_model.dart';
-import 'package:brisk/download_engine/internal_messages.dart';
-import 'package:brisk/download_engine/download_progress_message.dart';
+import 'package:brisk/download_engine/message/connection_segment_message.dart';
+import 'package:brisk/download_engine/segment/segment.dart';
+import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:brisk/download_engine/message/internal_messages.dart';
+import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/constants/types.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:path/path.dart';

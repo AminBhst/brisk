@@ -8,7 +8,7 @@ import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:path/path.dart';
-import 'package:brisk/download_engine/download_item_model.dart';
+import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
@@ -19,7 +19,7 @@ import 'package:pluto_grid/src/model/pluto_row.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../../download_engine/mock/mock_http_client_proxy.dart';
+import '../../download_engine/client/mock_http_client_proxy.dart';
 import '../../provider/download_request_provider.dart';
 import '../../util/file_util.dart';
 import '../queue/add_to_queue_window.dart';

@@ -1,4 +1,4 @@
-import 'download_item_model.dart';
+import '../model/download_item_model.dart';
 
 class ConnectionDetails {
   DownloadItemModel downloadItem;

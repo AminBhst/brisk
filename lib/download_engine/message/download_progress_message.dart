@@ -1,7 +1,7 @@
-import 'package:brisk/download_engine/download_item_model.dart';
-import 'package:brisk/download_engine/segment.dart';
+import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:brisk/download_engine/segment/segment.dart';
 
-import 'base_http_download_connection.dart';
+import '../connection/base_http_download_connection.dart';
 
 class DownloadProgressMessage {
   List<DownloadProgressMessage> connectionProgresses = [];

@@ -1,5 +1,5 @@
-import 'package:brisk/download_engine/base_http_download_connection.dart';
-import 'package:brisk/download_engine/mock/mock_http_client_proxy.dart';
+import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
+import 'package:brisk/download_engine/client/mock_http_client_proxy.dart';
 import 'package:http/src/client.dart';
 
 /// A mock implementation used for the download engine development

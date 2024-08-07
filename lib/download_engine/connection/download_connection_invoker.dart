@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:brisk/download_engine/download_command.dart';
-import 'package:brisk/download_engine/http_download_connection.dart';
-import 'package:brisk/download_engine/download_isolate_message.dart';
-import 'package:brisk/download_engine/mock/mock_http_download_connection.dart';
+import 'package:brisk/download_engine/connection/http_download_connection.dart';
+import 'package:brisk/download_engine/message/download_isolate_message.dart';
+import 'package:brisk/download_engine/connection/mock_http_download_connection.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 
 import 'base_http_download_connection.dart';
-import 'mock/mock_http_client_proxy.dart';
+import '../client/mock_http_client_proxy.dart';
 
 class DownloadConnectionInvoker {
   static final Map<int, Map<int, BaseHttpDownloadConnection>> _connections = {};

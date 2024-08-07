@@ -1,5 +1,5 @@
-import 'package:brisk/download_engine/segment.dart';
-import 'package:brisk/download_engine/segment_status.dart';
+import 'package:brisk/download_engine/segment/segment.dart';
+import 'package:brisk/download_engine/segment/segment_status.dart';
 import 'package:dartx/dartx.dart';
 
 /// A tree implementation of download segments. Used for dynamic segmentation
