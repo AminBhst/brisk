@@ -9,7 +9,7 @@ import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/parse_util.dart';
-import './file_util.dart';
+import 'file_util.dart';
 
 class SettingsCache {
   /// General

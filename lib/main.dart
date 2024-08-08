@@ -26,7 +26,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
-import './util/file_util.dart';
+import 'util/file_util.dart';
 import 'util/settings_cache.dart';
 
 // TODO add current version in settings

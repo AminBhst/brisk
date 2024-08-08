@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -53,9 +54,9 @@ class FileUtil {
 
   static doooo() {
     print("=================================================");
-    final dir = Directory("C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp\\a384cc88-943a-4fcb-83eb-93a5798222ef");
-    final list = dir.listSync();
-    list.sort(FileUtil.sortByByteRanges);
+    final dir = Directory(
+        "C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp\\a384cc88-943a-4fcb-83eb-93a5798222ef");
+    final list = dir.listSync()..sort(sortByByteRanges);
     for (var value in list) {
       value = value as File;
       print("${basename(value.path)} Size : ${value.lengthSync()}");
@@ -215,43 +216,6 @@ class FileUtil {
     if (dir.existsSync()) {
       dir.deleteSync(recursive: true);
     }
-  }
-
-  static int sortByByteRanges(FileSystemEntity a, FileSystemEntity b) {
-    final aName = basename(a.path);
-    final bName = basename(b.path);
-    final aStartByte = getStartByteFromTempFileName(aName);
-    final bStartByte = getStartByteFromTempFileName(bName);
-    return aStartByte.compareTo(bStartByte);
-  }
-
-  static int getStartByteFromTempFileName(String tempFileName) {
-    return int.parse(
-      tempFileName.substring(
-        tempFileName.indexOf("#") + 1,
-        tempFileName.indexOf("-"),
-      ),
-    );
-  }
-
-  static int getStartByteFromTempFile(File tempFile) {
-    return getStartByteFromTempFileName(basename(tempFile.path));
-  }
-
-  static int getEndByteFromTempFile(File tempFile) {
-    return getEndByteFromTempFileName(basename(tempFile.path));
-  }
-
-  static int getEndByteFromTempFileName(String fileName) {
-    return int.parse(fileName.substring(fileName.indexOf("-") + 1));
-  }
-
-  static int getSegmentNumberFromTempFileName(String fileName) {
-    return int.parse(fileName.substring(0, fileName.indexOf("#")));
-  }
-
-  static int fileNameToInt(FileSystemEntity file) {
-    return int.parse(basename(file.path).toString());
   }
 
   static bool checkFileDuplication(String fileName) {

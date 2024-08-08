@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
@@ -64,8 +65,8 @@ class _TopMenuState extends State<TopMenu> {
             /// TODO comment in production
             onTap: () => onMockDownloadPressed(context),
             title: 'Mock',
-            icon: const Icon(Icons.not_started_outlined, color: Colors.white),
-            onHoverColor: Colors.green,
+            icon: const Icon(Icons.not_started_outlined, color: Colors.red),
+            onHoverColor: Colors.red,
           ),
           TopMenuButton(
             onTap: onDownloadPressed,
@@ -116,7 +117,7 @@ class _TopMenuState extends State<TopMenu> {
             title: 'Build',
             icon: Icon(
               Icons.extension,
-              color: Colors.white,
+              color: Colors.red,
             ),
             onTap: () {
               final dlitem = HiveUtil.instance.downloadItemsBox.getAt(0);
@@ -135,8 +136,12 @@ class _TopMenuState extends State<TopMenu> {
       Directory baseTempDir, Directory baseSaveDir) {
     final tempPath = join(baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
-    final tempFies = tempDir.listSync().map((o) => o as File).toList();
-    tempFies.sort(FileUtil.sortByByteRanges);
+
+    final tempFies = tempDir.listSync()
+        .map((o) => o as File)
+        .toList()
+      ..sort(sortByByteRanges);
+
     File fileToWrite = File(downloadItem.filePath);
     if (fileToWrite.existsSync()) {
       final newFilePath = FileUtil.getFilePath(

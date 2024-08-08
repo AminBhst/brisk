@@ -55,10 +55,6 @@ class DownloadConnectionInvoker {
         conn = _buildDownloadConnection(data);
         _connections[id]![connectionNumber] = conn;
       }
-      if (data.command == DownloadCommand.start_ReuseConnection) {
-        conn.startByte = data.segment!.startByte;
-        conn.endByte = data.segment!.endByte;
-      }
       _executeCommand(data, channel);
     });
   }
@@ -104,34 +100,36 @@ class DownloadConnectionInvoker {
   ) {
     final id = data.downloadItem.id;
     final segmentNumber = data.connectionNumber;
-    final request = _connections[id]![segmentNumber]!;
+    final connection = _connections[id]![segmentNumber]!;
     switch (data.command) {
       case DownloadCommand.start_Initial:
       case DownloadCommand.start:
-        request.start(channel.sink.add);
+        connection.start(channel.sink.add);
         break;
       case DownloadCommand.start_ReuseConnection:
-        request.start(channel.sink.add, reuseConnection: true);
+        connection.startByte = data.segment!.startByte;
+        connection.endByte = data.segment!.endByte;
+        connection.start(channel.sink.add, reuseConnection: true);
         break;
       case DownloadCommand.pause:
-        request.pause(channel.sink.add);
+        connection.pause(channel.sink.add);
         break;
       case DownloadCommand.clearConnections: // TODO add sink.close()
         _connections[id]?.clear();
         break;
       case DownloadCommand.cancel:
-        request.cancel();
+        connection.cancel();
         _connections[id]?.clear();
         break;
       case DownloadCommand.forceCancel:
-        request.cancel(failure: true);
+        connection.cancel(failure: true);
         _connections[id]?.clear();
         break;
       case DownloadCommand.refreshSegment:
-        request.refreshSegment(data.segment!);
+        connection.refreshSegment(data.segment!);
         break;
       case DownloadCommand.refreshSegment_reuseConnection:
-        request.refreshSegment(data.segment!, reuseConnection: true);
+        connection.refreshSegment(data.segment!, reuseConnection: true);
         break;
     }
   }

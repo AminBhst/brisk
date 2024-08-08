@@ -17,6 +17,7 @@ import 'package:brisk/download_engine/connection/download_connection_invoker.dar
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';
+import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
@@ -525,7 +526,7 @@ class HttpDownloadEngine {
       return {0: Segment(0, downloadItem.contentLength)};
     }
 
-    tempFiles.sort(FileUtil.sortByByteRanges);
+    tempFiles.sort(sortByByteRanges);
     String prevFileName = "";
     Map<int, Segment> missingBytes = {};
     for (var i = 0; i < tempFiles.length; i++) {
@@ -536,11 +537,10 @@ class HttpDownloadEngine {
         continue;
       }
 
-      final startByte = FileUtil.getStartByteFromTempFileName(tempFileName);
-      final endByte = FileUtil.getEndByteFromTempFileName(tempFileName);
-      final prevEndByte = FileUtil.getEndByteFromTempFileName(prevFileName);
-      final segmentNumber =
-          FileUtil.getSegmentNumberFromTempFileName(tempFileName);
+      final startByte = getStartByteFromTempFileName(tempFileName);
+      final endByte = getEndByteFromTempFileName(tempFileName);
+      final prevEndByte = getEndByteFromTempFileName(prevFileName);
+      final segmentNumber = getConnectionNumberFromTempFileName(tempFileName);
 
       if (prevEndByte + 1 != startByte) {
         final missingStartByte = prevEndByte + 1;
@@ -566,8 +566,7 @@ class HttpDownloadEngine {
   static bool assembleFile(DownloadItemModel downloadItem) {
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
-    final tempFies = tempDir.listSync().map((o) => o as File).toList();
-    tempFies.sort(FileUtil.sortByByteRanges);
+    final tempFies = getTempFilesSorted(tempDir);
     File fileToWrite = File(downloadItem.filePath);
     if (fileToWrite.existsSync()) {
       final newFilePath = FileUtil.getFilePath(

@@ -7,6 +7,7 @@ import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/internal_messages.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/constants/types.dart';
+import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
@@ -136,7 +137,7 @@ abstract class BaseHttpDownloadConnection {
         return;
       }
 
-      final request = buildDownloadRequest();
+      final request = buildDownloadRequest(reuseConnection);
       sendDownloadRequest(request);
     } catch (e) {
       print("Failed to start");
@@ -169,10 +170,10 @@ abstract class BaseHttpDownloadConnection {
     paused = false;
   }
 
-  http.Request buildDownloadRequest() {
+  http.Request buildDownloadRequest(bool reuseConnection) {
     final request = http.Request('GET', Uri.parse(downloadItem.downloadUrl));
     print("Setting request headers!");
-    _setRequestHeaders(request);
+    _setRequestHeaders(request, reuseConnection);
     return request;
   }
 
@@ -252,19 +253,18 @@ abstract class BaseHttpDownloadConnection {
   /// The length of the existing file is set to the start value and the TODO FIX DOC (SEGMENTED)
   /// content-length retrieved from the HEAD Request is set to the end value.
   /// returns whether the segment download has already been finished or not.
-  void _setRequestHeaders(http.Request request) {
+  /// TODO move variable sets outside of this method
+  void _setRequestHeaders(http.Request request, bool reuseConnection) {
     tempDirectory.createSync(recursive: true);
-    print("Getting new start byte now");
-    // final newStartByte = getNewStartByte();
-    final newStartByte = this.startByte; // TODO Fix
+    final startByte = reuseConnection ? this.startByte : getNewStartByte();
     request.headers.addAll({
-      "Range": "bytes=$newStartByte-$endByte",
+      "Range": "bytes=$startByte-$endByte",
       "Keep-Alive": "timeout=5, max=1",
       // TODO handle request time-out response (We should reinitialize client)
       "User-Agent":
           "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;",
     });
-    final existingLength = newStartByte - this.startByte;
+    final existingLength = startByte - this.startByte;
     downloadProgress = existingLength / segmentLength;
     writeProgress = downloadProgress;
     totalReceivedBytes = existingLength;
@@ -279,7 +279,7 @@ abstract class BaseHttpDownloadConnection {
       return this.startByte;
     }
     final lastFileName = basename(tempFiles.last.path);
-    return FileUtil.getEndByteFromTempFileName(lastFileName) + 1;
+    return getEndByteFromTempFileName(lastFileName) + 1;
   }
 
   void _processChunk(List<int> chunk) {
@@ -372,8 +372,8 @@ abstract class BaseHttpDownloadConnection {
     int? newBufferStartByte;
     for (var file in tempFiles) {
       final fileName = basename(file.path);
-      final tempStartByte = FileUtil.getStartByteFromTempFileName(fileName);
-      final tempEndByte = FileUtil.getEndByteFromTempFileName(fileName);
+      final tempStartByte = getStartByteFromTempFileName(fileName);
+      final tempEndByte = getEndByteFromTempFileName(fileName);
       if (this.endByte < tempStartByte) {
         print("THROAWAY FILE : ${tempEndByte - tempStartByte}");
         tempFilesToDelete.add(file);
@@ -410,8 +410,8 @@ abstract class BaseHttpDownloadConnection {
     final tempFiles = _getTempFilesSorted(thisConnectionOnly: false)
         .where(
           (file) =>
-              FileUtil.getStartByteFromTempFile(file) >= this.startByte &&
-              FileUtil.getEndByteFromTempFile(file) <= this.endByte,
+              getStartByteFromTempFile(file) >= this.startByte &&
+              getEndByteFromTempFile(file) <= this.endByte,
         )
         .toList();
 
@@ -423,9 +423,9 @@ abstract class BaseHttpDownloadConnection {
       if (i == 0) continue;
       final file = tempFiles[i];
       final prevFile = tempFiles[i - 1];
-      final fileStartByte = FileUtil.getStartByteFromTempFile(file);
-      final fileEndByte = FileUtil.getEndByteFromTempFile(file);
-      final prevFileEndByte = FileUtil.getEndByteFromTempFile(prevFile);
+      final fileStartByte = getStartByteFromTempFile(file);
+      final fileEndByte = getEndByteFromTempFile(file);
+      final prevFileEndByte = getEndByteFromTempFile(prevFile);
       final isLastFile = i == tempFiles.length - 1;
       if ((fileStartByte != prevFileEndByte) ||
           (isLastFile && fileEndByte != this.endByte)) {
@@ -435,32 +435,35 @@ abstract class BaseHttpDownloadConnection {
     return true;
   }
 
-  List<File> _getTempFilesSorted({bool thisConnectionOnly = true}) {
+  List<File> _getTempFilesSorted({
+    bool thisConnectionOnly = true,
+    bool currentByteRangeOnly = false,
+  }) {
     if (!tempDirectory.existsSync()) {
       return List.empty();
     }
-
-    var tempFiles = tempDirectory.listSync().map((e) => e as File).toList();
-    if (thisConnectionOnly) {
-      tempFiles = tempFiles
-          .where(_tempFileBelongsToThisConnection)
-          .where(_isInConnectionByteRange)
-          .toList();
-    }
-
-    tempFiles.sort(FileUtil.sortByByteRanges);
-    return tempFiles;
+    return tempDirectory
+        .listSync()
+        .map((e) => e as File)
+        .where(
+          (file) => thisConnectionOnly
+              ? tempFileBelongsToThisConnection(file, this.connectionNumber)
+              : true,
+        )
+        .where(
+          (file) =>
+              currentByteRangeOnly ? _isInConnectionByteRange(file) : true,
+        )
+        .toList()
+      ..sort(sortByByteRanges);
   }
 
   bool _isInConnectionByteRange(File file) {
-    final tempStartByte = FileUtil.getStartByteFromTempFile(file);
-    final tempEndByte = FileUtil.getEndByteFromTempFile(file);
+    final tempStartByte = getStartByteFromTempFile(file);
+    final tempEndByte = getEndByteFromTempFile(file);
     return tempStartByte >= this.startByte && tempStartByte < this.endByte ||
         tempEndByte <= this.endByte && tempEndByte > this.startByte;
   }
-
-  bool _tempFileBelongsToThisConnection(File file) =>
-      basename(file.path).startsWith("${connectionNumber}#");
 
   void _calculateTransferRate(List<int> chunk) {
     _transferRateChunkBuffer.add(chunk);
