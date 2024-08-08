@@ -82,20 +82,22 @@ class DownloadSegmentTree {
     return _searchNodeRecursive(targetSegment, root);
   }
 
-  SegmentNode? _searchNodeRecursive(Segment targetSegment, SegmentNode? currentNode) {
+  SegmentNode? _searchNodeRecursive(Segment target, SegmentNode? currentNode) {
     if (currentNode == null) {
       return null;
     }
-    if (targetSegment == currentNode.segment) {
+    if (target == currentNode.segment) {
       return currentNode;
     }
-    final currentStart = currentNode.segment.startByte;
-    final currentEnd = currentNode.segment.endByte;
-    final middle = currentStart + ((currentEnd - currentStart) / 2).floor();
-    if (middle >= targetSegment.startByte) {
-      return _searchNodeRecursive(targetSegment, currentNode.leftChild);
-    } else if (middle < targetSegment.startByte) {
-      return _searchNodeRecursive(targetSegment, currentNode.rightChild);
+    final rChild = currentNode.rightChild;
+    final lChild = currentNode.leftChild;
+    if (rChild == null || lChild == null) {
+      return null;
+    }
+    if (target.isInRangeOfOther(lChild.segment)) {
+      return _searchNodeRecursive(target, lChild);
+    } else if (target.isInRangeOfOther(rChild.segment)) {
+      return _searchNodeRecursive(target, rChild);
     }
     return null;
   }
