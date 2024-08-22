@@ -297,7 +297,7 @@ abstract class BaseHttpDownloadConnection {
     totalRequestReceivedBytes = getTotalWrittenBytesLength(
       tempDirectory,
       connectionNumber,
-      range: Segment(this.startByte, this.endByte),
+      range: this.segment,
     );
     totalConnectionReceivedBytes = totalExistingLength;
     totalWrittenBytes = totalExistingLength;
@@ -312,7 +312,7 @@ abstract class BaseHttpDownloadConnection {
     final tempFiles = getTempFilesSorted(
       tempDirectory,
       connectionNumber: connectionNumber,
-      inByteRange: Segment(this.startByte, this.endByte),
+      inByteRange: this.segment,
     );
     if (tempFiles.isEmpty) {
       return this.startByte;
