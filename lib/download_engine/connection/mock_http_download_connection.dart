@@ -6,8 +6,7 @@ import 'package:http/src/client.dart';
 class MockHttpDownloadConnection extends BaseHttpDownloadConnection {
   MockHttpDownloadConnection({
     required super.downloadItem,
-    required super.startByte,
-    required super.endByte,
+    required super.segment,
     required super.connectionNumber,
     required super.settings,
   });

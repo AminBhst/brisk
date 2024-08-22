@@ -4,8 +4,7 @@ import 'package:http/http.dart' as http;
 class HttpDownloadConnection extends BaseHttpDownloadConnection {
   HttpDownloadConnection({
     required super.downloadItem,
-    required super.startByte,
-    required super.endByte,
+    required super.segment,
     required super.connectionNumber,
     required super.settings,
   });

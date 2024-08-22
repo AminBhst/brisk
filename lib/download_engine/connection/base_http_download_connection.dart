@@ -9,7 +9,6 @@ import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/constants/types.dart';
 import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/util/file_util.dart';
-import 'package:dartx/dartx.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 import 'package:brisk/download_engine/download_status.dart';
@@ -87,9 +86,7 @@ abstract class BaseHttpDownloadConnection {
   /// Callback method used to update the engine on the current progress of the download
   DownloadProgressCallback? progressCallback;
 
-  int startByte;
-
-  int endByte;
+  Segment segment;
 
   int connectionNumber;
 
@@ -108,8 +105,7 @@ abstract class BaseHttpDownloadConnection {
 
   BaseHttpDownloadConnection({
     required this.downloadItem,
-    required this.startByte,
-    required this.endByte,
+    required this.segment,
     required this.connectionNumber,
     required this.settings,
   });
@@ -285,7 +281,7 @@ abstract class BaseHttpDownloadConnection {
     print("Conn $connectionNumber Start byte:::: $startByte");
     request.headers.addAll({
       "Range": "bytes=$startByte-$endByte",
-      "Keep-Alive": "timeout=5, max=1",
+      // "Keep-Alive": "timeout=5, max=1",
       // TODO handle request time-out response (We should reinitialize client)
       "User-Agent":
           "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;",
@@ -309,9 +305,6 @@ abstract class BaseHttpDownloadConnection {
         totalConnectionReceivedBytes / downloadItem.contentLength;
     print("Conn $connectionNumber endByte $endByte");
     print("Conn $connectionNumber startByte $startByte");
-    if (startByte > endByte) {
-      print("object");
-    }
     _notifyProgress();
   }
 
@@ -602,8 +595,7 @@ abstract class BaseHttpDownloadConnection {
               message_refreshSegmentRefused(reuseConnection);
           print("::::::::::::::DID REFUSE:::::::::::::::::");
         } else {
-          this.startByte = segment.startByte;
-          this.endByte = newEndByte;
+          this.segment = Segment(segment.startByte, newEndByte);
           message
             ..validNewStartByte = this.endByte + 1
             ..validNewEndByte = prevEndByte
@@ -640,8 +632,7 @@ abstract class BaseHttpDownloadConnection {
       ;
       print("::::::::::::::DID REFUSE:::::::::::::::::");
     } else {
-      this.endByte = segment.endByte;
-      this.startByte = segment.startByte;
+      this.segment = segment;
       message
         ..internalMessage = InternalMessage.REFRESH_SEGMENT_SUCCESS
         ..refreshedStartByte = this.startByte
@@ -779,6 +770,10 @@ abstract class BaseHttpDownloadConnection {
       this.endByte; // TODO what if equals
 
   int get segmentLength => this.endByte - this.startByte + 1;
+
+  int get startByte => segment.startByte;
+
+  int get endByte => segment.endByte;
 
   bool get connectionRetryAllowed =>
       lastResponseTimeMillis + settings.connectionRetryTimeout < _nowMillis &&

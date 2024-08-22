@@ -124,9 +124,6 @@ class DownloadSegmentTree {
       .filter((node) => node.segmentStatus == SegmentStatus.IN_USE)
       .toList();
 
-  // List<SegmentNode> get lowestLevelNodes =>
-  //     getAllSameLevelNodes(lowestLevelLeftNode);
-
   /// Returns the lowest level segments, i.e.
   List<Segment> get currentSegment =>
       lowestLevelNodes.map((e) => e.segment).toList();

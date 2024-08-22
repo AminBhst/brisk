@@ -65,15 +65,13 @@ class DownloadConnectionInvoker {
     return data.downloadItem.downloadUrl == mockDownloadUrl
         ? MockHttpDownloadConnection(
             downloadItem: data.downloadItem,
-            startByte: data.segment!.startByte,
-            endByte: data.segment!.endByte,
+            segment: data.segment!,
             connectionNumber: data.connectionNumber!,
             settings: data.settings,
           )
         : HttpDownloadConnection(
             downloadItem: data.downloadItem,
-            startByte: data.segment!.startByte,
-            endByte: data.segment!.endByte,
+            segment: data.segment!,
             connectionNumber: data.connectionNumber!,
             settings: data.settings,
           );
@@ -107,8 +105,7 @@ class DownloadConnectionInvoker {
         connection.start(channel.sink.add);
         break;
       case DownloadCommand.start_ReuseConnection:
-        connection.startByte = data.segment!.startByte;
-        connection.endByte = data.segment!.endByte;
+        connection.segment = data.segment!;
         print("Conn num ${data.connectionNumber} StartByte ${connection.startByte} Endbyte ${connection.endByte}");
         connection.start(channel.sink.add, reuseConnection: true);
         break;

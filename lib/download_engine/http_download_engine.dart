@@ -281,7 +281,7 @@ class HttpDownloadEngine {
         .indexWhere((node) => node.segment == parent.leftChild!.segment);
     print("Trying to fix segment tree lowest nodes");
     if (l_index != -1) {
-      parent.segmentStatus = SegmentStatus.IN_USE;
+      // parent.segmentStatus = SegmentStatus.IN_USE;
       tree.lowestLevelNodes
         ..insert(l_index, parent)
         ..removeWhere((node) => node.segment == parent.rightChild!.segment)
