@@ -109,6 +109,7 @@ class DownloadConnectionInvoker {
       case DownloadCommand.start_ReuseConnection:
         connection.startByte = data.segment!.startByte;
         connection.endByte = data.segment!.endByte;
+        print("Conn num ${data.connectionNumber} StartByte ${connection.startByte} Endbyte ${connection.endByte}");
         connection.start(channel.sink.add, reuseConnection: true);
         break;
       case DownloadCommand.pause:

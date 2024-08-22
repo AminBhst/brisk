@@ -52,10 +52,9 @@ class FileUtil {
     return completer.future;
   }
 
-  static doooo() {
+  static doooo(String uid) {
     print("=================================================");
-    final dir = Directory(
-        "C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp\\a384cc88-943a-4fcb-83eb-93a5798222ef");
+    final dir = Directory("C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp\\$uid");
     final list = dir.listSync()..sort(sortByByteRanges);
     for (var value in list) {
       value = value as File;

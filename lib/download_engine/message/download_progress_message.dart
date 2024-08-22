@@ -64,7 +64,7 @@ class DownloadProgressMessage {
       downloadItem: request.downloadItem,
       bytesTransferRate: request.bytesTransferRate,
       totalDownloadProgress: request.totalDownloadProgress,
-      totalReceivedBytes: request.totalReceivedBytes,
+      totalReceivedBytes: request.totalConnectionReceivedBytes,
       segmentLength: request.segmentLength,
       detailsStatus: request.detailsStatus,
       connectionNumber: request.connectionNumber,

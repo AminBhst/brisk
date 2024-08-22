@@ -1,37 +1,69 @@
 import 'dart:io';
+
+import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:dartx/dartx.dart';
 import 'package:path/path.dart';
 
-List<File> getTempFilesSorted(Directory tempDir) {
-  return tempDir.listSync().map((o) => o as File).toList()
-    ..sort(sortByByteRanges);
-}
-
 int getTotalWrittenBytesLength(
   Directory tempDir,
-  int connectionNumber,
-) {
-  return getTempFilesSorted(tempDir)
-      .where(
-        (file) => tempFileBelongsToThisConnection(file, connectionNumber),
-      )
-      .map((file) => basename(file.path))
-      .reduce((f1, f2) => addTempFilesLength(f1, f2).toString())
+  int connectionNumber, {
+  Segment? range,
+}) {
+  if (tempDir.listSync().isEmpty) {
+    return 0;
+  }
+  final connectionFiles = getTempFilesSorted(tempDir).where(
+    (file) => tempFileBelongsToConnection(file, connectionNumber),
+  );
+
+  if (connectionFiles.isEmpty) {
+    return 0;
+  }
+
+  final connectionFileNames = connectionFiles.map((f) => basename(f.path));
+  if (range != null) {
+    final fileNamesInRange = connectionFileNames.where(
+      (fileName) => fileNameToSegment(fileName).isInRangeOfOther(range),
+    );
+    return fileNamesInRange.isEmpty
+        ? 0
+        : fileNamesInRange
+            .reduce((f1, f2) => _addTempFilesLength(f1, f2).toString())
+            .toInt();
+  }
+
+  return connectionFileNames
+      .reduce((f1, f2) => _addTempFilesLength(f1, f2).toString())
       .toInt();
 }
 
-int addTempFilesLength(String firstFileName, String secondFileName) {
-  return getTempFileLength(firstFileName) + getTempFileLength(secondFileName);
+/// [first] : either the first file name or the sum of the previous reduce operation
+int _addTempFilesLength(String first, String secondFileName) {
+  if (first.isInt) {
+    return first.toInt() + getTempFileLength(secondFileName);
+  }
+  return getTempFileLength(first) + getTempFileLength(secondFileName);
+}
+
+Segment fileNameToSegment(String fileName) {
+  final startByte = getStartByteFromTempFileName(fileName);
+  final endByte = getEndByteFromTempFileName(fileName);
+  return Segment(startByte, endByte);
 }
 
 int getTempFileLength(String tempFileName) {
+  if (tempFileName.isEmpty) {
+    return 0;
+  }
   return getEndByteFromTempFileName(tempFileName) -
       getStartByteFromTempFileName(tempFileName) +
       1;
 }
 
-bool tempFileBelongsToThisConnection(File file, int connectionNumber) {
-  return getConnectionNumberFromTempFileName(basename(file.path)) ==
+bool tempFileBelongsToConnection(File file, int connectionNumber) {
+  return getConnectionNumberFromTempFileName(
+        basename(file.path),
+      ) ==
       connectionNumber;
 }
 
@@ -50,6 +82,45 @@ int getStartByteFromTempFileName(String tempFileName) {
       tempFileName.indexOf("-"),
     ),
   );
+}
+
+List<File> getTempFilesSorted(
+  Directory tempDirectory, {
+  int? connectionNumber,
+  Segment? inByteRange,
+}) {
+  if (!tempDirectory.existsSync()) {
+    return [];
+  }
+  return tempDirectory
+      .listSync()
+      .map((e) => e as File)
+      .where(
+        (file) => connectionNumber != null
+            ? tempFileBelongsToConnection(file, connectionNumber)
+            : true,
+      )
+      .where(
+        (file) => inByteRange != null
+            ? isTempFileInByteRange(
+                file,
+                inByteRange.startByte,
+                inByteRange.endByte,
+              )
+            : true,
+      )
+      .toList()
+    ..sort(sortByByteRanges);
+}
+
+bool isTempFileInByteRange(File file, int startByte, int endByte) {
+  final tempStartByte = getStartByteFromTempFile(file);
+  final tempEndByte = getEndByteFromTempFile(file);
+  return (tempStartByte >= startByte &&
+          tempStartByte < endByte &&
+          tempEndByte <= endByte &&
+          tempEndByte > startByte) ||
+      (tempStartByte < endByte && tempEndByte > endByte);
 }
 
 int getStartByteFromTempFile(File tempFile) {

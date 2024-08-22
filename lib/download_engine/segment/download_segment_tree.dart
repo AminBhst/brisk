@@ -131,12 +131,12 @@ class DownloadSegmentTree {
   List<Segment> get currentSegment =>
       lowestLevelNodes.map((e) => e.segment).toList();
 
-  void splitSegmentNode(SegmentNode node, {setConnectionNumber = true}) {
+  bool splitSegmentNode(SegmentNode node, {setConnectionNumber = true}) {
     final nodeSegment = node.segment;
     final splitByte =
         ((nodeSegment.endByte - nodeSegment.startByte) / 2).floor();
     if (splitByte <= 0) {
-      return;
+      return false;
     }
     Segment segLeft;
     Segment segRight;
@@ -147,6 +147,9 @@ class DownloadSegmentTree {
     } else {
       segLeft = Segment(nodeSegment.startByte, splitByte);
       segRight = Segment(splitByte + 1, nodeSegment.endByte);
+    }
+    if (!segLeft.isValid || !segRight.isValid) {
+      return false;
     }
     node.rightChild = SegmentNode(segment: segRight, parent: node);
     node.leftChild = SegmentNode(segment: segLeft, parent: node);
@@ -164,6 +167,7 @@ class DownloadSegmentTree {
     lowestLevelNodes.removeAt(nodeIndex);
     lowestLevelNodes.insert(nodeIndex, node.leftChild!);
     lowestLevelNodes.insert(nodeIndex + 1, node.rightChild!);
+    return true;
   }
 }
 

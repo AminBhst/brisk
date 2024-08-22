@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
@@ -122,6 +123,7 @@ class _TopMenuState extends State<TopMenu> {
             onTap: () {
               final dlitem = HiveUtil.instance.downloadItemsBox.getAt(0);
               final itemModel = DownloadItemModel.fromDownloadItem(dlitem!);
+              FileUtil.doooo(itemModel.uid);
               assembleFile(
                   itemModel, SettingsCache.temporaryDir, SettingsCache.saveDir);
               print("DONE");
@@ -134,12 +136,11 @@ class _TopMenuState extends State<TopMenu> {
 
   static bool assembleFile(DownloadItemModel downloadItem,
       Directory baseTempDir, Directory baseSaveDir) {
+    ayo(downloadItem);
     final tempPath = join(baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
 
-    final tempFies = tempDir.listSync()
-        .map((o) => o as File)
-        .toList()
+    final tempFies = tempDir.listSync().map((o) => o as File).toList()
       ..sort(sortByByteRanges);
 
     File fileToWrite = File(downloadItem.filePath);
@@ -168,6 +169,49 @@ class _TopMenuState extends State<TopMenu> {
       // tempDir.delete(recursive: true);
     }
     return assembleSuccessful;
+  }
+
+  static void ayo(DownloadItemModel downloadItem) {
+    print("Validating temp files integrity...");
+    final tempPath = join(
+        Directory("C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp").path,
+        downloadItem.uid);
+    final tempDir = Directory(tempPath);
+    final tempFies = getTempFilesSorted(tempDir);
+    for (int i = 0; i < tempFies.length; i++) {
+      if (i == tempFies.length - 1) {
+        return;
+      }
+      final file = tempFies[i];
+      final nextFile = tempFies[i + 1];
+      final startNext = getStartByteFromTempFile(nextFile);
+      final end = getEndByteFromTempFile(file);
+      final start = getStartByteFromTempFile(file);
+      if (startNext - 1 != end) {
+        print(
+            "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)}");
+      }
+      if (end - start + 1 != file.lengthSync()) {
+        print("Found bad length ::: ${basename(file.path)}");
+      }
+      final badTemps = tempFies.where((f) => f != file).where((f) {
+        final startF = getStartByteFromTempFile(f);
+        final endF = getEndByteFromTempFile(f);
+        final fSeg = Segment(startF, endF);
+        final sseg = Segment(start, end);
+        final overlaps = fSeg.overlapsWithOther(sseg);
+        // isInRangeOfOther(Segment(start, end)) || Segment(startF, endF).overlapsWithOther(Segment(start, end));
+        final overlappss = sseg.overlapsWithOther(fSeg);
+        if (overlaps || overlappss) {
+          print("OVERLAPS!!!!!");
+          print("fSeg = $fSeg sseg = $sseg");
+        }
+        return false;
+      }).toList();
+      for (final t in badTemps) {
+        print("Found bad temp!!");
+      }
+    }
   }
 
   void onMockDownloadPressed(BuildContext context) async {
