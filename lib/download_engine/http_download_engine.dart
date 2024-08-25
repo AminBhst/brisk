@@ -792,29 +792,26 @@ class HttpDownloadEngine {
     final downloadId = progress.downloadItem.id;
     if (_connectionProgresses[downloadId] == null) return;
     final progresses = _connectionProgresses[downloadId]!.values;
-    final pendingHandshakeExists = _pendingHandshakes[downloadId] != null &&
-        _pendingHandshakes[downloadId]!.isNotEmpty;
     if (totalProgress >= 1) {
       progress.pauseButtonEnabled = false;
       progress.startButtonEnabled = false;
+      return;
+    }
+    final pendingHandshakeExists =
+        _pendingHandshakes[downloadId]?.isNotEmpty ?? false;
+    final unfinishedConnections = progresses.where(
+      (p) => p.detailsStatus != DownloadStatus.complete,
+    );
+    if (pendingHandshakeExists) {
+      progress.pauseButtonEnabled = false;
     } else {
-      final unfinishedConnections = progresses.where(
-        (p) => p.detailsStatus != DownloadStatus.complete,
-      );
-      print("Pending handshake exists? ${pendingHandshakeExists}");
-      print(
-          "${_pendingHandshakes[downloadId]?.map((e) => e.newConnectionNumber).toList()}");
-      if (pendingHandshakeExists) {
-        progress.pauseButtonEnabled = false;
-      } else {
-        progress.pauseButtonEnabled = unfinishedConnections.every(
-          (c) => c.pauseButtonEnabled,
-        );
-      }
-      progress.startButtonEnabled = unfinishedConnections.every(
-        (c) => c.startButtonEnabled,
+      progress.pauseButtonEnabled = unfinishedConnections.every(
+        (c) => c.pauseButtonEnabled,
       );
     }
+    progress.startButtonEnabled = unfinishedConnections.every(
+      (c) => c.startButtonEnabled,
+    );
   }
 
   static double _calculateTotalDownloadProgress(int id) {
