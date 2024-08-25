@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
+import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 import 'package:brisk/download_engine/message/connection_segment_message.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/download_status.dart';
@@ -44,7 +45,13 @@ class HttpDownloadEngine {
 
   static const _CONNECTION_SPAWNER_TIMER_DURATION_SEC = 3;
 
+  ///
+  /// key: downloadId
+  static final Map<int, List<EngineConnectionHandshake>> _pendingHandshakes =
+      {};
+
   /// A map of all stream channels related to the running download requests
+  /// key: downloadId
   static final Map<int, MainDownloadChannel> _downloadChannels = {};
 
   /// TODO Remove and use download channels
@@ -124,7 +131,8 @@ class HttpDownloadEngine {
         return;
       }
       final connectionChannel = queue.removeFirst();
-      print("Sending refresh segment for conn ${connectionChannel.connectionNumber}");
+      print(
+          "Sending refresh segment for conn ${connectionChannel.connectionNumber}");
       _sendRefreshSegmentCommand_ReuseConnection(connectionChannel);
     });
   }
@@ -165,7 +173,7 @@ class HttpDownloadEngine {
     }
   }
 
-  static _refreshConnectionSegments(int downloadId) async {
+  static void _refreshConnectionSegments(int downloadId) {
     final progress = _downloadProgresses[downloadId];
     if (progress == null) {
       return;
@@ -236,6 +244,19 @@ class HttpDownloadEngine {
     if (message is ConnectionSegmentMessage) {
       _handleSegmentMessage(message);
     }
+    if (message is ConnectionHandshake) {
+      _handleConnectionHandshakeMessage(message);
+    }
+  }
+
+  static void _handleConnectionHandshakeMessage(ConnectionHandshake message) {
+    print("Got handshake");
+    _pendingHandshakes[message.downloadId]?.forEach((element) {
+      print(element.newConnectionNumber);
+    });
+    _pendingHandshakes[message.downloadId]?.removeWhere(
+      (h) => h.newConnectionNumber == message.newConnectionNumber,
+    );
   }
 
   static void _handleSegmentMessage(ConnectionSegmentMessage message) {
@@ -257,6 +278,15 @@ class HttpDownloadEngine {
       default:
         break;
     }
+  }
+
+  static void _addHandshake(int downloadId, int connectionNumber) {
+    final handshake = EngineConnectionHandshake(
+      newConnectionNumber: connectionNumber,
+      handShakeStatus: HandShakeStatus.PENDING_CONNECTION_SPAWN,
+    );
+    _pendingHandshakes[downloadId] ??= [];
+    _pendingHandshakes[downloadId]!.add(handshake);
   }
 
   static void _handleRefreshSegmentRefused(ConnectionSegmentMessage message) {
@@ -324,6 +354,7 @@ class HttpDownloadEngine {
       newConnectionNode,
       newConnectionNode.connectionNumber,
     );
+    _addHandshake(message.downloadItem.id, newConnectionNode.connectionNumber);
   }
 
   static void _handleRefreshSegmentSuccess(ConnectionSegmentMessage message) {
@@ -350,6 +381,7 @@ class HttpDownloadEngine {
         connectionNode,
         connectionNode.connectionNumber,
       );
+      _addHandshake(message.downloadItem.id, connectionNode.connectionNumber);
     }
     parent.leftChild!.segmentStatus = SegmentStatus.IN_USE;
     connectionNode.segmentStatus = SegmentStatus.IN_USE;
@@ -383,6 +415,8 @@ class HttpDownloadEngine {
   }
 
   static void _handleProgressUpdates(DownloadProgressMessage progress) {
+    print(
+        "Got progress update conn num ${progress.connectionNumber} ${progress.status} ${progress.detailsStatus} ${progress.totalRequestWriteProgress}");
     final downloadItem = progress.downloadItem;
     final downloadId = downloadItem.id;
     final downloadChannel = _downloadChannels[downloadItem.id]!;
@@ -758,6 +792,8 @@ class HttpDownloadEngine {
     final downloadId = progress.downloadItem.id;
     if (_connectionProgresses[downloadId] == null) return;
     final progresses = _connectionProgresses[downloadId]!.values;
+    final pendingHandshakeExists = _pendingHandshakes[downloadId] != null &&
+        _pendingHandshakes[downloadId]!.isNotEmpty;
     if (totalProgress >= 1) {
       progress.pauseButtonEnabled = false;
       progress.startButtonEnabled = false;
@@ -765,9 +801,16 @@ class HttpDownloadEngine {
       final unfinishedConnections = progresses.where(
         (p) => p.detailsStatus != DownloadStatus.complete,
       );
-      progress.pauseButtonEnabled = unfinishedConnections.every(
-        (c) => c.pauseButtonEnabled,
-      );
+      print("Pending handshake exists? ${pendingHandshakeExists}");
+      print(
+          "${_pendingHandshakes[downloadId]?.map((e) => e.newConnectionNumber).toList()}");
+      if (pendingHandshakeExists) {
+        progress.pauseButtonEnabled = false;
+      } else {
+        progress.pauseButtonEnabled = unfinishedConnections.every(
+          (c) => c.pauseButtonEnabled,
+        );
+      }
       progress.startButtonEnabled = unfinishedConnections.every(
         (c) => c.startButtonEnabled,
       );
@@ -785,8 +828,8 @@ class HttpDownloadEngine {
   /// TODO fix
   static bool checkTempWriteCompletion(DownloadItemModel downloadItem) {
     final progresses = _connectionProgresses[downloadItem.id]!.values;
-    final tempComplete =
-        progresses.every((progress) => progress.writeProgress == 1);
+    final tempComplete = progresses
+        .every((progress) => progress.totalConnectionWriteProgress == 1);
 
     progresses.forEach((prog) {
       // print("WRITE PROG ${prog.segmentNumber} ::::::::: ${prog.writeProgress}");

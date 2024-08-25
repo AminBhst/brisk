@@ -328,7 +328,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                                 selector: (_, provider) => provider
                                     .downloads[widget.downloadId]!
                                     .connectionProgresses[index]
-                                    .writeProgress,
+                                    .totalRequestWriteProgress,
                                 builder: (context, progress, child) {
                                   return SizedBox(
                                     height: 3,

@@ -15,7 +15,8 @@ class DownloadProgressMessage {
   String status;
   String estimatedRemaining;
   bool paused;
-  double writeProgress;
+  double totalConnectionWriteProgress;
+  double totalRequestWriteProgress;
   double assembleProgress;
   bool startButtonEnabled;
   bool pauseButtonEnabled;
@@ -35,7 +36,8 @@ class DownloadProgressMessage {
     this.status = "",
     this.estimatedRemaining = "",
     this.paused = false,
-    this.writeProgress = 0,
+    this.totalConnectionWriteProgress = 0,
+    this.totalRequestWriteProgress = 0,
     this.assembleProgress = 0,
     this.startButtonEnabled = false,
     this.pauseButtonEnabled = false,
@@ -58,17 +60,17 @@ class DownloadProgressMessage {
       status: request.status,
       estimatedRemaining: request.estimatedRemaining,
       paused: request.paused,
-      writeProgress: request.writeProgress,
+      totalConnectionWriteProgress: request.totalConnectionWriteProgress,
+      totalRequestWriteProgress: request.totalRequestWriteProgress,
       startButtonEnabled: request.isStartButtonEnabled,
       pauseButtonEnabled: request.pauseButtonEnabled,
       downloadItem: request.downloadItem,
       bytesTransferRate: request.bytesTransferRate,
       totalDownloadProgress: request.totalDownloadProgress,
       totalReceivedBytes: request.totalConnectionReceivedBytes,
-      segmentLength: request.segmentLength,
       detailsStatus: request.detailsStatus,
       connectionNumber: request.connectionNumber,
-      segment: Segment(request.startByte, request.endByte),
+      segment: request.segment,
     );
     return downloadProgress;
   }
