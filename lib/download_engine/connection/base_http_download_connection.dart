@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 import 'package:brisk/download_engine/message/connection_segment_message.dart';
 import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
@@ -151,7 +150,10 @@ abstract class BaseHttpDownloadConnection {
       print("CONN NUM $connectionNumber REUSE BYTES : $startByte - $endByte");
     }
 
-    if (isStartNotAllowed(connectionReset, reuseConnection)) return;
+    if (isStartNotAllowed(connectionReset, reuseConnection)) {
+      print("Start is not allowed for connection $connectionNumber");
+      return;
+    }
     // _runConnectionResetTimer(); /// TODO uncomment
 
     _init(connectionReset, progressCallback, reuseConnection);
@@ -195,7 +197,7 @@ abstract class BaseHttpDownloadConnection {
 
   http.Request buildDownloadRequest(bool reuseConnection) {
     final request = http.Request('GET', Uri.parse(downloadItem.downloadUrl));
-    print("Setting request headers!");
+    print("Setting request headers! conn $connectionNumber");
     _setRequestHeaders(request, reuseConnection);
     return request;
   }
@@ -348,7 +350,6 @@ abstract class BaseHttpDownloadConnection {
     lastResponseTimeMillis = _nowMillis;
     pauseButtonEnabled = downloadItem.supportsPause;
     detailsStatus = transferRate;
-    print("processing chunk conn num $connectionNumber");
     _notifyProgress();
     if (downloadProgress == 1) {
       // TODO WTF is this???
@@ -462,6 +463,7 @@ abstract class BaseHttpDownloadConnection {
         totalConnectionReceivedBytes / downloadItem.contentLength;
   }
 
+  /// TODO improve
   bool _isDownloadCompleted() {
     final tempFiles = getTempFilesSorted(
       tempDirectory,
@@ -470,6 +472,13 @@ abstract class BaseHttpDownloadConnection {
     );
     if (tempFiles.isEmpty) {
       return false;
+    }
+    if (tempFiles.length == 1) {
+      final file = basename(tempFiles[0].path);
+      final endByte = getEndByteFromTempFileName(file);
+      if (this.segment.endByte != endByte) {
+        return false;
+      }
     }
     for (var i = 0; i < tempFiles.length; i++) {
       if (i == 0) continue;
