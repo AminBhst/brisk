@@ -20,19 +20,24 @@ int getTotalWrittenBytesLength(
     return 0;
   }
 
-  final connectionFileNames = connectionFiles.map((f) => basename(f.path));
+  var fileNames = connectionFiles.map((f) => basename(f.path));
   if (range != null) {
-    final fileNamesInRange = connectionFileNames.where(
-      (fileName) => fileNameToSegment(fileName).isInRangeOfOther(range),
-    );
-    return fileNamesInRange.isEmpty
-        ? 0
-        : fileNamesInRange
-            .reduce((f1, f2) => _addTempFilesLength(f1, f2).toString())
-            .toInt();
+    fileNames = fileNames
+        .where(
+          (fileName) => fileNameToSegment(fileName).isInRangeOfOther(range),
+        )
+        .toList();
   }
 
-  return connectionFileNames
+  if (fileNames.isEmpty) {
+    return 0;
+  }
+
+  if (fileNames.length == 1) {
+    return getTempFileLength(fileNames.first);
+  }
+
+  return fileNames
       .reduce((f1, f2) => _addTempFilesLength(f1, f2).toString())
       .toInt();
 }
