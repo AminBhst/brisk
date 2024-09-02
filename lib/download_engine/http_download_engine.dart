@@ -45,8 +45,6 @@ class HttpDownloadEngine {
 
   static const _CONNECTION_SPAWNER_TIMER_DURATION_SEC = 3;
 
-  ///
-  /// key: downloadId
   static final Map<int, List<EngineConnectionHandshake>> _pendingHandshakes =
       {};
 
@@ -250,7 +248,7 @@ class HttpDownloadEngine {
   }
 
   static void _handleConnectionHandshakeMessage(ConnectionHandshake message) {
-    print("Got handshake");
+    print("Got handshake ${message.newConnectionNumber}");
     _pendingHandshakes[message.downloadId]?.forEach((element) {
       print(element.newConnectionNumber);
     });
@@ -381,8 +379,8 @@ class HttpDownloadEngine {
         connectionNode,
         connectionNode.connectionNumber,
       );
-      _addHandshake(message.downloadItem.id, connectionNode.connectionNumber);
     }
+    _addHandshake(message.downloadItem.id, connectionNode.connectionNumber);
     parent.leftChild!.segmentStatus = SegmentStatus.IN_USE;
     connectionNode.segmentStatus = SegmentStatus.IN_USE;
     connectionNode.setLastUpdateMillis();
@@ -415,8 +413,6 @@ class HttpDownloadEngine {
   }
 
   static void _handleProgressUpdates(DownloadProgressMessage progress) {
-    print(
-        "Got progress update conn num ${progress.connectionNumber} ${progress.status} ${progress.detailsStatus} ${progress.totalRequestWriteProgress}");
     final downloadItem = progress.downloadItem;
     final downloadId = downloadItem.id;
     final downloadChannel = _downloadChannels[downloadItem.id]!;
@@ -564,8 +560,9 @@ class HttpDownloadEngine {
       await _spawnDownloadIsolates(data);
     } else {
       _downloadChannels[id]?.connectionChannels.forEach((connNum, connection) {
-        data.connectionNumber = connNum;
-        connection.sendMessage(data);
+        final newData = data.clone()..connectionNumber = connNum;
+        print("Command ${data.command} send to connection $connNum");
+        connection.sendMessage(newData);
       });
     }
     return completer.complete();
@@ -867,12 +864,6 @@ class HttpDownloadEngine {
       rPort.sendPort,
       errorsAreFatal: false,
     );
-    // final isolateCount = _activeDownloadIsolateCount[downloadId];
-    // if (isolateCount == null) {
-    //   _activeDownloadIsolateCount[downloadId] = 1;
-    // } else {
-    //   _activeDownloadIsolateCount[downloadId] = isolateCount + 1;
-    // }
     print("SPAWNED $connectionNumber for id $downloadId");
     channel.sink.add(data);
     _connectionIsolates[downloadId] ??= {};

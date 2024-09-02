@@ -115,6 +115,7 @@ class DownloadConnectionInvoker {
         print(
             "Conn num ${data.connectionNumber} StartByte ${connection.startByte} Endbyte ${connection.endByte}");
         connection.start(channel.sink.add, reuseConnection: true);
+        channel.sink.add(ConnectionHandshake.fromIsolateMessage(data));
         break;
       case DownloadCommand.pause:
         connection.pause(channel.sink.add);
