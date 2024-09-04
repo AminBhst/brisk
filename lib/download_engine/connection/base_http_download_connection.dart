@@ -117,6 +117,7 @@ abstract class BaseHttpDownloadConnection {
   /// Starts the download request.
   /// [progressCallback] is used to let the provider know that the values are
   /// changed so that it calls notify listeners which can be used to display its live progress.
+  /// TODO Correct the received bytes when correcting temp bytes (never allow it to go beyond the required bytes)
   void start(
     DownloadProgressCallback progressCallback, {
     bool connectionReset = false,
