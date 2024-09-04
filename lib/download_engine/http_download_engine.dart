@@ -303,7 +303,6 @@ class HttpDownloadEngine {
       print("Added connection $connNum to connection queue");
     } else {
       _downloadChannels[message.downloadItem.id]!.createdConnections--;
-      parent.segmentStatus = SegmentStatus.COMPLETE;
     }
     final l_index = tree.lowestLevelNodes
         .indexWhere((node) => node.segment == parent.leftChild!.segment);
@@ -315,9 +314,6 @@ class HttpDownloadEngine {
         ..removeWhere((node) => node.segment == parent.rightChild!.segment)
         ..removeWhere((node) => node.segment == parent.leftChild!.segment);
     }
-    tree.lowestLevelNodes.forEach((element) {
-      print(element.segment);
-    });
     parent
       ..removeChildren()
       ..setLastUpdateMillis();
