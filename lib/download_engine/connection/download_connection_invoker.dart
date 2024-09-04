@@ -9,16 +9,14 @@ import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 
-import 'base_http_download_connection.dart';
-import '../client/mock_http_client_proxy.dart';
-import '../message/connection_handshake_message.dart';
+import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
+import 'package:brisk/download_engine/client/mock_http_client_proxy.dart';
+import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 
 class DownloadConnectionInvoker {
   static final Map<int, Map<int, BaseHttpDownloadConnection>> _connections = {};
 
   static final Map<int, Map<int, TrackedDownloadCommand>> _trackedCommands = {};
-
-  static final Map<int, TrackedDownloadCommand> _latestDownloadCommands = {};
 
   static final Map<int, Pair<bool, StreamChannel>> stopCommandTrackerMap = {};
 
@@ -27,7 +25,7 @@ class DownloadConnectionInvoker {
   /// TODO : Check if it's a new connection (doesn't exist in the map) ignore it as a reference for commands
   static void _runCommandTrackerTimer() {
     if (_commandTrackerTimer != null) return;
-    _commandTrackerTimer = Timer.periodic(Duration(milliseconds: 500), (_) {
+    _commandTrackerTimer = Timer.periodic(Duration(milliseconds: 200), (_) {
       _connections.forEach((downloadId, connections) {
         final shouldSignalStop =
             stopCommandTrackerMap[downloadId]?.first ?? false;
@@ -35,9 +33,10 @@ class DownloadConnectionInvoker {
         if (!shouldSignalStop) {
           return;
         }
-        _connections[downloadId]?.forEach((_, request) {
-          if (!request.paused) {
-            request.pause(channel?.sink.add);
+        _connections[downloadId]?.forEach((_, conn) {
+          if (!conn.paused) {
+            conn.pause(channel?.sink.add);
+            print("======== paused connection ${conn.connectionNumber}");
           }
         });
       });
@@ -46,7 +45,7 @@ class DownloadConnectionInvoker {
 
   static void invokeConnection(SendPort sendPort) async {
     final channel = IsolateChannel.connectSend(sendPort);
-    // _runCommandTrackerTimer();
+    _runCommandTrackerTimer();
     channel.stream.cast<DownloadIsolateMessage>().listen((data) {
       final id = data.downloadItem.id;
       _connections[id] ??= {};
@@ -152,8 +151,5 @@ class DownloadConnectionInvoker {
     final trackedCommand = TrackedDownloadCommand.create(data.command, channel);
     _trackedCommands[data.downloadItem.id] ??= {};
     _trackedCommands[id]![segmentNumber] = trackedCommand;
-    if (_connections[id]![segmentNumber] != null) {
-      _latestDownloadCommands[id] = trackedCommand;
-    }
   }
 }
