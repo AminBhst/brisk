@@ -77,8 +77,6 @@ class HttpDownloadEngine {
 
   static late DownloadSettings downloadSettings;
 
-  static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
-
   /// Adds download connections on the fly
   static void _runDynamicConnectionSpawner() {
     _downloadChannels.forEach((downloadId, handlerChannel) {
@@ -892,4 +890,6 @@ class HttpDownloadEngine {
     );
     return progress;
   }
+
+  static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 }
