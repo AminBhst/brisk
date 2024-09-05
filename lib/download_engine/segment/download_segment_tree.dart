@@ -102,24 +102,6 @@ class DownloadSegmentTree {
     return null;
   }
 
-  List<SegmentNode> getAllSameLevelNodes(SegmentNode node) {
-    var currentNode = getSameLevelLeftNode(node);
-    var nodes = [currentNode];
-    while (currentNode.rightNeighbor != null) {
-      currentNode = currentNode.rightNeighbor!;
-      nodes.add(currentNode);
-    }
-    return nodes;
-  }
-
-  SegmentNode getSameLevelLeftNode(SegmentNode node) {
-    var currentNode = node;
-    while (node.leftNeighbor != null) {
-      currentNode = node.leftNeighbor!;
-    }
-    return currentNode;
-  }
-
   List<SegmentNode>? get inUseNodes => lowestLevelNodes
       .filter((node) => node.segmentStatus == SegmentStatus.IN_USE)
       .toList();
@@ -194,28 +176,6 @@ class SegmentNode {
     this.lastUpdateMillis = DateTime.now().millisecondsSinceEpoch;
   }
 
-  SegmentNode? getChildByDirection(NodeRelationDirection direction) {
-    if (direction == NodeRelationDirection.RIGHT) {
-      return this.rightChild;
-    } else if (direction == NodeRelationDirection.LEFT) {
-      return this.leftChild;
-    }
-    return null;
-  }
-
-  NodeRelationDirection? findChildDirection(SegmentNode child) {
-    var nodeDirection;
-    if (this.leftChild == child) {
-      nodeDirection = NodeRelationDirection.LEFT;
-    } else if (this.rightChild == child) {
-      nodeDirection = NodeRelationDirection.RIGHT;
-    } else {
-      print("Target node not found based on parent node. FATAL!");
-      return null;
-    }
-    return nodeDirection;
-  }
-
   SegmentNode({
     required this.segment,
     this.connectionNumber = 0,
@@ -223,16 +183,3 @@ class SegmentNode {
     this.segmentStatus = SegmentStatus.INITIAL,
   });
 }
-
-enum NodeRelationDirection {
-  RIGHT,
-  LEFT,
-}
-
-extension NodeRelationDirectionExtension on NodeRelationDirection {
-  NodeRelationDirection get opposite => this == NodeRelationDirection.LEFT
-      ? NodeRelationDirection.RIGHT
-      : NodeRelationDirection.LEFT;
-}
-
-enum NodeRelationshipType { CHILD, NEIGHBOR, PARENT }
