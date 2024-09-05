@@ -90,8 +90,10 @@ class DownloadRequestProvider with ChangeNotifier {
   Future<StreamChannel> _spawnDownloadEngineIsolate(int id) async {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
-    final isolate = await Isolate.spawn(HttpDownloadEngine.startDownloadRequest,
-        IsolateArgsPair(rPort.sendPort, id));
+    final isolate = await Isolate.spawn(
+      HttpDownloadEngine.startDownloadRequest,
+      IsolateArgsPair(rPort.sendPort, id),
+    );
     engineIsolates[id] = isolate;
     engineChannels[id] = channel;
     return channel;
