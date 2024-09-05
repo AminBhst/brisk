@@ -45,9 +45,6 @@ class HttpDownloadEngine {
 
   static const _CONNECTION_SPAWNER_TIMER_DURATION_SEC = 3;
 
-  static final Map<int, List<EngineConnectionHandshake>> _pendingHandshakes =
-      {};
-
   /// A map of all stream channels related to the running download requests
   /// key: downloadId
   static final Map<int, MainDownloadChannel> _downloadChannels = {};
@@ -64,8 +61,6 @@ class HttpDownloadEngine {
   // TODO redundant
   static final Map<int, String> completionEstimations = {};
 
-  static Timer? _dynamicConnectionSpawnerTimer = null;
-
   /// The list of download IDs that should be ignored for dynamic connection spawn.
   /// This is used to prevent adding new connections when the user has stopped
   /// the download before all download connections have been spawned. In the
@@ -75,6 +70,10 @@ class HttpDownloadEngine {
   static final List<int> _dynamicConnectionSpawnerIgnoreList = [];
 
   static Timer? _dynamicConnectionReuseTimer = null;
+
+  static Timer? _dynamicConnectionSpawnerTimer = null;
+
+  static Map<int, bool> forcePause = {};
 
   static late DownloadSettings downloadSettings;
 
@@ -229,11 +228,6 @@ class HttpDownloadEngine {
     return shouldCreate;
   }
 
-  // TODO implement
-  static bool validateTempFilesIntegrity() {
-    throw UnimplementedError();
-  }
-
   /// Handles the messages coming from [BaseHttpDownloadConnection]
   static void _handleConnectionMessages(message) async {
     if (message is DownloadProgressMessage) {
@@ -249,10 +243,8 @@ class HttpDownloadEngine {
 
   static void _handleConnectionHandshakeMessage(ConnectionHandshake message) {
     print("Got handshake ${message.newConnectionNumber}");
-    _pendingHandshakes[message.downloadId]?.forEach((element) {
-      print(element.newConnectionNumber);
-    });
-    _pendingHandshakes[message.downloadId]?.removeWhere(
+    final downloadChannel = _downloadChannels[message.downloadId];
+    downloadChannel?.pendingHandshakes.removeWhere(
       (h) => h.newConnectionNumber == message.newConnectionNumber,
     );
   }
@@ -283,8 +275,8 @@ class HttpDownloadEngine {
       newConnectionNumber: connectionNumber,
       handShakeStatus: HandShakeStatus.PENDING_CONNECTION_SPAWN,
     );
-    _pendingHandshakes[downloadId] ??= [];
-    _pendingHandshakes[downloadId]!.add(handshake);
+    final downloadChannel = _downloadChannels[downloadId];
+    downloadChannel?.pendingHandshakes.add(handshake);
   }
 
   static void _handleRefreshSegmentRefused(ConnectionSegmentMessage message) {
@@ -633,7 +625,7 @@ class HttpDownloadEngine {
         downloadItem.status != DownloadStatus.assembleFailed;
   }
 
-  static void ayo(DownloadItemModel downloadItem) {
+  static void validateTempFilesIntegrity(DownloadItemModel downloadItem) {
     print("Validating temp files integrity...");
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
@@ -660,7 +652,7 @@ class HttpDownloadEngine {
   /// Writes all the file parts inside the temp folder into one file therefore
   /// creating the final downloaded file.
   static bool assembleFile(DownloadItemModel downloadItem) {
-    ayo(downloadItem);
+    validateTempFilesIntegrity(downloadItem);
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final tempFies = getTempFilesSorted(tempDir);
@@ -790,8 +782,9 @@ class HttpDownloadEngine {
       progress.startButtonEnabled = false;
       return;
     }
+    final downloadChannel = _downloadChannels[downloadId];
     final pendingHandshakeExists =
-        _pendingHandshakes[downloadId]?.isNotEmpty ?? false;
+        downloadChannel?.pendingHandshakes.isNotEmpty ?? false;
     final unfinishedConnections = progresses.where(
       (p) => p.detailsStatus != DownloadStatus.complete,
     );
