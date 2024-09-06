@@ -16,8 +16,10 @@ class MainDownloadChannel extends IsolateChannelWrapper {
 
   List<EngineConnectionHandshake> pendingHandshakes = [];
 
+  // TODO actually it only counts the number of refresh requests
+  int createdConnections = 1;
 
-  int createdConnections = 1; // TODO actually it only counts the number of refresh requests
+  bool pauseOnFinalHandshake = false;
 
   void setConnectionChannel(int connNum, DownloadConnectionChannel channel) {
     this.connectionChannels[connNum] = channel;

@@ -1,21 +1,21 @@
+import 'package:brisk/download_engine/model/download_item_model.dart';
+
 import 'download_isolate_message.dart';
 
 class EngineConnectionHandshake {
   int newConnectionNumber;
-  HandShakeStatus handShakeStatus;
 
   EngineConnectionHandshake({
-    required this.handShakeStatus,
     required this.newConnectionNumber,
   });
 }
 
 class ConnectionHandshake {
-  int downloadId;
+  DownloadItemModel downloadItem;
   int newConnectionNumber;
 
   ConnectionHandshake({
-    required this.downloadId,
+    required this.downloadItem,
     required this.newConnectionNumber,
   });
 
@@ -23,10 +23,8 @@ class ConnectionHandshake {
     DownloadIsolateMessage message,
   ) {
     return ConnectionHandshake(
-      downloadId: message.downloadItem.id,
+      downloadItem: message.downloadItem,
       newConnectionNumber: message.connectionNumber!,
     );
   }
 }
-
-enum HandShakeStatus { PENDING_REFRESH, PENDING_CONNECTION_SPAWN }

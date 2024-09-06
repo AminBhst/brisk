@@ -73,8 +73,6 @@ class HttpDownloadEngine {
 
   static Timer? _dynamicConnectionSpawnerTimer = null;
 
-  static Map<int, bool> forcePause = {};
-
   static late DownloadSettings downloadSettings;
 
   /// Adds download connections on the fly
@@ -147,11 +145,20 @@ class HttpDownloadEngine {
         mainChannel.sendMessage(progress);
         return;
       }
+      _setFutureCommandExecution(data);
       await sendToDownloadIsolates(data, providerChannel);
       for (final channel in _downloadChannels[id]!.connectionChannels.values) {
         channel.listenToStream(_handleConnectionMessages);
       }
     });
+  }
+
+  static void _setFutureCommandExecution(DownloadIsolateMessage message) {
+    if (message.command != DownloadCommand.pause) return;
+    final downloadChannel = _downloadChannels[message.downloadItem.id]!;
+    if (downloadChannel.pendingHandshakes.length > 0) {
+      downloadChannel.pauseOnFinalHandshake = true;
+    }
   }
 
   static void _startEngineTimers() {
@@ -241,10 +248,22 @@ class HttpDownloadEngine {
 
   static void _handleConnectionHandshakeMessage(ConnectionHandshake message) {
     print("Got handshake ${message.newConnectionNumber}");
-    final downloadChannel = _downloadChannels[message.downloadId];
-    downloadChannel?.pendingHandshakes.removeWhere(
+    final downloadChannel = _downloadChannels[message.downloadItem.id]!;
+    downloadChannel.pendingHandshakes.removeWhere(
       (h) => h.newConnectionNumber == message.newConnectionNumber,
     );
+    if (downloadChannel.pendingHandshakes.length == 0 &&
+        downloadChannel.pauseOnFinalHandshake) {
+      downloadChannel.connectionChannels.forEach((connNum, conn) {
+        final pauseCommand = DownloadIsolateMessage(
+          command: DownloadCommand.pause,
+          downloadItem: message.downloadItem,
+          settings: downloadSettings,
+          connectionNumber: connNum,
+        );
+        conn.sendMessage(pauseCommand);
+      });
+    }
   }
 
   static void _handleSegmentMessage(ConnectionSegmentMessage message) {
@@ -271,7 +290,6 @@ class HttpDownloadEngine {
   static void _addHandshake(int downloadId, int connectionNumber) {
     final handshake = EngineConnectionHandshake(
       newConnectionNumber: connectionNumber,
-      handShakeStatus: HandShakeStatus.PENDING_CONNECTION_SPAWN,
     );
     final downloadChannel = _downloadChannels[downloadId];
     downloadChannel?.pendingHandshakes.add(handshake);
@@ -780,19 +798,12 @@ class HttpDownloadEngine {
       progress.startButtonEnabled = false;
       return;
     }
-    final downloadChannel = _downloadChannels[downloadId];
-    final pendingHandshakeExists =
-        downloadChannel?.pendingHandshakes.isNotEmpty ?? false;
     final unfinishedConnections = progresses.where(
       (p) => p.detailsStatus != DownloadStatus.complete,
     );
-    if (pendingHandshakeExists) {
-      progress.pauseButtonEnabled = false;
-    } else {
-      progress.pauseButtonEnabled = unfinishedConnections.every(
-        (c) => c.pauseButtonEnabled,
-      );
-    }
+    progress.pauseButtonEnabled = unfinishedConnections.every(
+      (c) => c.pauseButtonEnabled,
+    );
     progress.startButtonEnabled = unfinishedConnections.every(
       (c) => c.startButtonEnabled,
     );
