@@ -62,8 +62,11 @@ class FileUtil {
     }
   }
 
-  static String getFilePath(String fileName,
-      {Directory? baseSaveDir, bool checkFileDuplicationOnly = false}) {
+  static String getFilePath(
+    String fileName, {
+    Directory? baseSaveDir,
+    bool checkFileDuplicationOnly = false,
+  }) {
     final saveDir = baseSaveDir ?? SettingsCache.saveDir;
     if (!saveDir.existsSync()) {
       saveDir.createSync();
