@@ -231,6 +231,11 @@ abstract class BaseHttpDownloadConnection {
     downloadProgress = totalRequestReceivedBytes / segment.length;
     totalDownloadProgress =
         totalConnectionReceivedBytes / downloadItem.contentLength;
+    if (downloadProgress > 1) {
+      final excessBytes = totalConnectionReceivedBytes - segment.length;
+      totalDownloadProgress = (totalConnectionReceivedBytes - excessBytes) /
+          downloadItem.contentLength;
+    }
     _notifyProgress();
   }
 
