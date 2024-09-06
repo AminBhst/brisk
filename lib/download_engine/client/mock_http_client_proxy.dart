@@ -136,7 +136,9 @@ class MockHttpClientProxy implements BaseClient {
   }
 
   @override
-  Future<StreamedResponse> send(BaseRequest request) {
+  Future<StreamedResponse> send(BaseRequest request) async {
+    final waitDuration = Random().nextInt(3000);
+    await Future.delayed(Duration(milliseconds: waitDuration));
     return client.send(request);
   }
 }
