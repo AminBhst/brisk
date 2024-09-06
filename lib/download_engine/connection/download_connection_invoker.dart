@@ -114,7 +114,6 @@ class DownloadConnectionInvoker {
         if (connection.paused) {
           print(
               "Cnnection $connectionNumber is paused when received reuseConnection command");
-          channel.sink.add(ConnectionHandshake.fromIsolateMessage(data));
           break;
         }
         print(
