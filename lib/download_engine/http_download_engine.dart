@@ -356,7 +356,12 @@ class HttpDownloadEngine {
       newConnectionNode,
       newConnectionNode.connectionNumber,
     );
-    _addHandshake(message.downloadItem.id, newConnectionNode.connectionNumber);
+    if (!message.reuseConnection) {
+      _addHandshake(
+        message.downloadItem.id,
+        newConnectionNode.connectionNumber,
+      );
+    }
   }
 
   static void _handleRefreshSegmentSuccess(ConnectionSegmentMessage message) {
@@ -384,7 +389,12 @@ class HttpDownloadEngine {
         connectionNode.connectionNumber,
       );
     }
-    _addHandshake(message.downloadItem.id, connectionNode.connectionNumber);
+    if (!message.reuseConnection) {
+      _addHandshake(
+        message.downloadItem.id,
+        connectionNode.connectionNumber,
+      );
+    }
     parent.leftChild!.segmentStatus = SegmentStatus.IN_USE;
     connectionNode.segmentStatus = SegmentStatus.IN_USE;
     connectionNode.setLastUpdateMillis();

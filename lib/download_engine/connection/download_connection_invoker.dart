@@ -111,6 +111,12 @@ class DownloadConnectionInvoker {
         break;
       case DownloadCommand.start_ReuseConnection:
         connection.segment = data.segment!;
+        if (connection.paused) {
+          print(
+              "Cnnection $connectionNumber is paused when received reuseConnection command");
+          channel.sink.add(ConnectionHandshake.fromIsolateMessage(data));
+          break;
+        }
         print(
             "Conn num ${data.connectionNumber} StartByte ${connection.startByte} Endbyte ${connection.endByte}");
         connection.start(channel.sink.add, reuseConnection: true);
