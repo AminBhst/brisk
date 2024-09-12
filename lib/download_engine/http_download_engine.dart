@@ -351,12 +351,19 @@ class HttpDownloadEngine {
       message.validNewEndByte,
     );
     newConnectionNode.setLastUpdateMillis();
-    _createDownloadConnection(
-      message.downloadItem,
-      newConnectionNode,
-      newConnectionNode.connectionNumber,
-    );
-    if (!message.reuseConnection) {
+    if (message.reuseConnection) {
+      _sendStartCommand_ReuseConnection(
+        message.downloadItem,
+        newConnectionNode.connectionNumber,
+        newConnectionNode.segment,
+      );
+      newConnectionNode.segmentStatus = SegmentStatus.IN_USE;
+    } else {
+      _createDownloadConnection(
+        message.downloadItem,
+        newConnectionNode,
+        newConnectionNode.connectionNumber,
+      );
       _addHandshake(
         message.downloadItem.id,
         newConnectionNode.connectionNumber,
