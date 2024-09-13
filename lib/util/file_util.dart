@@ -54,7 +54,7 @@ class FileUtil {
 
   static doooo(String uid) {
     print("=================================================");
-    final dir = Directory("C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp\\$uid");
+    final dir = Directory("/home/ryewell/Downloads/Brisk/Temp/$uid");
     final list = dir.listSync()..sort(sortByByteRanges);
     for (var value in list) {
       value = value as File;
@@ -225,9 +225,11 @@ class FileUtil {
     final filePath = join(SettingsCache.saveDir.path, subDir, fileName);
     return File(filePath).existsSync();
   }
+}
 
-  static Uint8List readSync(File file, int count) {
-    final fileOpen = file.openSync();
+extension Util on File {
+  Uint8List safeReadSync(int count) {
+    final fileOpen = openSync();
     final result = fileOpen.readSync(count);
     fileOpen.closeSync();
     return result;
