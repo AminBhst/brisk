@@ -6,7 +6,7 @@ import 'package:brisk/download_engine/segment/download_segment_tree.dart';
 import 'package:brisk/download_engine/util/isolate_channel_wrapper.dart';
 
 /// The download engine channel that is connected via [DownloadRequestProvider].
-/// i.e. the messages send via [sendMessage] will be received by [DownloadRequestProvider]
+/// i.e. the messages sent via [sendMessage] will be received by [DownloadRequestProvider]
 class EngineChannel extends IsolateChannelWrapper {
   DownloadSegmentTree? segmentTree;
 
