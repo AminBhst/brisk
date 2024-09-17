@@ -12,9 +12,9 @@ int getTotalWrittenBytesLength(
   if (tempDir.listSync().isEmpty) {
     return 0;
   }
-  final connectionFiles = getTempFilesSorted(tempDir).where(
-    (file) => tempFileBelongsToConnection(file, connectionNumber),
-  );
+  final connectionFiles = getTempFilesSorted(tempDir)
+      .where((file) => tempFileBelongsToConnection(file, connectionNumber))
+      .toList();
 
   if (connectionFiles.isEmpty) {
     return 0;
@@ -105,6 +105,7 @@ List<File> getTempFilesSorted(
             ? tempFileBelongsToConnection(file, connectionNumber)
             : true,
       )
+      .toList()
       .where(
         (file) => inByteRange != null
             ? isTempFileInByteRange(
