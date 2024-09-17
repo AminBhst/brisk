@@ -229,7 +229,6 @@ class HttpDownloadEngine {
         progress.totalDownloadProgress < 1 &&
         mainChannel!.createdConnections < downloadSettings.totalConnections &&
         !_dynamicConnectionSpawnerIgnoreList.contains(downloadId);
-    print("WELL SHOULD I CREATE NEW CONN ? $shouldCreate");
     return shouldCreate;
   }
 
@@ -255,13 +254,13 @@ class HttpDownloadEngine {
     if (downloadChannel.pendingHandshakes.length == 0 &&
         downloadChannel.pauseOnFinalHandshake) {
       downloadChannel.connectionChannels.forEach((connNum, conn) {
-        final pauseCommand = DownloadIsolateMessage(
-          command: DownloadCommand.pause,
-          downloadItem: message.downloadItem,
-          settings: downloadSettings,
-          connectionNumber: connNum,
-        );
-        conn.sendMessage(pauseCommand);
+        // final pauseCommand = DownloadIsolateMessage(
+        //   command: DownloadCommand.pause,
+        //   downloadItem: message.downloadItem,
+        //   settings: downloadSettings,
+        //   connectionNumber: connNum,
+        // );
+        // conn.sendMessage(pauseCommand);
       });
     }
   }
@@ -314,13 +313,14 @@ class HttpDownloadEngine {
     }
     final l_index = tree.lowestLevelNodes
         .indexWhere((node) => node.segment == parent.leftChild!.segment);
-    print("Trying to fix segment tree lowest nodes");
     if (l_index != -1) {
       // parent.segmentStatus = SegmentStatus.IN_USE;
       tree.lowestLevelNodes
         ..insert(l_index, parent)
         ..removeWhere((node) => node.segment == parent.rightChild!.segment)
         ..removeWhere((node) => node.segment == parent.leftChild!.segment);
+    } else {
+      print("RefreshSegmentRefused::Failed to find segment node to insert. FATAL!");
     }
     parent
       ..removeChildren()
@@ -388,15 +388,12 @@ class HttpDownloadEngine {
         connectionNode.connectionNumber,
         connectionNode.segment,
       );
-      connectionNode.segmentStatus = SegmentStatus.IN_USE;
     } else {
       _createDownloadConnection(
         message.downloadItem,
         connectionNode,
         connectionNode.connectionNumber,
       );
-    }
-    if (!message.reuseConnection) {
       _addHandshake(
         message.downloadItem.id,
         connectionNode.connectionNumber,
@@ -500,7 +497,9 @@ class HttpDownloadEngine {
     inUseNodes.sort((a, b) => a.lastUpdateMillis.compareTo(b.lastUpdateMillis));
     final targetNode = inUseNodes
         .where((node) => node.segment != connectionChannel.segment)
+        .toList()
         .where((node) => node.segmentStatus == SegmentStatus.IN_USE)
+        .toList()
         .lastOrNull;
     if (targetNode == null) {
       print("Target node is null! FATAL!");
@@ -520,10 +519,14 @@ class HttpDownloadEngine {
         "Split SegNode : Parent ${targetNode.segment} ::  l:: ${targetNode.leftChild!.segment} r :: ${targetNode.rightChild!.segment}");
     print("Segment tree reuse ===========================");
     segmentTree.lowestLevelNodes.forEach((element) {
-      print(element.segment);
+      print("${element.segment} ==> ${element.connectionNumber}");
     });
     targetNode.rightChild?.connectionNumber =
         connectionChannel.connectionNumber;
+    targetNode
+      ..segmentStatus = SegmentStatus.REFRESH_REQUESTED
+      ..rightChild?.segmentStatus = SegmentStatus.REFRESH_REQUESTED
+      ..leftChild?.segmentStatus = SegmentStatus.REFRESH_REQUESTED;
     final oldestSegmentConnection = mainChannel.connectionChannels.values
         .where((conn) => conn.segment == targetNode.segment)
         .firstOrNull;
