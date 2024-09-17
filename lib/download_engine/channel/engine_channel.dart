@@ -5,8 +5,8 @@ import 'package:brisk/download_engine/message/connection_handshake_message.dart'
 import 'package:brisk/download_engine/segment/download_segment_tree.dart';
 import 'package:brisk/download_engine/util/isolate_channel_wrapper.dart';
 
-/// The download channel listened by [DownloadRequestProvider]
-class MainDownloadChannel extends IsolateChannelWrapper {
+/// The download engine channel listened by [DownloadRequestProvider]
+class EngineChannel extends IsolateChannelWrapper {
   DownloadSegmentTree? segmentTree;
 
   /// Connection channels listened by [DownloadConnectionInvoker]
@@ -25,5 +25,5 @@ class MainDownloadChannel extends IsolateChannelWrapper {
     this.connectionChannels[connNum] = channel;
   }
 
-  MainDownloadChannel({required super.channel});
+  EngineChannel({required super.channel});
 }

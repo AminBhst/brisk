@@ -11,7 +11,7 @@ import 'package:brisk/download_engine/channel/download_connection_channel.dart';
 import 'package:brisk/download_engine/segment/download_segment_tree.dart';
 import 'package:brisk/download_engine/download_settings.dart';
 import 'package:brisk/download_engine/message/internal_messages.dart';
-import 'package:brisk/download_engine/channel/main_download_channel.dart';
+import 'package:brisk/download_engine/channel/engine_channel.dart';
 import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:brisk/download_engine/segment/segment_status.dart';
 import 'package:brisk/download_engine/connection/download_connection_invoker.dart';
@@ -47,7 +47,7 @@ class HttpDownloadEngine {
 
   /// A map of all stream channels related to the running download requests
   /// key: downloadId
-  static final Map<int, MainDownloadChannel> _downloadChannels = {};
+  static final Map<int, EngineChannel> _engineChannels = {};
 
   /// TODO Remove and use download channels
   static final Map<int, Map<int, DownloadProgressMessage>>
@@ -77,7 +77,7 @@ class HttpDownloadEngine {
 
   /// Adds download connections on the fly
   static void _runDynamicConnectionSpawner() {
-    _downloadChannels.forEach((downloadId, handlerChannel) {
+    _engineChannels.forEach((downloadId, _) {
       final downloadProgress = _downloadProgresses[downloadId];
       if (downloadProgress == null) {
         return;
@@ -115,7 +115,7 @@ class HttpDownloadEngine {
   }
 
   static void _runDynamicConnectionReuse() {
-    _downloadChannels.forEach((downloadId, handlerChannel) {
+    _engineChannels.forEach((downloadId, handlerChannel) {
       final queue = handlerChannel.connectionReuseQueue;
       final prog = _downloadProgresses[downloadId]?.totalDownloadProgress ?? 0;
       if (queue.isEmpty ||
@@ -132,22 +132,22 @@ class HttpDownloadEngine {
 
   static void startDownloadRequest(IsolateArgsPair<int> args) async {
     final providerChannel = IsolateChannel.connectSend(args.sendPort);
-    final mainChannel = MainDownloadChannel(channel: providerChannel);
-    _downloadChannels[args.obj] = mainChannel;
+    final engineChannel = EngineChannel(channel: providerChannel);
+    _engineChannels[args.obj] = engineChannel;
     _startEngineTimers();
-    mainChannel.listenToStream<DownloadIsolateMessage>((data) async {
+    engineChannel.listenToStream<DownloadIsolateMessage>((data) async {
       downloadSettings = data.settings;
       _setConnectionSpawnIgnoreList(data);
       final downloadItem = data.downloadItem;
       final id = downloadItem.id;
       if (isAssembledFileInvalid(downloadItem)) {
         final progress = reassembleFile(downloadItem);
-        mainChannel.sendMessage(progress);
+        engineChannel.sendMessage(progress);
         return;
       }
       _setFutureCommandExecution(data);
       await sendToDownloadIsolates(data, providerChannel);
-      for (final channel in _downloadChannels[id]!.connectionChannels.values) {
+      for (final channel in _engineChannels[id]!.connectionChannels.values) {
         channel.listenToStream(_handleConnectionMessages);
       }
     });
@@ -155,7 +155,7 @@ class HttpDownloadEngine {
 
   static void _setFutureCommandExecution(DownloadIsolateMessage message) {
     if (message.command != DownloadCommand.pause) return;
-    final downloadChannel = _downloadChannels[message.downloadItem.id]!;
+    final downloadChannel = _engineChannels[message.downloadItem.id]!;
     if (downloadChannel.pendingHandshakes.length > 0) {
       downloadChannel.pauseOnFinalHandshake = true;
     }
@@ -180,17 +180,18 @@ class HttpDownloadEngine {
     if (progress == null) {
       return;
     }
-    final mainChannel = _downloadChannels[downloadId]!;
-    if (mainChannel.segmentTree == null) return;
-    mainChannel.segmentTree!.split();
-    final nodes = mainChannel.segmentTree!.lowestLevelNodes;
+    final engineChannel = _engineChannels[downloadId]!;
+    if (engineChannel.segmentTree == null) return;
+    engineChannel.segmentTree!.split();
+    final nodes = engineChannel.segmentTree!.lowestLevelNodes;
     print("======================== SEGMENT TREE =========================");
     nodes.forEach((node) {
       print(node.segment);
     });
     print("======================== SEGMENT TREE =========================");
-    final segmentNodes = mainChannel.segmentTree!.lowestLevelNodes;
-    mainChannel.connectionChannels.forEach((connectionNum, connectionChannel) {
+    final segmentNodes = engineChannel.segmentTree!.lowestLevelNodes;
+    engineChannel.connectionChannels
+        .forEach((connectionNum, connectionChannel) {
       final relatedSegmentNode = segmentNodes
           .where((s) => s.connectionNumber == connectionNum)
           .firstOrNull;
@@ -208,8 +209,8 @@ class HttpDownloadEngine {
       );
       relatedSegmentNode.segmentStatus = SegmentStatus.REFRESH_REQUESTED;
       relatedSegmentNode.setLastUpdateMillis();
-      _downloadChannels[downloadId]?.createdConnections++;
-      print("CREATED:::: ${_downloadChannels[downloadId]?.createdConnections}");
+      _engineChannels[downloadId]?.createdConnections++;
+      print("CREATED:::: ${_engineChannels[downloadId]?.createdConnections}");
       connectionChannel.sendMessage(data);
     });
   }
@@ -218,8 +219,8 @@ class HttpDownloadEngine {
   static bool _shouldCreateNewConnections(int downloadId) {
     final progress = _downloadProgresses[downloadId]!;
     print("^^^^^^^^^^^^^^^ TOTAL PROG : ${progress.totalDownloadProgress}");
-    final mainChannel = _downloadChannels[downloadId];
-    final pendingSegmentExists = _downloadChannels[downloadId]!
+    final engineChannel = _engineChannels[downloadId];
+    final pendingSegmentExists = _engineChannels[downloadId]!
             .segmentTree
             ?.lowestLevelNodes
             .any((s) => s.segmentStatus == SegmentStatus.REFRESH_REQUESTED) ??
@@ -227,7 +228,7 @@ class HttpDownloadEngine {
 
     final shouldCreate = !pendingSegmentExists &&
         progress.totalDownloadProgress < 1 &&
-        mainChannel!.createdConnections < downloadSettings.totalConnections &&
+        engineChannel!.createdConnections < downloadSettings.totalConnections &&
         !_dynamicConnectionSpawnerIgnoreList.contains(downloadId);
     return shouldCreate;
   }
@@ -247,7 +248,7 @@ class HttpDownloadEngine {
 
   static void _handleConnectionHandshakeMessage(ConnectionHandshake message) {
     print("Got handshake ${message.newConnectionNumber}");
-    final downloadChannel = _downloadChannels[message.downloadItem.id]!;
+    final downloadChannel = _engineChannels[message.downloadItem.id]!;
     downloadChannel.pendingHandshakes.removeWhere(
       (h) => h.newConnectionNumber == message.newConnectionNumber,
     );
@@ -290,26 +291,26 @@ class HttpDownloadEngine {
     final handshake = EngineConnectionHandshake(
       newConnectionNumber: connectionNumber,
     );
-    final downloadChannel = _downloadChannels[downloadId];
+    final downloadChannel = _engineChannels[downloadId];
     downloadChannel?.pendingHandshakes.add(handshake);
   }
 
   static void _handleRefreshSegmentRefused(ConnectionSegmentMessage message) {
     final node = findSegmentNode(message);
-    final tree = _downloadChannels[message.downloadItem.id]!.segmentTree!;
+    final tree = _engineChannels[message.downloadItem.id]!.segmentTree!;
     if (node == null) {
       print("Failed to find requested segment node! Fatal!");
       return;
     }
     final parent = node.parent!;
     if (message.reuseConnection) {
-      final downloadChannel = _downloadChannels[message.downloadItem.id]!;
+      final downloadChannel = _engineChannels[message.downloadItem.id]!;
       final connNum = parent.rightChild!.connectionNumber;
       final connection = downloadChannel.connectionChannels[connNum]!;
       downloadChannel.connectionReuseQueue.add(connection);
       print("Added connection $connNum to connection queue");
     } else {
-      _downloadChannels[message.downloadItem.id]!.createdConnections--;
+      _engineChannels[message.downloadItem.id]!.createdConnections--;
     }
     final l_index = tree.lowestLevelNodes
         .indexWhere((node) => node.segment == parent.leftChild!.segment);
@@ -320,7 +321,8 @@ class HttpDownloadEngine {
         ..removeWhere((node) => node.segment == parent.rightChild!.segment)
         ..removeWhere((node) => node.segment == parent.leftChild!.segment);
     } else {
-      print("RefreshSegmentRefused::Failed to find segment node to insert. FATAL!");
+      print(
+          "RefreshSegmentRefused::Failed to find segment node to insert. FATAL!");
     }
     parent
       ..removeChildren()
@@ -417,14 +419,14 @@ class HttpDownloadEngine {
       segment: segment,
       connectionNumber: connectionNumber,
     );
-    final connection = _downloadChannels[downloadItem.id]!
-        .connectionChannels[connectionNumber]!;
+    final connection =
+        _engineChannels[downloadItem.id]!.connectionChannels[connectionNumber]!;
     connection.sendMessage(data);
   }
 
   static SegmentNode? findSegmentNode(ConnectionSegmentMessage message) {
     final id = message.downloadItem.id;
-    final tree = _downloadChannels[id]!.segmentTree!;
+    final tree = _engineChannels[id]!.segmentTree!;
     final node = tree.searchNode(message.requestedSegment);
     print("DID I FIND THE NODE???? ${node != null}");
     return node;
@@ -433,7 +435,7 @@ class HttpDownloadEngine {
   static void _handleProgressUpdates(DownloadProgressMessage progress) {
     final downloadItem = progress.downloadItem;
     final downloadId = downloadItem.id;
-    final downloadChannel = _downloadChannels[downloadItem.id]!;
+    final downloadChannel = _engineChannels[downloadItem.id]!;
     _connectionProgresses[downloadId] ??= {};
     _connectionProgresses[downloadId]![progress.connectionNumber] = progress;
     final totalByteTransferRate = _calculateTotalTransferRate(downloadId);
@@ -469,14 +471,14 @@ class HttpDownloadEngine {
 
   static void _addToReuseQueue(DownloadProgressMessage progress) {
     final downloadId = progress.downloadItem.id;
-    final mainChannel = _downloadChannels[downloadId];
-    final conn = mainChannel!.connectionChannels[progress.connectionNumber]!;
-    _downloadChannels[downloadId]!.connectionReuseQueue.add(conn);
+    final engineChannel = _engineChannels[downloadId];
+    final conn = engineChannel!.connectionChannels[progress.connectionNumber]!;
+    _engineChannels[downloadId]!.connectionReuseQueue.add(conn);
   }
 
   static void _setSegmentComplete(DownloadProgressMessage progress) {
     final downloadId = progress.downloadItem.id;
-    final tree = _downloadChannels[downloadId]!.segmentTree!;
+    final tree = _engineChannels[downloadId]!.segmentTree!;
     final node = tree.searchNode(progress.segment!);
     print("did I find the node??? ${node != null}");
     node!.segmentStatus = SegmentStatus.COMPLETE;
@@ -487,8 +489,8 @@ class HttpDownloadEngine {
     DownloadConnectionChannel connectionChannel,
   ) {
     final downloadId = connectionChannel.downloadItem!.id;
-    final mainChannel = _downloadChannels[downloadId]!;
-    final segmentTree = mainChannel.segmentTree;
+    final engineChannel = _engineChannels[downloadId]!;
+    final segmentTree = engineChannel.segmentTree;
     final inUseNodes = segmentTree!.inUseNodes;
     if (inUseNodes!.isEmpty) {
       print("Failed to find segment node! FATAL!");
@@ -527,7 +529,7 @@ class HttpDownloadEngine {
       ..segmentStatus = SegmentStatus.REFRESH_REQUESTED
       ..rightChild?.segmentStatus = SegmentStatus.REFRESH_REQUESTED
       ..leftChild?.segmentStatus = SegmentStatus.REFRESH_REQUESTED;
-    final oldestSegmentConnection = mainChannel.connectionChannels.values
+    final oldestSegmentConnection = engineChannel.connectionChannels.values
         .where((conn) => conn.segment == targetNode.segment)
         .firstOrNull;
     if (oldestSegmentConnection == null) {
@@ -566,7 +568,7 @@ class HttpDownloadEngine {
   ) async {
     final int id = data.downloadItem.id;
     Completer<void> completer = Completer();
-    if (_downloadChannels[id]!.connectionChannels.isEmpty) {
+    if (_engineChannels[id]!.connectionChannels.isEmpty) {
       final byteRangeMap = _findMissingByteRanges(
         data.downloadItem,
       ); // TODO Fix segment tree impl
@@ -576,14 +578,14 @@ class HttpDownloadEngine {
       if (ranges.isEmpty) {
         return;
       }
-      _downloadChannels[id]!.segmentTree =
+      _engineChannels[id]!.segmentTree =
           DownloadSegmentTree.fromByteRanges(ranges);
       print("=========== MISSING BYTE RANGES =========");
       print(byteRangeMap);
       data.command = DownloadCommand.start_Initial;
       await _spawnDownloadIsolates(data);
     } else {
-      _downloadChannels[id]?.connectionChannels.forEach((connNum, connection) {
+      _engineChannels[id]?.connectionChannels.forEach((connNum, connection) {
         final newData = data.clone()..connectionNumber = connNum;
         print("Command ${data.command} send to connection $connNum");
         connection.sendMessage(newData);
@@ -597,7 +599,7 @@ class HttpDownloadEngine {
 
   static _spawnDownloadIsolates(DownloadIsolateMessage data) async {
     final id = data.downloadItem.id;
-    final segmentTree = _downloadChannels[id]!.segmentTree!;
+    final segmentTree = _engineChannels[id]!.segmentTree!;
     segmentTree.lowestLevelNodes.forEach((segmentNode) {
       var newData = data.clone()..segment = segmentNode.segment;
       segmentNode.segmentStatus = SegmentStatus.IN_USE;
@@ -892,7 +894,7 @@ class HttpDownloadEngine {
       segment: data.segment!,
     );
 
-    _downloadChannels[downloadId]!
+    _engineChannels[downloadId]!
         .setConnectionChannel(connectionNumber, connectionChannel);
 
     connectionChannel.listenToStream(_handleConnectionMessages);
