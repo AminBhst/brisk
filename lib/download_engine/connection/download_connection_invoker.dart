@@ -101,6 +101,7 @@ class DownloadConnectionInvoker {
     final id = data.downloadItem.id;
     final connectionNumber = data.connectionNumber;
     final connection = _connections[id]![connectionNumber]!;
+    print("Got command conn num $connectionNumber ===> ${data.command}");
     switch (data.command) {
       case DownloadCommand.start_Initial:
         connection.start(channel.sink.add);
