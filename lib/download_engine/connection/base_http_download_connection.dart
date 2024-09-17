@@ -533,11 +533,6 @@ abstract class BaseHttpDownloadConnection {
       if (isLastFile && fileEndByte == this.endByte - 1) {
         print("ATTENTION:: ConnNum$connectionNumber is weird");
       }
-      // if (isLastFile &&
-      //     this.endByte == downloadItem.contentLength &&
-      //     fileEndByte == this.endByte - 1) {
-      //   return true;
-      // }
       if (fileStartByte != prevFileEndByte + 1) {
         print(
             "IsDownloadComplete::Found inconsistent ranges : ${basename(prevFile.path)} != ${basename(file.path)}");
