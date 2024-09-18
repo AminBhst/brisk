@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
+import 'package:brisk/download_engine/message/button_availability_message.dart';
 import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 import 'package:brisk/download_engine/message/connection_segment_message.dart';
 import 'package:brisk/download_engine/download_command.dart';
@@ -45,6 +46,10 @@ class HttpDownloadEngine {
 
   static const _CONNECTION_SPAWNER_TIMER_DURATION_SEC = 3;
 
+  static const _BUTTON_AVAILABILITY_NOTIFIER_TIMER_DURATION_SEC = 1;
+
+  static const BUTTON_AVAILABILITY_WAIT_SEC = 2;
+
   /// A map of all stream channels related to the running download requests
   /// key: downloadId
   static final Map<int, EngineChannel> _engineChannels = {};
@@ -70,8 +75,8 @@ class HttpDownloadEngine {
   static final List<int> _dynamicConnectionSpawnerIgnoreList = [];
 
   static Timer? _dynamicConnectionReuseTimer = null;
-
   static Timer? _dynamicConnectionSpawnerTimer = null;
+  static Timer? _buttonAvailabilityTimer = null;
 
   static late DownloadSettings downloadSettings;
 
@@ -85,6 +90,34 @@ class HttpDownloadEngine {
       if (_shouldCreateNewConnections(downloadId)) {
         _refreshConnectionSegments(downloadId);
       }
+    });
+  }
+
+  /// Notifies the UI when the start button is available. Since there will not
+  /// be any new messages coming from connections after pausing the download, [_setButtonAvailability]
+  /// will not be able to notify the UI when the start button is available. Therefore, this timer
+  /// is executed priodically to solve this problem.
+  static void _startButtonAvailabilityNotifierTimer() {
+    if (_buttonAvailabilityTimer != null) {
+      return;
+    }
+    _buttonAvailabilityTimer = Timer.periodic(
+      Duration(seconds: _BUTTON_AVAILABILITY_NOTIFIER_TIMER_DURATION_SEC),
+      (_) => _runButtonAvailabilityNotifier(),
+    );
+  }
+
+  static void _runButtonAvailabilityNotifier() {
+    _engineChannels.forEach((downloadId, engineChannel) {
+      if (engineChannel.downloadItem == null || !engineChannel.paused) {
+        return;
+      }
+      final message = ButtonAvailabilityMessage(
+        downloadItem: engineChannel.downloadItem!,
+        pauseButtonEnabled: false,
+        startButtonEnabled: engineChannel.isStartButtonWaitComplete,
+      );
+      engineChannel.sendMessage(message);
     });
   }
 
@@ -164,6 +197,7 @@ class HttpDownloadEngine {
   static void _startEngineTimers() {
     _startDynamicConnectionSpawnerTimer();
     _startDynamicConnectionReuseTimer();
+    _startButtonAvailabilityNotifierTimer();
   }
 
   static void _setConnectionSpawnIgnoreList(DownloadIsolateMessage data) {
@@ -807,12 +841,14 @@ class HttpDownloadEngine {
   }
 
   /// Sets the availability for start and pause buttons based on all the
-  /// statuses of active connections
+  /// statuses of active connections. To prevent unexpected issues, both the
+  /// start and pause button will have a wait time set by the value of [BUTTON_AVAILABILITY_WAIT_SEC].
   static void _setButtonAvailability(
     DownloadProgressMessage progress,
     double totalProgress,
   ) {
     final downloadId = progress.downloadItem.id;
+    final engineChannel = _engineChannels[downloadId];
     if (_connectionProgresses[downloadId] == null) return;
     final progresses = _connectionProgresses[downloadId]!.values;
     if (totalProgress >= 1) {
@@ -820,15 +856,19 @@ class HttpDownloadEngine {
       progress.startButtonEnabled = false;
       return;
     }
-    final unfinishedConnections = progresses.where(
-      (p) => p.detailsStatus != DownloadStatus.complete,
-    );
+    final unfinishedConnections = progresses
+        .where((p) => p.detailsStatus != DownloadStatus.complete)
+        .toList();
+
     progress.pauseButtonEnabled = unfinishedConnections.every(
-      (c) => c.pauseButtonEnabled,
-    );
+          (c) => c.pauseButtonEnabled,
+        ) &&
+        engineChannel!.isPauseButtonWaitComplete;
+
     progress.startButtonEnabled = unfinishedConnections.every(
-      (c) => c.startButtonEnabled,
-    );
+          (c) => c.startButtonEnabled,
+        ) &&
+        engineChannel!.isStartButtonWaitComplete;
   }
 
   static double _calculateTotalDownloadProgress(int id) {

@@ -7,6 +7,7 @@ import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/download_settings.dart';
 import 'package:brisk/download_engine/http_download_engine.dart';
+import 'package:brisk/download_engine/message/button_availability_message.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/model/download_item.dart';
@@ -68,9 +69,7 @@ class DownloadRequestProvider with ChangeNotifier {
     if (channel == null) {
       channel = await _spawnDownloadEngineIsolate(id);
       if (command == DownloadCommand.cancel) return;
-      channel.stream
-          .cast<DownloadProgressMessage>()
-          .listen((progress) => _listenToEngineChannel(progress, id));
+      channel.stream.listen(_handleDownloadEngineMessage);
     }
     channel.sink.add(data);
   }
@@ -99,7 +98,24 @@ class DownloadRequestProvider with ChangeNotifier {
     return channel;
   }
 
-  void _listenToEngineChannel(DownloadProgressMessage progress, int id) {
+  void _handleDownloadEngineMessage(message) {
+    if (message is DownloadProgressMessage) {
+      _handleDownloadProgressMessage(message);
+    }
+    if (message is ButtonAvailabilityMessage) {
+      _handleButtonAvailabilityMessage(message);
+    }
+  }
+
+  void _handleButtonAvailabilityMessage(ButtonAvailabilityMessage message) {
+    final download = downloads[message.downloadItem.id];
+    download?.startButtonEnabled = message.startButtonEnabled;
+    download?.pauseButtonEnabled = message.pauseButtonEnabled;
+    notifyListeners();
+  }
+
+  void _handleDownloadProgressMessage(DownloadProgressMessage progress) {
+    final id = progress.downloadItem.id;
     downloads[id] = progress;
     _handleNotification(progress);
     final downloadItem = progress.downloadItem;
