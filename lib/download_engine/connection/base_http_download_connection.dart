@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:brisk/download_engine/http_download_engine.dart';
 import 'package:brisk/download_engine/message/connection_segment_message.dart';
 import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
@@ -616,23 +617,27 @@ abstract class BaseHttpDownloadConnection {
     if (this.status == DownloadStatus.complete) {
       message.internalMessage = message_refreshSegmentRefused(reuseConnection);
       progressCallback!.call(message);
+      print(
+          "Connection :: $connectionNumber ::::: Refresh segment :::: requested : ($segment) :::: validStart "
+          ": ${message.validNewStartByte} , validEnd : ${message.validNewEndByte} :: message: ${message.internalMessage}");
       return;
     }
     if (this.startByte + totalRequestReceivedBytes >= segment.endByte) {
       message.internalMessage = InternalMessage.OVERLAPPING_REFRESH_SEGMENT;
       final newEndByte = _newValidRefreshSegmentEndByte;
-      if (newEndByte > 0 && segment.startByte < newEndByte) {
+      final validNewEndByte = prevEndByte;
+      final validNewStartByte = this.startByte;
+      if (newEndByte > 0 &&
+          segment.startByte < newEndByte &&
+          validNewStartByte +
+                  HttpDownloadEngine.MINIMUM_DOWNLOAD_SEGMENT_LENGTH <
+              validNewEndByte) {
         this.segment = Segment(segment.startByte, newEndByte);
         message
           ..validNewStartByte = this.endByte + 1
           ..validNewEndByte = prevEndByte
           ..refreshedStartByte = this.startByte
           ..refreshedEndByte = this.endByte;
-        if (message.validNewStartByte! >= message.validNewEndByte! ||
-            message.validNewStartByte! + 1 >= message.validNewEndByte!) {
-          message.internalMessage =
-              message_refreshSegmentRefused(reuseConnection);
-        }
       } else {
         message.internalMessage =
             message_refreshSegmentRefused(reuseConnection);

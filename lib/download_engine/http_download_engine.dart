@@ -42,6 +42,8 @@ import '../util/readability_util.dart';
 /// TODO add automatic bug report for fatal errors in the engine
 /// TODO handle the case when a download is initially started using, for example, 8 connections, it is paused, then on the next start, it starts with only one connection
 class HttpDownloadEngine {
+  static const MINIMUM_DOWNLOAD_SEGMENT_LENGTH = 500000;
+
   static const _CONNECTION_REUSE_TIMER_DURATION_SEC = 2;
 
   static const _CONNECTION_SPAWNER_TIMER_DURATION_SEC = 3;
@@ -286,6 +288,16 @@ class HttpDownloadEngine {
     downloadChannel.pendingHandshakes.removeWhere(
       (h) => h.newConnectionNumber == message.newConnectionNumber,
     );
+    if (message.reuseConnection) {
+      downloadChannel.segmentTree?.lowestLevelNodes
+          .where(
+            (node) =>
+                node.segmentStatus == SegmentStatus.REUSE_REQUESTED &&
+                node.connectionNumber == message.newConnectionNumber,
+          )
+          .firstOrNull
+          ?.segmentStatus = SegmentStatus.IN_USE;
+    }
     if (downloadChannel.pendingHandshakes.length == 0 &&
         downloadChannel.pauseOnFinalHandshake) {
       downloadChannel.connectionChannels.forEach((connNum, conn) {
@@ -380,7 +392,7 @@ class HttpDownloadEngine {
       ..leftChild?.setLastUpdateMillis()
       ..segmentStatus = SegmentStatus.OUT_DATED
       ..leftChild?.segmentStatus = SegmentStatus.IN_USE
-      ..rightChild?.segmentStatus = SegmentStatus.IN_USE;
+      ..rightChild?.segmentStatus = SegmentStatus.REUSE_REQUESTED;
     final newConnectionNode = parent.rightChild!;
     newConnectionNode.segment = Segment(
       message.validNewStartByte,
@@ -417,7 +429,7 @@ class HttpDownloadEngine {
     parent.segmentStatus = SegmentStatus.OUT_DATED;
     parent.setLastUpdateMillis();
     final connectionNode = parent.rightChild!;
-    print("Creating connection................");
+    print("Creating connection................"); // TODO bad log
     if (message.reuseConnection) {
       _sendStartCommand_ReuseConnection(
         message.downloadItem,
@@ -553,23 +565,29 @@ class HttpDownloadEngine {
     }
     print(
         "Split SegNode : Parent ${targetNode.segment} ::  l:: ${targetNode.leftChild!.segment} r :: ${targetNode.rightChild!.segment}");
-    print("Segment tree reuse ===========================");
-    segmentTree.lowestLevelNodes.forEach((element) {
-      print("${element.segment} ==> ${element.connectionNumber}");
-    });
     targetNode.rightChild?.connectionNumber =
         connectionChannel.connectionNumber;
     targetNode
       ..segmentStatus = SegmentStatus.REFRESH_REQUESTED
-      ..rightChild?.segmentStatus = SegmentStatus.REFRESH_REQUESTED
-      ..leftChild?.segmentStatus = SegmentStatus.REFRESH_REQUESTED;
+      ..leftChild?.segmentStatus = SegmentStatus.REFRESH_REQUESTED
+      ..rightChild?.segmentStatus = SegmentStatus.INITIAL;
     final oldestSegmentConnection = engineChannel.connectionChannels.values
         .where((conn) => conn.segment == targetNode.segment)
         .firstOrNull;
+    print("Segment tree reuse ===========================");
+    segmentTree.lowestLevelNodes.forEach((element) {
+      print(
+          "${element.segment} ==> ${element.connectionNumber} ==> ${element.segmentStatus}");
+    });
     if (oldestSegmentConnection == null) {
-      print("Failed to find oldest conn! FATAL!");
+      print("Failed to find oldest conn! FATAL! List is :");
+      engineChannel.connectionChannels.forEach((_, conn) {
+        print("Conn:${conn.connectionNumber} => ${conn.segment}");
+      });
       return;
     }
+    print(
+        "Sending refresh segment request to connection ${oldestSegmentConnection.connectionNumber}");
     final data = DownloadIsolateMessage(
       command: DownloadCommand.refreshSegment_reuseConnection,
       downloadItem: connectionChannel.downloadItem!,
@@ -698,6 +716,7 @@ class HttpDownloadEngine {
   }
 
   static void validateTempFilesIntegrity(DownloadItemModel downloadItem) {
+    /// TODO check the last segment as well. right now if the last segment is missing, it will go unnoticed
     print("Validating temp files integrity...");
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);

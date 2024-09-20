@@ -12,11 +12,13 @@ class EngineConnectionHandshake {
 
 class ConnectionHandshake {
   DownloadItemModel downloadItem;
+  bool reuseConnection;
   int newConnectionNumber;
 
   ConnectionHandshake({
     required this.downloadItem,
     required this.newConnectionNumber,
+    this.reuseConnection = false,
   });
 
   factory ConnectionHandshake.fromIsolateMessage(

@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:isolate';
 
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/connection/http_download_connection.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';
 import 'package:brisk/download_engine/connection/mock_http_download_connection.dart';
 import 'package:dartx/dartx.dart';
@@ -19,6 +21,8 @@ class DownloadConnectionInvoker {
   static final Map<int, Map<int, TrackedDownloadCommand>> _trackedCommands = {};
 
   static final Map<int, Pair<bool, StreamChannel>> stopCommandTrackerMap = {};
+
+  static final Map<int, Set<int>> forceApplyReuseConnections = {};
 
   static Timer? _commandTrackerTimer;
 
@@ -101,7 +105,15 @@ class DownloadConnectionInvoker {
     final id = data.downloadItem.id;
     final connectionNumber = data.connectionNumber;
     final connection = _connections[id]![connectionNumber]!;
-    print("Got command conn num $connectionNumber ===> ${data.command}");
+    print(
+        "Got command conn $connectionNumber ===> ${data.command} ==> ${data.segment}");
+    bool forcedConnectionReuse = false;
+    if (shouldForceApplyReuseConnection(data)) {
+      data.command = DownloadCommand.start_ReuseConnection;
+      forceApplyReuseConnections[id]?.remove(connectionNumber);
+      forcedConnectionReuse = true;
+      print("Forcing reuseConnection for conn $connectionNumber");
+    }
     switch (data.command) {
       case DownloadCommand.start_Initial:
         connection.start(channel.sink.add);
@@ -111,16 +123,21 @@ class DownloadConnectionInvoker {
         connection.start(channel.sink.add);
         break;
       case DownloadCommand.start_ReuseConnection:
-        connection.segment = data.segment!;
-        if (connection.paused) {
-          print(
-              "Cnnection $connectionNumber is paused when received reuseConnection command");
-          break;
+        if (!forcedConnectionReuse) {
+          connection.segment = data.segment!;
+          if (connection.detailsStatus == DownloadStatus.paused) {
+            print(
+              "Conn $connectionNumber received start_ConnectionReuse command in paused status",
+            );
+            forceApplyReuseConnections[id] ??= HashSet();
+            forceApplyReuseConnections[id]!.add(connectionNumber!);
+            break;
+          }
         }
-        print(
-            "Conn num ${data.connectionNumber} StartByte ${connection.startByte} Endbyte ${connection.endByte}");
         connection.start(channel.sink.add, reuseConnection: true);
-        channel.sink.add(ConnectionHandshake.fromIsolateMessage(data));
+        channel.sink.add(
+          ConnectionHandshake.fromIsolateMessage(data)..reuseConnection = true,
+        );
         break;
       case DownloadCommand.pause:
         connection.pause(channel.sink.add);
@@ -143,6 +160,14 @@ class DownloadConnectionInvoker {
         connection.refreshSegment(data.segment!, reuseConnection: true);
         break;
     }
+  }
+
+  static bool shouldForceApplyReuseConnection(DownloadIsolateMessage message) {
+    final downloadId = message.downloadItem.id;
+    return message.command == DownloadCommand.start &&
+        forceApplyReuseConnections[downloadId] != null &&
+        forceApplyReuseConnections[downloadId]!
+            .contains(message.connectionNumber);
   }
 
   static void setTrackedCommand(
