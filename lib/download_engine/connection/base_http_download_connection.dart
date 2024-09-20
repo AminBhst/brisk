@@ -229,7 +229,11 @@ abstract class BaseHttpDownloadConnection {
     downloadProgress = 1;
     totalConnectionWriteProgress = 1;
     detailsStatus = DownloadStatus.complete;
-    totalDownloadProgress = segment.length / downloadItem.contentLength;
+    final totalExistingLength = getTotalWrittenBytesLength(
+      tempDirectory,
+      connectionNumber,
+    );
+    totalDownloadProgress = totalExistingLength / downloadItem.contentLength;
   }
 
   void _updateDownloadProgress() {
@@ -241,7 +245,6 @@ abstract class BaseHttpDownloadConnection {
       totalDownloadProgress = (totalConnectionReceivedBytes - excessBytes) /
           downloadItem.contentLength;
     }
-    _notifyProgress();
   }
 
   // TODO USE THIS
@@ -370,11 +373,6 @@ abstract class BaseHttpDownloadConnection {
     lastResponseTimeMillis = _nowMillis;
     pauseButtonEnabled = downloadItem.supportsPause;
     detailsStatus = transferRate;
-    _notifyProgress();
-    if (downloadProgress == 1) {
-      // TODO WTF is this???
-      _updateStatus("Download Complete");
-    }
     _calculateTransferRate(chunk);
     _calculateDynamicFlushThreshold();
     buffer.add(chunk);
@@ -382,6 +380,7 @@ abstract class BaseHttpDownloadConnection {
     _updateDownloadProgress();
     if (receivedBytesExceededEndByte) {
       _onByteExceeded();
+      _notifyProgress();
       return;
     }
 
@@ -395,9 +394,8 @@ abstract class BaseHttpDownloadConnection {
     client.close();
     _flushBuffer();
     print("Correcting temp bytes for conn $connectionNumber");
-    _correctTempBytes();
+    _fixTempFiles();
     _setDownloadComplete();
-    _notifyProgress();
     print("On byte exceed complete conn num $connectionNumber");
   }
 
@@ -428,9 +426,6 @@ abstract class BaseHttpDownloadConnection {
   }
 
   void _onTempFileWriteComplete(File file) {
-    if (paused) {
-      _updateStatus("Download Paused");
-    }
     totalRequestWrittenBytes += file.lengthSync();
     totalConnectionWriteProgress =
         totalConnectionWrittenBytes / downloadItem.contentLength;
@@ -439,10 +434,9 @@ abstract class BaseHttpDownloadConnection {
       detailsStatus = DownloadStatus.complete;
     }
     _isWritingTempFile = false;
-    _notifyProgress();
   }
 
-  void _correctTempBytes() {
+  void _fixTempFiles() {
     final str = StringBuffer(
         "CorrectTempBytes::$connectionNumber::S$startByte-E$endByte ==> \n");
     final tempFiles = getTempFilesSorted(
