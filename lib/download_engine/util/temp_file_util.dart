@@ -4,46 +4,9 @@ import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:dartx/dartx.dart';
 import 'package:path/path.dart';
 
-int getTotalWrittenBytesLength(
-  Directory tempDir,
-  int connectionNumber, {
-  Segment? range,
-}) {
-  if (tempDir.listSync().isEmpty) {
-    return 0;
-  }
-  final connectionFiles = getTempFilesSorted(tempDir)
-      .where((file) => tempFileBelongsToConnection(file, connectionNumber))
-      .toList();
-
-  if (connectionFiles.isEmpty) {
-    return 0;
-  }
-
-  var fileNames = connectionFiles.map((f) => basename(f.path));
-  if (range != null) {
-    fileNames = fileNames
-        .where(
-          (fileName) => fileNameToSegment(fileName).isInRangeOfOther(range),
-        )
-        .toList();
-  }
-
-  if (fileNames.isEmpty) {
-    return 0;
-  }
-
-  if (fileNames.length == 1) {
-    return getTempFileLength(fileNames.first);
-  }
-
-  return fileNames
-      .reduce((f1, f2) => _addTempFilesLength(f1, f2).toString())
-      .toInt();
-}
 
 /// [first] : either the first file name or the sum of the previous reduce operation
-int _addTempFilesLength(String first, String secondFileName) {
+int addTempFilesLength_reduce(String first, String secondFileName) {
   if (first.isInt) {
     return first.toInt() + getTempFileLength(secondFileName);
   }
