@@ -103,7 +103,7 @@ class DownloadSegmentTree {
   }
 
   List<SegmentNode>? get inUseNodes => lowestLevelNodes
-      .filter((node) => node.segmentStatus == SegmentStatus.IN_USE)
+      .where((node) => node.segmentStatus == SegmentStatus.IN_USE)
       .toList();
 
   /// Returns the lowest level segments, i.e.
