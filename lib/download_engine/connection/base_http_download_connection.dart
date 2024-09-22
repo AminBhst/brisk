@@ -824,7 +824,7 @@ abstract class BaseHttpDownloadConnection {
       ));
 
   /// Determines if the user is permitted to hit the start (Resume) button or not
-  bool get isStartButtonEnabled => paused || downloadProgress == 0;
+  bool get isStartButtonEnabled => paused;
 
   bool get receivedBytesExceededEndByte =>
       this.startByte + totalRequestReceivedBytes >
