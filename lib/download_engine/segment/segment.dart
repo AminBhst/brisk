@@ -1,6 +1,6 @@
 class Segment {
-  final startByte;
-  final endByte;
+  final int startByte;
+  final int endByte;
 
   Segment(this.startByte, this.endByte);
 

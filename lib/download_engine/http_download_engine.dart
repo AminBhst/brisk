@@ -384,8 +384,8 @@ class HttpDownloadEngine {
     }
     final parent = node.parent!;
     parent.leftChild!.segment = Segment(
-      message.refreshedStartByte,
-      message.refreshedEndByte,
+      message.refreshedStartByte!,
+      message.refreshedEndByte!,
     );
     parent
       ..setLastUpdateMillis()
@@ -395,8 +395,8 @@ class HttpDownloadEngine {
       ..rightChild?.segmentStatus = SegmentStatus.REUSE_REQUESTED;
     final newConnectionNode = parent.rightChild!;
     newConnectionNode.segment = Segment(
-      message.validNewStartByte,
-      message.validNewEndByte,
+      message.validNewStartByte!,
+      message.validNewEndByte!,
     );
     newConnectionNode.setLastUpdateMillis();
     if (message.reuseConnection) {
@@ -620,20 +620,15 @@ class HttpDownloadEngine {
   ) async {
     final int id = data.downloadItem.id;
     Completer<void> completer = Completer();
+    final engineChannel = _engineChannels[id];
     if (_engineChannels[id]!.connectionChannels.isEmpty) {
-      final byteRangeMap = _findMissingByteRanges(
+      final missingByteRanges = _findMissingByteRanges(
         data.downloadItem,
-      ); // TODO Fix segment tree impl
-      final ranges = byteRangeMap.values.toList();
-
-      /// TODO handle
-      if (ranges.isEmpty) {
-        return;
-      }
-      _engineChannels[id]!.segmentTree =
-          DownloadSegmentTree.fromByteRanges(ranges);
-      print("=========== MISSING BYTE RANGES =========");
-      print(byteRangeMap);
+      );
+      engineChannel!.segmentTree = DownloadSegmentTree.buildFromMissingBytes(
+        data.downloadItem.contentLength,
+        missingByteRanges,
+      );
       data.command = DownloadCommand.start_Initial;
       await _spawnDownloadIsolates(data);
     } else {
@@ -662,7 +657,7 @@ class HttpDownloadEngine {
   /// Analyzes the temp files and returns the missing temp byte ranges
   /// TODO handle if no missing bytes were found
   /// TODO probably needs fixing
-  static Map<int, Segment> _findMissingByteRanges(
+  static List<Segment> _findMissingByteRanges(
     DownloadItemModel downloadItem,
   ) {
     final contentLength = downloadItem.contentLength;
@@ -677,12 +672,12 @@ class HttpDownloadEngine {
     }
 
     if (tempFiles == null || tempFiles.isEmpty) {
-      return {0: Segment(0, downloadItem.contentLength)};
+      return [Segment(0, downloadItem.contentLength)];
     }
 
     tempFiles.sort(sortByByteRanges);
     String prevFileName = "";
-    Map<int, Segment> missingBytes = {};
+    List<Segment> missingBytes = [];
     for (var i = 0; i < tempFiles.length; i++) {
       final tempFile = tempFiles[i];
       final tempFileName = basename(tempFile.path);
@@ -694,20 +689,22 @@ class HttpDownloadEngine {
       final startByte = getStartByteFromTempFileName(tempFileName);
       final endByte = getEndByteFromTempFileName(tempFileName);
       final prevEndByte = getEndByteFromTempFileName(prevFileName);
-      final segmentNumber = getConnectionNumberFromTempFileName(tempFileName);
 
       if (prevEndByte + 1 != startByte) {
         final missingStartByte = prevEndByte + 1;
         final missingEndByte = startByte - 1;
-        missingBytes[segmentNumber] = Segment(missingStartByte, missingEndByte);
+        missingBytes.add(Segment(missingStartByte, missingEndByte));
       }
       prevFileName = tempFileName;
 
-      if (i == tempFiles.length - 1 && endByte != contentLength) {
-        missingBytes[segmentNumber] = Segment(endByte, contentLength);
+      /// endByte is always contentLength - 1, but just to be sure we also add
+      /// the endbyte != contentLength
+      if (i == tempFiles.length - 1 &&
+          (endByte != contentLength - 1 || endByte != contentLength)) {
+        missingBytes.add(Segment(endByte + 1, contentLength));
       }
     }
-    return missingBytes;
+    return missingBytes..sort((a, b) => a.startByte.compareTo(b.startByte));
   }
 
   static bool isAssembleEligible(DownloadItemModel downloadItem) {
