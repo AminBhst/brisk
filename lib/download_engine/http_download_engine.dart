@@ -622,11 +622,13 @@ class HttpDownloadEngine {
     Completer<void> completer = Completer();
     final engineChannel = _engineChannels[id];
     if (_engineChannels[id]!.connectionChannels.isEmpty) {
+      /// TODO verify temp file integrity
       final missingByteRanges = _findMissingByteRanges(
         data.downloadItem,
       );
       engineChannel!.segmentTree = DownloadSegmentTree.buildFromMissingBytes(
         data.downloadItem.contentLength,
+        downloadSettings.totalConnections,
         missingByteRanges,
       );
       data.command = DownloadCommand.start_Initial;

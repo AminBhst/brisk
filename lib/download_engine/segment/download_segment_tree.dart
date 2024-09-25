@@ -1,5 +1,6 @@
 import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:brisk/download_engine/segment/segment_status.dart';
+import 'package:dartx/dartx.dart';
 
 /// A tree implementation of download segments. Used for dynamic segmentation
 /// of the download byte ranges associated with their designated connections.
@@ -10,7 +11,7 @@ import 'package:brisk/download_engine/segment/segment_status.dart';
 ///
 /// An example visual representation of the tree:
 ///
-///               [0    -     1000] ===============> (initial)
+///               [     0-1000     ] ===============> (initial)
 ///                /             \
 ///               /               \
 ///          [0-500]-------------[501-1000] ========> (First [split] call)
@@ -28,12 +29,13 @@ class DownloadSegmentTree {
     return DownloadSegmentTree(SegmentNode(segment: segment));
   }
 
-  /// In cases where the tree is built around a previously-
-  /// existing download, due to the possibility of having multiple missing byte-ranges
-  /// (e.g. [500-1000], [4000-7000], [9000-14000]) we may have multiple root-
-  /// nodes (connected through [rightNeighbor]), each representing a missing byte range.
+  /// Used to create the segment tree from multiple missing segments. This is used
+  /// when the app was closed without the download being complete, leading to
+  /// the loss of the initial segment tree. In order to resume the download,
+  /// we need to build the tree again using the missing byte ranges.
   factory DownloadSegmentTree.buildFromMissingBytes(
     int contentLength,
+    int maxNumberOfConnections,
     List<Segment> segments,
   ) {
     final tree = DownloadSegmentTree(
@@ -49,22 +51,25 @@ class DownloadSegmentTree {
       tree.root.createLeftChild(
         0,
         first.startByte - 1,
-        SegmentStatus.COMPLETE,
+        segmentStatus: SegmentStatus.COMPLETE,
+        connectionNumber: 0,
       );
     } else {
-      tree.root.createLeftChild(0, first.endByte);
+      tree.root.createLeftChild(0, first.endByte, connectionNumber: 0);
     }
-    tree.root.createRightChild(
-      tree.root.leftChild!.segment.endByte + 1,
-      contentLength,
-      SegmentStatus.OUT_DATED,
-    );
+    tree.root
+      ..connectionNumber = 0
+      ..createRightChild(
+        tree.root.leftChild!.segment.endByte + 1,
+        contentLength,
+        segmentStatus: SegmentStatus.OUT_DATED,
+        connectionNumber: 1,
+      );
+    tree.maxConnectionNumber = 1;
     tree.lowestLevelNodes
       ..remove(tree.root)
       ..add(tree.root.leftChild!)
       ..add(tree.root.rightChild!);
-
-    /// TODO split segments in to 8
     if (first.startByte == 0 && segments.length == 1) {
       tree.root.rightChild!.segmentStatus = SegmentStatus.COMPLETE;
       return tree;
@@ -75,32 +80,73 @@ class DownloadSegmentTree {
       /// because it has already been assigned to a SegmentNode
       missingSegments.removeAt(0);
     }
-
     var iterationRoot = tree.root.rightChild!;
+    var currentMaxConnectionNumber = -1;
     while (missingSegments.isNotEmpty) {
       final currentMissing = missingSegments[0];
+      var exceededMaxConnectionNumber = false;
       if (iterationRoot.segment.startByte == currentMissing.startByte) {
+        if (currentMaxConnectionNumber + 1 > maxNumberOfConnections - 1) {
+          exceededMaxConnectionNumber = true;
+        } else {
+          currentMaxConnectionNumber++;
+        }
         iterationRoot.createLeftChild(
           currentMissing.startByte,
           currentMissing.endByte,
+          connectionNumber: currentMaxConnectionNumber,
+          segmentStatus: exceededMaxConnectionNumber
+              ? SegmentStatus.IN_QUEUE
+              : SegmentStatus.INITIAL,
         );
         missingSegments.remove(currentMissing);
       } else {
         iterationRoot.createLeftChild(
           iterationRoot.segment.startByte,
-          currentMissing.endByte - 1,
-          SegmentStatus.COMPLETE,
+          currentMissing.startByte - 1,
+          segmentStatus: SegmentStatus.COMPLETE,
         );
       }
       iterationRoot.createRightChild(
         iterationRoot.leftChild!.segment.endByte + 1,
         contentLength,
-        SegmentStatus.OUT_DATED,
+        segmentStatus: exceededMaxConnectionNumber
+            ? SegmentStatus.IN_QUEUE
+            : SegmentStatus.OUT_DATED,
       );
+      final index = tree.lowestLevelNodes.indexOf(iterationRoot);
+      tree.lowestLevelNodes
+        ..removeAt(index)
+        ..insert(index, iterationRoot.leftChild!)
+        ..insert(index + 1, iterationRoot.rightChild!);
       if (missingSegments.isEmpty) {
         iterationRoot.rightChild!.segmentStatus = SegmentStatus.COMPLETE;
       }
       iterationRoot = iterationRoot.rightChild!;
+    }
+    var initialNodes = tree.lowestLevelNodes
+        .where((node) => node.segmentStatus == SegmentStatus.INITIAL)
+        .toList();
+    if (initialNodes.length == maxNumberOfConnections) {
+      return tree;
+    }
+
+    int connectionNumber =
+        initialNodes.maxBy((node) => node.connectionNumber)!.connectionNumber;
+    loop:
+    while (connectionNumber <= maxNumberOfConnections) {
+      initialNodes = tree.lowestLevelNodes
+          .where((node) => node.segmentStatus == SegmentStatus.INITIAL)
+          .toList();
+      for (final node in initialNodes) {
+        if (connectionNumber + 1 >= maxNumberOfConnections) {
+          break loop;
+        }
+        final success = tree.splitSegmentNode(node);
+        if (!success) break loop;
+        connectionNumber++;
+        node.rightChild!.connectionNumber = connectionNumber;
+      }
     }
     return tree;
   }
@@ -161,10 +207,6 @@ class DownloadSegmentTree {
       .where((node) => node.segmentStatus == SegmentStatus.IN_USE)
       .toList();
 
-  /// Returns the lowest level segments, i.e.
-  List<Segment> get currentSegment =>
-      lowestLevelNodes.map((e) => e.segment).toList();
-
   bool splitSegmentNode(SegmentNode node, {setConnectionNumber = true}) {
     final nodeSegment = node.segment;
     final splitByte =
@@ -182,7 +224,10 @@ class DownloadSegmentTree {
       segLeft = Segment(nodeSegment.startByte, splitByte);
       segRight = Segment(splitByte + 1, nodeSegment.endByte);
     }
-    if (!segLeft.isValid || !segRight.isValid) {
+    if (!segLeft.isValid ||
+        !segRight.isValid ||
+        segLeft.length < 8192 ||
+        segRight.length < 8192) {
       return false;
     }
     node.rightChild = SegmentNode(segment: segRight, parent: node);
@@ -224,25 +269,29 @@ class SegmentNode {
 
   void createLeftChild(
     int startByte,
-    int endByte, [
+    int endByte, {
     SegmentStatus segmentStatus = SegmentStatus.INITIAL,
-  ]) {
+    int connectionNumber = 0,
+  }) {
     this.leftChild = SegmentNode(
       segment: Segment(startByte, endByte),
       parent: this,
       segmentStatus: segmentStatus,
+      connectionNumber: connectionNumber,
     );
   }
 
   void createRightChild(
     int startByte,
-    int endByte, [
+    int endByte, {
     SegmentStatus segmentStatus = SegmentStatus.INITIAL,
-  ]) {
+    int connectionNumber = 0,
+  }) {
     this.rightChild = SegmentNode(
       segment: Segment(startByte, endByte),
       parent: this,
       segmentStatus: segmentStatus,
+      connectionNumber: connectionNumber,
     );
   }
 
