@@ -9,12 +9,15 @@ class DownloadIsolateMessage {
   DownloadItemModel downloadItem;
   Segment? segment;
   DownloadSettings settings;
+  int previouslyWrittenByteLength;
+
   DownloadIsolateMessage({
     required this.command,
     required this.downloadItem,
     required this.settings,
     this.connectionNumber,
     this.segment,
+    this.previouslyWrittenByteLength = 0,
   });
 
   DownloadIsolateMessage clone() {

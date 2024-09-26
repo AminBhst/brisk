@@ -37,6 +37,8 @@ abstract class BaseHttpDownloadConnection {
   /// The total of received bytes for this request
   int totalConnectionReceivedBytes = 0;
 
+  int previouslyWrittenBytesLength = 0;
+
   /// used to differentiate between the total bytes of a request (with a certain
   /// byte range) and the total received bytes of a connection which is the
   /// accumulation of all received byte ranges
@@ -316,6 +318,7 @@ abstract class BaseHttpDownloadConnection {
     );
     downloadProgress = totalRequestReceivedBytes / segment.length;
     totalConnectionReceivedBytes = totalExistingLength;
+    totalConnectionWriteProgress += previousBufferEndByte;
     totalRequestWrittenBytes = totalRequestReceivedBytes;
     totalConnectionWrittenBytes = totalExistingLength;
     totalDownloadProgress =

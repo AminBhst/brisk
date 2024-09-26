@@ -116,6 +116,7 @@ class DownloadConnectionInvoker {
     }
     switch (data.command) {
       case DownloadCommand.start_Initial:
+        connection.previousBufferEndByte = data.previouslyWrittenByteLength;
         connection.start(channel.sink.add);
         channel.sink.add(ConnectionHandshake.fromIsolateMessage(data));
         break;

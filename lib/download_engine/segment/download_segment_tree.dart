@@ -44,7 +44,7 @@ class DownloadSegmentTree {
     final first = segments[0];
     if (segments.length == 1 &&
         first.startByte == 0 &&
-        (first == contentLength || first.endByte == contentLength - 1)) {
+        (first.endByte == contentLength || first.endByte == contentLength - 1)) {
       return tree;
     }
     if (first.startByte != 0) {
@@ -65,6 +65,9 @@ class DownloadSegmentTree {
         segmentStatus: SegmentStatus.OUT_DATED,
         connectionNumber: 1,
       );
+    tree.root
+      ..rightChild?.leftNeighbor = tree.root.leftChild
+      ..leftChild?.rightNeighbor = tree.root.rightChild;
     tree.maxConnectionNumber = 1;
     tree.lowestLevelNodes
       ..remove(tree.root)
@@ -114,6 +117,9 @@ class DownloadSegmentTree {
             ? SegmentStatus.IN_QUEUE
             : SegmentStatus.OUT_DATED,
       );
+      iterationRoot
+        ..rightChild?.leftNeighbor = iterationRoot.leftChild
+        ..leftChild?.rightNeighbor = iterationRoot.rightChild;
       final index = tree.lowestLevelNodes.indexOf(iterationRoot);
       tree.lowestLevelNodes
         ..removeAt(index)
@@ -205,6 +211,10 @@ class DownloadSegmentTree {
 
   List<SegmentNode>? get inUseNodes => lowestLevelNodes
       .where((node) => node.segmentStatus == SegmentStatus.IN_USE)
+      .toList();
+
+  List<SegmentNode>? get inQueueNodes => lowestLevelNodes
+      .where((node) => node.segmentStatus == SegmentStatus.IN_QUEUE)
       .toList();
 
   bool splitSegmentNode(SegmentNode node, {setConnectionNumber = true}) {

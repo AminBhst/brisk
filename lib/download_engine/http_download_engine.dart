@@ -537,16 +537,16 @@ class HttpDownloadEngine {
     final downloadId = connectionChannel.downloadItem!.id;
     final engineChannel = _engineChannels[downloadId]!;
     final segmentTree = engineChannel.segmentTree;
-    final inUseNodes = segmentTree!.inUseNodes;
-    if (inUseNodes!.isEmpty) {
+    final nodes = segmentTree!.inQueueNodes!.isNotEmpty
+        ? segmentTree.inQueueNodes
+        : segmentTree.inUseNodes;
+    if (nodes!.isEmpty) {
       print("Failed to find segment node! FATAL!");
       return;
     }
-    inUseNodes.sort((a, b) => a.lastUpdateMillis.compareTo(b.lastUpdateMillis));
-    final targetNode = inUseNodes
+    nodes.sort((a, b) => a.lastUpdateMillis.compareTo(b.lastUpdateMillis));
+    final targetNode = nodes
         .where((node) => node.segment != connectionChannel.segment)
-        .toList()
-        .where((node) => node.segmentStatus == SegmentStatus.IN_USE)
         .toList()
         .lastOrNull;
     if (targetNode == null) {
@@ -631,6 +631,17 @@ class HttpDownloadEngine {
         downloadSettings.totalConnections,
         missingByteRanges,
       );
+      // If the tree was built on top of existing temp files, the dynamic connection spawner
+      // should not be executed because multiple segments are already assigned to connections.
+      // therefore we set the created connections to the max allowed value.
+      print("Tree lowest level nodes : ${engineChannel.segmentTree!.lowestLevelNodes.map((e) => e.segment).toList()}");
+      if (engineChannel.segmentTree!.lowestLevelNodes.length != 1) {
+        engineChannel.createdConnections = downloadSettings.totalConnections;
+      }
+      print("Built tree!");
+      engineChannel.segmentTree!.lowestLevelNodes.forEach((element) {
+        print("${element.segment} ==> ${element.segmentStatus}");
+      });
       data.command = DownloadCommand.start_Initial;
       await _spawnDownloadIsolates(data);
     } else {
@@ -641,17 +652,27 @@ class HttpDownloadEngine {
       });
     }
     return completer.complete();
-    // if (missingByteRanges.length > totalConnections) {
-    /// TODO This shouldn't really happen but just in case we should do sth about it
-    // }
   }
 
   static _spawnDownloadIsolates(DownloadIsolateMessage data) async {
     final id = data.downloadItem.id;
     final segmentTree = _engineChannels[id]!.segmentTree!;
-    segmentTree.lowestLevelNodes.forEach((segmentNode) {
+    segmentTree.lowestLevelNodes
+        .where((node) => node.segmentStatus == SegmentStatus.INITIAL)
+        .toList()
+        .forEach((segmentNode) {
       var newData = data.clone()..segment = segmentNode.segment;
       segmentNode.segmentStatus = SegmentStatus.IN_USE;
+      final completedSegments = segmentTree.lowestLevelNodes
+          .where((node) =>
+              node.segmentStatus == SegmentStatus.COMPLETE &&
+              node.connectionNumber == segmentNode.connectionNumber)
+          .map((e) => e.segment.length)
+          .toList();
+      int completedLength = completedSegments.isEmpty
+          ? 0
+          : completedSegments.reduce((first, second) => first + second);
+      data.previouslyWrittenByteLength = completedLength;
       _spawnSingleDownloadIsolate(newData, segmentNode.connectionNumber);
     });
   }
@@ -942,7 +963,8 @@ class HttpDownloadEngine {
       rPort.sendPort,
       errorsAreFatal: false,
     );
-    print("SPAWNED $connectionNumber for id $downloadId");
+    print(
+        "SPAWNED $connectionNumber for id $downloadId with segment ${data.segment}");
     channel.sink.add(data);
     _connectionIsolates[downloadId] ??= {};
     _connectionIsolates[downloadId]![connectionNumber] = isolate;
