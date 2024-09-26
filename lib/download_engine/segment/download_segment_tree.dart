@@ -127,6 +127,13 @@ class DownloadSegmentTree {
         ..insert(index + 1, iterationRoot.rightChild!);
       if (missingSegments.isEmpty) {
         iterationRoot.rightChild!.segmentStatus = SegmentStatus.COMPLETE;
+        if (iterationRoot.rightChild!.segment.startByte >= contentLength) {
+          tree.lowestLevelNodes.remove(iterationRoot.rightChild);
+          iterationRoot.rightChild = null;
+        }
+      }
+      if (iterationRoot.rightChild == null) {
+        break;
       }
       iterationRoot = iterationRoot.rightChild!;
     }
