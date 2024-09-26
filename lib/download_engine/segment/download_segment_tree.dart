@@ -193,6 +193,12 @@ class DownloadSegmentTree {
   }
 
   SegmentNode? searchNode(Segment targetSegment) {
+    final nodeInLowestLevelList = lowestLevelNodes.where((node) => node.segment == targetSegment)
+    .toList()
+    .firstOrNull;
+    if (nodeInLowestLevelList != null) {
+      return nodeInLowestLevelList;
+    }
     return _searchNodeRecursive(targetSegment, root);
   }
 
