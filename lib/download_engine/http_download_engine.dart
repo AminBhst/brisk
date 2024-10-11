@@ -1058,7 +1058,6 @@ class HttpDownloadEngine {
       connectionNumber: connNum,
       segment: data.segment!,
     );
-
     _engineChannels[id]!.connectionChannels[connNum] = connectionChannel;
     connectionChannel.listenToStream(_handleConnectionMessages);
   }
