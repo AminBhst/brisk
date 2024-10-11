@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:brisk/download_engine/channel/download_connection_channel.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/http_download_engine.dart';
+import 'package:brisk/download_engine/log/logger.dart';
 import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
@@ -15,6 +16,8 @@ import 'package:brisk/download_engine/util/isolate_channel_wrapper.dart';
 /// and the [DownloadRequestProvider] (which technically is the UI), and as a container
 /// for all things related to each download request.
 class EngineChannel extends IsolateChannelWrapper {
+  Logger? logger;
+
   EngineChannel({required super.channel});
 
   DownloadItemModel? downloadItem;
@@ -49,6 +52,7 @@ class EngineChannel extends IsolateChannelWrapper {
       return;
     }
     this.downloadItem = message.downloadItem;
+    this.buildLogger();
     if (message.command == DownloadCommand.pause) {
       this.paused = true;
       lastPauseTimeMillis = DateTime.now().millisecondsSinceEpoch;
@@ -57,6 +61,14 @@ class EngineChannel extends IsolateChannelWrapper {
       this.paused = false;
       lastStartTimeMillis = DateTime.now().millisecondsSinceEpoch;
     }
+  }
+
+  void buildLogger() {
+    if (logger != null) return;
+    this.logger = Logger(
+      downloadUid: downloadItem!.uid,
+      logBaseDir: HttpDownloadEngine.downloadSettings.baseTempDir,
+    )..enablePeriodicLogFlush();
   }
 
   bool get isPauseButtonWaitComplete =>

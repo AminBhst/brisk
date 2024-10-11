@@ -40,7 +40,7 @@ class DownloadConnectionInvoker {
         _connections[downloadId]?.forEach((_, conn) {
           if (!conn.paused) {
             conn.pause(channel?.sink.add);
-            print("======== paused connection ${conn.connectionNumber}");
+            conn.logger?.info("Invoker:: Force paused connection");
           }
         });
       });
@@ -59,6 +59,7 @@ class DownloadConnectionInvoker {
       setTrackedCommand(data, channel);
       if (conn == null) {
         conn = _buildDownloadConnection(data);
+        conn.initLogger();
         _connections[id]![connectionNumber] = conn;
       }
       _executeCommand(data, channel);
@@ -105,14 +106,15 @@ class DownloadConnectionInvoker {
     final id = data.downloadItem.id;
     final connectionNumber = data.connectionNumber;
     final connection = _connections[id]![connectionNumber]!;
-    print(
-        "Got command conn $connectionNumber ===> ${data.command} ==> ${data.segment}");
+    connection.logger?.info(
+      "Invoker:: Received command ${data.command} with segment ${data.segment}",
+    );
     bool forcedConnectionReuse = false;
     if (shouldForceApplyReuseConnection(data)) {
       data.command = DownloadCommand.start_ReuseConnection;
       forceApplyReuseConnections[id]?.remove(connectionNumber);
       forcedConnectionReuse = true;
-      print("Forcing reuseConnection for conn $connectionNumber");
+      connection.logger?.info("Invoker:: Forcing reuseConnection...");
     }
     switch (data.command) {
       case DownloadCommand.start_Initial:
@@ -127,8 +129,8 @@ class DownloadConnectionInvoker {
         if (!forcedConnectionReuse) {
           connection.segment = data.segment!;
           if (connection.detailsStatus == DownloadStatus.paused) {
-            print(
-              "Conn $connectionNumber received start_ConnectionReuse command in paused status",
+            connection.logger?.info(
+              "Invoker:: received start_ConnectionReuse command in paused status",
             );
             forceApplyReuseConnections[id] ??= HashSet();
             forceApplyReuseConnections[id]!.add(connectionNumber!);
