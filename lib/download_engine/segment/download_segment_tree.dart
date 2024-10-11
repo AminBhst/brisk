@@ -44,7 +44,8 @@ class DownloadSegmentTree {
     final first = segments[0];
     if (segments.length == 1 &&
         first.startByte == 0 &&
-        (first.endByte == contentLength || first.endByte == contentLength - 1)) {
+        (first.endByte == contentLength ||
+            first.endByte == contentLength - 1)) {
       return tree;
     }
     if (first.startByte != 0) {
@@ -193,9 +194,10 @@ class DownloadSegmentTree {
   }
 
   SegmentNode? searchNode(Segment targetSegment) {
-    final nodeInLowestLevelList = lowestLevelNodes.where((node) => node.segment == targetSegment)
-    .toList()
-    .firstOrNull;
+    final nodeInLowestLevelList = lowestLevelNodes
+        .where((node) => node.segment == targetSegment)
+        .toList()
+        .firstOrNull;
     if (nodeInLowestLevelList != null) {
       return nodeInLowestLevelList;
     }
@@ -266,6 +268,14 @@ class DownloadSegmentTree {
       (s) => s.segment == node.segment,
     );
     node.setLastUpdateMillis();
+    if (nodeIndex == -1) {
+      final str = StringBuffer();
+      str.writeln("Failed to find node index ${node.segment}");
+      lowestLevelNodes
+          .forEach((element) => str.writeln("LowestNode: ${element.segment}"));
+      print(str.toString());
+      throw Exception(str.toString());
+    }
     lowestLevelNodes.removeAt(nodeIndex);
     lowestLevelNodes.insert(nodeIndex, node.leftChild!);
     lowestLevelNodes.insert(nodeIndex + 1, node.rightChild!);

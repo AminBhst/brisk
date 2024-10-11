@@ -600,10 +600,15 @@ class HttpDownloadEngine {
       return;
     }
     logger?.info("Splitting segment node ${targetNode.segment}...");
-    final success = segmentTree.splitSegmentNode(
-      targetNode,
-      setConnectionNumber: false,
-    );
+    bool success = false;
+    try {
+      success = segmentTree.splitSegmentNode(
+        targetNode,
+        setConnectionNumber: false,
+      );
+    } catch (e) {
+      logger?.error("Fatal! ${e.toString()}");
+    }
 
     /// TODO retry with a different node (has to stop at some point tho)
     if (!success) {
