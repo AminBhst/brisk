@@ -56,6 +56,9 @@ class DownloadRequestProvider with ChangeNotifier {
     final downloadItem = downloadProgress.downloadItem;
     if (checkDownloadCompletion(downloadItem)) return;
     StreamChannel? channel = engineChannels[id];
+    if (channel == null && command == DownloadCommand.clearConnections) {
+      return;
+    }
     final totalConnections = downloadProgress.downloadItem.supportsPause
         ? SettingsCache.connectionsNumber
         : 1;
