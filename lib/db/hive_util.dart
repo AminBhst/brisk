@@ -1,3 +1,4 @@
+import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/model/general_data.dart';
 import 'package:brisk/model/setting.dart';
@@ -21,7 +22,7 @@ class HiveUtil {
   late final Box<GeneralData> generalDataBox;
 
   Future<void> initHive() async {
-    await Hive.initFlutter("Brisk");
+    await Hive.initFlutter("Brisk_v2");
     Hive.registerAdapter(DownloadItemAdapter());
     Hive.registerAdapter(DownloadQueueAdapter());
     Hive.registerAdapter(SettingAdapter());
@@ -34,6 +35,14 @@ class HiveUtil {
     downloadQueueBox = await Hive.openBox<DownloadQueue>("download_queues");
     settingBox = await Hive.openBox<Setting>("settings");
     generalDataBox = await Hive.openBox<GeneralData>("general_data");
+  }
+
+
+  static Setting? getSetting(SettingOptions option) {
+    return HiveUtil.instance.settingBox
+        .values
+        .where((setting) => setting.name == option.name)
+        .firstOrNull;
   }
 
   Future<void> putInitialBoxValues() async {

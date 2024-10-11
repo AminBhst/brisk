@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
@@ -115,11 +116,14 @@ class BrowserExtensionServer {
     httpRequest.response.headers.add("Access-Control-Allow-Headers", "*");
   }
 
-  static int get _extensionPort =>
-      int.parse(HiveUtil.instance.settingBox.get(17)?.value ?? '3020');
+  static int get _extensionPort => int.parse(
+        HiveUtil.getSetting(SettingOptions.extensionPort)?.value ?? "3020",
+      );
 
-  static bool get _windowToFrontEnabled =>
-      parseBool(HiveUtil.instance.settingBox.get(16)?.value ?? 'true');
+  static bool get _windowToFrontEnabled => parseBool(
+        HiveUtil.getSetting(SettingOptions.enableWindowToFront)?.value ??
+            "true",
+      );
 
   static void _showPortInUseError(BuildContext context, String port) {
     showDialog(
