@@ -538,8 +538,10 @@ class HttpDownloadEngine {
       downloadProgress.status = DownloadStatus.assembling;
       engineChannel.sendMessage(downloadProgress);
       // TODO uncomment
-      // final success = assembleFile(progress.downloadItem); /// TODO add proper progress indication. currently it only notifies when the assemble is complete
-      // _setCompletionStatuses(success, downloadProgress);
+      final success = assembleFile(progress.downloadItem);
+
+      /// TODO add proper progress indication. currently it only notifies when the assemble is complete
+      _setCompletionStatuses(success, downloadProgress);
     }
     _setConnectionProgresses(downloadProgress);
     _downloadProgresses[downloadId] = downloadProgress;
@@ -1030,13 +1032,13 @@ class HttpDownloadEngine {
   /// connection because the isolate would already be dead.
   static _spawnSingleDownloadIsolate(
     DownloadIsolateMessage data,
-    int connectionNumber,
+    int connNum,
   ) async {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
-    final downloadId = data.downloadItem.id;
-    final logger = _engineChannels[downloadId]?.logger;
-    data.connectionNumber = connectionNumber;
+    final id = data.downloadItem.id;
+    final logger = _engineChannels[id]?.logger;
+    data.connectionNumber = connNum;
     logger?.info(
       "Spawning download connection isolate with connection number ${data.connectionNumber}...",
     );
@@ -1046,20 +1048,18 @@ class HttpDownloadEngine {
       errorsAreFatal: false,
     );
     logger?.info(
-      "Spawned connection $connectionNumber with segment ${data.segment}",
+      "Spawned connection $connNum with segment ${data.segment}",
     );
     channel.sink.add(data);
-    _connectionIsolates[downloadId] ??= {};
-    _connectionIsolates[downloadId]![connectionNumber] = isolate;
+    _connectionIsolates[id] ??= {};
+    _connectionIsolates[id]![connNum] = isolate;
     final connectionChannel = DownloadConnectionChannel(
       channel: channel,
-      connectionNumber: connectionNumber,
+      connectionNumber: connNum,
       segment: data.segment!,
     );
 
-    _engineChannels[downloadId]!
-        .setConnectionChannel(connectionNumber, connectionChannel);
-
+    _engineChannels[id]!.connectionChannels[connNum] = connectionChannel;
     connectionChannel.listenToStream(_handleConnectionMessages);
   }
 
