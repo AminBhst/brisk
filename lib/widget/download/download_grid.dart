@@ -37,6 +37,14 @@ class _DownloadGridState extends State<DownloadGrid> {
         type: PlutoColumnType.number(),
       ),
       PlutoColumn(
+        readOnly: true,
+        hide: true,
+        width: 80,
+        title: 'Uid',
+        field: 'uid',
+        type: PlutoColumnType.text(),
+      ),
+      PlutoColumn(
         enableRowChecked: true,
         width: 400,
         title: 'File Name',

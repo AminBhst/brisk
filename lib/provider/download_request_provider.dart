@@ -223,6 +223,7 @@ class DownloadRequestProvider with ChangeNotifier {
           "finish_date": PlutoCell(value: e.downloadItem.finishDate ?? ""),
           "file_type": PlutoCell(value: e.downloadItem.fileType),
           "id": PlutoCell(value: e.downloadItem.id),
+          "uid": PlutoCell(value: e.downloadItem.uid),
         },
       );
     }).toList();
