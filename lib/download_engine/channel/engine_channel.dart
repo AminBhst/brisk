@@ -42,10 +42,6 @@ class EngineChannel extends IsolateChannelWrapper {
 
   int lastStartTimeMillis = DateTime.now().millisecondsSinceEpoch;
 
-  void setConnectionChannel(int connNum, DownloadConnectionChannel channel) {
-    this.connectionChannels[connNum] = channel;
-  }
-
   @override
   void onEventReceived(message) {
     if (!(message is DownloadIsolateMessage)) {
