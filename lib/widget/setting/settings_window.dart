@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:brisk/provider/settings_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/setting/page/settings_page.dart';
@@ -18,11 +20,13 @@ class SettingsWindow extends StatefulWidget {
 }
 
 class _SettingsWindowState extends State<SettingsWindow> {
-  SettingsProvider? provider;
+  SettingsProvider? settingsProvider;
+  ThemeProvider? themeProvider;
 
   @override
   Widget build(BuildContext context) {
-    provider = Provider.of<SettingsProvider>(context);
+    settingsProvider = Provider.of<SettingsProvider>(context);
+    themeProvider = Provider.of<ThemeProvider>(context);
     final size = MediaQuery.of(context).size;
     return ClosableWindow(
       width: size.width * 0.6,
@@ -95,19 +99,21 @@ class _SettingsWindowState extends State<SettingsWindow> {
   }
 
   void _onApplyPressed() {
-    final tempPath = provider?.tempPath;
-    final savePath = provider?.savePath;
+    final tempPath = settingsProvider?.tempPath;
+    final savePath = settingsProvider?.savePath;
     if (validatePathSettings(tempPath)) {
       SettingsCache.temporaryDir = Directory(tempPath!);
     } else {
-      provider?.tempPath = SettingsCache.temporaryDir.path;
+      settingsProvider?.tempPath = SettingsCache.temporaryDir.path;
     }
     if (validatePathSettings(savePath)) {
       SettingsCache.saveDir = Directory(savePath!);
     } else {
-      provider?.savePath = SettingsCache.saveDir.path;
+      settingsProvider?.savePath = SettingsCache.saveDir.path;
     }
     SettingsCache.saveCachedSettingsToDB();
+    ApplicationThemeHolder.setActiveTheme();
+    themeProvider?.updateActiveTheme();
     Navigator.of(context).pop();
   }
 

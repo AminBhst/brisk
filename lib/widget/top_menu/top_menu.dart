@@ -7,6 +7,7 @@ import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:path/path.dart';
@@ -41,11 +42,13 @@ class _TopMenuState extends State<TopMenu> {
   @override
   Widget build(BuildContext context) {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
+    final topMenuTheme =
+        Provider.of<ThemeProvider>(context).activeTheme.topMenuTheme;
     final size = MediaQuery.of(context).size;
     return Container(
       width: resolveWindowWidth(size),
       height: 70,
-      color: const Color.fromRGBO(46, 54, 67, 1),
+      color: topMenuTheme.backgroundColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -59,76 +62,112 @@ class _TopMenuState extends State<TopMenu> {
                 barrierDismissible: false,
               ),
               title: 'Add URL',
-              icon: const Icon(Icons.add_rounded, color: Colors.white),
+              icon: Icon(
+                Icons.add_rounded,
+                color: topMenuTheme.addUrlColor.iconColor,
+              ),
+              onHoverColor: topMenuTheme.addUrlColor.hoverBackgroundColor,
+              textColor: topMenuTheme.addUrlColor.textColor,
             ),
           ),
-          TopMenuButton(
-            /// TODO comment in production
-            onTap: () => onMockDownloadPressed(context),
-            title: 'Mock',
-            icon: const Icon(Icons.not_started_outlined, color: Colors.red),
-            onHoverColor: Colors.red,
-          ),
+          // TopMenuButton(
+          //
+          //   /// TODO comment in production
+          //   onTap: () => onMockDownloadPressed(context),
+          //   title: 'Mock',
+          //   icon: const Icon(Icons.not_started_outlined, color: Colors.red),
+          //   onHoverColor: Colors.red,
+          // ),
+          // TopMenuButton(
+          //   /// TODO comment in production
+          //   onTap: () => onMockDownloadPressed(context),
+          //   title: 'Mock',
+          //   icon: const Icon(Icons.not_started_outlined, color: Colors.red),
+          //   onHoverColor: Colors.red,
+          // ),
           TopMenuButton(
             onTap: onDownloadPressed,
             title: 'Download',
-            icon: const Icon(Icons.download_rounded, color: Colors.white),
-            onHoverColor: Colors.green,
+            icon: Icon(
+              Icons.download_rounded,
+              color: topMenuTheme.downloadColor.iconColor,
+            ),
+            onHoverColor: topMenuTheme.downloadColor.hoverBackgroundColor,
+            textColor: topMenuTheme.downloadColor.textColor,
           ),
           TopMenuButton(
             onTap: onStopPressed,
             title: 'Stop',
-            icon: const Icon(Icons.stop_rounded, color: Colors.white),
-            onHoverColor: Colors.redAccent,
+            icon: Icon(
+              Icons.stop_rounded,
+              color: topMenuTheme.stopColor.iconColor,
+            ),
+            onHoverColor: topMenuTheme.stopColor.hoverBackgroundColor,
+            textColor: topMenuTheme.stopColor.textColor,
           ),
           TopMenuButton(
             onTap: onStopAllPressed,
             title: 'Stop All',
-            icon: const Icon(Icons.stop_circle_outlined, color: Colors.white),
-            onHoverColor: Colors.redAccent,
+            icon: Icon(
+              Icons.stop_circle_outlined,
+              color: topMenuTheme.stopAllColor.iconColor,
+            ),
+            onHoverColor: topMenuTheme.stopAllColor.hoverBackgroundColor,
+            textColor: topMenuTheme.stopAllColor.textColor,
           ),
           TopMenuButton(
             onTap: () => onRemovePressed(context),
             title: 'Remove',
-            icon: const Icon(Icons.delete, color: Colors.white),
-            onHoverColor: Colors.red,
+            icon: Icon(
+              Icons.delete,
+              color: topMenuTheme.removeColor.iconColor,
+            ),
+            onHoverColor: topMenuTheme.removeColor.hoverBackgroundColor,
+            textColor: topMenuTheme.removeColor.textColor,
           ),
           TopMenuButton(
             onTap: () => onAddToQueuePressed(context),
             title: 'Add To Queue',
-            icon: const Icon(Icons.queue, color: Colors.white),
+            icon: Icon(
+              Icons.queue,
+              color: topMenuTheme.addToQueueColor.iconColor,
+            ),
             fontSize: 10.5,
-            onHoverColor: Colors.teal,
+            onHoverColor: topMenuTheme.addToQueueColor.hoverBackgroundColor,
+            textColor: topMenuTheme.addToQueueColor.textColor,
           ),
           SizedBox(width: 5),
-          Container(color: Colors.white, width: 1, height: 40),
+          // Container(color: Colors.white, width: 1, height: 40),
           TopMenuButton(
-            title: 'Extension',
+            title: 'Get Extension',
+            fontSize: 11,
             icon: Icon(
               Icons.extension,
-              color: Colors.white,
+              color: topMenuTheme.extensionColor.iconColor,
             ),
             onTap: () => launchUrlString(
               'https://github.com/AminBhst/brisk-browser-extension',
             ),
+            onHoverColor: topMenuTheme.extensionColor.hoverBackgroundColor,
+            textColor: topMenuTheme.extensionColor.textColor,
           ),
           SizedBox(width: 5),
-          Container(color: Colors.white, width: 1, height: 40),
-          TopMenuButton(
-            title: 'Build',
-            icon: Icon(
-              Icons.extension,
-              color: Colors.red,
-            ),
-            onTap: () {
-              final dlitem = HiveUtil.instance.downloadItemsBox.getAt(0);
-              final itemModel = DownloadItemModel.fromDownloadItem(dlitem!);
-              FileUtil.doooo(itemModel.uid);
-              assembleFile(
-                  itemModel, SettingsCache.temporaryDir, SettingsCache.saveDir);
-              print("DONE");
-            },
-          ),
+          // Container(color: Colors.white, width: 1, height: 40),
+          // TopMenuButton(
+          //   title: 'Build',
+          //   icon: Icon(
+          //     Icons.extension,
+          //     color: Colors.red,
+          //   ),
+          //   onTap: () {
+          //     final dlitem = HiveUtil.instance.downloadItemsBox.getAt(0);
+          //     final itemModel = DownloadItemModel.fromDownloadItem(dlitem!);
+          //     FileUtil.doooo(itemModel.uid);
+          //     assembleFile(
+          //         itemModel, SettingsCache.temporaryDir, SettingsCache.saveDir);
+          //     print("DONE");
+          //   },
+          // ),
         ],
       ),
     );

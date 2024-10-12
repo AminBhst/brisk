@@ -6,6 +6,8 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/http_util.dart';
@@ -42,6 +44,7 @@ void main() async {
   await HiveUtil.instance.putInitialBoxValues();
   await SettingsCache.setCachedSettings();
   await updateLaunchAtStartupSetting();
+  ApplicationThemeHolder.setActiveTheme();
 
   runApp(
     MultiProvider(
@@ -54,6 +57,9 @@ void main() async {
         ),
         ChangeNotifierProvider<QueueProvider>(
           create: (_) => QueueProvider(),
+        ),
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (_) => ThemeProvider(),
         ),
       ],
       child: const MyApp(),
@@ -128,7 +134,6 @@ class _MyHomePageState extends State<MyHomePage>
       ),
     );
   }
-
 
   Future<void> saveNewAppClosureBehaviour(AppClosureBehaviour behaviour) async {
     SettingsCache.appClosureBehaviour = behaviour;

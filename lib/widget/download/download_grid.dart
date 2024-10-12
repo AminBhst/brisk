@@ -2,6 +2,7 @@ import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/queue_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/download/download_row_pop_up_menu_button.dart';
@@ -157,6 +158,8 @@ class _DownloadGridState extends State<DownloadGrid> {
   Widget build(BuildContext context) {
     final provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);
+    final downloadGridTheme =
+        Provider.of<ThemeProvider>(context).activeTheme.downloadGridTheme;
     final queueProvider = Provider.of<QueueProvider>(context);
     final size = MediaQuery.of(context).size;
     return Material(
@@ -168,15 +171,15 @@ class _DownloadGridState extends State<DownloadGrid> {
         child: PlutoGrid(
           key: UniqueKey(),
           mode: PlutoGridMode.selectWithOneTap,
-          configuration: const PlutoGridConfiguration(
+          configuration: PlutoGridConfiguration(
             style: PlutoGridStyleConfig.dark(
               activatedBorderColor: Colors.transparent,
-              borderColor: Colors.black26,
-              gridBorderColor: Colors.black54,
-              activatedColor: Colors.black26,
-              gridBackgroundColor: Color.fromRGBO(40, 46, 58, 1),
-              rowColor: Color.fromRGBO(49, 56, 72, 1),
-              checkedColor: Colors.blueGrey,
+              borderColor: downloadGridTheme.borderColor,
+              gridBorderColor: downloadGridTheme.borderColor,
+              activatedColor: downloadGridTheme.activeRowColor,
+              gridBackgroundColor: downloadGridTheme.backgroundColor,
+              rowColor: downloadGridTheme.rowColor,
+              checkedColor: downloadGridTheme.checkedRowColor,
             ),
           ),
           columns: columns,

@@ -2,6 +2,7 @@ import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/settings_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/setting/settings_window.dart';
 import 'package:brisk/widget/side_menu/side_menu_expansion_tile.dart';
@@ -19,11 +20,13 @@ class SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final queueProvider = Provider.of<QueueProvider>(context);
+    final sideMenuTheme =
+        Provider.of<ThemeProvider>(context).activeTheme.sideMenuTheme;
     final size = MediaQuery.of(context).size;
     return Container(
       width: resolveSideMenuWidth(size),
       height: double.infinity,
-      color: const Color.fromRGBO(55, 64, 81, 1),
+      color: sideMenuTheme.backgroundColor,
       child: Material(
         type: MaterialType.transparency,
         child: Column(
@@ -34,7 +37,10 @@ class SideMenu extends StatelessWidget {
                 "assets/icons/logo.svg",
                 height: 25,
                 width: 25,
-                colorFilter: ColorFilter.mode(Colors.white60, BlendMode.srcIn),
+                colorFilter: ColorFilter.mode(
+                  sideMenuTheme.briskLogoColor,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
             const SizedBox(height: 20),
