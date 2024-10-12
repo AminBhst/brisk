@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -123,7 +124,7 @@ Future<dynamic> checkLatestBriskRelease() async {
 
 // TODO Refactor and fix version check logic
 void checkForUpdate(BuildContext context) async {
-  var lastUpdateCheck = await HiveUtil.instance.settingBox.get(18); // Todo fix
+  var lastUpdateCheck = HiveUtil.getSetting(SettingOptions.lastUpdateCheck);
   if (lastUpdateCheck == null) {
     lastUpdateCheck = Setting(
       name: "lastUpdateCheck",
@@ -155,6 +156,6 @@ void checkForUpdate(BuildContext context) async {
       ),
     );
     lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
-    await HiveUtil.instance.settingBox.put(18, lastUpdateCheck);
+    await lastUpdateCheck.save();
   }
 }
