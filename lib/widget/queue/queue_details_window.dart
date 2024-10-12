@@ -45,65 +45,99 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 600,
-                    height: resolveListHeight(size),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.fromBorderSide(
-                        BorderSide(color: Colors.white12),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: ReorderableListView.builder(
-                        buildDefaultDragHandles: false,
-                        itemBuilder: (context, index) {
-                          final dl = HiveUtil.instance.downloadItemsBox.get(
-                              HiveUtil.instance.downloadQueueBox
-                                  .get(widget.queue.key)!
-                                  .downloadItemsIds![index])!;
-                          return ListTile(
-                            key: ValueKey(dl.key),
-                            leading: SizedBox(
-                              width: 25,
-                              height: 25,
-                              child: SvgPicture.asset(
-                                FileUtil.resolveFileTypeIconPath(dl.fileType),
-                                colorFilter: ColorFilter.mode(
-                                  FileUtil.resolveFileTypeIconColor(
-                                      dl.fileType),
-                                  BlendMode.srcIn,
-                                ),
-                              ),
+                  downloadIds == null || downloadIds!.isEmpty
+                      ? Container(
+                          width: 600,
+                          height: resolveListHeight(size),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.fromBorderSide(
+                              BorderSide(color: Colors.white12),
                             ),
-                            title: Text(dl.fileName,
-                                style: TextStyle(color: Colors.white)),
-                            trailing: SizedBox(
-                              width: 100,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () => onRemovePressed(index),
-                                  ),
-                                  ReorderableDragStartListener(
-                                    index: index,
-                                    child: const Icon(Icons.drag_handle,
-                                        color: Colors.white),
-                                  ),
-                                ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                "assets/icons/blank.svg",
+                                height: 90,
+                                width: 90,
+                                colorFilter:
+                                ColorFilter.mode(Colors.white10, BlendMode.srcIn),
                               ),
+                              const SizedBox(height: 10),
+                              Text(
+                                "Queue is empty",
+                                style: TextStyle(color: Colors.white10, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(
+                          width: 600,
+                          height: resolveListHeight(size),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.fromBorderSide(
+                              BorderSide(color: Colors.white12),
                             ),
-                          );
-                        },
-                        itemCount: itemCount,
-                        onReorder: onReorder,
-                      ),
-                    ),
-                  )
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: ReorderableListView.builder(
+                              buildDefaultDragHandles: false,
+                              itemBuilder: (context, index) {
+                                final dl = HiveUtil.instance.downloadItemsBox
+                                    .get(HiveUtil.instance.downloadQueueBox
+                                        .get(widget.queue.key)!
+                                        .downloadItemsIds![index])!;
+                                return ListTile(
+                                  key: ValueKey(dl.key),
+                                  leading: SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: SvgPicture.asset(
+                                      FileUtil.resolveFileTypeIconPath(
+                                          dl.fileType),
+                                      colorFilter: ColorFilter.mode(
+                                        FileUtil.resolveFileTypeIconColor(
+                                            dl.fileType),
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text(dl.fileName,
+                                      style: TextStyle(color: Colors.white)),
+                                  trailing: SizedBox(
+                                    width: 100,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.delete,
+                                              color: Colors.red),
+                                          onPressed: () =>
+                                              onRemovePressed(index),
+                                        ),
+                                        ReorderableDragStartListener(
+                                          index: index,
+                                          child: const Icon(Icons.drag_handle,
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              itemCount: itemCount,
+                              onReorder: onReorder,
+                            ),
+                          ),
+                        )
                 ],
               ),
             ),
@@ -116,7 +150,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                   onPressed: onCancelPressed,
                   borderColor: Colors.red,
                   textColor: Colors.red,
-                  width: 80,
+                  width: 95,
                   text: "Cancel",
                 ),
                 const SizedBox(width: 50),
@@ -124,7 +158,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                   onPressed: onSavePressed,
                   borderColor: Colors.green,
                   textColor: Colors.green,
-                  width: 80,
+                  width: 95,
                   text: "Save",
                 )
               ],

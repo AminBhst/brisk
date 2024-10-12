@@ -106,6 +106,7 @@ flutter:
     - assets/icons/file.svg
     - assets/icons/image.svg
     - assets/icons/logo.svg
+    - assets/icons/blank.svg
     - assets/icons/github.svg
     - assets/icons/logo.png
     - assets/icons/logo.ico
