@@ -34,6 +34,7 @@ class _SideMenuExpansionTileState extends State<SideMenuExpansionTile> {
       color:
           widget.active ? sideMenuTheme.activeTabBackgroundColor : Colors.transparent,
       child: ExpansionTile(
+        shape: Border.all(color: Colors.transparent),
         backgroundColor: sideMenuTheme.expansionTileExpandedColor,
         // title: ListTile(
         //   onTap: onTap,
