@@ -3,8 +3,8 @@ import 'package:brisk/util/settings_cache.dart';
 import 'package:flutter/material.dart';
 
 class ApplicationThemeHolder {
-  static final List<ApplicationTheme> themes = [briskV2Dark, briskOld];
-  static late ApplicationTheme activeTheme = briskV2Dark;
+  static final List<ApplicationTheme> themes = [celestialDark, signatureBlue];
+  static late ApplicationTheme activeTheme = celestialDark;
 
   static void setActiveTheme() {
     activeTheme = themes
@@ -13,8 +13,8 @@ class ApplicationThemeHolder {
   }
 }
 
-ApplicationTheme briskV2Dark = ApplicationTheme(
-  themeId: "Brisk v2 Dark",
+ApplicationTheme celestialDark = ApplicationTheme(
+  themeId: "Celestial Dark",
   topMenuTheme: TopMenuTheme(
     backgroundColor: const Color.fromRGBO(20, 20, 20, 0.85),
     addUrlColor: const ButtonColor(
@@ -140,7 +140,7 @@ ApplicationTheme briskV2Dark = ApplicationTheme(
   ),
 );
 
-ApplicationTheme briskOld = ApplicationTheme(
+ApplicationTheme signatureBlue = ApplicationTheme(
   themeId: "Signature Blue",
   sideMenuTheme: SideMenuTheme(
     backgroundColor: const Color.fromRGBO(55, 64, 81, 1),
