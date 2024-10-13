@@ -165,7 +165,9 @@ class DownloadSegmentTree {
     return tree;
   }
 
-  /// Splits and breaks down the lowest level nodes to new download segments
+  /// Splits and breaks down the lowest level nodes to new download segments.
+  /// May throw an exception which is highly recommended to be handled.
+  /// Refer to the docs of [splitSegmentNode] for more information.
   void split() {
     SegmentNode node = lowestLevelLeftNode;
     splitSegmentNode(node);
@@ -232,6 +234,15 @@ class DownloadSegmentTree {
       .where((node) => node.segmentStatus == SegmentStatus.IN_QUEUE)
       .toList();
 
+
+  /// Splits the given [node] into 2 child segments.
+  /// e.g.          [0-1000] ==> [node]
+  ///               /     \
+  ///            [0-500] [501-1000]
+  ///
+  /// Throws an exception if the [node] is not present in [lowestLevelNodes].
+  /// It is HIGHLY recommended to call this method as well as other methods that
+  /// rely in this to always be called in a try-catch block.
   bool splitSegmentNode(SegmentNode node, {setConnectionNumber = true}) {
     final nodeSegment = node.segment;
     final splitByte =
