@@ -193,7 +193,6 @@ abstract class BaseHttpDownloadConnection {
     tempReceivedBytes = 0;
     totalRequestWrittenBytes = 0;
     totalRequestReceivedBytes = 0;
-    status = DownloadStatus.connecting;
     detailsStatus = DownloadStatus.connecting;
     previousBufferEndByte = 0;
   }
@@ -402,19 +401,40 @@ abstract class BaseHttpDownloadConnection {
       _notifyProgress();
       return;
     }
-
+    if (receivedBytesMatchEndByte) {
+      _onByteExactMatch();
+      return;
+    }
     if (tempReceivedBytes > _dynamicFlushThreshold) {
       _flushBuffer();
     }
     _notifyProgress();
   }
 
+  void _onByteExactMatch() {
+    logger?.info(
+      "Received bytes match endByte! "
+      "closing the connection and flushing the buffer...",
+    );
+    if (this.endByte == downloadItem.contentLength) {
+      logger?.info("Connection corresponds to the last segment!");
+      totalRequestReceivedBytes += 3;
+      totalConnectionReceivedBytes += 3;
+      totalDownloadProgress =
+          totalConnectionReceivedBytes / downloadItem.contentLength;
+    }
+    client.close();
+    _flushBuffer();
+    _setDownloadComplete();
+    _notifyProgress();
+  }
+
   void _onByteExceeded() {
+    logger?.info("Received bytes exceeded endByte");
     client.close();
     _flushBuffer();
     _fixTempFiles();
     _setDownloadComplete();
-    logger?.info("TempFiles fix complete");
   }
 
   /// Flushes the buffer containing the received bytes to the disk.
@@ -511,6 +531,7 @@ abstract class BaseHttpDownloadConnection {
     }
     totalDownloadProgress =
         totalConnectionReceivedBytes / downloadItem.contentLength;
+    logger?.info("TempFiles fix complete");
   }
 
   /// TODO improve: we could send the newEndByte in this method instead of doing another IO in [_getNewStartByte]
@@ -708,10 +729,10 @@ abstract class BaseHttpDownloadConnection {
     totalDownloadProgress =
         totalConnectionReceivedBytes / downloadItem.contentLength;
     _flushBuffer();
-    _updateStatus(DownloadStatus.complete);
     detailsStatus = DownloadStatus.complete;
     logger?.info("Download complete with completion signal");
     logger?.info("connection progress : $downloadProgress");
+    _setDownloadComplete();
     _notifyProgress(completionSignal: true);
   }
 
@@ -873,6 +894,9 @@ abstract class BaseHttpDownloadConnection {
 
   /// Determines if the user is permitted to hit the start (Resume) button or not
   bool get isStartButtonEnabled => paused;
+
+  bool get receivedBytesMatchEndByte =>
+      this.startByte + totalRequestReceivedBytes == this.endByte;
 
   bool get receivedBytesExceededEndByte =>
       this.startByte + totalRequestReceivedBytes >
