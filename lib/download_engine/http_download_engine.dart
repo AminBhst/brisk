@@ -220,11 +220,17 @@ class HttpDownloadEngine {
       return;
     }
     final engineChannel = _engineChannels[downloadId]!;
+    final logger = engineChannel.logger;
     if (engineChannel.segmentTree == null) return;
-    engineChannel.segmentTree!.split();
+    try {
+      engineChannel.segmentTree!.split();
+    } catch (e) {
+      logger?.error("_refreshConnectionSegments:: Fatal! ${e}");
+      return;
+    }
     final nodes = engineChannel.segmentTree!.lowestLevelNodes;
-    engineChannel.logger?.info("refreshing connection segments...");
-    engineChannel.logger?.info("Current segment tree lowest level nodes:");
+    logger?.info("refreshing connection segments...");
+    logger?.info("Current segment tree lowest level nodes:");
     nodes.forEach(
       (element) => engineChannel.logger?.info(element.segment.toString()),
     );
@@ -233,7 +239,7 @@ class HttpDownloadEngine {
       final relatedSegmentNode =
           segmentNodes.where((s) => s.connectionNumber == connNum).firstOrNull;
       if (relatedSegmentNode == null) {
-        engineChannel.logger?.error(
+        logger?.error(
           "Fatal error occurred! relatedSegmentNode is null!",
         );
         return;
@@ -249,7 +255,7 @@ class HttpDownloadEngine {
       relatedSegmentNode.setLastUpdateMillis();
       engineChannel.createdConnections++;
       connectionChannel.sendMessage(data);
-      engineChannel.logger?.info(
+      logger?.info(
         "Command ${data.command} with segment ${relatedSegmentNode.segment} sent to connection $connNum",
       );
     });
@@ -268,11 +274,10 @@ class HttpDownloadEngine {
             .any((s) => s.segmentStatus == SegmentStatus.REFRESH_REQUESTED) ??
         true;
 
-    final shouldCreate = !pendingSegmentExists &&
+    return !pendingSegmentExists &&
         progress.totalDownloadProgress < downloadSettings.totalConnections &&
         engineChannel!.createdConnections < downloadSettings.totalConnections &&
         !_connectionSpawnerIgnoreList.contains(downloadId);
-    return shouldCreate;
   }
 
   /// Handles the messages coming from [BaseHttpDownloadConnection]
@@ -519,6 +524,7 @@ class HttpDownloadEngine {
     final downloadItem = progress.downloadItem;
     final downloadId = downloadItem.id;
     final engineChannel = _engineChannels[downloadItem.id]!;
+    final logger = engineChannel.logger;
     _connectionProgresses[downloadId] ??= {};
     _connectionProgresses[downloadId]![progress.connectionNumber] = progress;
     final totalByteTransferRate = _calculateTotalTransferRate(downloadId);
@@ -537,17 +543,18 @@ class HttpDownloadEngine {
     if (isTempWriteComplete && isAssembleEligible(downloadItem)) {
       downloadProgress.status = DownloadStatus.assembling;
       engineChannel.sendMessage(downloadProgress);
-      // TODO uncomment
       final success = assembleFile(progress.downloadItem);
-
       /// TODO add proper progress indication. currently it only notifies when the assemble is complete
       _setCompletionStatuses(success, downloadProgress);
+      logger
+        ?..writeLogBuffer()
+        ..flushTimer?.cancel();
     }
     _setConnectionProgresses(downloadProgress);
     _downloadProgresses[downloadId] = downloadProgress;
     engineChannel.sendMessage(downloadProgress);
     if (progress.completionSignal) {
-      engineChannel.logger?.info(
+      logger?.info(
         "Received completion signal from connection ${progress.connectionNumber}",
       );
       _addToReuseQueue(progress);
@@ -747,7 +754,6 @@ class HttpDownloadEngine {
   }
 
   /// Analyzes the temp files and returns the missing temp byte ranges
-  /// TODO handle if no missing bytes were found
   /// TODO probably needs fixing
   static List<Segment> _findMissingByteRanges(
     DownloadItemModel downloadItem,
@@ -790,9 +796,9 @@ class HttpDownloadEngine {
       prevFileName = tempFileName;
 
       /// endByte is always contentLength - 1, but just to be sure we also add
-      /// the endbyte != contentLength
+      /// the endByte != contentLength
       if (i == tempFiles.length - 1 &&
-          (endByte != contentLength - 1 || endByte != contentLength)) {
+          (endByte != contentLength - 1 && endByte != contentLength)) {
         missingBytes.add(Segment(endByte + 1, contentLength));
       }
     }
@@ -804,15 +810,24 @@ class HttpDownloadEngine {
         downloadItem.status != DownloadStatus.assembleFailed;
   }
 
-  static void validateTempFilesIntegrity(DownloadItemModel downloadItem) {
-    /// TODO check the last segment as well. right now if the last segment is missing, it will go unnoticed
-    final logger = _engineChannels[downloadItem.id]?.logger;
+  /// Checks all temp files and optionally removes all files that are considered to be corrupted.
+  /// e.g. If a file does not correspond to the byte range it is named as,
+  /// or if the byte range of multiple temp files clash with each other.
+  static void validateTempFilesIntegrity(
+    DownloadItemModel downloadItem, {
+    bool deleteCorruptedTempFiles = true,
+  }) {
+    final logger = _engineChannels[downloadItem.id]!.logger;
+    final progress = _downloadProgresses[downloadItem.id];
+    progress?.status = DownloadStatus.validatingFiles;
+    _engineChannels[downloadItem.id]?.sendMessage(progress);
     logger?.info("Validating temp files integrity...");
+    List<File> tempFilesToDelete = [];
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final tempFies = getTempFilesSorted(tempDir);
     for (int i = 0; i < tempFies.length; i++) {
-      if (i == tempFies.length) {
+      if (i == tempFies.length - 1) {
         return;
       }
       final file = tempFies[i];
@@ -820,14 +835,43 @@ class HttpDownloadEngine {
       final startNext = getStartByteFromTempFile(nextFile);
       final end = getEndByteFromTempFile(file);
       final start = getStartByteFromTempFile(file);
-      if (startNext + 1 != end) {
-        logger?.warn(
-          "Found inconsistent temp files :: ${basename(file.path)} == ${basename(nextFile.path)}",
+      if (startNext - 1 != end) {
+        logger?.info(
+          "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)}",
         );
       }
       if (end - start + 1 != file.lengthSync()) {
-        logger?.warn("Found bad temp file length :: ${basename(file.path)}");
+        logger?.info("Found bad length :: ${basename(file.path)}");
+        tempFilesToDelete.add(file);
       }
+      final badTempFiles = tempFies.where((f) => f != file).where((f) {
+        final fileSegment = Segment(
+          getStartByteFromTempFile(f),
+          getEndByteFromTempFile(f),
+        );
+        final currentFileSegment = Segment(start, end);
+
+        final fileOverlapsWithCurrent =
+            fileSegment.overlapsWithOther(currentFileSegment);
+
+        final currentOverlapsWithFile =
+            currentFileSegment.overlapsWithOther(fileSegment);
+
+        if (fileOverlapsWithCurrent || currentOverlapsWithFile) {
+          logger?.info(
+            "Found overlapping temp files : ${basename(file.path)} === ${basename(f.path)}",
+          );
+          return true;
+        }
+        return false;
+      }).toList();
+      tempFilesToDelete.addAll(badTempFiles);
+      for (final badFile in badTempFiles) {
+        logger?.info("Bad file :: ${basename(badFile.path)}");
+      }
+    }
+    if (deleteCorruptedTempFiles) {
+      tempFilesToDelete.forEach((file) => file.deleteSync(recursive: true));
     }
   }
 
@@ -835,7 +879,6 @@ class HttpDownloadEngine {
   /// creating the final downloaded file.
   static bool assembleFile(DownloadItemModel downloadItem) {
     final logger = _engineChannels[downloadItem.id]?.logger;
-    validateTempFilesIntegrity(downloadItem);
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final tempFies = getTempFilesSorted(tempDir);
@@ -861,7 +904,7 @@ class HttpDownloadEngine {
       _connectionIsolates[downloadItem.id]?.values.forEach((isolate) {
         isolate.kill();
       });
-      tempDir.delete(recursive: true);
+      // tempDir.deleteSync(recursive: true);
     } else {
       logger?.error(
         "Assemble failed! written file length = ${fileToWrite.lengthSync()} expected file length = ${downloadItem.contentLength}",
@@ -889,6 +932,8 @@ class HttpDownloadEngine {
       downloadProgress.status = DownloadStatus.assembleFailed;
       downloadProgress.downloadItem.status = DownloadStatus.assembleFailed;
     }
+    downloadProgress.pauseButtonEnabled = false;
+    downloadProgress.startButtonEnabled = false;
     downloadProgress.transferRate = "";
   }
 
@@ -948,9 +993,6 @@ class HttpDownloadEngine {
     }
     if (totalProgress >= 1) {
       status = DownloadStatus.complete;
-      if (downloadProgress.assembleProgress < 1) {
-        status = DownloadStatus.assembling;
-      }
     }
     downloadProgress.status = status;
     downloadProgress.downloadItem.status = status;
@@ -1001,12 +1043,13 @@ class HttpDownloadEngine {
     final logger = _engineChannels[downloadItem.id]!.logger;
     final tempComplete = progresses.every(
       (progress) =>
-          progress.totalConnectionWriteProgress == 1 &&
+          progress.totalConnectionWriteProgress >= 1 &&
           progress.detailsStatus == DownloadStatus.complete,
     );
     if (!tempComplete) {
       return false;
     }
+    validateTempFilesIntegrity(downloadItem);
     final missingBytes = _findMissingByteRanges(downloadItem);
     logger?.info("Missing byte range check : ${missingBytes}");
     final nodes =
