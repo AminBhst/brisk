@@ -174,9 +174,11 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void didChangeDependencies() {
-    registerDefaultDownloadAdditionHotKey(context);
-    BrowserExtensionServer.setup(context);
-    checkForUpdate(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      registerDefaultDownloadAdditionHotKey(context);
+      BrowserExtensionServer.setup(context);
+      checkForUpdate(context);
+    });
     super.didChangeDependencies();
   }
 
@@ -204,7 +206,6 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   Widget build(BuildContext context) {
-    // FileUtil.doooo();
     final queueProvider = Provider.of<QueueProvider>(context);
     return LoaderOverlay(
       useDefaultLoading: false,

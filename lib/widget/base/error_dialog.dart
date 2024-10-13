@@ -6,6 +6,7 @@ class ErrorDialog extends StatelessWidget {
   final double height;
   final String? title;
   final double textHeight;
+  final double textSpaceBetween;
 
   const ErrorDialog({
     super.key,
@@ -14,6 +15,7 @@ class ErrorDialog extends StatelessWidget {
     this.height = 60,
     this.title = null,
     this.textHeight = 90,
+    this.textSpaceBetween = 0,
   });
 
   @override
@@ -47,6 +49,7 @@ class ErrorDialog extends StatelessWidget {
                   ),
               ],
             ),
+            SizedBox(height: textSpaceBetween),
             SizedBox(
                 height: textHeight,
                 child: Text(text, style: const TextStyle(color: Colors.red))),
