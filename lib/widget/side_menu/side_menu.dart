@@ -14,8 +14,16 @@ import 'package:provider/provider.dart';
 
 import '../../provider/queue_provider.dart';
 
-class SideMenu extends StatelessWidget {
-  const SideMenu({Key? key}) : super(key: key);
+class SideMenu extends StatefulWidget {
+  SideMenu({Key? key}) : super(key: key);
+
+  @override
+  State<SideMenu> createState() => _SideMenuState();
+}
+
+class _SideMenuState extends State<SideMenu> {
+  int selectedTab = 0;
+  int? selectedExpansionTileItemTab;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +54,7 @@ class SideMenu extends StatelessWidget {
             const SizedBox(height: 20),
             SideMenuExpansionTile(
               title: 'Downloads',
+              active: selectedTab == 0,
               icon: const Icon(
                 Icons.download_rounded,
                 color: Colors.white,
@@ -60,6 +69,7 @@ class SideMenu extends StatelessWidget {
                         ColorFilter.mode(Colors.cyanAccent, BlendMode.srcIn),
                   ),
                   onTap: () => setGridFileTypeFilter(DLFileType.music),
+                  active: selectedExpansionTileItemTab == 0,
                 ),
                 SideMenuListTileItem(
                   text: 'Videos',
@@ -69,6 +79,7 @@ class SideMenu extends StatelessWidget {
                         ColorFilter.mode(Colors.pinkAccent, BlendMode.srcIn),
                   ),
                   onTap: () => setGridFileTypeFilter(DLFileType.video),
+                  active: selectedExpansionTileItemTab == 1,
                 ),
                 SideMenuListTileItem(
                   text: 'Documents',
@@ -78,6 +89,7 @@ class SideMenu extends StatelessWidget {
                         ColorFilter.mode(Colors.orangeAccent, BlendMode.srcIn),
                   ),
                   onTap: () => setGridFileTypeFilter(DLFileType.documents),
+                  active: selectedExpansionTileItemTab == 2,
                 ),
                 SideMenuListTileItem(
                   text: 'Programs',
@@ -88,6 +100,7 @@ class SideMenu extends StatelessWidget {
                   ),
                   size: 30,
                   onTap: () => setGridFileTypeFilter(DLFileType.program),
+                  active: selectedExpansionTileItemTab == 3,
                 ),
                 SideMenuListTileItem(
                   text: 'Archive',
@@ -98,29 +111,33 @@ class SideMenu extends StatelessWidget {
                   ),
                   size: 32,
                   onTap: () => setGridFileTypeFilter(DLFileType.compressed),
+                  active: selectedExpansionTileItemTab == 4,
                 )
               ],
             ),
             SideMenuItem(
-              onTap: setUnfinishedGridFilter,
+              onTap: () => setUnfinishedGridFilter(queueProvider),
               leading: SvgPicture.asset(
                 'assets/icons/unfinished.svg',
                 colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
               ),
               title: "Unfinished",
+              active: selectedTab == 1,
             ),
             SideMenuItem(
-              onTap: setFinishedFilter,
+              onTap: () => setFinishedFilter(queueProvider),
               leading: const Icon(
                 Icons.download_done_rounded,
                 color: Colors.white,
               ),
               title: "Finished",
+              active: selectedTab == 2,
             ),
             SideMenuItem(
               onTap: () => onQueueTabPressed(queueProvider),
               leading: Icon(Icons.queue, color: Colors.white),
               title: "Queues",
+              active: selectedTab == 3,
             ),
             const Spacer(),
             Padding(
@@ -146,6 +163,10 @@ class SideMenu extends StatelessWidget {
     queueProvider.setSelectedQueue(null);
     queueProvider.setQueueTabSelected(false);
     queueProvider.setDownloadQueueTopMenu(false);
+    setState(() {
+      selectedTab = 0;
+      selectedExpansionTileItemTab = null;
+    });
   }
 
   void onQueueTabPressed(QueueProvider queueProvider) {
@@ -154,6 +175,10 @@ class SideMenu extends StatelessWidget {
     queueProvider.setQueueTopMenu(true);
     queueProvider.setQueueTabSelected(true);
     queueProvider.setSelectedQueue(null);
+    setState(() {
+      selectedTab = 3;
+      selectedExpansionTileItemTab = null;
+    });
   }
 
   void onSettingPressed(BuildContext context) {
@@ -167,14 +192,52 @@ class SideMenu extends StatelessWidget {
 
   void setGridFileTypeFilter(DLFileType fileType) {
     PlutoGridUtil.setFilter("file_type", fileType.name);
+    int? selected;
+    switch (fileType) {
+      case DLFileType.music:
+        selected = 0;
+        break;
+      case DLFileType.video:
+        selected = 1;
+        break;
+      case DLFileType.documents:
+        selected = 2;
+        break;
+      case DLFileType.program:
+        selected = 3;
+        break;
+      case DLFileType.compressed:
+        selected = 4;
+        break;
+      default:
+        break;
+    }
+    setState(() => selectedExpansionTileItemTab = selected);
   }
 
-  void setUnfinishedGridFilter() {
-    PlutoGridUtil.setFilter("status", DownloadStatus.assembleComplete,
-        negate: true);
+  void setUnfinishedGridFilter(QueueProvider queueProvider) {
+    PlutoGridUtil.setFilter(
+      "status",
+      DownloadStatus.assembleComplete,
+      negate: true,
+    );
+    setState(() {
+      selectedTab = 1;
+      selectedExpansionTileItemTab = null;
+    });
+    queueProvider.setQueueTopMenu(false);
+    queueProvider.setQueueTabSelected(false);
+    queueProvider.setSelectedQueue(null);
   }
 
-  void setFinishedFilter() {
+  void setFinishedFilter(QueueProvider queueProvider) {
     PlutoGridUtil.setFilter("status", DownloadStatus.assembleComplete);
+    setState(() {
+      selectedTab = 2;
+      selectedExpansionTileItemTab = null;
+    });
+    queueProvider.setQueueTopMenu(false);
+    queueProvider.setQueueTabSelected(false);
+    queueProvider.setSelectedQueue(null);
   }
 }

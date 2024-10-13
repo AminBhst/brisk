@@ -52,10 +52,33 @@ ApplicationTheme briskV2Dark = ApplicationTheme(
       hoverIconColor: Color.fromRGBO(0, 128, 128, 1),
       hoverBackgroundColor: Color.fromRGBO(0, 128, 128, 0.3),
     ),
+    createQueueColor: const ButtonColor(
+      iconColor: const Color.fromRGBO(56, 209, 82, 0.9),
+      hoverIconColor: const Color.fromRGBO(56, 209, 82, 0.9),
+      hoverBackgroundColor: const Color.fromRGBO(56, 209, 82, 0.2),
+    ),
+    startQueueColor: const ButtonColor(
+      iconColor: const Color.fromRGBO(56, 209, 82, 0.9),
+      hoverIconColor: const Color.fromRGBO(56, 209, 82, 0.9),
+      hoverBackgroundColor: const Color.fromRGBO(56, 209, 82, 0.2),
+    ),
+    stopQueueColor: const ButtonColor(
+      iconColor: Color.fromRGBO(163, 23, 30, 1),
+      hoverIconColor: Color.fromRGBO(163, 23, 30, 1),
+      hoverBackgroundColor: Color.fromRGBO(163, 23, 30, 0.3),
+    ),
   ),
   sideMenuTheme: SideMenuTheme(
     backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
     briskLogoColor: Color.fromRGBO(53, 89, 143, 1),
+    activeTabIconColor: Colors.white,
+    activeTabBackgroundColor: Color.fromRGBO(53, 89, 143, 1),
+    tabHoverColor: Color.fromRGBO(64, 65, 66, 0.3),
+    tabIconColor: Colors.white,
+    tabBackgroundColor: Colors.transparent,
+    expansionTileExpandedColor: Color.fromRGBO(64, 65, 66, 0.8),
+    expansionTileItemActiveColor: Color.fromRGBO(10, 126, 242, 0.8),
+    expansionTileItemHoverColor: Color.fromRGBO(64, 65, 66, 0.2),
   ),
   downloadGridTheme: DownloadGridTheme(
     backgroundColor: const Color.fromRGBO(30, 30, 30, 1),
@@ -108,13 +131,28 @@ ApplicationTheme briskV2Dark = ApplicationTheme(
       borderHoverColor: Colors.blueGrey,
     ),
   ),
+  queuePageTheme: QueuePageTheme(
+    backgroundColor: const Color.fromRGBO(30, 30, 30, 1),
+    queueItemIconColor: Colors.white38,
+    queueItemTitleTextColor: Colors.white,
+    queueItemTitleDetailsTextColor: Colors.grey,
+    queueItemHoverColor: Colors.white12,
+  ),
 );
 
 ApplicationTheme briskOld = ApplicationTheme(
-  themeId: "Brisk Old",
+  themeId: "Signature Blue",
   sideMenuTheme: SideMenuTheme(
     backgroundColor: const Color.fromRGBO(55, 64, 81, 1),
     briskLogoColor: Colors.white,
+    activeTabIconColor: Colors.white,
+    activeTabBackgroundColor: Colors.blueGrey,
+    tabHoverColor: Colors.blueGrey,
+    tabIconColor: Colors.white,
+    tabBackgroundColor: Colors.transparent,
+    expansionTileExpandedColor: Colors.blueGrey,
+    expansionTileItemActiveColor: Colors.lightBlue,
+    expansionTileItemHoverColor: Colors.lightBlue,
   ),
   topMenuTheme: TopMenuTheme(
     backgroundColor: const Color.fromRGBO(46, 54, 67, 1),
@@ -152,6 +190,21 @@ ApplicationTheme briskOld = ApplicationTheme(
       iconColor: Colors.white,
       hoverIconColor: Colors.white,
       hoverBackgroundColor: Colors.blueGrey,
+    ),
+    createQueueColor: ButtonColor(
+      iconColor: Colors.white,
+      hoverIconColor: Colors.white,
+      hoverBackgroundColor: Colors.green,
+    ),
+    startQueueColor: ButtonColor(
+      iconColor: Colors.white,
+      hoverIconColor: Colors.white,
+      hoverBackgroundColor: Colors.green,
+    ),
+    stopQueueColor: ButtonColor(
+      iconColor: Colors.white,
+      hoverIconColor: Colors.white,
+      hoverBackgroundColor: Colors.redAccent,
     ),
   ),
   downloadGridTheme: DownloadGridTheme(
@@ -204,5 +257,12 @@ ApplicationTheme briskOld = ApplicationTheme(
       borderColor: Colors.blueGrey,
       borderHoverColor: Colors.blueGrey,
     ),
+  ),
+  queuePageTheme: QueuePageTheme(
+    backgroundColor: Color.fromRGBO(40, 46, 58, 1),
+    queueItemIconColor: Colors.white38,
+    queueItemTitleTextColor: Colors.white,
+    queueItemTitleDetailsTextColor: Colors.grey,
+    queueItemHoverColor: Colors.white12,
   ),
 );

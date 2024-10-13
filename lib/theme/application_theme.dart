@@ -6,6 +6,7 @@ class ApplicationTheme {
   final SideMenuTheme sideMenuTheme;
   final TopMenuTheme topMenuTheme;
   final DownloadGridTheme downloadGridTheme;
+  final QueuePageTheme queuePageTheme;
   final SettingTheme settingTheme;
 
   ApplicationTheme({
@@ -13,17 +14,50 @@ class ApplicationTheme {
     required this.sideMenuTheme,
     required this.topMenuTheme,
     required this.downloadGridTheme,
+    required this.queuePageTheme,
     required this.settingTheme,
+  });
+}
+
+class QueuePageTheme {
+  final Color backgroundColor;
+  final Color queueItemIconColor;
+  final Color queueItemTitleTextColor;
+  final Color queueItemTitleDetailsTextColor;
+  final Color queueItemHoverColor;
+
+  QueuePageTheme({
+    required this.backgroundColor,
+    required this.queueItemIconColor,
+    required this.queueItemTitleTextColor,
+    required this.queueItemTitleDetailsTextColor,
+    required this.queueItemHoverColor,
   });
 }
 
 class SideMenuTheme {
   final Color backgroundColor;
   final Color briskLogoColor;
+  final Color activeTabIconColor;
+  final Color activeTabBackgroundColor;
+  final Color tabIconColor;
+  final Color tabBackgroundColor;
+  final Color tabHoverColor;
+  final Color expansionTileExpandedColor;
+  final Color expansionTileItemHoverColor;
+  final Color expansionTileItemActiveColor;
 
   SideMenuTheme({
     required this.backgroundColor,
     required this.briskLogoColor,
+    required this.activeTabIconColor,
+    required this.activeTabBackgroundColor,
+    required this.tabIconColor,
+    required this.tabHoverColor,
+    required this.expansionTileExpandedColor,
+    required this.expansionTileItemHoverColor,
+    required this.expansionTileItemActiveColor,
+    this.tabBackgroundColor = Colors.transparent,
   });
 }
 
@@ -36,6 +70,9 @@ class TopMenuTheme {
   final ButtonColor removeColor;
   final ButtonColor addToQueueColor;
   final ButtonColor extensionColor;
+  final ButtonColor createQueueColor;
+  final ButtonColor startQueueColor;
+  final ButtonColor stopQueueColor;
 
   TopMenuTheme({
     required this.backgroundColor,
@@ -46,6 +83,9 @@ class TopMenuTheme {
     required this.removeColor,
     required this.addToQueueColor,
     required this.extensionColor,
+    required this.createQueueColor,
+    required this.startQueueColor,
+    required this.stopQueueColor,
   });
 }
 
