@@ -4,7 +4,7 @@ class TopMenuButton extends StatelessWidget {
   final String title;
   final Widget icon;
   final Color onHoverColor;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final double fontSize;
   final Color textColor;
 

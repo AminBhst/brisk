@@ -7,9 +7,9 @@ import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
+import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
-import 'package:brisk/util/settings_cache.dart';
 import 'package:path/path.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
@@ -44,6 +44,7 @@ class _TopMenuState extends State<TopMenu> {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
     final topMenuTheme =
         Provider.of<ThemeProvider>(context).activeTheme.topMenuTheme;
+    Provider.of<PlutoGridCheckRowProvider>(context);
     final size = MediaQuery.of(context).size;
     return Container(
       width: resolveWindowWidth(size),
@@ -70,40 +71,40 @@ class _TopMenuState extends State<TopMenu> {
               textColor: topMenuTheme.addUrlColor.textColor,
             ),
           ),
-          // TopMenuButton(
-          //
-          //   /// TODO comment in production
-          //   onTap: () => onMockDownloadPressed(context),
-          //   title: 'Mock',
-          //   icon: const Icon(Icons.not_started_outlined, color: Colors.red),
-          //   onHoverColor: Colors.red,
-          // ),
-          // TopMenuButton(
-          //   /// TODO comment in production
-          //   onTap: () => onMockDownloadPressed(context),
-          //   title: 'Mock',
-          //   icon: const Icon(Icons.not_started_outlined, color: Colors.red),
-          //   onHoverColor: Colors.red,
-          // ),
           TopMenuButton(
-            onTap: onDownloadPressed,
+            /// TODO comment in production
+            onTap: () => onMockDownloadPressed(context),
+            title: 'Mock',
+            icon: const Icon(Icons.not_started_outlined, color: Colors.red),
+            onHoverColor: Colors.red,
+          ),
+          TopMenuButton(
+            onTap: isDownloadButtonEnabled ? onDownloadPressed : null,
             title: 'Download',
             icon: Icon(
               Icons.download_rounded,
-              color: topMenuTheme.downloadColor.iconColor,
+              color: isDownloadButtonEnabled
+                  ? topMenuTheme.downloadColor.iconColor
+                  : Color.fromRGBO(79, 79, 79, 0.5),
             ),
             onHoverColor: topMenuTheme.downloadColor.hoverBackgroundColor,
-            textColor: topMenuTheme.downloadColor.textColor,
+            textColor: isDownloadButtonEnabled
+                ? topMenuTheme.downloadColor.textColor
+                : Color.fromRGBO(79, 79, 79, 1),
           ),
           TopMenuButton(
-            onTap: onStopPressed,
+            onTap: isPauseButtonEnabled ? onStopPressed : null,
             title: 'Stop',
             icon: Icon(
               Icons.stop_rounded,
-              color: topMenuTheme.stopColor.iconColor,
+              color: isPauseButtonEnabled
+                  ? topMenuTheme.stopColor.iconColor
+                  : Color.fromRGBO(79, 79, 79, 0.5),
             ),
             onHoverColor: topMenuTheme.stopColor.hoverBackgroundColor,
-            textColor: topMenuTheme.stopColor.textColor,
+            textColor: isPauseButtonEnabled
+                ? topMenuTheme.stopColor.textColor
+                : Color.fromRGBO(79, 79, 79, 1),
           ),
           TopMenuButton(
             onTap: onStopAllPressed,
@@ -326,5 +327,24 @@ class _TopMenuState extends State<TopMenu> {
     HiveUtil.instance.downloadItemsBox.delete(id);
     HiveUtil.instance.removeDownloadFromQueues(id);
     provider.downloads.removeWhere((key, _) => key == id);
+  }
+
+  bool get isDownloadButtonEnabled {
+    final selectedRowIds = PlutoGridUtil.selectedRowIds;
+    return (selectedRowIds.isEmpty)
+        ? false
+        : (provider.downloads.values
+                .where((item) => selectedRowIds.contains(item.downloadItem.id))
+                .every((item) => item.startButtonEnabled) ||
+            provider.downloads.values.isEmpty);
+  }
+
+  bool get isPauseButtonEnabled {
+    final selectedRowIds = PlutoGridUtil.selectedRowIds;
+    return (selectedRowIds.isEmpty || provider.downloads.values.isEmpty)
+        ? false
+        : provider.downloads.values
+            .where((item) => selectedRowIds.contains(item.downloadItem.id))
+            .every((item) => item.pauseButtonEnabled);
   }
 }

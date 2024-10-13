@@ -13,6 +13,7 @@ import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';
 import 'package:brisk/model/isolate/isolate_args_pair.dart';
+import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/notification_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,6 +30,10 @@ class DownloadRequestProvider with ChangeNotifier {
   Map<int, DownloadProgressMessage> downloads = {};
   Map<int, StreamChannel?> engineChannels = {};
   Map<int, Isolate?> engineIsolates = {};
+
+  PlutoGridCheckRowProvider plutoProvider;
+
+  DownloadRequestProvider(this.plutoProvider);
 
   static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
@@ -95,6 +100,7 @@ class DownloadRequestProvider with ChangeNotifier {
     final isolate = await Isolate.spawn(
       HttpDownloadEngine.startDownloadRequest,
       IsolateArgsPair(rPort.sendPort, id),
+      errorsAreFatal: false,
     );
     engineIsolates[id] = isolate;
     engineChannels[id] = channel;
@@ -115,6 +121,7 @@ class DownloadRequestProvider with ChangeNotifier {
     download?.startButtonEnabled = message.startButtonEnabled;
     download?.pauseButtonEnabled = message.pauseButtonEnabled;
     notifyListeners();
+    plutoProvider?.notifyListeners();
   }
 
   void _handleDownloadProgressMessage(DownloadProgressMessage progress) {
@@ -237,6 +244,7 @@ class DownloadRequestProvider with ChangeNotifier {
     // if (_tmpTime + 90 > _nowMillis) return;
     // _tmpTime = _nowMillis;
     if (engineChannels[progress.downloadItem.id] == null) return;
+    plutoProvider.notifyListeners();
     notifyListeners();
     PlutoGridUtil.updateRowCells(progress);
   }

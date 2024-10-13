@@ -30,12 +30,11 @@ class PlutoGridUtil {
     _runPeriodicCachedRowClear();
   }
 
-
   static void _runPeriodicCachedRowClear() {
     if (cacheClearTimer != null) return;
     cacheClearTimer = Timer.periodic(
       const Duration(seconds: 3),
-          (timer) => cachedRows.clear(),
+      (timer) => cachedRows.clear(),
     );
   }
 
@@ -84,7 +83,14 @@ class PlutoGridUtil {
         0;
   }
 
-  static void doOperationOnCheckedRows(Function(int id, PlutoRow row) operation) {
+  static List<int> get selectedRowIds => _stateManager?.checkedRows == null
+      ? []
+      : _stateManager!.checkedRows
+          .map((row) => int.parse(row.cells["id"]!.value.toString()))
+          .toList();
+
+  static void doOperationOnCheckedRows(
+      Function(int id, PlutoRow row) operation) {
     final selectedRows = _stateManager?.checkedRows;
     if (selectedRows == null) return;
     for (var row in selectedRows) {

@@ -1,5 +1,6 @@
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/provider/download_request_provider.dart';
+import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
@@ -160,6 +161,10 @@ class _DownloadGridState extends State<DownloadGrid> {
         Provider.of<DownloadRequestProvider>(context, listen: false);
     final downloadGridTheme =
         Provider.of<ThemeProvider>(context).activeTheme.downloadGridTheme;
+    final plutoProvider = Provider.of<PlutoGridCheckRowProvider>(
+      context,
+      listen: false,
+    );
     final queueProvider = Provider.of<QueueProvider>(context);
     final size = MediaQuery.of(context).size;
     return Material(
@@ -184,6 +189,7 @@ class _DownloadGridState extends State<DownloadGrid> {
           ),
           columns: columns,
           rows: [],
+          onRowChecked: (row) => plutoProvider.notifyListeners(),
           onLoaded: (event) async {
             PlutoGridUtil.setStateManager(event.stateManager);
             PlutoGridUtil.plutoStateManager

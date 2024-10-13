@@ -4,6 +4,7 @@ import 'package:brisk/browser_extension//browser_extension_server.dart';
 import 'package:brisk/constants/app_closure_behaviour.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/download_request_provider.dart';
+import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
@@ -32,7 +33,8 @@ import 'util/file_util.dart';
 import 'util/settings_cache.dart';
 
 // TODO add current version in settings
-// TODO Add log files for errors
+// TODO Fix resizing the window when a row is selected
+// TODO handle stop all button availability as well as download and stop buttons in queue top menu
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
@@ -49,9 +51,6 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<DownloadRequestProvider>(
-          create: (_) => DownloadRequestProvider(),
-        ),
         ChangeNotifierProvider<SettingsProvider>(
           create: (_) => SettingsProvider(),
         ),
@@ -60,6 +59,21 @@ void main() async {
         ),
         ChangeNotifierProvider<ThemeProvider>(
           create: (_) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider<PlutoGridCheckRowProvider>(
+          create: (_) => PlutoGridCheckRowProvider(),
+        ),
+        ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
+            DownloadRequestProvider>(
+          create: (_) => DownloadRequestProvider(PlutoGridCheckRowProvider()),
+          update: (context, plutoProvider, downloadProvider) {
+            if (downloadProvider == null) {
+              return DownloadRequestProvider(plutoProvider);
+            } else {
+              downloadProvider.plutoProvider = plutoProvider;
+              return downloadProvider;
+            }
+          },
         ),
       ],
       child: const MyApp(),
