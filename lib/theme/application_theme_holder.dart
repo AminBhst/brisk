@@ -302,10 +302,10 @@ ApplicationTheme signatureBlue = ApplicationTheme(
     rowColor: Color.fromRGBO(49, 56, 72, 1),
   ),
   settingTheme: SettingTheme(
-    windowBackgroundColor: const Color.fromRGBO(25, 25, 25, 1),
+    windowBackgroundColor: Color.fromRGBO(33, 43, 49, 1.0),
     pageTheme: SettingPageTheme(
       pageBackgroundColor: Colors.black26,
-      groupBackgroundColor: const Color.fromRGBO(42, 43, 43, 1),
+      groupBackgroundColor: Color.fromRGBO(33, 43, 49, 6.0),
       groupTitleTextColor: Colors.white,
       titleTextColor: Colors.white,
       widgetColor: SettingWidgetColor(
@@ -330,10 +330,10 @@ ApplicationTheme signatureBlue = ApplicationTheme(
     ),
     sideMenuTheme: SettingSideMenuTheme(
       backgroundColor: Colors.black26,
-      activeTabBackgroundColor: Colors.transparent,
+      activeTabBackgroundColor: Colors.blueGrey,
       activeTabIconColor: Colors.white,
       inactiveTabIconColor: Colors.white,
-      inactiveTabHoverBackgroundColor: const Color.fromRGBO(38, 38, 38, 1),
+      inactiveTabHoverBackgroundColor: Colors.black26,
     ),
     cancelButtonColor: ButtonColor(
       iconColor: Colors.transparent,
