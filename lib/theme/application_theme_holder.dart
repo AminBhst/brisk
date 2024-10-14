@@ -159,6 +159,10 @@ ApplicationTheme celestialDark = ApplicationTheme(
     backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
     textColor: Colors.white,
     iconColor: Colors.white,
+    checkBoxColor: CheckBoxColor(
+      borderColor: Colors.grey,
+      activeColor: Color.fromRGBO(53, 89, 143, 1),
+    ),
     addButtonColor: ButtonColor(
       iconColor: Colors.transparent,
       hoverIconColor: Colors.transparent,
@@ -203,6 +207,10 @@ ApplicationTheme signatureBlue = ApplicationTheme(
     backgroundColor: Color.fromRGBO(38, 50, 56, 1),
     textColor: Colors.white,
     iconColor: Colors.white,
+    checkBoxColor: CheckBoxColor(
+      borderColor: Colors.grey,
+      activeColor: Colors.blueGrey,
+    ),
     addButtonColor: ButtonColor(
       iconColor: Colors.transparent,
       hoverIconColor: Colors.transparent,
