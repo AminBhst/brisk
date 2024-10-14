@@ -1,5 +1,7 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AskDuplicationAction extends StatelessWidget {
   final bool fileDuplication;
@@ -17,9 +19,11 @@ class AskDuplicationAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return AlertDialog(
       insetPadding: const EdgeInsets.all(2),
-      backgroundColor: const Color.fromRGBO(25, 25, 25, 1),
+      backgroundColor: theme.backgroundColor,
       icon:
           const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 40),
       content: SizedBox(
