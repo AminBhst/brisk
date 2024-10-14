@@ -1,5 +1,6 @@
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_queue.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +30,13 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     final size = MediaQuery.of(context).size;
     return ClosableWindow(
       width: 800,
       height: 500,
+      backgroundColor: theme.backgroundColor,
       disableCloseButton: true,
       padding: EdgeInsets.only(top: 60),
       content: SizedBox(
@@ -52,7 +56,8 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.fromBorderSide(
-                              BorderSide(color: Colors.white12),
+                              BorderSide(
+                                  color: theme.innerContainerBorderColor),
                             ),
                           ),
                           child: Column(
@@ -63,13 +68,18 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                                 "assets/icons/blank.svg",
                                 height: 90,
                                 width: 90,
-                                colorFilter:
-                                ColorFilter.mode(Colors.white10, BlendMode.srcIn),
+                                colorFilter: ColorFilter.mode(
+                                  theme.placeHolderIconColor,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                               const SizedBox(height: 10),
                               Text(
                                 "Queue is empty",
-                                style: TextStyle(color: Colors.white10, fontSize: 18),
+                                style: TextStyle(
+                                  color: theme.placeHolderIconColor,
+                                  fontSize: 18,
+                                ),
                               ),
                             ],
                           ),
@@ -148,16 +158,22 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
               children: [
                 RoundedOutlinedButton(
                   onPressed: onCancelPressed,
-                  borderColor: Colors.red,
-                  textColor: Colors.red,
+                  borderColor: theme.cancelButtonColor.borderColor,
+                  hoverTextColor: theme.cancelButtonColor.hoverTextColor,
+                  hoverBackgroundColor:
+                      theme.cancelButtonColor.hoverBackgroundColor,
+                  textColor: theme.cancelButtonColor.textColor,
                   width: 95,
                   text: "Cancel",
                 ),
                 const SizedBox(width: 50),
                 RoundedOutlinedButton(
                   onPressed: onSavePressed,
-                  borderColor: Colors.green,
-                  textColor: Colors.green,
+                  borderColor: theme.addButtonColor.borderColor,
+                  hoverTextColor: theme.addButtonColor.hoverTextColor,
+                  hoverBackgroundColor:
+                      theme.addButtonColor.hoverBackgroundColor,
+                  textColor: theme.addButtonColor.textColor,
                   width: 95,
                   text: "Save",
                 )

@@ -115,6 +115,9 @@ class AlertDialogTheme {
   final ButtonColor cancelButtonColor;
   final TextFieldColor urlFieldColor;
   final CheckBoxColor checkBoxColor;
+  final Color innerContainerBorderColor;
+  final Color placeHolderIconColor;
+  final Color placeHolderTextColor;
 
   AlertDialogTheme({
     required this.backgroundColor,
@@ -124,6 +127,9 @@ class AlertDialogTheme {
     required this.cancelButtonColor,
     required this.urlFieldColor,
     required this.checkBoxColor,
+    required this.innerContainerBorderColor,
+    required this.placeHolderIconColor,
+    required this.placeHolderTextColor,
   });
 }
 

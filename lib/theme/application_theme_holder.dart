@@ -157,12 +157,15 @@ ApplicationTheme celestialDark = ApplicationTheme(
   ),
   alertDialogTheme: AlertDialogTheme(
     backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
+    innerContainerBorderColor: Colors.white30,
     textColor: Colors.white,
     iconColor: Colors.white,
     checkBoxColor: CheckBoxColor(
       borderColor: Colors.grey,
       activeColor: Color.fromRGBO(53, 89, 143, 1),
     ),
+    placeHolderIconColor: Colors.white10,
+    placeHolderTextColor: Colors.white10,
     addButtonColor: ButtonColor(
       iconColor: Colors.transparent,
       hoverIconColor: Colors.transparent,
@@ -204,9 +207,12 @@ ApplicationTheme signatureBlue = ApplicationTheme(
     expansionTileItemHoverColor: Colors.lightBlue,
   ),
   alertDialogTheme: AlertDialogTheme(
-    backgroundColor: Color.fromRGBO(38, 50, 56, 1),
+    backgroundColor: Color.fromRGBO(33, 43, 49, 1.0),
+    innerContainerBorderColor: Colors.white38,
     textColor: Colors.white,
     iconColor: Colors.white,
+    placeHolderIconColor: Colors.white10,
+    placeHolderTextColor: Colors.white10,
     checkBoxColor: CheckBoxColor(
       borderColor: Colors.grey,
       activeColor: Colors.blueGrey,
