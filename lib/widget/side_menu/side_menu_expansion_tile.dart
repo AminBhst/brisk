@@ -30,7 +30,7 @@ class _SideMenuExpansionTileState extends State<SideMenuExpansionTile> {
     final sideMenuTheme =
         Provider.of<ThemeProvider>(context).activeTheme.sideMenuTheme;
     return Container(
-      width: size.width * 0.2,
+      width: 150,
       color:
           widget.active ? sideMenuTheme.activeTabBackgroundColor : Colors.transparent,
       child: ExpansionTile(
@@ -93,5 +93,6 @@ class _SideMenuExpansionTileState extends State<SideMenuExpansionTile> {
     );
   }
 
-  bool minimizedSideMenu(Size size) => size.width < 1300;
+  bool minimizedSideMenu(Size size) => true;
+  // bool minimizedSideMenu(Size size) => size.width < 1300;
 }

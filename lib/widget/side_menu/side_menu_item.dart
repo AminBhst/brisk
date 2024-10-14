@@ -48,5 +48,7 @@ class SideMenuItem extends StatelessWidget {
     );
   }
 
-  bool minimizedSideMenu(Size size) => size.width < 1300;
+
+  bool minimizedSideMenu(Size size) => true;
+  // bool minimizedSideMenu(Size size) => size.width < 1300;
 }
