@@ -1,5 +1,7 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ConfirmationDialog extends StatelessWidget {
   final VoidCallback onConfirmPressed;
@@ -13,7 +15,10 @@ class ConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return AlertDialog(
+      backgroundColor: theme.backgroundColor,
       content: Container(
         child: Text(
           title,
@@ -23,16 +28,20 @@ class ConfirmationDialog extends StatelessWidget {
       actions: [
         RoundedOutlinedButton(
           text: "No",
-          textColor: Colors.red,
-          borderColor: Colors.red,
+          borderColor: theme.cancelButtonColor.borderColor,
+          hoverTextColor: theme.cancelButtonColor.hoverTextColor,
+          hoverBackgroundColor: theme.cancelButtonColor.hoverBackgroundColor,
+          textColor: theme.cancelButtonColor.textColor,
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         RoundedOutlinedButton(
           text: "Yes",
-          textColor: Colors.green,
-          borderColor: Colors.green,
+          borderColor: theme.addButtonColor.borderColor,
+          hoverTextColor: theme.addButtonColor.hoverTextColor,
+          hoverBackgroundColor: theme.addButtonColor.hoverBackgroundColor,
+          textColor: theme.addButtonColor.textColor,
           onPressed: () {
             Navigator.of(context).pop();
             onConfirmPressed();

@@ -1,4 +1,6 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ErrorDialog extends StatelessWidget {
   final String text;
@@ -20,9 +22,12 @@ class ErrorDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return AlertDialog(
       insetPadding: const EdgeInsets.all(10),
-      backgroundColor: Colors.black,
+      backgroundColor: theme.backgroundColor,
+      surfaceTintColor: theme.backgroundColor,
       content: SizedBox(
         width: width,
         height: height,

@@ -20,6 +20,7 @@ class BrowserExtensionServer {
   static bool _cancelClicked = false;
 
   static void setup(BuildContext context) async {
+    _showPortInUseError(context, 123.toString());
     if (_isServerRunning) return;
 
     final port = _extensionPort;
