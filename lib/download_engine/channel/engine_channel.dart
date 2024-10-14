@@ -50,7 +50,7 @@ class EngineChannel extends IsolateChannelWrapper {
       return;
     }
     this.downloadItem = message.downloadItem;
-    this.buildLogger();
+    this.buildLogger(message);
     if (message.command == DownloadCommand.pause) {
       this.paused = true;
       lastPauseTimeMillis = DateTime.now().millisecondsSinceEpoch;
@@ -61,11 +61,11 @@ class EngineChannel extends IsolateChannelWrapper {
     }
   }
 
-  void buildLogger() {
+  void buildLogger(DownloadIsolateMessage message) {
     if (logger != null) return;
     this.logger = Logger(
       downloadUid: downloadItem!.uid,
-      logBaseDir: HttpDownloadEngine.downloadSettings.baseTempDir,
+      logBaseDir: message.settings.baseTempDir,
     )..enablePeriodicLogFlush();
   }
 
