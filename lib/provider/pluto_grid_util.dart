@@ -83,6 +83,8 @@ class PlutoGridUtil {
         0;
   }
 
+  static bool get selectedRowExists => !selectedRowIds.isEmpty;
+
   static List<int> get selectedRowIds => _stateManager?.checkedRows == null
       ? []
       : _stateManager!.checkedRows

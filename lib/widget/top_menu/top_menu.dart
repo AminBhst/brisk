@@ -106,36 +106,48 @@ class _TopMenuState extends State<TopMenu> {
                 ? topMenuTheme.stopColor.textColor
                 : Color.fromRGBO(79, 79, 79, 1),
           ),
+          // TopMenuButton(
+          //   onTap: onStopAllPressed,
+          //   title: 'Stop All',
+          //   icon: Icon(
+          //     Icons.stop_circle_outlined,
+          //     color: topMenuTheme.stopAllColor.iconColor,
+          //   ),
+          //   onHoverColor: topMenuTheme.stopAllColor.hoverBackgroundColor,
+          //   textColor: topMenuTheme.stopAllColor.textColor,
+          // ),
           TopMenuButton(
-            onTap: onStopAllPressed,
-            title: 'Stop All',
-            icon: Icon(
-              Icons.stop_circle_outlined,
-              color: topMenuTheme.stopAllColor.iconColor,
-            ),
-            onHoverColor: topMenuTheme.stopAllColor.hoverBackgroundColor,
-            textColor: topMenuTheme.stopAllColor.textColor,
-          ),
-          TopMenuButton(
-            onTap: () => onRemovePressed(context),
+            onTap: PlutoGridUtil.selectedRowExists
+                ? () => onRemovePressed(context)
+                : null,
             title: 'Remove',
             icon: Icon(
               Icons.delete,
-              color: topMenuTheme.removeColor.iconColor,
+              color: PlutoGridUtil.selectedRowExists
+                  ? topMenuTheme.removeColor.iconColor
+                  : disabledButtonColor,
             ),
             onHoverColor: topMenuTheme.removeColor.hoverBackgroundColor,
-            textColor: topMenuTheme.removeColor.textColor,
+            textColor: PlutoGridUtil.selectedRowExists
+                ? topMenuTheme.removeColor.textColor
+                : disabledButtonTextColor,
           ),
           TopMenuButton(
-            onTap: () => onAddToQueuePressed(context),
+            onTap: PlutoGridUtil.selectedRowExists
+                ? () => onAddToQueuePressed(context)
+                : null,
             title: 'Add To Queue',
             icon: Icon(
               Icons.queue,
-              color: topMenuTheme.addToQueueColor.iconColor,
+              color: PlutoGridUtil.selectedRowExists
+                  ? topMenuTheme.addToQueueColor.iconColor
+                  : disabledButtonColor,
             ),
             fontSize: 10.5,
             onHoverColor: topMenuTheme.addToQueueColor.hoverBackgroundColor,
-            textColor: topMenuTheme.addToQueueColor.textColor,
+            textColor: PlutoGridUtil.selectedRowExists
+                ? topMenuTheme.addToQueueColor.textColor
+                : disabledButtonTextColor,
           ),
           SizedBox(width: 5),
           // Container(color: Colors.white, width: 1, height: 40),
@@ -174,85 +186,9 @@ class _TopMenuState extends State<TopMenu> {
     );
   }
 
-  static bool assembleFile(DownloadItemModel downloadItem,
-      Directory baseTempDir, Directory baseSaveDir) {
-    ayo(downloadItem);
-    final tempPath = join(baseTempDir.path, downloadItem.uid);
-    final tempDir = Directory(tempPath);
+  Color get disabledButtonColor => Color.fromRGBO(79, 79, 79, 0.5);
 
-    final tempFies = tempDir.listSync().map((o) => o as File).toList()
-      ..sort(sortByByteRanges);
-
-    File fileToWrite = File(downloadItem.filePath);
-    if (fileToWrite.existsSync()) {
-      final newFilePath = FileUtil.getFilePath(
-        downloadItem.fileName,
-        baseSaveDir: baseSaveDir,
-        checkFileDuplicationOnly: true,
-      );
-      fileToWrite = File(newFilePath);
-    }
-    fileToWrite.createSync(recursive: true);
-    print("Creating file...");
-    for (var file in tempFies) {
-      final bytes = file.readAsBytesSync();
-      fileToWrite.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
-    }
-    final assembleSuccessful =
-        fileToWrite.lengthSync() == downloadItem.contentLength;
-    print(
-        "SUCCESS ????????????????????????? ${assembleSuccessful} ::::  ${fileToWrite.lengthSync()} SHOULD BE ${downloadItem.contentLength}");
-    if (assembleSuccessful) {
-      // _connectionIsolates[downloadItem.id]?.values.forEach((isolate) {
-      //   isolate.kill();
-      // });
-      // tempDir.delete(recursive: true);
-    }
-    return assembleSuccessful;
-  }
-
-  static void ayo(DownloadItemModel downloadItem) {
-    print("Validating temp files integrity...");
-    final tempPath = join(
-        Directory("C:\\Users\\RyeWell\\Downloads\\Brisk\\Temp").path,
-        downloadItem.uid);
-    final tempDir = Directory(tempPath);
-    final tempFies = getTempFilesSorted(tempDir);
-    for (int i = 0; i < tempFies.length; i++) {
-      if (i == tempFies.length - 1) {
-        return;
-      }
-      final file = tempFies[i];
-      final nextFile = tempFies[i + 1];
-      final startNext = getStartByteFromTempFile(nextFile);
-      final end = getEndByteFromTempFile(file);
-      final start = getStartByteFromTempFile(file);
-      if (startNext - 1 != end) {
-        print(
-            "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)}");
-      }
-      if (end - start + 1 != file.lengthSync()) {
-        print("Found bad length ::: ${basename(file.path)}");
-      }
-      final badTemps = tempFies.where((f) => f != file).where((f) {
-        final startF = getStartByteFromTempFile(f);
-        final endF = getEndByteFromTempFile(f);
-        final fSeg = Segment(startF, endF);
-        final sseg = Segment(start, end);
-        final overlaps = fSeg.overlapsWithOther(sseg);
-        // isInRangeOfOther(Segment(start, end)) || Segment(startF, endF).overlapsWithOther(Segment(start, end));
-        final overlappss = sseg.overlapsWithOther(fSeg);
-        if (overlaps || overlappss) {
-          print("OVERLAPS!!!!!");
-          print("fSeg = $fSeg sseg = $sseg");
-        }
-        return false;
-      }).toList();
-      for (final t in badTemps) {
-        print("Found bad temp!!");
-      }
-    }
-  }
+  Color get disabledButtonTextColor => Color.fromRGBO(79, 79, 79, 1);
 
   void onMockDownloadPressed(BuildContext context) async {
     final item = DownloadItem.fromUrl(mockDownloadUrl);
@@ -329,6 +265,7 @@ class _TopMenuState extends State<TopMenu> {
     provider.downloads.removeWhere((key, _) => key == id);
   }
 
+  /// TODO Other buttons should only be active if a download row is selected
   /// TODO return false if download is complete
   bool get isDownloadButtonEnabled {
     final selectedRowIds = PlutoGridUtil.selectedRowIds;
