@@ -137,9 +137,6 @@ class HttpDownloadEngine {
     );
   }
 
-  /// TODO similar to this, we should have a queue of connections that should be assigned every N seconds
-  /// TODO by doing this, we can assign all of them together. Also, this queue should be run after all connections
-  /// TODO have been spawned. This way, we git rid of the possible overlapping of requests
   static void _startDynamicConnectionSpawnerTimer() {
     if (_dynamicConnectionSpawnerTimer != null) {
       return;
