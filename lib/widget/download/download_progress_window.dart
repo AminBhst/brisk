@@ -1,5 +1,6 @@
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/provider/download_request_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:flutter/material.dart';
@@ -24,10 +25,14 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
   Widget build(BuildContext context) {
     final provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);
+    final theme = Provider.of<ThemeProvider>(context)
+        .activeTheme
+        .downloadProgressWindowTheme;
     final size = MediaQuery.of(context).size;
     final downloadProgress = provider.downloads[widget.downloadId]!;
     return ClosableWindow(
       width: resolveWindowWidth(size),
+      backgroundColor: theme.windowBackgroundColor,
       height: showDetails
           ? resolveWindowHeight(size) + 280
           : resolveWindowHeight(size),
@@ -35,7 +40,11 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
         children: [
           Container(
             decoration: BoxDecoration(
-                border: Border.all(color: Colors.white10, width: 1),
+              color: theme.infoContainerBackgroundColor,
+                border: Border.all(
+                  color: theme.infoContainerBorderColor,
+                  width: 1,
+                ),
                 borderRadius: BorderRadius.circular(10)),
             child: Padding(
               padding: EdgeInsets.all(10),
@@ -238,7 +247,8 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                           style: TextStyle(color: Colors.white),
                         ),
                       )),
-              SizedBox(width: resolveButtonsXMargin(size, pauseStartMargin: true)),
+              SizedBox(
+                  width: resolveButtonsXMargin(size, pauseStartMargin: true)),
               Selector<DownloadRequestProvider, bool>(
                   selector: (_, provider) =>
                       provider.downloads[widget.downloadId]!.startButtonEnabled,
@@ -266,11 +276,12 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
               height: resolveDetailsHeight(size),
               width: 620,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.black87, width: 2),
-                color: const Color.fromRGBO(45, 45, 45, 1),
+                border: Border.all(color: theme.detailsContainerBorderColor, width: 2),
+                color: theme.detailsContainerBackgroundColor,
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: Selector<DownloadRequestProvider, List<DownloadProgressMessage>>(
+              child: Selector<DownloadRequestProvider,
+                  List<DownloadProgressMessage>>(
                 selector: (_, provider) =>
                     provider.downloads[widget.downloadId]!.connectionProgresses,
                 builder: (_, progresses, __) {

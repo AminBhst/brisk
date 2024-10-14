@@ -15,6 +15,15 @@ class ApplicationThemeHolder {
 
 ApplicationTheme celestialDark = ApplicationTheme(
   themeId: "Celestial Dark",
+  downloadProgressWindowTheme: DownloadProgressWindowTheme(
+    windowBackgroundColor: const Color.fromRGBO(25, 25, 25, 1),
+    detailsContainerBorderColor: Colors.white10,
+    detailsContainerBackgroundColor: const Color.fromRGBO(25, 25, 25, 0.7),
+    detailsContainerTextColor: Colors.white,
+    infoContainerBorderColor: Colors.white24,
+    infoContainerBackgroundColor: const Color.fromRGBO(25, 25, 25, 0.7),
+    infoContainerTextColor: Colors.white,
+  ),
   topMenuTheme: TopMenuTheme(
     backgroundColor: const Color.fromRGBO(20, 20, 20, 0.85),
     addUrlColor: const ButtonColor(
@@ -194,6 +203,15 @@ ApplicationTheme celestialDark = ApplicationTheme(
 
 ApplicationTheme signatureBlue = ApplicationTheme(
   themeId: "Signature Blue",
+  downloadProgressWindowTheme: DownloadProgressWindowTheme(
+    windowBackgroundColor: Color.fromRGBO(33, 43, 49, 1.0),
+    detailsContainerBorderColor: Colors.white24,
+    detailsContainerBackgroundColor: Color.fromRGBO(33, 43, 49, 8.0),
+    detailsContainerTextColor: Colors.white,
+    infoContainerBorderColor: Colors.white24,
+    infoContainerBackgroundColor: Color.fromRGBO(33, 43, 49, 9.0),
+    infoContainerTextColor: Colors.white,
+  ),
   sideMenuTheme: SideMenuTheme(
     backgroundColor: const Color.fromRGBO(55, 64, 81, 1),
     briskLogoColor: Colors.white,

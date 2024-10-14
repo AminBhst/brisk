@@ -9,6 +9,7 @@ class ApplicationTheme {
   final QueuePageTheme queuePageTheme;
   final SettingTheme settingTheme;
   AlertDialogTheme alertDialogTheme;
+  DownloadProgressWindowTheme downloadProgressWindowTheme;
 
   ApplicationTheme({
     required this.themeId,
@@ -18,6 +19,7 @@ class ApplicationTheme {
     required this.queuePageTheme,
     required this.settingTheme,
     required this.alertDialogTheme,
+    required this.downloadProgressWindowTheme,
   });
 }
 
@@ -140,6 +142,26 @@ class CheckBoxColor {
   CheckBoxColor({
     required this.borderColor,
     required this.activeColor,
+  });
+}
+
+class DownloadProgressWindowTheme {
+  final Color windowBackgroundColor;
+  final Color detailsContainerBorderColor;
+  final Color detailsContainerBackgroundColor;
+  final Color detailsContainerTextColor;
+  final Color infoContainerBorderColor;
+  final Color infoContainerBackgroundColor;
+  final Color infoContainerTextColor;
+
+  DownloadProgressWindowTheme({
+    required this.windowBackgroundColor,
+    required this.detailsContainerBorderColor,
+    required this.detailsContainerBackgroundColor,
+    required this.detailsContainerTextColor,
+    required this.infoContainerBorderColor,
+    required this.infoContainerBackgroundColor,
+    required this.infoContainerTextColor,
   });
 }
 
