@@ -52,16 +52,6 @@ class FileUtil {
     return completer.future;
   }
 
-  static doooo(String uid) {
-    print("=================================================");
-    final dir = Directory("/home/ryewell/Downloads/Brisk/Temp/$uid");
-    final list = dir.listSync()..sort(sortByByteRanges);
-    for (var value in list) {
-      value = value as File;
-      print("${basename(value.path)} Size : ${value.lengthSync()}");
-    }
-  }
-
   static String getFilePath(
     String fileName, {
     Directory? baseSaveDir,
