@@ -1,5 +1,6 @@
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/queue_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
@@ -19,10 +20,13 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return ClosableWindow(
       width: 350,
       height: 250,
       disableCloseButton: true,
+      backgroundColor: theme.backgroundColor,
       padding: EdgeInsets.only(top: 60),
       content: Column(
         children: [
