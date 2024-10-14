@@ -551,8 +551,12 @@ abstract class BaseHttpDownloadConnection {
     logger?.info(str.toString());
     if (tempFiles.length == 1) {
       final file = basename(tempFiles[0].path);
-      final endByte = getEndByteFromTempFileName(file);
-      if (this.segment.endByte != endByte) {
+      final fileEndByte = getEndByteFromTempFileName(file);
+      if (this.endByte == downloadItem.contentLength &&
+          fileEndByte == downloadItem.contentLength - 1) {
+        return true;
+      }
+      if (this.endByte != fileEndByte) {
         return false;
       }
     }
@@ -571,8 +575,14 @@ abstract class BaseHttpDownloadConnection {
         logger?.info(
             "IsDownloadComplete::Found inconsistent ranges : ${basename(prevFile.path)} != ${basename(file.path)}");
       }
-      if (isLastFile && fileEndByte != this.endByte) {
-        return false;
+      if (isLastFile) {
+        if (this.endByte == downloadItem.contentLength &&
+            fileEndByte == downloadItem.contentLength - 1) {
+          return true;
+        }
+        if (fileEndByte != this.endByte) {
+          return false;
+        }
       }
     }
     return true;
@@ -772,6 +782,12 @@ abstract class BaseHttpDownloadConnection {
   }
 
   bool isStartNotAllowed(bool connectionReset, bool connectionReuse) {
+    if (startByte >= endByte ||
+        startByte > downloadItem.contentLength ||
+        endByte > downloadItem.contentLength) {
+      logger?.warn("Invalid requested byte ranges $segment. Skipping...");
+      return true;
+    }
     if (connectionReuse) {
       return false;
     }
