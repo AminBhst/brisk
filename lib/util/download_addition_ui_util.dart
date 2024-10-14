@@ -79,9 +79,9 @@ class DownloadAdditionUiUtil {
     item.contentLength = fileInfo.contentLength;
     item.fileName = fileInfo.fileName;
     item.fileType = FileUtil.detectFileType(fileInfo.fileName).name;
-    final fileExists = FileUtil.checkFileDuplication(item.fileName);
+    // final fileExists = FileUtil.checkFileDuplication(item.fileName);
     final dlDuplication = checkDownloadDuplication(item.fileName);
-    if (dlDuplication || fileExists) {
+    if (dlDuplication) {
       final behaviour = SettingsCache.fileDuplicationBehaviour;
       switch (behaviour) {
         case FileDuplicationBehaviour.ask:
