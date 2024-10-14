@@ -1,9 +1,11 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:provider/provider.dart';
 
 class AddUrlDialog extends StatefulWidget {
   final bool updateDialog;
@@ -20,33 +22,41 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.addUrlDialogTheme;
     return LoaderOverlay(
       useDefaultLoading: false,
       overlayWidgetBuilder: (progress) => FileInfoLoader(
         onCancelPressed: () => DownloadAdditionUiUtil.cancelRequest(context),
       ),
       child: AlertDialog(
+        surfaceTintColor: theme.backgroundColor,
+        backgroundColor: theme.backgroundColor,
         insetPadding: const EdgeInsets.all(10),
-        backgroundColor: const Color.fromRGBO(25, 25, 25, 1),
         title: Text(
-            widget.updateDialog ? "Update Download URL" : "Add a Download URL",
-            style: const TextStyle(color: Colors.white)),
+          widget.updateDialog ? "Update Download URL" : "Add a Download URL",
+          style: TextStyle(color: theme.textColor),
+        ),
         content: SizedBox(
           width: 400,
           height: 100,
           child: Row(
             children: [
               SizedBox(
-                  width: 340,
-                  child: TextField(
-                    maxLines: 1,
-                    cursorColor: Colors.indigo,
-                    controller: txtController,
-                    decoration: const InputDecoration(
-                        focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white))),
-                    style: const TextStyle(color: Colors.white),
+                width: 340,
+                child: TextField(
+                  maxLines: 1,
+                  cursorColor: theme.urlFieldColor.cursorColor,
+                  controller: txtController,
+                  decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: theme.urlFieldColor.borderColor,
+                    ),
                   )),
+                  style: TextStyle(color: theme.urlFieldColor.textColor),
+                ),
+              ),
               const SizedBox(width: 20),
               IconButton(
                 icon: const Icon(Icons.paste_rounded, color: Colors.white),
@@ -62,15 +72,17 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
           RoundedOutlinedButton(
             text: "Cancel",
             width: 95,
-            borderColor: Colors.red,
-            textColor: Colors.red,
+            borderColor: theme.cancelButtonColor.borderColor,
+            textColor: theme.cancelButtonColor.textColor,
+            hoverTextColor: theme.cancelButtonColor.hoverTextColor,
             onPressed: () => _onCancelPressed(context),
           ),
           RoundedOutlinedButton(
             text: widget.updateDialog ? "Update" : "Add",
             width: 100,
-            borderColor: Colors.green,
-            textColor: Colors.green,
+            borderColor: theme.addButtonColor.borderColor,
+            textColor: theme.addButtonColor.textColor,
+            hoverTextColor: theme.addButtonColor.hoverTextColor,
             onPressed: () => _onAddPressed(context),
           ),
         ],

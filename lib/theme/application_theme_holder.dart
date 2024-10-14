@@ -155,6 +155,34 @@ ApplicationTheme celestialDark = ApplicationTheme(
     queueItemTitleDetailsTextColor: Colors.grey,
     queueItemHoverColor: Colors.white12,
   ),
+  addUrlDialogTheme: AddUrlDialogTheme(
+    backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
+    textColor: Colors.white,
+    pasteIconColor: Colors.white,
+    addButtonColor: ButtonColor(
+      iconColor: Colors.transparent,
+      hoverIconColor: Colors.transparent,
+      hoverBackgroundColor: Colors.green,
+      hoverTextColor: Colors.white,
+      textColor: Colors.green,
+      borderColor: Colors.green,
+      borderHoverColor: Colors.green,
+    ),
+    cancelButtonColor: ButtonColor(
+      iconColor: Colors.transparent,
+      hoverIconColor: Colors.transparent,
+      textColor: Colors.red,
+      hoverBackgroundColor: Colors.red,
+      hoverTextColor: Colors.white,
+      borderColor: Colors.red,
+      borderHoverColor: Colors.red,
+    ),
+    urlFieldColor: TextFieldColor(
+      focusBorderColor: Colors.white,
+      borderColor: Colors.white,
+      textColor: Colors.white,
+    ),
+  ),
 );
 
 ApplicationTheme signatureBlue = ApplicationTheme(
@@ -170,6 +198,34 @@ ApplicationTheme signatureBlue = ApplicationTheme(
     expansionTileExpandedColor: Colors.blueGrey,
     expansionTileItemActiveColor: Colors.lightBlue,
     expansionTileItemHoverColor: Colors.lightBlue,
+  ),
+  addUrlDialogTheme: AddUrlDialogTheme(
+    backgroundColor: Color.fromRGBO(38, 50, 56, 1),
+    textColor: Colors.white,
+    pasteIconColor: Colors.white,
+    addButtonColor: ButtonColor(
+      iconColor: Colors.transparent,
+      hoverIconColor: Colors.transparent,
+      hoverBackgroundColor: Colors.green,
+      hoverTextColor: Colors.white,
+      textColor: Colors.green,
+      borderColor: Colors.green,
+      borderHoverColor: Colors.green,
+    ),
+    cancelButtonColor: ButtonColor(
+      iconColor: Colors.transparent,
+      hoverIconColor: Colors.transparent,
+      textColor: Colors.red,
+      hoverBackgroundColor: Colors.red,
+      hoverTextColor: Colors.white,
+      borderColor: Colors.red,
+      borderHoverColor: Colors.red,
+    ),
+    urlFieldColor: TextFieldColor(
+      focusBorderColor: Colors.white,
+      borderColor: Colors.white,
+      textColor: Colors.white,
+    ),
   ),
   topMenuTheme: TopMenuTheme(
     backgroundColor: const Color.fromRGBO(46, 54, 67, 1),

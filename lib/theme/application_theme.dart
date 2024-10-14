@@ -8,6 +8,7 @@ class ApplicationTheme {
   final DownloadGridTheme downloadGridTheme;
   final QueuePageTheme queuePageTheme;
   final SettingTheme settingTheme;
+  AddUrlDialogTheme addUrlDialogTheme;
 
   ApplicationTheme({
     required this.themeId,
@@ -16,6 +17,7 @@ class ApplicationTheme {
     required this.downloadGridTheme,
     required this.queuePageTheme,
     required this.settingTheme,
+    required this.addUrlDialogTheme,
   });
 }
 
@@ -105,6 +107,24 @@ class DownloadGridTheme {
   });
 }
 
+class AddUrlDialogTheme {
+  final Color backgroundColor;
+  final Color textColor;
+  final Color pasteIconColor;
+  final ButtonColor addButtonColor;
+  final ButtonColor cancelButtonColor;
+  final TextFieldColor urlFieldColor;
+
+  AddUrlDialogTheme({
+    required this.backgroundColor,
+    required this.textColor,
+    required this.pasteIconColor,
+    required this.addButtonColor,
+    required this.cancelButtonColor,
+    required this.urlFieldColor,
+  });
+}
+
 class SettingTheme {
   final windowBackgroundColor;
   final SettingPageTheme pageTheme;
@@ -158,7 +178,7 @@ class SettingWidgetColor {
 class TextFieldColor {
   final Color focusBorderColor;
   final Color borderColor;
-  final Color fillColor;
+  final Color? fillColor;
   final Color textColor;
   Color? cursorColor;
   Color? hoverColor;
@@ -166,7 +186,7 @@ class TextFieldColor {
   TextFieldColor({
     required this.focusBorderColor,
     required this.borderColor,
-    required this.fillColor,
+    this.fillColor,
     required this.textColor,
     this.cursorColor,
     this.hoverColor,
