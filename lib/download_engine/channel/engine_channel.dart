@@ -36,6 +36,8 @@ class EngineChannel extends IsolateChannelWrapper {
 
   bool pauseOnFinalHandshake = false;
 
+  bool assembleRequested = false;
+
   bool paused = false;
 
   int lastPauseTimeMillis = DateTime.now().millisecondsSinceEpoch;

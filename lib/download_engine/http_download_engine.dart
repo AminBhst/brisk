@@ -178,6 +178,7 @@ class HttpDownloadEngine {
       _setConnectionSpawnIgnoreList(data);
       final downloadItem = data.downloadItem;
       final id = downloadItem.id;
+      final engineChannel = _engineChannels[id]!;
       if (isAssembledFileInvalid(downloadItem)) {
         final progress = reassembleFile(downloadItem);
         engineChannel.sendMessage(progress);
@@ -192,7 +193,9 @@ class HttpDownloadEngine {
   }
 
   static void _setFutureCommandExecution(DownloadIsolateMessage message) {
-    if (message.command != DownloadCommand.pause) return;
+    if (message.command != DownloadCommand.pause) {
+      return;
+    }
     final downloadChannel = _engineChannels[message.downloadItem.id]!;
     if (downloadChannel.pendingHandshakes.length > 0) {
       downloadChannel.pauseOnFinalHandshake = true;
@@ -525,6 +528,9 @@ class HttpDownloadEngine {
     final downloadId = downloadItem.id;
     final engineChannel = _engineChannels[downloadItem.id]!;
     final logger = engineChannel.logger;
+    if (engineChannel.assembleRequested) {
+      return;
+    }
     _connectionProgresses[downloadId] ??= {};
     _connectionProgresses[downloadId]![progress.connectionNumber] = progress;
     final totalByteTransferRate = _calculateTotalTransferRate(downloadId);
@@ -540,10 +546,17 @@ class HttpDownloadEngine {
     _setEstimation(downloadProgress, totalProgress);
     _setButtonAvailability(downloadProgress, totalProgress);
     _setStatus(downloadId, downloadProgress); // TODO broken
+    if (progress.completionSignal) {
+      logger?.info(
+        "Received completion signal from connection ${progress.connectionNumber}",
+      );
+      _addToReuseQueue(progress);
+      _setSegmentComplete(progress);
+    }
     if (isTempWriteComplete && isAssembleEligible(downloadItem)) {
-      downloadProgress.status = DownloadStatus.assembling;
       engineChannel.sendMessage(downloadProgress);
       final success = assembleFile(progress.downloadItem);
+
       /// TODO add proper progress indication. currently it only notifies when the assemble is complete
       _setCompletionStatuses(success, downloadProgress);
       logger
@@ -553,14 +566,8 @@ class HttpDownloadEngine {
     _setConnectionProgresses(downloadProgress);
     _downloadProgresses[downloadId] = downloadProgress;
     engineChannel.sendMessage(downloadProgress);
-    if (progress.completionSignal) {
-      logger?.info(
-        "Received completion signal from connection ${progress.connectionNumber}",
-      );
-      _addToReuseQueue(progress);
-      _setSegmentComplete(progress);
-    }
   }
+
 
   static void _addToReuseQueue(DownloadProgressMessage progress) {
     final downloadId = progress.downloadItem.id;
@@ -698,6 +705,10 @@ class HttpDownloadEngine {
       final missingByteRanges = _findMissingByteRanges(
         data.downloadItem,
       );
+      missingByteRanges.forEach((element) {
+        logger?.info("MissingByteRange:::: $element");
+      });
+      logger?.info("Building tree...");
       engineChannel!.segmentTree = DownloadSegmentTree.buildFromMissingBytes(
         data.downloadItem.contentLength,
         downloadSettings.totalConnections,
@@ -807,7 +818,8 @@ class HttpDownloadEngine {
 
   static bool isAssembleEligible(DownloadItemModel downloadItem) {
     return downloadItem.status != DownloadStatus.assembleComplete &&
-        downloadItem.status != DownloadStatus.assembleFailed;
+        downloadItem.status != DownloadStatus.assembleFailed &&
+        !_engineChannels[downloadItem.id]!.assembleRequested;
   }
 
   /// Checks all temp files and optionally removes all files that are considered to be corrupted.
@@ -819,8 +831,10 @@ class HttpDownloadEngine {
   }) {
     final logger = _engineChannels[downloadItem.id]!.logger;
     final progress = _downloadProgresses[downloadItem.id];
-    progress?.status = DownloadStatus.validatingFiles;
-    _engineChannels[downloadItem.id]?.sendMessage(progress);
+    progress
+      ?..status = DownloadStatus.validatingFiles
+      ..downloadItem.status = DownloadStatus.validatingFiles;
+    _engineChannels[downloadItem.id]!.sendMessage(progress);
     logger?.info("Validating temp files integrity...");
     List<File> tempFilesToDelete = [];
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
@@ -878,7 +892,14 @@ class HttpDownloadEngine {
   /// Writes all the file parts inside the temp folder into one file therefore
   /// creating the final downloaded file.
   static bool assembleFile(DownloadItemModel downloadItem) {
-    final logger = _engineChannels[downloadItem.id]?.logger;
+    final engineChannel = _engineChannels[downloadItem.id]!;
+    final progress = _downloadProgresses[downloadItem.id]!;
+    progress
+      ..downloadItem.status = DownloadStatus.assembling
+      ..status = DownloadStatus.downloading;
+    engineChannel.sendMessage(progress);
+    engineChannel.assembleRequested = true;
+    final logger = engineChannel.logger;
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final tempFies = getTempFilesSorted(tempDir);
