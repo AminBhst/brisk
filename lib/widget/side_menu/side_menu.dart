@@ -1,5 +1,6 @@
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
+import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
@@ -55,9 +56,12 @@ class _SideMenuState extends State<SideMenu> {
             SideMenuExpansionTile(
               title: 'Downloads',
               active: selectedTab == 0,
-              icon: const Icon(
-                Icons.download_rounded,
-                color: Colors.white,
+              icon: Tooltip(
+                message: "All Downloads",
+                child: const Icon(
+                  Icons.download_rounded,
+                  color: Colors.white,
+                ),
               ),
               onTap: () => onDownloadsPressed(queueProvider),
               children: [
@@ -117,25 +121,37 @@ class _SideMenuState extends State<SideMenu> {
             ),
             SideMenuItem(
               onTap: () => setUnfinishedGridFilter(queueProvider),
-              leading: SvgPicture.asset(
-                'assets/icons/unfinished.svg',
-                colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+              leading: Tooltip(
+                message: "Unfinished",
+                child: SvgPicture.asset(
+                  'assets/icons/unfinished.svg',
+                  colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                ),
               ),
               title: "Unfinished",
               active: selectedTab == 1,
             ),
             SideMenuItem(
               onTap: () => setFinishedFilter(queueProvider),
-              leading: const Icon(
-                Icons.download_done_rounded,
-                color: Colors.white,
+              leading: Tooltip(
+                message: "Finished",
+                child: const Icon(
+                  Icons.download_done_rounded,
+                  color: Colors.white,
+                ),
               ),
               title: "Finished",
               active: selectedTab == 2,
             ),
             SideMenuItem(
               onTap: () => onQueueTabPressed(queueProvider),
-              leading: Icon(Icons.queue, color: Colors.white),
+              leading: Tooltip(
+                message: "Queues",
+                child: Icon(
+                  Icons.queue,
+                  color: Colors.white,
+                ),
+              ),
               title: "Queues",
               active: selectedTab == 3,
             ),
