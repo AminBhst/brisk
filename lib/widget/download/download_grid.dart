@@ -189,7 +189,9 @@ class _DownloadGridState extends State<DownloadGrid> {
           ),
           columns: columns,
           rows: [],
-          onRowChecked: (row) => plutoProvider.notifyListeners(),
+          onRowChecked: (row) {
+            plutoProvider.notifyListeners();
+          },
           onLoaded: (event) async {
             PlutoGridUtil.setStateManager(event.stateManager);
             PlutoGridUtil.plutoStateManager
@@ -207,6 +209,7 @@ class _DownloadGridState extends State<DownloadGrid> {
                   .toList();
               provider.fetchRows(downloads);
             }
+            PlutoGridUtil.plutoStateManager?.setFilter(PlutoGridUtil.filter);
           },
         ),
       ),

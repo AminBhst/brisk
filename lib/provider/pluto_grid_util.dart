@@ -11,6 +11,8 @@ class PlutoGridUtil {
   static Timer? cacheClearTimer;
   static final List<PlutoRow> cachedRows = [];
 
+  static bool Function(PlutoRow)? filter = null;
+
   static void updateRowCells(DownloadProgressMessage progress) {
     final id = progress.downloadItem.id;
     final row = findCachedRow(id) ?? findRowById(id);
@@ -62,14 +64,16 @@ class PlutoGridUtil {
 
   static void setFilter(String cellName, String filterValue,
       {bool negate = false}) {
-    _stateManager?.setFilter((row) {
+    filter = (row) {
       final cellValue = row.cells[cellName]?.value;
       return negate ? cellValue != filterValue : cellValue == filterValue;
-    });
+    };
+    _stateManager?.setFilter(filter);
     _stateManager?.notifyListeners();
   }
 
   static void removeFilters() {
+    filter = null;
     _stateManager?.setFilter(null);
     _stateManager?.notifyListeners();
   }
