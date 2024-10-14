@@ -201,22 +201,22 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                     ],
                   )),
               SizedBox(width: resolveButtonsXMargin(size)),
-              TextButton(
-                style: const ButtonStyle(
-                    // backgroundColor: MaterialStatePropertyAll(
-                    //           Color.fromRGBO(56, 159, 140, 1)),
-                    backgroundColor: MaterialStatePropertyAll(Colors.blueGrey),
-                    fixedSize: MaterialStatePropertyAll(Size.fromWidth(90))),
-                onPressed: () {
-                  provider.executeDownloadCommand(
-                      widget.downloadId, DownloadCommand.cancel);
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+              // TextButton(
+              //   style: const ButtonStyle(
+              //       // backgroundColor: MaterialStatePropertyAll(
+              //       //           Color.fromRGBO(56, 159, 140, 1)),
+              //       backgroundColor: MaterialStatePropertyAll(Colors.blueGrey),
+              //       fixedSize: MaterialStatePropertyAll(Size.fromWidth(90))),
+              //   onPressed: () {
+              //     provider.executeDownloadCommand(
+              //         widget.downloadId, DownloadCommand.cancel);
+              //     Navigator.of(context).pop();
+              //   },
+              //   child: const Text(
+              //     'Cancel',
+              //     style: TextStyle(color: Colors.white),
+              //   ),
+              // ),
               SizedBox(width: resolveButtonsXMargin(size)),
               Selector<DownloadRequestProvider, bool>(
                   selector: (_, provider) =>
@@ -238,7 +238,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                           style: TextStyle(color: Colors.white),
                         ),
                       )),
-              SizedBox(width: resolveButtonsXMargin(size)),
+              SizedBox(width: resolveButtonsXMargin(size, pauseStartMargin: true)),
               Selector<DownloadRequestProvider, bool>(
                   selector: (_, provider) =>
                       provider.downloads[widget.downloadId]!.startButtonEnabled,
@@ -356,8 +356,8 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
     );
   }
 
-  double resolveButtonsXMargin(Size size) {
-    double margin = 50;
+  double resolveButtonsXMargin(Size size, {bool pauseStartMargin = false}) {
+    double margin = pauseStartMargin ? 30 : 70;
     if (size.width < 835) {
       margin = 20;
     }
