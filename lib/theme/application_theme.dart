@@ -128,20 +128,70 @@ class SettingPageTheme {
   final Color groupBackgroundColor;
   final Color groupTitleTextColor;
   final Color titleTextColor;
-  final Color dropDownBackgroundColor;
-  final Color dropDownItemHoverBackgroundColor;
-  final Color dropDownItemActiveBackgroundColor;
-  final Color dropDownItemTextColor;
+  final SettingWidgetColor widgetColor;
 
   SettingPageTheme({
     required this.pageBackgroundColor,
     required this.groupBackgroundColor,
     required this.groupTitleTextColor,
     required this.titleTextColor,
+    required this.widgetColor,
+  });
+}
+
+class SettingWidgetColor {
+  final SwitchColor switchColor;
+  final DropDownColor dropDownColor;
+  final TextFieldColor textFieldColor;
+  Color launchIconColor;
+  final Color aboutIconColor;
+
+  SettingWidgetColor({
+    required this.switchColor,
+    required this.dropDownColor,
+    required this.textFieldColor,
+    this.launchIconColor = Colors.white,
+    required this.aboutIconColor,
+  });
+}
+
+class TextFieldColor {
+  final Color focusBorderColor;
+  final Color borderColor;
+  final Color fillColor;
+  final Color textColor;
+  Color? cursorColor;
+  Color? hoverColor;
+
+  TextFieldColor({
+    required this.focusBorderColor,
+    required this.borderColor,
+    required this.fillColor,
+    required this.textColor,
+    this.cursorColor,
+    this.hoverColor,
+  });
+}
+
+class DropDownColor {
+  final Color dropDownBackgroundColor;
+  final Color ItemTextColor;
+
+  DropDownColor({
     required this.dropDownBackgroundColor,
-    required this.dropDownItemHoverBackgroundColor,
-    required this.dropDownItemActiveBackgroundColor,
-    required this.dropDownItemTextColor,
+    required this.ItemTextColor,
+  });
+}
+
+class SwitchColor {
+  Color? activeColor;
+  Color? hoverColor;
+  Color? focusColor;
+
+  SwitchColor({
+    this.activeColor,
+    this.hoverColor,
+    this.focusColor,
   });
 }
 

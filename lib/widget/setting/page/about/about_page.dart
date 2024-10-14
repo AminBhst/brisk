@@ -1,6 +1,8 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class AboutPage extends StatelessWidget {
@@ -8,6 +10,8 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
     return Center(
       child: SingleChildScrollView(
         child: Column(
@@ -21,13 +25,17 @@ class AboutPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    SizedBox(width: 5),
-                    Icon(Icons.person, color: Colors.white70, size: 30),
-                    SizedBox(width: 30),
+                  children: [
+                    const SizedBox(width: 5),
+                    Icon(
+                      Icons.person,
+                      color: theme.widgetColor.aboutIconColor,
+                      size: 30,
+                    ),
+                    const SizedBox(width: 30),
                     Text(
                       "Amin Beheshti",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: theme.titleTextColor),
                     ),
                   ],
                 ),
@@ -35,17 +43,17 @@ class AboutPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    SizedBox(width: 5),
+                  children: [
+                    const SizedBox(width: 5),
                     Icon(
                       Icons.email,
-                      color: Colors.white70,
+                      color: theme.widgetColor.aboutIconColor,
                       size: 30,
                     ),
-                    SizedBox(width: 30),
+                    const SizedBox(width: 30),
                     Text(
                       "amin.bhst@gmail.com",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: theme.titleTextColor),
                     ),
                   ],
                 ),
@@ -59,17 +67,19 @@ class AboutPage extends StatelessWidget {
                       "assets/icons/github.svg",
                       height: 35,
                       width: 35,
-                      colorFilter:
-                          ColorFilter.mode(Colors.white60, BlendMode.srcIn),
+                      colorFilter: ColorFilter.mode(
+                        theme.widgetColor.aboutIconColor,
+                        BlendMode.srcIn,
+                      ),
                     ),
                     const SizedBox(width: 30),
                     InkWell(
                         onTap: () =>
                             launchUrlString("https://github.com/AminBhst"),
-                        child: const Text(
+                        child: Text(
                           "AminBhst",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: theme.titleTextColor,
                           ),
                         )),
                   ],
@@ -84,17 +94,19 @@ class AboutPage extends StatelessWidget {
                       "assets/icons/github.svg",
                       height: 35,
                       width: 35,
-                      colorFilter:
-                          ColorFilter.mode(Colors.white60, BlendMode.srcIn),
+                      colorFilter: ColorFilter.mode(
+                        theme.widgetColor.aboutIconColor,
+                        BlendMode.srcIn,
+                      ),
                     ),
                     const SizedBox(width: 30),
                     InkWell(
                         onTap: () => launchUrlString(
                             "https://github.com/AminBhst/Brisk"),
-                        child: const Text(
+                        child: Text(
                           "AminBhst/Brisk",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: theme.titleTextColor,
                           ),
                         )),
                   ],

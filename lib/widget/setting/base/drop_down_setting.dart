@@ -1,4 +1,6 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DropDownSetting extends StatelessWidget {
   final List<String> items;
@@ -8,6 +10,7 @@ class DropDownSetting extends StatelessWidget {
   final double? dropDownWidth;
   final double? dropDownItemTextWidth;
   final Function(String? value) onChanged;
+
   const DropDownSetting({
     super.key,
     required this.items,
@@ -21,6 +24,8 @@ class DropDownSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
     textWidth ?? MediaQuery.of(context).size.width * 0.6 * 0.5;
     return Row(
       children: [
@@ -28,7 +33,7 @@ class DropDownSetting extends StatelessWidget {
           width: textWidth,
           child: Text(
             text,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: theme.titleTextColor),
           ),
         ),
         const Spacer(),
@@ -36,14 +41,17 @@ class DropDownSetting extends StatelessWidget {
           width: dropDownWidth,
           child: DropdownButton<String>(
             value: value,
-            dropdownColor: Colors.black87,
+            dropdownColor:
+                theme.widgetColor.dropDownColor.dropDownBackgroundColor,
             items: items.map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: SizedBox(
                     width: dropDownItemTextWidth,
                     child: Text(value,
-                        style: const TextStyle(color: Colors.white))),
+                        style: TextStyle(
+                          color: theme.widgetColor.dropDownColor.ItemTextColor,
+                        ))),
               );
             }).toList(),
             onChanged: onChanged,

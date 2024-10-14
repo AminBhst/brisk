@@ -329,6 +329,7 @@ class _TopMenuState extends State<TopMenu> {
     provider.downloads.removeWhere((key, _) => key == id);
   }
 
+  /// TODO return false if download is complete
   bool get isDownloadButtonEnabled {
     final selectedRowIds = PlutoGridUtil.selectedRowIds;
     return (selectedRowIds.isEmpty)

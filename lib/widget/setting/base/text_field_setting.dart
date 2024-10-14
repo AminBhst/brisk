@@ -1,5 +1,7 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../../base/outlined_text_field.dart';
 
@@ -27,6 +29,8 @@ class TextFieldSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
     textWidth ?? MediaQuery.of(context).size.width * 0.6 * 0.5;
     return Row(
       children: [
@@ -34,7 +38,7 @@ class TextFieldSetting extends StatelessWidget {
           width: textWidth,
           child: Text(
             text,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: theme.titleTextColor),
           ),
         ),
         const Spacer(),

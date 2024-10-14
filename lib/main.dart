@@ -35,6 +35,8 @@ import 'util/settings_cache.dart';
 // TODO add current version in settings
 // TODO Fix resizing the window when a row is selected
 // TODO handle stop all button availability as well as download and stop buttons in queue top menu
+/// TODO fix assemble file called multiple times, ending up with multiple files
+/// TODO Remove logs for succeeding downloads
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
