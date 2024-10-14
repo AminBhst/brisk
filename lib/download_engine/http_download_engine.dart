@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:math';
 
 import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
 import 'package:brisk/download_engine/message/button_availability_message.dart';
@@ -700,8 +699,11 @@ class HttpDownloadEngine {
     Completer<void> completer = Completer();
     final engineChannel = _engineChannels[id];
     final logger = engineChannel?.logger;
-    if (_engineChannels[id]!.connectionChannels.isEmpty) {
-      /// TODO verify temp file integrity
+    if (engineChannel!.connectionChannels.isEmpty) {
+      validateTempFilesIntegrity(
+        data.downloadItem,
+        checkForMissingTempFile: false,
+      );
       final missingByteRanges = _findMissingByteRanges(
         data.downloadItem,
       );
@@ -709,7 +711,7 @@ class HttpDownloadEngine {
         logger?.info("MissingByteRange:::: $element");
       });
       logger?.info("Building tree...");
-      engineChannel!.segmentTree = DownloadSegmentTree.buildFromMissingBytes(
+      engineChannel.segmentTree = DownloadSegmentTree.buildFromMissingBytes(
         data.downloadItem.contentLength,
         downloadSettings.totalConnections,
         missingByteRanges,
@@ -828,6 +830,7 @@ class HttpDownloadEngine {
   static void validateTempFilesIntegrity(
     DownloadItemModel downloadItem, {
     bool deleteCorruptedTempFiles = true,
+    bool checkForMissingTempFile = true,
   }) {
     final logger = _engineChannels[downloadItem.id]!.logger;
     final progress = _downloadProgresses[downloadItem.id];
@@ -840,23 +843,26 @@ class HttpDownloadEngine {
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
     final tempFies = getTempFilesSorted(tempDir);
+    if (tempFies.isEmpty) {
+      return;
+    }
     for (int i = 0; i < tempFies.length; i++) {
-      if (i == tempFies.length - 1) {
-        return;
-      }
       final file = tempFies[i];
-      final nextFile = tempFies[i + 1];
-      final startNext = getStartByteFromTempFile(nextFile);
       final end = getEndByteFromTempFile(file);
       final start = getStartByteFromTempFile(file);
-      if (startNext - 1 != end) {
-        logger?.info(
-          "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)}",
-        );
-      }
       if (end - start + 1 != file.lengthSync()) {
         logger?.info("Found bad length :: ${basename(file.path)}");
         tempFilesToDelete.add(file);
+      }
+      if (i == tempFies.length - 1) {
+        continue;
+      }
+      final nextFile = tempFies[i + 1];
+      final startNext = getStartByteFromTempFile(nextFile);
+      if (checkForMissingTempFile && startNext - 1 != end) {
+        logger?.info(
+          "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)}",
+        );
       }
       final badTempFiles = tempFies.where((f) => f != file).where((f) {
         final fileSegment = Segment(
@@ -885,7 +891,10 @@ class HttpDownloadEngine {
       }
     }
     if (deleteCorruptedTempFiles) {
-      tempFilesToDelete.forEach((file) => file.deleteSync(recursive: true));
+      tempFilesToDelete.forEach((file) {
+        logger?.info("Deleting bad temp file ${basename(file.path)}...");
+        file.deleteSync(recursive: true);
+      });
     }
   }
 
