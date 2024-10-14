@@ -8,7 +8,7 @@ class ApplicationTheme {
   final DownloadGridTheme downloadGridTheme;
   final QueuePageTheme queuePageTheme;
   final SettingTheme settingTheme;
-  AddUrlDialogTheme addUrlDialogTheme;
+  AlertDialogTheme alertDialogTheme;
 
   ApplicationTheme({
     required this.themeId,
@@ -17,7 +17,7 @@ class ApplicationTheme {
     required this.downloadGridTheme,
     required this.queuePageTheme,
     required this.settingTheme,
-    required this.addUrlDialogTheme,
+    required this.alertDialogTheme,
   });
 }
 
@@ -107,18 +107,18 @@ class DownloadGridTheme {
   });
 }
 
-class AddUrlDialogTheme {
+class AlertDialogTheme {
   final Color backgroundColor;
   final Color textColor;
-  final Color pasteIconColor;
+  final Color iconColor;
   final ButtonColor addButtonColor;
   final ButtonColor cancelButtonColor;
   final TextFieldColor urlFieldColor;
 
-  AddUrlDialogTheme({
+  AlertDialogTheme({
     required this.backgroundColor,
     required this.textColor,
-    required this.pasteIconColor,
+    required this.iconColor,
     required this.addButtonColor,
     required this.cancelButtonColor,
     required this.urlFieldColor,

@@ -155,10 +155,10 @@ ApplicationTheme celestialDark = ApplicationTheme(
     queueItemTitleDetailsTextColor: Colors.grey,
     queueItemHoverColor: Colors.white12,
   ),
-  addUrlDialogTheme: AddUrlDialogTheme(
+  alertDialogTheme: AlertDialogTheme(
     backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
     textColor: Colors.white,
-    pasteIconColor: Colors.white,
+    iconColor: Colors.white,
     addButtonColor: ButtonColor(
       iconColor: Colors.transparent,
       hoverIconColor: Colors.transparent,
@@ -199,10 +199,10 @@ ApplicationTheme signatureBlue = ApplicationTheme(
     expansionTileItemActiveColor: Colors.lightBlue,
     expansionTileItemHoverColor: Colors.lightBlue,
   ),
-  addUrlDialogTheme: AddUrlDialogTheme(
+  alertDialogTheme: AlertDialogTheme(
     backgroundColor: Color.fromRGBO(38, 50, 56, 1),
     textColor: Colors.white,
-    pasteIconColor: Colors.white,
+    iconColor: Colors.white,
     addButtonColor: ButtonColor(
       iconColor: Colors.transparent,
       hoverIconColor: Colors.transparent,

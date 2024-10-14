@@ -23,7 +23,7 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
   @override
   Widget build(BuildContext context) {
     final theme =
-        Provider.of<ThemeProvider>(context).activeTheme.addUrlDialogTheme;
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return LoaderOverlay(
       useDefaultLoading: false,
       overlayWidgetBuilder: (progress) => FileInfoLoader(
