@@ -57,5 +57,7 @@ class SideMenuListTileItem extends StatelessWidget {
     );
   }
 
-  bool minimizedSideMenu(Size size) => size.width < 1300 && responsive;
+
+  bool minimizedSideMenu(Size size) => true;
+  // bool minimizedSideMenu(Size size) => size.width < 1300 && responsive;
 }
