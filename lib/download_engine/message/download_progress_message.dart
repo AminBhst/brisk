@@ -1,11 +1,10 @@
-import 'dart:io';
+import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:brisk/download_engine/segment/segment.dart';
 
-import 'package:brisk/model/download_item_model.dart';
+import '../connection/base_http_download_connection.dart';
 
-import '../downloader/http_download_request.dart';
-
-class DownloadProgress {
-  List<DownloadProgress> connectionProgresses = [];
+class DownloadProgressMessage {
+  List<DownloadProgressMessage> connectionProgresses = [];
   DownloadItemModel downloadItem;
   int totalSegments;
   double downloadProgress;
@@ -16,56 +15,63 @@ class DownloadProgress {
   String status;
   String estimatedRemaining;
   bool paused;
-  double writeProgress;
+  double totalConnectionWriteProgress;
+  double totalRequestWriteProgress;
   double assembleProgress;
   bool startButtonEnabled;
   bool pauseButtonEnabled;
-  int segmentNumber;
+  int connectionNumber;
   int segmentLength;
-  late Directory baseTempDir;
   String detailsStatus;
+  String message;
+  Segment? segment;
+  bool completionSignal;
 
-  DownloadProgress({
+  DownloadProgressMessage({
     required this.downloadItem,
+    this.segment,
+    this.connectionNumber = 0,
     this.downloadProgress = 0,
     this.transferRate = "",
     this.status = "",
     this.estimatedRemaining = "",
     this.paused = false,
-    this.writeProgress = 0,
+    this.totalConnectionWriteProgress = 0,
+    this.totalRequestWriteProgress = 0,
     this.assembleProgress = 0,
     this.startButtonEnabled = false,
     this.pauseButtonEnabled = false,
     this.bytesTransferRate = 0,
     this.totalReceivedBytes = 0,
-    this.segmentNumber = 0,
     this.totalDownloadProgress = 0,
     this.segmentLength = 0,
     this.detailsStatus = "",
     this.totalSegments = 0,
+    this.message = "",
+    this.completionSignal = false,
   });
 
-  factory DownloadProgress.loadFromHttpDownloadRequest(
-      HttpDownloadRequest request) {
-    final downloadProgress = DownloadProgress(
+  factory DownloadProgressMessage.loadFromHttpDownloadRequest(
+    BaseHttpDownloadConnection request,
+  ) {
+    final downloadProgress = DownloadProgressMessage(
       downloadProgress: request.downloadProgress,
       transferRate: request.transferRate,
       status: request.status,
       estimatedRemaining: request.estimatedRemaining,
       paused: request.paused,
-      writeProgress: request.writeProgress,
+      totalConnectionWriteProgress: request.totalConnectionWriteProgress,
+      totalRequestWriteProgress: request.totalRequestWriteProgress,
       startButtonEnabled: request.isStartButtonEnabled,
       pauseButtonEnabled: request.pauseButtonEnabled,
       downloadItem: request.downloadItem,
       bytesTransferRate: request.bytesTransferRate,
-      segmentNumber: request.segmentNumber,
       totalDownloadProgress: request.totalDownloadProgress,
-      totalReceivedBytes: request.totalReceivedBytes,
-      segmentLength: request.segmentLength,
+      totalReceivedBytes: request.totalConnectionReceivedBytes,
       detailsStatus: request.detailsStatus,
-      totalSegments: request.totalSegments,
+      connectionNumber: request.connectionNumber,
+      segment: request.segment,
     );
-    downloadProgress.baseTempDir = request.baseTempDir;
     return downloadProgress;
   }
 }

@@ -1,4 +1,6 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../base/settings_group.dart';
@@ -9,6 +11,8 @@ class WebExtensionSettingsDownloadGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textWidth = MediaQuery.of(context).size.width * 0.6 * 0.5;
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
     return SettingsGroup(
       height: 200,
       title: "Download Brisk Browser Extension",
@@ -19,7 +23,7 @@ class WebExtensionSettingsDownloadGroup extends StatelessWidget {
               width: textWidth,
               child: Text(
                 "Click the link to open browser extension download page",
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: theme.titleTextColor),
               ),
             ),
             const Spacer(),
@@ -29,7 +33,7 @@ class WebExtensionSettingsDownloadGroup extends StatelessWidget {
               ),
               icon: Icon(
                 Icons.launch,
-                color: Colors.white,
+                color: theme.widgetColor.launchIconColor,
               ),
             )
           ],

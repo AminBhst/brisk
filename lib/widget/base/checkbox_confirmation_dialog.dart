@@ -1,5 +1,7 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CheckboxConfirmationDialog extends StatefulWidget {
   final Function(bool value) onConfirmPressed;
@@ -24,7 +26,11 @@ class _CheckedBoxedConfirmationDialogState
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return AlertDialog(
+      surfaceTintColor: theme.backgroundColor,
+      backgroundColor: theme.backgroundColor,
       content: Container(
         height: 100,
         child: Column(
@@ -44,9 +50,12 @@ class _CheckedBoxedConfirmationDialogState
                     borderRadius: BorderRadius.circular(2.0),
                   ),
                   side: MaterialStateBorderSide.resolveWith(
-                    (states) => BorderSide(width: 1.0, color: Colors.grey),
+                    (states) => BorderSide(
+                      width: 1.0,
+                      color: theme.checkBoxColor.borderColor,
+                    ),
                   ),
-                  activeColor: Colors.blueGrey,
+                  activeColor: theme.checkBoxColor.activeColor,
                   value: checkBoxValue,
                   onChanged: (value) => setState(() => checkBoxValue = value),
                 ),

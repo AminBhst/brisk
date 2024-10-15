@@ -1,4 +1,5 @@
 import 'package:brisk/provider/settings_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:brisk/widget/setting/base/text_field_setting.dart';
 import 'package:file_picker/file_picker.dart';
@@ -26,6 +27,11 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final provider = Provider.of<SettingsProvider>(context);
+    final theme = Provider.of<ThemeProvider>(context)
+        .activeTheme
+        .settingTheme
+        .pageTheme
+        .widgetColor;
     return SettingsGroup(
       title: "Paths",
       children: [
@@ -44,7 +50,10 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
               tempPathController.text = newPath;
               provider.tempPath = newPath;
             },
-            icon: openIcon,
+            icon: Icon(
+              Icons.open_in_new_rounded,
+              color: theme.launchIconColor,
+            ),
           ),
         ),
         const SizedBox(height: 5),
@@ -63,7 +72,10 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
               savePathController.text = newPath;
               provider.savePath = newPath;
             },
-            icon: openIcon,
+            icon: Icon(
+              Icons.open_in_new_rounded,
+              color: theme.launchIconColor,
+            ),
           ),
         ),
       ],
@@ -75,8 +87,4 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
         .getDirectoryPath(initialDirectory: initialDir);
   }
 
-  Widget get openIcon => const Icon(
-        Icons.open_in_new_rounded,
-        color: Colors.white,
-      );
 }

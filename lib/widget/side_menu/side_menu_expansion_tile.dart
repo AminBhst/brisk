@@ -1,10 +1,13 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class SideMenuExpansionTile extends StatelessWidget {
+class SideMenuExpansionTile extends StatefulWidget {
   final List<Widget> children;
   final String title;
   final Widget icon;
   final VoidCallback? onTap;
+  final active;
 
   const SideMenuExpansionTile({
     super.key,
@@ -12,15 +15,27 @@ class SideMenuExpansionTile extends StatelessWidget {
     required this.icon,
     required this.children,
     required this.onTap,
+    this.active = false,
   });
+
+  @override
+  State<SideMenuExpansionTile> createState() => _SideMenuExpansionTileState();
+}
+
+class _SideMenuExpansionTileState extends State<SideMenuExpansionTile> {
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return SizedBox(
-      width: size.width * 0.2,
+    final sideMenuTheme =
+        Provider.of<ThemeProvider>(context).activeTheme.sideMenuTheme;
+    return Container(
+      width: 150,
+      color:
+          widget.active ? sideMenuTheme.activeTabBackgroundColor : Colors.transparent,
       child: ExpansionTile(
-        backgroundColor: Colors.blueGrey,
+        shape: Border.all(color: Colors.transparent),
+        backgroundColor: sideMenuTheme.expansionTileExpandedColor,
         // title: ListTile(
         //   onTap: onTap,
         //   leading: Padding(
@@ -42,7 +57,7 @@ class SideMenuExpansionTile extends StatelessWidget {
         //         ),
         // ),
         title: InkWell(
-          onTap: onTap,
+          onTap: widget.onTap,
           child: SizedBox(
             height: 50,
             child: Row(
@@ -56,26 +71,28 @@ class SideMenuExpansionTile extends StatelessWidget {
                   child: SizedBox(
                     width: 20,
                     height: 20,
-                    child: icon,
+                    child: widget.icon,
                   ),
                 ),
                 minimizedSideMenu(size)
                     ? Container()
                     : Padding(
-                      padding: const EdgeInsets.only(left: 30.0),
-                      child: Text(
-                          title,
-                          style: const TextStyle(color: Colors.white, fontSize: 18),
+                        padding: const EdgeInsets.only(left: 30.0),
+                        child: Text(
+                          widget.title,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 18),
                         ),
-                    )
+                      )
               ],
             ),
           ),
         ),
-        children: children,
+        children: widget.children,
       ),
     );
   }
 
-  bool minimizedSideMenu(Size size) => size.width < 1300;
+  bool minimizedSideMenu(Size size) => true;
+  // bool minimizedSideMenu(Size size) => size.width < 1300;
 }

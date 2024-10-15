@@ -1,11 +1,12 @@
-import 'package:brisk/constants/download_command.dart';
+import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/provider/download_request_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../model/download_progress.dart';
+import '../../download_engine/message/download_progress_message.dart';
 
 class DownloadProgressWindow extends StatefulWidget {
   final int downloadId;
@@ -24,126 +25,145 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
   Widget build(BuildContext context) {
     final provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);
+    final theme = Provider.of<ThemeProvider>(context)
+        .activeTheme
+        .downloadProgressWindowTheme;
     final size = MediaQuery.of(context).size;
     final downloadProgress = provider.downloads[widget.downloadId]!;
     return ClosableWindow(
       width: resolveWindowWidth(size),
-      height: showDetails ? resolveWindowHeight(size) + 280 : resolveWindowHeight(size),
+      backgroundColor: theme.windowBackgroundColor,
+      height: showDetails
+          ? resolveWindowHeight(size) + 280
+          : resolveWindowHeight(size),
       content: Column(
         children: [
           Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.white10, width: 1), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+              color: theme.infoContainerBackgroundColor,
+                border: Border.all(
+                  color: theme.infoContainerBorderColor,
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(10)),
             child: Padding(
               padding: EdgeInsets.all(10),
-              child: Column(children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text('File Name :  ',
-                        style: TextStyle(color: Colors.white)),
-                    SizedBox(
-                      width: resolveTextWidth(size),
-                      child: Text(
-                        downloadProgress.downloadItem.fileName,
-                        style: const TextStyle(color: Colors.white),
-                        overflow: TextOverflow.ellipsis,
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text('File Name :  ',
+                          style: TextStyle(color: Colors.white)),
+                      SizedBox(
+                        width: resolveTextWidth(size),
+                        child: Text(
+                          downloadProgress.downloadItem.fileName,
+                          style: const TextStyle(color: Colors.white),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      )
+                    ],
+                  ),
+                  // const SizedBox(height: 8),
+                  statusTextPadding(size),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text('URL : ',
+                          style: TextStyle(color: Colors.white)),
+                      SizedBox(
+                        width: resolveTextWidth(size),
+                        child: Text(
+                          downloadProgress.downloadItem.downloadUrl,
+                          style: const TextStyle(color: Colors.white),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    )
-                  ],
-                ),
-                // const SizedBox(height: 8),
-                statusTextPadding(size),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text('URL : ', style: TextStyle(color: Colors.white)),
-                    SizedBox(
-                      width: resolveTextWidth(size),
-                      child: Text(
-                        downloadProgress.downloadItem.downloadUrl,
-                        style: const TextStyle(color: Colors.white),
-                        overflow: TextOverflow.ellipsis,
+                    ],
+                  ),
+                  statusTextPadding(size),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text('Size : ',
+                          style: TextStyle(color: Colors.white)),
+                      Text(
+                          convertByteToReadableStr(
+                              downloadProgress.downloadItem.contentLength),
+                          style: const TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                  statusTextPadding(size),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text('Progress : ',
+                          style: TextStyle(color: Colors.white)),
+                      Selector<DownloadRequestProvider, double>(
+                        selector: (_, provider) => provider
+                            .downloads[widget.downloadId]!.downloadProgress,
+                        builder: (context, progress, child) => Text(
+                            progress == 1
+                                ? '${(progress * 100).toStringAsFixed(0)}%'
+                                : '${(progress * 100).toStringAsFixed(2)}%',
+                            style: const TextStyle(color: Colors.white)),
                       ),
-                    ),
-                  ],
-                ),
-                statusTextPadding(size),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text('Size : ', style: TextStyle(color: Colors.white)),
-                    Text(
-                        convertByteToReadableStr(
-                            downloadProgress.downloadItem.contentLength),
-                        style: const TextStyle(color: Colors.white)),
-                  ],
-                ),
-                statusTextPadding(size),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text('Progress : ', style: TextStyle(color: Colors.white)),
-                    Selector<DownloadRequestProvider, double>(
-                      selector: (_, provider) =>
-                      provider.downloads[widget.downloadId]!.downloadProgress,
-                      builder: (context, progress, child) => Text(
-                          progress == 1
-                              ? '${(progress * 100).toStringAsFixed(0)}%'
-                              : '${(progress * 100).toStringAsFixed(2)}%',
-                          style: const TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-                statusTextPadding(size),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text('Transfer Rate : ',
-                        style: TextStyle(color: Colors.white)),
-                    Selector<DownloadRequestProvider, String>(
-                      selector: (_, provider) =>
-                      provider.downloads[widget.downloadId]!.transferRate,
-                      builder: (context, transferRate, child) => Text(transferRate,
-                          style: const TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-                statusTextPadding(size),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text('Status : ', style: TextStyle(color: Colors.white)),
-                    Selector<DownloadRequestProvider, String>(
-                      selector: (_, provider) =>
-                      provider.downloads[widget.downloadId]!.status,
-                      builder: (context, status, child) =>
-                          Text(status, style: const TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-                statusTextPadding(size),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text('Estimated Time Remaining : ',
-                        style: TextStyle(color: Colors.white)),
-                    Selector<DownloadRequestProvider, String>(
-                      selector: (_, provider) =>
-                      provider.downloads[widget.downloadId]!.estimatedRemaining,
-                      builder: (context, estimatedRemaining, child) => Text(
-                          estimatedRemaining,
-                          style: const TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-              ],),
+                    ],
+                  ),
+                  statusTextPadding(size),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text('Transfer Rate : ',
+                          style: TextStyle(color: Colors.white)),
+                      Selector<DownloadRequestProvider, String>(
+                        selector: (_, provider) =>
+                            provider.downloads[widget.downloadId]!.transferRate,
+                        builder: (context, transferRate, child) => Text(
+                            transferRate,
+                            style: const TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                  statusTextPadding(size),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text('Status : ',
+                          style: TextStyle(color: Colors.white)),
+                      Selector<DownloadRequestProvider, String>(
+                        selector: (_, provider) =>
+                            provider.downloads[widget.downloadId]!.downloadItem.status,
+                        builder: (context, status, child) => Text(status,
+                            style: const TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                  statusTextPadding(size),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text('Estimated Time Remaining : ',
+                          style: TextStyle(color: Colors.white)),
+                      Selector<DownloadRequestProvider, String>(
+                        selector: (_, provider) => provider
+                            .downloads[widget.downloadId]!.estimatedRemaining,
+                        builder: (context, estimatedRemaining, child) => Text(
+                            estimatedRemaining,
+                            style: const TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           SizedBox(height: size.height < 450 ? 10 : 30),
@@ -174,9 +194,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                       : null,
                   style: ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll(
-                          showDetailAvailable
-                              ? Colors.blueGrey
-                              : Colors.grey)),
+                          showDetailAvailable ? Colors.blueGrey : Colors.grey)),
                   child: Row(
                     children: [
                       Text(
@@ -192,22 +210,22 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                     ],
                   )),
               SizedBox(width: resolveButtonsXMargin(size)),
-              TextButton(
-                style: const ButtonStyle(
-                    // backgroundColor: MaterialStatePropertyAll(
-                    //           Color.fromRGBO(56, 159, 140, 1)),
-                  backgroundColor: MaterialStatePropertyAll(Colors.blueGrey),
-                    fixedSize:  MaterialStatePropertyAll(
-                        Size.fromWidth(90))),
-                onPressed: () {
-                  provider.executeDownloadCommand(widget.downloadId, DownloadCommand.cancel);
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+              // TextButton(
+              //   style: const ButtonStyle(
+              //       // backgroundColor: MaterialStatePropertyAll(
+              //       //           Color.fromRGBO(56, 159, 140, 1)),
+              //       backgroundColor: MaterialStatePropertyAll(Colors.blueGrey),
+              //       fixedSize: MaterialStatePropertyAll(Size.fromWidth(90))),
+              //   onPressed: () {
+              //     provider.executeDownloadCommand(
+              //         widget.downloadId, DownloadCommand.cancel);
+              //     Navigator.of(context).pop();
+              //   },
+              //   child: const Text(
+              //     'Cancel',
+              //     style: TextStyle(color: Colors.white),
+              //   ),
+              // ),
               SizedBox(width: resolveButtonsXMargin(size)),
               Selector<DownloadRequestProvider, bool>(
                   selector: (_, provider) =>
@@ -215,30 +233,31 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                   builder: (context, buttonEnabled, child) => TextButton(
                         style: ButtonStyle(
                             backgroundColor: MaterialStatePropertyAll(
-                                buttonEnabled
-                                    ? Colors.redAccent
-                                    : Colors.grey),
+                                buttonEnabled ? Colors.redAccent : Colors.grey),
                             fixedSize: const MaterialStatePropertyAll(
                                 Size.fromWidth(90))),
                         onPressed: buttonEnabled
                             ? () => provider.executeDownloadCommand(
-                                widget.downloadId, DownloadCommand.pause)
+                                  widget.downloadId,
+                                  DownloadCommand.pause,
+                                )
                             : null,
                         child: const Text(
                           'Pause',
                           style: TextStyle(color: Colors.white),
                         ),
                       )),
-              SizedBox(width: resolveButtonsXMargin(size)),
+              SizedBox(
+                  width: resolveButtonsXMargin(size, pauseStartMargin: true)),
               Selector<DownloadRequestProvider, bool>(
                   selector: (_, provider) =>
                       provider.downloads[widget.downloadId]!.startButtonEnabled,
                   builder: (context, buttonEnabled, child) => TextButton(
                       style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(
-                              buttonEnabled
+                          backgroundColor:
+                              MaterialStatePropertyAll(buttonEnabled
                                   // ? const Color.fromRGBO(56, 159, 140, 1)
-                              ? Colors.green
+                                  ? Colors.green
                                   : Colors.grey),
                           fixedSize: const MaterialStatePropertyAll(
                               Size.fromWidth(90))),
@@ -257,11 +276,12 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
               height: resolveDetailsHeight(size),
               width: 620,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.black87, width: 2),
-                color: const Color.fromRGBO(45, 45, 45, 1),
+                border: Border.all(color: theme.detailsContainerBorderColor, width: 2),
+                color: theme.detailsContainerBackgroundColor,
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: Selector<DownloadRequestProvider, List<DownloadProgress>>(
+              child: Selector<DownloadRequestProvider,
+                  List<DownloadProgressMessage>>(
                 selector: (_, provider) =>
                     provider.downloads[widget.downloadId]!.connectionProgresses,
                 builder: (_, progresses, __) {
@@ -282,7 +302,10 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text("(${(index + 1).toString()})  ", style: const TextStyle(color: Colors.white),),
+                                  Text(
+                                    "(${(index + 1).toString()})  ",
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
                                   Text(
                                     transferRate,
                                     style: const TextStyle(color: Colors.white),
@@ -316,7 +339,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                                 selector: (_, provider) => provider
                                     .downloads[widget.downloadId]!
                                     .connectionProgresses[index]
-                                    .writeProgress,
+                                    .totalRequestWriteProgress,
                                 builder: (context, progress, child) {
                                   return SizedBox(
                                     height: 3,
@@ -344,9 +367,8 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
     );
   }
 
-
-  double resolveButtonsXMargin(Size size) {
-    double margin = 50;
+  double resolveButtonsXMargin(Size size, {bool pauseStartMargin = false}) {
+    double margin = pauseStartMargin ? 30 : 70;
     if (size.width < 835) {
       margin = 20;
     }
@@ -406,7 +428,6 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
     }
     return padding;
   }
-
 
   double resolveWindowWidth(Size size) {
     double width = size.width * 0.7;

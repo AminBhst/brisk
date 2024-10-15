@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import 'package:brisk/provider/queue_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/download_command.dart';
-import '../../constants/download_status.dart';
+import '../../download_engine/download_command.dart';
+import '../../download_engine/download_status.dart';
 import '../../db/hive_util.dart';
 import '../../provider/download_request_provider.dart';
 import '../../provider/pluto_grid_util.dart';
@@ -31,11 +32,13 @@ class DownloadQueueTopMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
+    final topMenuTheme =
+        Provider.of<ThemeProvider>(context).activeTheme.topMenuTheme;
     final size = MediaQuery.of(context).size;
     return Container(
       width: resolveWindowWidth(size),
       height: 70,
-      color: const Color.fromRGBO(46, 54, 67, 1),
+      color: topMenuTheme.backgroundColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,34 +49,49 @@ class DownloadQueueTopMenu extends StatelessWidget {
               onTap: () => onStartQueuePressed(context),
               title: 'Start Queue',
               fontSize: 12,
-              icon: const Icon(Icons.play_arrow_rounded, color: Colors.white),
-              onHoverColor: Colors.green,
+              icon: Icon(
+                Icons.play_arrow_rounded,
+                color: topMenuTheme.startQueueColor.iconColor,
+              ),
+              onHoverColor: topMenuTheme.startQueueColor.hoverBackgroundColor,
             ),
           ),
           TopMenuButton(
             onTap: onStopAllPressed,
             title: 'Stop Queue',
             fontSize: 12,
-            icon: const Icon(Icons.stop_circle_rounded, color: Colors.white),
-            onHoverColor: Colors.redAccent,
+            icon: Icon(
+              Icons.stop_circle_rounded,
+              color: topMenuTheme.stopQueueColor.iconColor,
+            ),
+            onHoverColor: topMenuTheme.stopQueueColor.hoverBackgroundColor,
           ),
           TopMenuButton(
             onTap: onDownloadPressed,
             title: 'Download',
-            icon: const Icon(Icons.download_rounded, color: Colors.white),
-            onHoverColor: Colors.green,
+            icon: Icon(
+              Icons.download_rounded,
+              color: topMenuTheme.downloadColor.iconColor,
+            ),
+            onHoverColor: topMenuTheme.downloadColor.hoverBackgroundColor,
           ),
           TopMenuButton(
             onTap: onStopPressed,
             title: 'Stop',
-            icon: const Icon(Icons.stop_rounded, color: Colors.white),
-            onHoverColor: Colors.redAccent,
+            icon: Icon(
+              Icons.stop_rounded,
+              color: topMenuTheme.stopColor.iconColor,
+            ),
+            onHoverColor: topMenuTheme.stopColor.hoverBackgroundColor,
           ),
           TopMenuButton(
             onTap: () => onRemovePressed(context),
             title: 'Remove',
-            icon: const Icon(Icons.delete, color: Colors.white),
-            onHoverColor: Colors.red,
+            icon: Icon(
+              Icons.delete,
+              color: topMenuTheme.removeColor.iconColor,
+            ),
+            onHoverColor: topMenuTheme.removeColor.hoverBackgroundColor,
           ),
         ],
       ),

@@ -7,8 +7,10 @@ class RoundedOutlinedButton extends StatefulWidget {
   final String text;
   final Color backgroundColor;
   final double? width;
+  Color? hoverBackgroundColor;
+  Color? hoverTextColor;
 
-  const RoundedOutlinedButton({
+  RoundedOutlinedButton({
     Key? key,
     required this.onPressed,
     required this.borderColor,
@@ -16,6 +18,8 @@ class RoundedOutlinedButton extends StatefulWidget {
     required this.text,
     this.backgroundColor = Colors.black38,
     this.width,
+    this.hoverBackgroundColor,
+    this.hoverTextColor,
   }) : super(key: key);
 
   @override
@@ -34,7 +38,11 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
         onHover: (val) => setState(() => hover = val),
         style: ButtonStyle(
           backgroundColor: MaterialStatePropertyAll(
-            hover ? widget.borderColor : widget.backgroundColor,
+            widget.hoverBackgroundColor == null
+                ? (hover ? widget.borderColor : widget.backgroundColor)
+                : (hover
+                    ? widget.hoverBackgroundColor
+                    : widget.backgroundColor),
           ),
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
@@ -47,7 +55,11 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
         ),
         child: Text(
           widget.text,
-          style: TextStyle(color: hover ? Colors.white : widget.textColor),
+          style: TextStyle(
+            color: widget.hoverTextColor == null
+                ? (hover ? Colors.white : widget.textColor)
+                : (hover ? widget.hoverTextColor : widget.textColor),
+          ),
         ),
       ),
     );

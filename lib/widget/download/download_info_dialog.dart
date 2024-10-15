@@ -1,7 +1,8 @@
 import 'package:brisk/db/hive_util.dart';
-import 'package:brisk/model/download_item_model.dart';
-import 'package:brisk/model/download_progress.dart';
+import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/provider/download_request_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/util/settings_cache.dart';
@@ -12,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/download_command.dart';
+import '../../download_engine/download_command.dart';
 import '../../model/download_item.dart';
 import 'download_progress_window.dart';
 
@@ -40,9 +41,12 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
   @override
   Widget build(BuildContext context) {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return AlertDialog(
       insetPadding: const EdgeInsets.all(10),
-      backgroundColor: const Color.fromRGBO(25, 25, 25, 1),
+      backgroundColor: theme.backgroundColor,
+      surfaceTintColor: theme.backgroundColor,
       content: SizedBox(
         width: 500,
         height: 350,
@@ -226,7 +230,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog> {
     final request = widget.downloadItem;
     await HiveUtil.instance.addDownloadItem(request);
     provider.insertRows([
-      DownloadProgress(
+      DownloadProgressMessage(
           downloadItem: DownloadItemModel.fromDownloadItem(request))
     ]);
     if (!mounted) return;

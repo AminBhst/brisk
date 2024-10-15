@@ -1,0 +1,9 @@
+enum SegmentStatus {
+  INITIAL,
+  REFRESH_REQUESTED,
+  IN_USE,
+  IN_QUEUE,
+  REUSE_REQUESTED,
+  OUT_DATED,
+  COMPLETE
+}

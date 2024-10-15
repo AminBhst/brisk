@@ -1,6 +1,8 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 
 class FileInfoLoader extends StatelessWidget {
   final VoidCallback onCancelPressed;
@@ -9,18 +11,21 @@ class FileInfoLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return AlertDialog(
-      backgroundColor: const Color.fromRGBO(25, 25, 25, 1),
+      backgroundColor: theme.backgroundColor,
+      surfaceTintColor: theme.backgroundColor,
       content: SizedBox(
         width: 250,
         height: 50,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
+          children: [
             Text(
               'Retrieving file information...',
-              style: TextStyle(color: Colors.white, fontSize: 15),
+              style: TextStyle(color: theme.textColor, fontSize: 15),
             ),
             SizedBox(width: 10),
             SpinKitRing(color: Colors.blueAccent, size: 30)

@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -50,8 +52,11 @@ class FileUtil {
     return completer.future;
   }
 
-  static String getFilePath(String fileName,
-      {Directory? baseSaveDir, bool checkFileDuplicationOnly = false}) {
+  static String getFilePath(
+    String fileName, {
+    Directory? baseSaveDir,
+    bool checkFileDuplicationOnly = false,
+  }) {
     final saveDir = baseSaveDir ?? SettingsCache.saveDir;
     if (!saveDir.existsSync()) {
       saveDir.createSync();
@@ -80,7 +85,8 @@ class FileUtil {
     return join(saveDir.path, subDir, fileName);
   }
 
-  static bool checkDownloadDuplication(File file, bool checkFileDuplicationOnly) {
+  static bool checkDownloadDuplication(
+      File file, bool checkFileDuplicationOnly) {
     if (checkFileDuplicationOnly) return file.existsSync();
 
     return HiveUtil.instance.downloadItemsBox.values
@@ -89,6 +95,7 @@ class FileUtil {
         file.existsSync();
   }
 
+  // TODO FIX add other types with two dots
   static String getRawFileName(String fileName) {
     return fileName.substring(
         0,
@@ -107,7 +114,7 @@ class FileUtil {
       Directory(join(path, 'Other'))
     ];
     for (var dir in dirs) {
-      await dir.create();
+      dir.createSync();
     }
   }
 
@@ -203,17 +210,18 @@ class FileUtil {
     }
   }
 
-  static int sortByFileName(FileSystemEntity a, FileSystemEntity b) {
-    return fileNameToInt(a).compareTo(fileNameToInt(b));
-  }
-
-  static int fileNameToInt(FileSystemEntity file) {
-    return int.parse(basename(file.path).toString());
-  }
-
   static bool checkFileDuplication(String fileName) {
     final subDir = _fileTypeToFolderName(detectFileType(fileName));
     final filePath = join(SettingsCache.saveDir.path, subDir, fileName);
     return File(filePath).existsSync();
+  }
+}
+
+extension Util on File {
+  Uint8List safeReadSync(int count) {
+    final fileOpen = openSync();
+    final result = fileOpen.readSync(count);
+    fileOpen.closeSync();
+    return result;
   }
 }

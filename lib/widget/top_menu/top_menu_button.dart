@@ -4,8 +4,9 @@ class TopMenuButton extends StatelessWidget {
   final String title;
   final Widget icon;
   final Color onHoverColor;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final double fontSize;
+  final Color textColor;
 
   const TopMenuButton({
     super.key,
@@ -14,6 +15,7 @@ class TopMenuButton extends StatelessWidget {
     this.onHoverColor = Colors.blueGrey,
     required this.onTap,
     this.fontSize = 13,
+    this.textColor = Colors.white60,
   });
 
   @override
@@ -37,7 +39,7 @@ class TopMenuButton extends StatelessWidget {
                   padding: const EdgeInsets.all(5),
                   child: Text(
                     title,
-                    style: TextStyle(fontSize: fontSize),
+                    style: TextStyle(fontSize: fontSize, color: textColor),
                     textAlign: TextAlign.center,
                   ),
                 ),

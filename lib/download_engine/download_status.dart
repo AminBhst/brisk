@@ -1,3 +1,4 @@
+/// TODO use enum
 class DownloadStatus {
    static const complete = "Complete...";
    static const downloading = "Downloading...";
@@ -9,4 +10,5 @@ class DownloadStatus {
    static const failed = "Failed";
    static const canceled = "Canceled";
    static const assembleComplete = "Complete";
+   static const validatingFiles = "Validating files...";
 }

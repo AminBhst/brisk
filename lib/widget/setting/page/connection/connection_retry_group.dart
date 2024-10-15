@@ -1,6 +1,8 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:brisk/widget/setting/base/text_field_setting.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../util/settings_cache.dart';
 
@@ -14,6 +16,10 @@ class ConnectionRetryGroup extends StatefulWidget {
 class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
   @override
   Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context)
+        .activeTheme
+        .settingTheme
+        .pageTheme;
     final size = MediaQuery.of(context).size;
     return SettingsGroup(
       height: 200,
@@ -26,9 +32,9 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
           ),
           width: 50,
           textWidth: size.width * 0.6 * 0.32,
-          icon: const Text(
+          icon: Text(
             "-1 = infinite",
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: theme.titleTextColor),
           ),
           text: "Max connection retry count",
           keyboardType: const TextInputType.numberWithOptions(
@@ -47,9 +53,9 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
           width: 75,
           textWidth: size.width * 0.6 * 0.32,
           text: "Connection retry timeout",
-          icon: const Text(
+          icon: Text(
             "seconds",
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: theme.titleTextColor),
           ),
           txtController: TextEditingController(
               text: SettingsCache.connectionRetryTimeout.toString()),

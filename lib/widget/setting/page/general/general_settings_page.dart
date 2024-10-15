@@ -1,5 +1,6 @@
 import 'package:brisk/widget/setting/page/general/behaviour_settings_group.dart';
 import 'package:brisk/widget/setting/page/general/notification_settings_group.dart';
+import 'package:brisk/widget/setting/page/general/ui_setting_group.dart';
 import 'package:flutter/material.dart';
 
 class GeneralSettingsPage extends StatelessWidget {
@@ -14,6 +15,7 @@ class GeneralSettingsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: const [
             NotificationSettingsGroup(),
+            UISettingGroup(),
             BehaviourSettingsGroup(),
           ],
         ),

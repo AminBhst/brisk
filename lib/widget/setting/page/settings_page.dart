@@ -1,4 +1,5 @@
 import 'package:brisk/provider/settings_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/setting/page/about/about_page.dart';
 import 'package:brisk/widget/setting/page/bug_report/bug_report_page.dart';
 import 'package:brisk/widget/setting/page/connection/connection_settings_page.dart';
@@ -15,11 +16,15 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<SettingsProvider>(context);
     final size = MediaQuery.of(context).size;
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
     return Container(
       height: resolveHeight(size.height),
       width: size.width * 0.6 * 0.75,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15), color: Colors.black26),
+        borderRadius: BorderRadius.circular(15),
+        color: theme.pageBackgroundColor,
+      ),
       child: PageView(
         controller: provider.settingsPageController,
         physics: NeverScrollableScrollPhysics(),

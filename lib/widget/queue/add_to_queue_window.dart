@@ -1,8 +1,10 @@
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../model/download_queue.dart';
 
@@ -20,9 +22,12 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
   @override
   Widget build(BuildContext context) {
     setDownloadQueues();
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return ClosableWindow(
       width: 300,
       height: 250,
+      backgroundColor: theme.backgroundColor,
       disableCloseButton: true,
       padding: EdgeInsets.only(top: 50),
       content: Column(
@@ -60,16 +65,21 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
             children: [
               RoundedOutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                borderColor: Colors.red,
-                textColor: Colors.red,
+                borderColor: theme.cancelButtonColor.borderColor,
+                hoverTextColor: theme.cancelButtonColor.hoverTextColor,
+                hoverBackgroundColor:
+                    theme.cancelButtonColor.hoverBackgroundColor,
+                textColor: theme.cancelButtonColor.textColor,
                 text: "Cancel",
                 width: 95,
               ),
               const SizedBox(width: 10),
               RoundedOutlinedButton(
                 onPressed: onAddPressed,
-                borderColor: Colors.green,
-                textColor: Colors.green,
+                borderColor: theme.addButtonColor.borderColor,
+                hoverTextColor: theme.addButtonColor.hoverTextColor,
+                hoverBackgroundColor: theme.addButtonColor.hoverBackgroundColor,
+                textColor: theme.addButtonColor.textColor,
                 text: "Add",
                 width: 95,
               ),

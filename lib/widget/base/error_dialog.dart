@@ -1,4 +1,6 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ErrorDialog extends StatelessWidget {
   final String text;
@@ -6,6 +8,7 @@ class ErrorDialog extends StatelessWidget {
   final double height;
   final String? title;
   final double textHeight;
+  final double textSpaceBetween;
 
   const ErrorDialog({
     super.key,
@@ -14,13 +17,17 @@ class ErrorDialog extends StatelessWidget {
     this.height = 60,
     this.title = null,
     this.textHeight = 90,
+    this.textSpaceBetween = 0,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return AlertDialog(
       insetPadding: const EdgeInsets.all(10),
-      backgroundColor: Colors.black,
+      backgroundColor: theme.backgroundColor,
+      surfaceTintColor: theme.backgroundColor,
       content: SizedBox(
         width: width,
         height: height,
@@ -47,6 +54,7 @@ class ErrorDialog extends StatelessWidget {
                   ),
               ],
             ),
+            SizedBox(height: textSpaceBetween),
             SizedBox(
               height: textHeight,
               child: Text(text, style: const TextStyle(color: Colors.red)),
