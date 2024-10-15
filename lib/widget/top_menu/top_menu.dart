@@ -71,13 +71,13 @@ class _TopMenuState extends State<TopMenu> {
               textColor: topMenuTheme.addUrlColor.textColor,
             ),
           ),
-          TopMenuButton(
-            /// TODO comment in production
-            onTap: () => onMockDownloadPressed(context),
-            title: 'Mock',
-            icon: const Icon(Icons.not_started_outlined, color: Colors.red),
-            onHoverColor: Colors.red,
-          ),
+          // TopMenuButton(
+          //   /// TODO comment in production
+          //   onTap: () => onMockDownloadPressed(context),
+          //   title: 'Mock',
+          //   icon: const Icon(Icons.not_started_outlined, color: Colors.red),
+          //   onHoverColor: Colors.red,
+          // ),
           TopMenuButton(
             onTap: isDownloadButtonEnabled ? onDownloadPressed : null,
             title: 'Download',
