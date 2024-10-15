@@ -110,7 +110,6 @@ flutter:
     - assets/icons/github.svg
     - assets/icons/logo.png
     - assets/icons/logo.ico
-    - assets/test/Mozilla.Firefox.zip
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
