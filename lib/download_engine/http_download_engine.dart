@@ -264,9 +264,6 @@ class HttpDownloadEngine {
   static bool _shouldCreateNewConnections(int downloadId) {
     final progress = _downloadProgresses[downloadId]!;
     final engineChannel = _engineChannels[downloadId];
-    engineChannel?.logger?.info(
-      "Total download progress: ${progress.totalDownloadProgress}",
-    );
     final pendingSegmentExists = _engineChannels[downloadId]!
             .segmentTree
             ?.lowestLevelNodes
@@ -274,7 +271,8 @@ class HttpDownloadEngine {
         true;
 
     return !pendingSegmentExists &&
-        progress.totalDownloadProgress < downloadSettings.totalConnections &&
+        progress.connectionProgresses.length <
+            downloadSettings.totalConnections &&
         engineChannel!.createdConnections < downloadSettings.totalConnections &&
         !_connectionSpawnerIgnoreList.contains(downloadId);
   }
