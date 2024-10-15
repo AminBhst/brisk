@@ -24,6 +24,7 @@ class AskDuplicationAction extends StatelessWidget {
     return AlertDialog(
       insetPadding: const EdgeInsets.all(2),
       backgroundColor: theme.backgroundColor,
+      surfaceTintColor: theme.backgroundColor,
       icon:
           const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 40),
       content: SizedBox(
