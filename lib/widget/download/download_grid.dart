@@ -185,7 +185,7 @@ class _DownloadGridState extends State<DownloadGrid> {
               activatedBorderColor: Colors.transparent,
               borderColor: downloadGridTheme.borderColor,
               gridBorderColor: downloadGridTheme.borderColor,
-              activatedColor: Colors.grey,
+              activatedColor: downloadGridTheme.activeRowColor,
               gridBackgroundColor: downloadGridTheme.backgroundColor,
               rowColor: downloadGridTheme.rowColor,
               checkedColor: downloadGridTheme.checkedRowColor,

@@ -91,7 +91,7 @@ ApplicationTheme celestialDark = ApplicationTheme(
   ),
   downloadGridTheme: DownloadGridTheme(
     backgroundColor: const Color.fromRGBO(30, 30, 30, 1),
-    activeRowColor: Colors.black26,
+    activeRowColor: const Color.fromRGBO(49, 48, 48, 1),
     checkedRowColor: Color.fromRGBO(36, 63, 103, 1),
     borderColor: Colors.black26,
     rowColor: Colors.black26,
