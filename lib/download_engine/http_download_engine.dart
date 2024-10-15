@@ -1012,14 +1012,22 @@ class HttpDownloadEngine {
     final firstProgress = _connectionProgresses[id]!.values.first;
     String status = firstProgress.status;
     final totalProgress = _calculateTotalDownloadProgress(id);
-    final allConnecting = _connectionProgresses[id]!
+    final allConnecting = _engineChannels[id]!
+        .connectionChannels
         .values
         .every((p) => p.detailsStatus == DownloadStatus.connecting);
+    final anyDownloading = _engineChannels[id]!
+        .connectionChannels
+        .values
+        .every((p) => p.status == DownloadStatus.downloading);
     if (allConnecting) {
       status = DownloadStatus.connecting;
     }
     if (totalProgress >= 1) {
       status = DownloadStatus.complete;
+    }
+    if (anyDownloading) {
+      status = DownloadStatus.downloading;
     }
     downloadProgress.status = status;
     downloadProgress.downloadItem.status = status;
