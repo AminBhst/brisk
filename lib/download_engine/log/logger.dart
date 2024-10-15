@@ -64,14 +64,15 @@ class Logger {
     print(logLevel.name + ":: " + message);
   }
 
+  File get logFile => File(
+        join(logBaseDir.path, "Logs", "${downloadUid}_logs.log"),
+      );
+
   void writeLogBuffer() {
     if (logBuffer.isEmpty) return;
     if (!logBaseDir.existsSync()) {
       logBaseDir.createSync(recursive: true);
     }
-    final logFile = File(
-      join(logBaseDir.path, "Logs", "${downloadUid}_logs.log"),
-    );
     if (!logFile.existsSync()) {
       logFile.createSync(recursive: true);
     }

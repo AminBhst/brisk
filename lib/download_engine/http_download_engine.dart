@@ -950,6 +950,13 @@ class HttpDownloadEngine {
       _setCompletionStatuses(assembleSuccessful, progress);
       engineChannel.sendMessage(progress);
     }
+    if (assembleSuccessful) {
+      logger
+        ?..writeLogBuffer()
+        ..logBuffer.clear()
+        ..flushTimer?.cancel()
+        ..logFile.deleteSync();
+    }
     return assembleSuccessful;
   }
 
