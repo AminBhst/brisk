@@ -1,4 +1,5 @@
 import 'package:brisk/constants/file_type.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
@@ -6,11 +7,13 @@ import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/responsive_util.dart';
+import 'package:brisk/widget/download/download_progress_window.dart';
 import 'package:brisk/widget/download/download_row_pop_up_menu_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../db/hive_util.dart';
 
@@ -21,6 +24,8 @@ class DownloadGrid extends StatefulWidget {
 
 class _DownloadGridState extends State<DownloadGrid> {
   late List<PlutoColumn> columns;
+  DownloadRequestProvider? provider;
+  QueueProvider? queueProvider;
 
   @override
   void didChangeDependencies() {
@@ -157,15 +162,14 @@ class _DownloadGridState extends State<DownloadGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final provider =
-        Provider.of<DownloadRequestProvider>(context, listen: false);
+    provider = Provider.of<DownloadRequestProvider>(context, listen: false);
     final downloadGridTheme =
         Provider.of<ThemeProvider>(context).activeTheme.downloadGridTheme;
     final plutoProvider = Provider.of<PlutoGridCheckRowProvider>(
       context,
       listen: false,
     );
-    final queueProvider = Provider.of<QueueProvider>(context);
+    queueProvider = Provider.of<QueueProvider>(context);
     final size = MediaQuery.of(context).size;
     return Material(
       type: MaterialType.transparency,
@@ -181,7 +185,7 @@ class _DownloadGridState extends State<DownloadGrid> {
               activatedBorderColor: Colors.transparent,
               borderColor: downloadGridTheme.borderColor,
               gridBorderColor: downloadGridTheme.borderColor,
-              activatedColor: downloadGridTheme.activeRowColor,
+              activatedColor: Colors.grey,
               gridBackgroundColor: downloadGridTheme.backgroundColor,
               rowColor: downloadGridTheme.rowColor,
               checkedColor: downloadGridTheme.checkedRowColor,
@@ -189,30 +193,49 @@ class _DownloadGridState extends State<DownloadGrid> {
           ),
           columns: columns,
           rows: [],
-          onRowChecked: (row) {
-            plutoProvider.notifyListeners();
-          },
-          onLoaded: (event) async {
-            PlutoGridUtil.setStateManager(event.stateManager);
-            PlutoGridUtil.plutoStateManager
-                ?.setSelectingMode(PlutoGridSelectingMode.row);
-            if (queueProvider.selectedQueueId == null) {
-              provider.fetchRows(
-                  HiveUtil.instance.downloadItemsBox.values.toList());
-            } else {
-              final queueId = queueProvider.selectedQueueId!;
-              final queue =
-                  await HiveUtil.instance.downloadQueueBox.get(queueId);
-              if (queue?.downloadItemsIds == null) return;
-              final downloads = queue!.downloadItemsIds!
-                  .map((e) => HiveUtil.instance.downloadItemsBox.get(e)!)
-                  .toList();
-              provider.fetchRows(downloads);
-            }
-            PlutoGridUtil.plutoStateManager?.setFilter(PlutoGridUtil.filter);
-          },
+          onRowChecked: (row) => plutoProvider.notifyListeners(),
+          onRowDoubleTap: onRowDoubleTap,
+          onLoaded: onLoaded,
         ),
       ),
     );
+  }
+
+  void onLoaded(event) async {
+    PlutoGridUtil.setStateManager(event.stateManager);
+    PlutoGridUtil.plutoStateManager
+        ?.setSelectingMode(PlutoGridSelectingMode.row);
+    if (queueProvider!.selectedQueueId == null) {
+      provider!.fetchRows(HiveUtil.instance.downloadItemsBox.values.toList());
+    } else {
+      final queueId = queueProvider!.selectedQueueId!;
+      final queue = await HiveUtil.instance.downloadQueueBox.get(queueId);
+      if (queue?.downloadItemsIds == null) return;
+      final downloads = queue!.downloadItemsIds!
+          .map((e) => HiveUtil.instance.downloadItemsBox.get(e)!)
+          .toList();
+      provider!.fetchRows(downloads);
+    }
+    PlutoGridUtil.plutoStateManager?.setFilter(PlutoGridUtil.filter);
+  }
+
+  void onRowDoubleTap(event) {
+    final status = event.row.cells["status"]?.value;
+    final id = event.row.cells["id"]?.value;
+    final downloadItem = HiveUtil.instance.downloadItemsBox.get(id);
+    if (status == null || downloadItem == null) {
+      return;
+    }
+    if (status == DownloadStatus.assembleComplete) {
+      launchUrlString("file:${downloadItem.filePath}");
+      return;
+    }
+    if (provider!.downloads[id] != null) {
+      showDialog(
+        context: context,
+        builder: (_) => DownloadProgressWindow(id),
+        barrierDismissible: false,
+      );
+    }
   }
 }
