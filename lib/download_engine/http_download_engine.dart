@@ -564,7 +564,6 @@ class HttpDownloadEngine {
     engineChannel.sendMessage(downloadProgress);
   }
 
-
   static void _addToReuseQueue(DownloadProgressMessage progress) {
     final downloadId = progress.downloadItem.id;
     final engineChannel = _engineChannels[downloadId];
@@ -704,6 +703,10 @@ class HttpDownloadEngine {
       final missingByteRanges = _findMissingByteRanges(
         data.downloadItem,
       );
+      if (missingByteRanges.isEmpty && isAssembleEligible(data.downloadItem)) {
+        assembleFile(data.downloadItem, notifyProgress: true);
+        return;
+      }
       missingByteRanges.forEach((element) {
         logger?.info("MissingByteRange:::: $element");
       });
@@ -897,11 +900,17 @@ class HttpDownloadEngine {
 
   /// Writes all the file parts inside the temp folder into one file therefore
   /// creating the final downloaded file.
-  static bool assembleFile(DownloadItemModel downloadItem) {
+  static bool assembleFile(
+    DownloadItemModel downloadItem, {
+    bool notifyProgress = false,
+  }) {
     final engineChannel = _engineChannels[downloadItem.id]!;
-    final progress = _downloadProgresses[downloadItem.id]!;
+    final progress = _downloadProgresses[downloadItem.id] ??
+        DownloadProgressMessage(downloadItem: downloadItem);
     progress
       ..downloadItem.status = DownloadStatus.assembling
+      ..totalDownloadProgress = 1
+      ..downloadProgress = 1
       ..status = DownloadStatus.downloading;
     engineChannel.sendMessage(progress);
     engineChannel.assembleRequested = true;
@@ -936,6 +945,10 @@ class HttpDownloadEngine {
       logger?.error(
         "Assemble failed! written file length = ${fileToWrite.lengthSync()} expected file length = ${downloadItem.contentLength}",
       );
+    }
+    if (notifyProgress) {
+      _setCompletionStatuses(assembleSuccessful, progress);
+      engineChannel.sendMessage(progress);
     }
     return assembleSuccessful;
   }
