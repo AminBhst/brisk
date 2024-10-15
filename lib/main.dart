@@ -191,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void didChangeDependencies() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      registerDefaultDownloadAdditionHotKey(context);
+      // registerDefaultDownloadAdditionHotKey(context);
       BrowserExtensionServer.setup(context);
       checkForUpdate(context);
     });

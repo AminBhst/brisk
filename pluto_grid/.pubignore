@@ -1,0 +1,12 @@
+/demo
+/example/android
+/example/ios
+/example/macos
+/example/web
+/example/windows
+/example/linux
+/example/build
+/coverage
+/test
+/build
+pubspec.lock
