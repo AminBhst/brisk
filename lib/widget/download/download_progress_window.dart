@@ -140,7 +140,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                           style: TextStyle(color: Colors.white)),
                       Selector<DownloadRequestProvider, String>(
                         selector: (_, provider) =>
-                            provider.downloads[widget.downloadId]!.status,
+                            provider.downloads[widget.downloadId]!.downloadItem.status,
                         builder: (context, status, child) => Text(status,
                             style: const TextStyle(color: Colors.white)),
                       ),
