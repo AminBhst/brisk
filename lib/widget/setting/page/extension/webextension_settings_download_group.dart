@@ -29,7 +29,7 @@ class WebExtensionSettingsDownloadGroup extends StatelessWidget {
             const Spacer(),
             IconButton(
               onPressed: () => launchUrl(
-                Uri.parse('https://github.com/AminBhst/brisk_webextension'),
+                Uri.parse('https://github.com/AminBhst/brisk-browser-extension'),
               ),
               icon: Icon(
                 Icons.launch,
