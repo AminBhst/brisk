@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid/src/ui/miscellaneous/double_tap_detector.dart';
 
 import 'ui.dart';
 
@@ -45,23 +46,13 @@ class PlutoBaseCell extends StatelessWidget
     );
   }
 
-  int lastTap = DateTime.now().millisecondsSinceEpoch;
-  int consecutiveTaps = 1;
-
   void _handleOnTapUp(TapUpDetails details) {
-    int now = DateTime.now().millisecondsSinceEpoch;
-    if (now - lastTap < 300) {
-      consecutiveTaps++;
-      if (consecutiveTaps >= 2) {
-        if (stateManager.onRowDoubleTap != null) {
-          _handleOnDoubleTap();
-        }
-      }
+    if (DoubleTapDetector.isDoubleTap(cell) &&
+        stateManager.onRowDoubleTap != null) {
+      _handleOnDoubleTap();
     } else {
-      consecutiveTaps = 1;
       _addGestureEvent(PlutoGridGestureType.onTapUp, details.globalPosition);
     }
-    lastTap = now;
   }
 
   void _handleOnLongPressStart(LongPressStartDetails details) {
@@ -129,7 +120,7 @@ class PlutoBaseCell extends StatelessWidget
       onLongPressEnd: _handleOnLongPressEnd,
       // Optional gestures.
       // onDoubleTap: _onDoubleTapOrNull(),
-      // onSecondaryTapDown: _onSecondaryTapOrNull(),
+      onSecondaryTapDown: _onSecondaryTapOrNull(),
       child: _CellContainer(
         cell: cell,
         rowIdx: rowIdx,
