@@ -101,7 +101,7 @@ class _MultiDownloadAdditionDialogState
   Future<void> updateDuplicateUrls(List<DownloadItem> downloadItems) async {
     final duplicates = downloadItems.where(checkDownloadDuplication).toList();
     final uncompletedDownloads = HiveUtil.instance.downloadItemsBox.values
-        .where((element) => element.status != DownloadStatus.complete);
+        .where((element) => element.status != DownloadStatus.assembleComplete);
     for (final download in uncompletedDownloads) {
       final fileNames = duplicates.map((e) => e.fileName).toList();
       if (fileNames.contains(download.fileName)) {

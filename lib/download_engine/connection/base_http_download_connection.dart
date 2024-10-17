@@ -240,7 +240,7 @@ abstract class BaseHttpDownloadConnection {
     pauseButtonEnabled = true;
     downloadProgress = 1;
     totalConnectionWriteProgress = 1;
-    detailsStatus = DownloadStatus.complete;
+    detailsStatus = DownloadStatus.connectionComplete;
     final totalExistingLength = getTotalWrittenBytesLength();
     totalDownloadProgress = totalExistingLength / downloadItem.contentLength;
   }
@@ -476,7 +476,7 @@ abstract class BaseHttpDownloadConnection {
         totalConnectionWrittenBytes / downloadItem.contentLength;
     totalRequestWriteProgress = totalRequestReceivedBytes / segment.length;
     if (totalRequestWriteProgress == 1) {
-      detailsStatus = DownloadStatus.complete;
+      detailsStatus = DownloadStatus.connectionComplete;
     }
     _isWritingTempFile = false;
   }
@@ -657,7 +657,7 @@ abstract class BaseHttpDownloadConnection {
       requestedSegment: segment,
       reuseConnection: reuseConnection,
     );
-    if (this.status == DownloadStatus.complete) {
+    if (this.status == DownloadStatus.connectionComplete) {
       message.internalMessage = message_refreshSegmentRefused(reuseConnection);
       progressCallback!.call(message);
       logger?.info(
@@ -739,7 +739,7 @@ abstract class BaseHttpDownloadConnection {
     totalDownloadProgress =
         totalConnectionReceivedBytes / downloadItem.contentLength;
     _flushBuffer();
-    detailsStatus = DownloadStatus.complete;
+    detailsStatus = DownloadStatus.connectionComplete;
     logger?.info("Download complete with completion signal");
     logger?.info("connection progress : $downloadProgress");
     _setDownloadComplete();
@@ -793,9 +793,9 @@ abstract class BaseHttpDownloadConnection {
     }
     final isAllowed = (paused && _isWritingTempFile) ||
         (!paused && downloadProgress > 0) ||
-        downloadItem.status == DownloadStatus.complete ||
-        status == DownloadStatus.complete ||
-        detailsStatus == DownloadStatus.complete;
+        downloadItem.status == DownloadStatus.connectionComplete ||
+        status == DownloadStatus.connectionComplete ||
+        detailsStatus == DownloadStatus.connectionComplete;
 
     return isAllowed && !connectionReset;
   }
@@ -926,9 +926,9 @@ abstract class BaseHttpDownloadConnection {
       lastResponseTimeMillis + settings.connectionRetryTimeout < _nowMillis &&
       !_isWritingTempFile &&
       status != DownloadStatus.paused &&
-      status != DownloadStatus.complete &&
+      status != DownloadStatus.connectionComplete &&
       detailsStatus != DownloadStatus.canceled &&
-      detailsStatus != DownloadStatus.complete &&
+      detailsStatus != DownloadStatus.connectionComplete &&
       (_retryCount < settings.maxConnectionRetryCount ||
           settings.maxConnectionRetryCount == -1);
 }

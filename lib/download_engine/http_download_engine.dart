@@ -1042,7 +1042,7 @@ class HttpDownloadEngine {
       status = DownloadStatus.connecting;
     }
     if (totalProgress >= 1) {
-      status = DownloadStatus.complete;
+      status = DownloadStatus.connectionComplete;
     }
     if (anyDownloading) {
       status = DownloadStatus.downloading;
@@ -1068,7 +1068,7 @@ class HttpDownloadEngine {
       return;
     }
     final unfinishedConnections = progresses
-        .where((p) => p.detailsStatus != DownloadStatus.complete)
+        .where((p) => p.detailsStatus != DownloadStatus.connectionComplete)
         .toList();
 
     progress.pauseButtonEnabled = unfinishedConnections.every(
@@ -1097,7 +1097,7 @@ class HttpDownloadEngine {
     final tempComplete = progresses.every(
       (progress) =>
           progress.totalConnectionWriteProgress >= 1 &&
-          progress.detailsStatus == DownloadStatus.complete,
+          progress.detailsStatus == DownloadStatus.connectionComplete,
     );
     if (!tempComplete) {
       return false;

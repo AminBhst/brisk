@@ -1,6 +1,6 @@
 /// TODO use enum
 class DownloadStatus {
-   static const complete = "Complete...";
+   static const connectionComplete = "Complete...";
    static const downloading = "Downloading...";
    static const paused = "Paused";
    static const assembling = "Assembling file...";
