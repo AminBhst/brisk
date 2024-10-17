@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/provider/download_request_provider.dart';
@@ -11,7 +9,6 @@ import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/download/download_progress_window.dart';
-import 'package:brisk/widget/download/download_row_pop_up_menu_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -31,7 +28,6 @@ class _DownloadGridState extends State<DownloadGrid> {
   DownloadRequestProvider? provider;
   QueueProvider? queueProvider;
   PlutoGridCheckRowProvider? plutoProvider;
-  final GlobalKey _popupMenuKey = GlobalKey();
 
   @override
   void didChangeDependencies() {
