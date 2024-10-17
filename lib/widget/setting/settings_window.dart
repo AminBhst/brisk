@@ -32,7 +32,7 @@ class _SettingsWindowState extends State<SettingsWindow> {
     return ClosableWindow(
       backgroundColor: settingTheme.windowBackgroundColor,
       width: size.width * 0.6,
-      height: size.height * 0.79,
+      height: resolveWindowHeight(size),
       padding: const EdgeInsets.all(0),
       onWindowClosed: SettingsCache.setCachedSettings,
       content: SizedBox(
@@ -136,13 +136,25 @@ class _SettingsWindowState extends State<SettingsWindow> {
     return dir.existsSync();
   }
 
+  double resolveWindowHeight(Size size) {
+    double height = size.height * 0.75;
+    if (size.height < 645) {
+      height -= 60;
+    }
+    return height;
+  }
+
   double resolveHeight(double sizeHeight) {
+    print(sizeHeight);
     double height = sizeHeight * 0.79 * 0.8;
     if (height < 500) {
       height * 0.9;
     }
     if (height < 700) {
       height * 0.5;
+    }
+    if (sizeHeight < 645) {
+      height = height * 0.8;
     }
     return height;
   }
