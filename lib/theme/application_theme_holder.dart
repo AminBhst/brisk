@@ -120,7 +120,7 @@ ApplicationTheme celestialDark = ApplicationTheme(
             textColor: Colors.white,
             cursorColor: Colors.white,
           ),
-          aboutIconColor: Colors.red,
+          aboutIconColor: Colors.white70,
         )),
     sideMenuTheme: SettingSideMenuTheme(
       backgroundColor: const Color.fromRGBO(15, 15, 15, 1),
@@ -150,11 +150,11 @@ ApplicationTheme celestialDark = ApplicationTheme(
     resetDefaultsButtonColor: ButtonColor(
       iconColor: Colors.transparent,
       hoverIconColor: Colors.transparent,
-      hoverBackgroundColor: Colors.blueGrey,
+      hoverBackgroundColor: Color.fromRGBO(53, 89, 143, 1),
       hoverTextColor: Colors.white,
-      borderColor: Colors.blueGrey,
-      textColor: Colors.blueGrey,
-      borderHoverColor: Colors.blueGrey,
+      borderColor: Color.fromRGBO(53, 89, 143, 1),
+      textColor: Color.fromRGBO(53, 89, 143, 1),
+      borderHoverColor: Color.fromRGBO(53, 89, 143, 1),
     ),
   ),
   queuePageTheme: QueuePageTheme(

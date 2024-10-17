@@ -15,18 +15,21 @@ class WebExtensionSettingsPage extends StatelessWidget {
         .pageTheme;
     return Center(
       child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const PortSettingsGroup(),
-            Text(
-              '*Changes require a restart',
-              style: TextStyle(color: theme.titleTextColor),
-            ),
-            const SizedBox(height: 10),
-            WebExtensionSettingsDownloadGroup(),
-          ],
+        child: SizedBox(
+          height: 450,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const PortSettingsGroup(),
+              Text(
+                '*Changes require a restart',
+                style: TextStyle(color: theme.titleTextColor),
+              ),
+              const SizedBox(height: 10),
+              WebExtensionSettingsDownloadGroup(),
+            ],
+          ),
         ),
       ),
     );

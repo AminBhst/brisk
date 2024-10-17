@@ -19,7 +19,7 @@ class AboutPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SettingsGroup(
-              height: 500,
+              height: 300,
               title: "Developer",
               children: [
                 Row(
