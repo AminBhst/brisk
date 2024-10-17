@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/model/download_item.dart';
@@ -265,11 +266,15 @@ class _TopMenuState extends State<TopMenu> {
     provider.downloads.removeWhere((key, _) => key == id);
   }
 
-  /// TODO Other buttons should only be active if a download row is selected
-  /// TODO return false if download is complete
   bool get isDownloadButtonEnabled {
     final selectedRowIds = PlutoGridUtil.selectedRowIds;
-    return (selectedRowIds.isEmpty)
+    final completedDownloadSelected = selectedRowIds
+        .map((id) => HiveUtil.instance.downloadItemsBox.get(id))
+        .toList()
+        .any((download) =>
+            download != null &&
+            download.status == DownloadStatus.assembleComplete);
+    return (selectedRowIds.isEmpty || completedDownloadSelected)
         ? false
         : (provider.downloads.values
                 .where((item) => selectedRowIds.contains(item.downloadItem.id))
