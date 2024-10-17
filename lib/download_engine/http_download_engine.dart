@@ -1035,7 +1035,7 @@ class HttpDownloadEngine {
     final anyDownloading = _engineChannels[id]!
         .connectionChannels
         .values
-        .every((p) => p.status == DownloadStatus.downloading);
+        .any((p) => p.status == DownloadStatus.downloading);
     if (allConnecting) {
       status = DownloadStatus.connecting;
     }
