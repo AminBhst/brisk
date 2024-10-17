@@ -219,6 +219,7 @@ mixin RowState implements IPlutoGridState {
     PlutoRow row,
     bool flag, {
     bool notify = true,
+    bool checkedViaSelect = false,
   }) {
     final findRow = refRows.firstWhereOrNull(
       (element) => element.key == row.key,
@@ -228,7 +229,7 @@ mixin RowState implements IPlutoGridState {
       return;
     }
 
-    findRow.setChecked(flag);
+    findRow.setChecked(flag, checkedViaSelect);
 
     notifyListeners(notify, setRowChecked.hashCode);
   }

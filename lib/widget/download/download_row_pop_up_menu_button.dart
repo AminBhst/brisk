@@ -14,7 +14,7 @@ class DownloadRowPopUpMenuButton extends StatelessWidget {
   final String status;
   final int id;
 
-  const DownloadRowPopUpMenuButton({
+  DownloadRowPopUpMenuButton({
     Key? key,
     required this.status,
     required this.id,
@@ -108,9 +108,10 @@ class DownloadRowPopUpMenuButton extends StatelessWidget {
         break;
       case 3:
         showDialog(
-            context: context,
-            builder: (context) =>
-                DownloadInfoDialog(dl, showActionButtons: false));
+          context: context,
+          builder: (context) =>
+              DownloadInfoDialog(dl, showActionButtons: false),
+        );
         break;
       case 4:
         launchUrlString("file:${dl.filePath}");

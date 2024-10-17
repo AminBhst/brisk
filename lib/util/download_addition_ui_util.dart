@@ -120,7 +120,9 @@ class DownloadAdditionUiUtil {
         context: context,
         builder: (context) => const ErrorDialog(
           width: 400,
-          text: "The given URL does not refer to the same file",
+          height: 60,
+          textHeight: 30,
+          text: "The given URL does not refer to the same file!",
         ),
       );
     } else {

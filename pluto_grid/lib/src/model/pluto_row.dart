@@ -25,6 +25,8 @@ class PlutoRow {
 
   bool? _checked;
 
+  bool? checkedViaSelect;
+
   PlutoRow? _parent;
 
   PlutoRowState _state;
@@ -119,8 +121,9 @@ class PlutoRow {
     _parent = row;
   }
 
-  void setChecked(bool? flag) {
+  void setChecked(bool? flag, [bool checkedViaSelect = false]) {
     _checked = flag;
+    this.checkedViaSelect = checkedViaSelect;
     if (type.isGroup) {
       for (final child in type.group.children) {
         child.setChecked(flag);

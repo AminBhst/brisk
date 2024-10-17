@@ -12,6 +12,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../download_engine/download_command.dart';
 import '../../model/download_item.dart';
@@ -20,9 +21,14 @@ import 'download_progress_window.dart';
 class DownloadInfoDialog extends StatefulWidget {
   final DownloadItem downloadItem;
   final bool showActionButtons;
+  final bool showFileActionButtons;
 
-  const DownloadInfoDialog(this.downloadItem,
-      {super.key, this.showActionButtons = true});
+  const DownloadInfoDialog(
+    this.downloadItem, {
+    super.key,
+    this.showActionButtons = true,
+    this.showFileActionButtons = false,
+  });
 
   @override
   State<DownloadInfoDialog> createState() => _DownloadInfoDialogState();
@@ -205,37 +211,68 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
           ),
         ),
         actions: <Widget>[
-          widget.showActionButtons
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      RoundedOutlinedButton(
-                        text: "Cancel",
-                        onPressed: () => Navigator.of(context).pop(),
-                        borderColor: Colors.red,
-                        textColor: Colors.red,
-                      ),
-                      const SizedBox(width: 40),
-                      RoundedOutlinedButton(
-                        text: "Download",
-                        onPressed: () => _onDownloadPressed(context),
-                        borderColor: Colors.green,
-                        textColor: Colors.green,
-                      ),
-                      const SizedBox(width: 40),
-                      RoundedOutlinedButton(
-                        text: "Add to list",
-                        onPressed: addToList,
-                        borderColor: Colors.grey,
-                        textColor: Colors.grey,
-                      ),
-                    ],
+          if (widget.showActionButtons)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  RoundedOutlinedButton(
+                    text: "Cancel",
+                    onPressed: () => Navigator.of(context).pop(),
+                    borderColor: Colors.red,
+                    textColor: Colors.red,
                   ),
-                )
-              : Container()
+                  const SizedBox(width: 40),
+                  RoundedOutlinedButton(
+                    text: "Download",
+                    onPressed: () => _onDownloadPressed(context),
+                    borderColor: Colors.green,
+                    textColor: Colors.green,
+                  ),
+                  const SizedBox(width: 40),
+                  RoundedOutlinedButton(
+                    text: "Add to list",
+                    onPressed: addToList,
+                    borderColor: Color.fromRGBO(53, 89, 143, 1),
+                    textColor: Color.fromRGBO(53, 89, 143, 1),
+                  ),
+                ],
+              ),
+            )
+          else if (widget.showFileActionButtons)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  RoundedOutlinedButton(
+                    text: "Open File",
+                    onPressed: () {
+                      launchUrlString("file:${widget.downloadItem.filePath}");
+                      Navigator.of(context).pop();
+                    },
+                    borderColor: Color.fromRGBO(53, 89, 143, 1),
+                    textColor: Colors.white,
+                    backgroundColor: Color.fromRGBO(53, 89, 143, 1),
+                  ),
+                  const SizedBox(width: 40),
+                  RoundedOutlinedButton(
+                    text: "Open File Location",
+                    onPressed: () {
+                      openFileLocation(widget.downloadItem);
+                      Navigator.of(context).pop();
+                    },
+                    borderColor: Color.fromRGBO(53, 89, 143, 1),
+                    textColor: Color.fromRGBO(53, 89, 143, 1),
+                  ),
+                ],
+              ),
+            )
+          else
+            Container()
         ],
       ),
     );
