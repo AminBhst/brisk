@@ -933,7 +933,6 @@ class HttpDownloadEngine {
     }
     final assembleSuccessful =
         fileToWrite.lengthSync() == downloadItem.contentLength;
-    //// TODO delete logs if it was successful
     if (assembleSuccessful) {
       _connectionIsolates[downloadItem.id]?.values.forEach((isolate) {
         isolate.kill();
