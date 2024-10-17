@@ -356,10 +356,12 @@ class _DownloadGridState extends State<DownloadGrid> {
     final status = event.row.cells["status"]?.value;
     final id = event.row.cells["id"]?.value;
     final downloadItem = HiveUtil.instance.downloadItemsBox.get(id);
+    final downloadProgress = provider!.downloads[id];
     if (status == null || downloadItem == null) {
       return;
     }
-    if (provider!.downloads[id] != null) {
+    if (downloadProgress != null &&
+        downloadProgress.status != DownloadStatus.assembleComplete) {
       showDialog(
         context: context,
         builder: (_) => DownloadProgressWindow(id),
