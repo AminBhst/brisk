@@ -938,7 +938,7 @@ class HttpDownloadEngine {
       _connectionIsolates[downloadItem.id]?.values.forEach((isolate) {
         isolate.kill();
       });
-      // tempDir.deleteSync(recursive: true);
+      tempDir.deleteSync(recursive: true);
     } else {
       logger?.error(
         "Assemble failed! written file length = ${fileToWrite.lengthSync()} expected file length = ${downloadItem.contentLength}",
