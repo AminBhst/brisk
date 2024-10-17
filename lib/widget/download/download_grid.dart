@@ -244,8 +244,7 @@ class _DownloadGridState extends State<DownloadGrid> {
     final updateUrlEnabled = downloadExists
         ? (downloadProgress.status != DownloadStatus.assembleComplete ||
             downloadProgress.status != DownloadStatus.downloading)
-        : (status != DownloadStatus.assembleComplete ||
-            status != DownloadStatus.downloading);
+        : (!downloadComplete || status == DownloadStatus.paused);
     showMenu(
       popUpAnimationStyle: AnimationStyle(
         curve: Easing.emphasizedAccelerate,
