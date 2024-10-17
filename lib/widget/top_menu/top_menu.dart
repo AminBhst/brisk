@@ -273,7 +273,7 @@ class _TopMenuState extends State<TopMenu> {
         ? false
         : (provider.downloads.values
                 .where((item) => selectedRowIds.contains(item.downloadItem.id))
-                .every((item) => item.startButtonEnabled) ||
+                .every((item) => item.buttonAvailability.startButtonEnabled) ||
             provider.downloads.values.isEmpty);
   }
 
@@ -283,6 +283,6 @@ class _TopMenuState extends State<TopMenu> {
         ? false
         : provider.downloads.values
             .where((item) => selectedRowIds.contains(item.downloadItem.id))
-            .every((item) => item.pauseButtonEnabled);
+            .every((item) => item.buttonAvailability.pauseButtonEnabled);
   }
 }

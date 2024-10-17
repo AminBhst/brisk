@@ -18,8 +18,7 @@ class DownloadProgressMessage {
   double totalConnectionWriteProgress;
   double totalRequestWriteProgress;
   double assembleProgress;
-  bool startButtonEnabled;
-  bool pauseButtonEnabled;
+  ButtonAvailability buttonAvailability;
   int connectionNumber;
   int segmentLength;
   String detailsStatus;
@@ -39,8 +38,7 @@ class DownloadProgressMessage {
     this.totalConnectionWriteProgress = 0,
     this.totalRequestWriteProgress = 0,
     this.assembleProgress = 0,
-    this.startButtonEnabled = false,
-    this.pauseButtonEnabled = false,
+    this.buttonAvailability = const ButtonAvailability(false, false),
     this.bytesTransferRate = 0,
     this.totalReceivedBytes = 0,
     this.totalDownloadProgress = 0,
@@ -62,8 +60,10 @@ class DownloadProgressMessage {
       paused: request.paused,
       totalConnectionWriteProgress: request.totalConnectionWriteProgress,
       totalRequestWriteProgress: request.totalRequestWriteProgress,
-      startButtonEnabled: request.isStartButtonEnabled,
-      pauseButtonEnabled: request.pauseButtonEnabled,
+      buttonAvailability: ButtonAvailability(
+        request.pauseButtonEnabled,
+        request.isStartButtonEnabled,
+      ),
       downloadItem: request.downloadItem,
       bytesTransferRate: request.bytesTransferRate,
       totalDownloadProgress: request.totalDownloadProgress,
@@ -74,4 +74,11 @@ class DownloadProgressMessage {
     );
     return downloadProgress;
   }
+}
+
+class ButtonAvailability {
+  final bool pauseButtonEnabled;
+  final bool startButtonEnabled;
+
+  const ButtonAvailability(this.pauseButtonEnabled, this.startButtonEnabled);
 }

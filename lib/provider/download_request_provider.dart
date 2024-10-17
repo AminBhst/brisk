@@ -118,10 +118,12 @@ class DownloadRequestProvider with ChangeNotifier {
 
   void _handleButtonAvailabilityMessage(ButtonAvailabilityMessage message) {
     final download = downloads[message.downloadItem.id];
-    download?.startButtonEnabled = message.startButtonEnabled;
-    download?.pauseButtonEnabled = message.pauseButtonEnabled;
+    download?.buttonAvailability = ButtonAvailability(
+      message.pauseButtonEnabled,
+      message.startButtonEnabled,
+    );
     notifyListeners();
-    plutoProvider?.notifyListeners();
+    plutoProvider.notifyListeners();
   }
 
   void _handleDownloadProgressMessage(DownloadProgressMessage progress) {

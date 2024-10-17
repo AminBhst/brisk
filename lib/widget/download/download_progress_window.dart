@@ -40,7 +40,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: theme.infoContainerBackgroundColor,
+                color: theme.infoContainerBackgroundColor,
                 border: Border.all(
                   color: theme.infoContainerBorderColor,
                   width: 1,
@@ -139,8 +139,8 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                       const Text('Status : ',
                           style: TextStyle(color: Colors.white)),
                       Selector<DownloadRequestProvider, String>(
-                        selector: (_, provider) =>
-                            provider.downloads[widget.downloadId]!.downloadItem.status,
+                        selector: (_, provider) => provider
+                            .downloads[widget.downloadId]!.downloadItem.status,
                         builder: (context, status, child) => Text(status,
                             style: const TextStyle(color: Colors.white)),
                       ),
@@ -189,84 +189,67 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextButton(
-                  onPressed: showDetailAvailable
-                      ? () => setState(() => showDetails = !showDetails)
-                      : null,
+                onPressed: showDetailAvailable
+                    ? () => setState(() => showDetails = !showDetails)
+                    : null,
+                style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                        showDetailAvailable ? Colors.blueGrey : Colors.grey)),
+                child: Row(
+                  children: [
+                    Text(
+                      showDetails ? "Hide Details" : "Show Details",
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    Icon(
+                      showDetails
+                          ? Icons.expand_less_rounded
+                          : Icons.expand_more_rounded,
+                      color: Colors.white,
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(width: resolveButtonsXMargin(size)),
+              Selector<DownloadRequestProvider, ButtonAvailability>(
+                selector: (_, provider) =>
+                    provider.downloads[widget.downloadId]!.buttonAvailability,
+                builder: (context, buttonEnabled, child) => TextButton(
                   style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
-                          showDetailAvailable ? Colors.blueGrey : Colors.grey)),
-                  child: Row(
-                    children: [
-                      Text(
-                        showDetails ? "Hide Details" : "Show Details",
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      Icon(
-                        showDetails
-                            ? Icons.expand_less_rounded
-                            : Icons.expand_more_rounded,
-                        color: Colors.white,
-                      )
-                    ],
-                  )),
+                    // backgroundColor: MaterialStatePropertyAll(
+                    //           Color.fromRGBO(56, 159, 140, 1)),
+                    backgroundColor: WidgetStatePropertyAll(
+                      (buttonEnabled.pauseButtonEnabled ||
+                              buttonEnabled.startButtonEnabled)
+                          ? Colors.blueGrey
+                          : Colors.grey,
+                    ),
+                    fixedSize: WidgetStatePropertyAll(Size.fromWidth(100)),
+                  ),
+                  onPressed: buttonEnabled.pauseButtonEnabled ||
+                          buttonEnabled.startButtonEnabled
+                      ? () {
+                          provider.executeDownloadCommand(
+                            widget.downloadId,
+                            DownloadCommand.cancel,
+                          );
+                          Navigator.of(context).pop();
+                        }
+                      : null,
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              // SizedBox(width: resolveButtonsXMargin(size)),
               SizedBox(width: resolveButtonsXMargin(size)),
-              // TextButton(
-              //   style: const ButtonStyle(
-              //       // backgroundColor: MaterialStatePropertyAll(
-              //       //           Color.fromRGBO(56, 159, 140, 1)),
-              //       backgroundColor: MaterialStatePropertyAll(Colors.blueGrey),
-              //       fixedSize: MaterialStatePropertyAll(Size.fromWidth(90))),
-              //   onPressed: () {
-              //     provider.executeDownloadCommand(
-              //         widget.downloadId, DownloadCommand.cancel);
-              //     Navigator.of(context).pop();
-              //   },
-              //   child: const Text(
-              //     'Cancel',
-              //     style: TextStyle(color: Colors.white),
-              //   ),
-              // ),
-              SizedBox(width: resolveButtonsXMargin(size)),
-              Selector<DownloadRequestProvider, bool>(
-                  selector: (_, provider) =>
-                      provider.downloads[widget.downloadId]!.pauseButtonEnabled,
-                  builder: (context, buttonEnabled, child) => TextButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(
-                                buttonEnabled ? Colors.redAccent : Colors.grey),
-                            fixedSize: const MaterialStatePropertyAll(
-                                Size.fromWidth(90))),
-                        onPressed: buttonEnabled
-                            ? () => provider.executeDownloadCommand(
-                                  widget.downloadId,
-                                  DownloadCommand.pause,
-                                )
-                            : null,
-                        child: const Text(
-                          'Pause',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      )),
-              SizedBox(
-                  width: resolveButtonsXMargin(size, pauseStartMargin: true)),
-              Selector<DownloadRequestProvider, bool>(
-                  selector: (_, provider) =>
-                      provider.downloads[widget.downloadId]!.startButtonEnabled,
-                  builder: (context, buttonEnabled, child) => TextButton(
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(buttonEnabled
-                                  // ? const Color.fromRGBO(56, 159, 140, 1)
-                                  ? Colors.green
-                                  : Colors.grey),
-                          fixedSize: const MaterialStatePropertyAll(
-                              Size.fromWidth(90))),
-                      onPressed: buttonEnabled
-                          ? () => provider.executeDownloadCommand(
-                              widget.downloadId, DownloadCommand.start)
-                          : null,
-                      child: const Text('Start',
-                          style: TextStyle(color: Colors.white)))),
+              Selector<DownloadRequestProvider, ButtonAvailability>(
+                selector: (_, provider) =>
+                    provider.downloads[widget.downloadId]!.buttonAvailability,
+                builder: (context, buttonEnabled, child) =>
+                    pauseOrResumeButton(provider, buttonEnabled),
+              ),
             ],
           ),
           showDetails ? const SizedBox(height: 37) : Container(),
@@ -276,7 +259,8 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
               height: resolveDetailsHeight(size),
               width: 620,
               decoration: BoxDecoration(
-                border: Border.all(color: theme.detailsContainerBorderColor, width: 2),
+                border: Border.all(
+                    color: theme.detailsContainerBorderColor, width: 2),
                 color: theme.detailsContainerBackgroundColor,
                 borderRadius: BorderRadius.circular(5),
               ),
@@ -367,8 +351,47 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
     );
   }
 
-  double resolveButtonsXMargin(Size size, {bool pauseStartMargin = false}) {
-    double margin = pauseStartMargin ? 30 : 70;
+  Widget pauseOrResumeButton(
+    DownloadRequestProvider provider,
+    ButtonAvailability buttonAvailability,
+  ) {
+    if (buttonAvailability.pauseButtonEnabled) {
+      return TextButton(
+        style: ButtonStyle(
+          backgroundColor: WidgetStatePropertyAll(Colors.redAccent),
+          fixedSize: const WidgetStatePropertyAll(Size.fromWidth(100)),
+        ),
+        onPressed: () => provider.executeDownloadCommand(
+          widget.downloadId,
+          DownloadCommand.pause,
+        ),
+        child: const Text(
+          'Pause',
+          style: TextStyle(color: Colors.white),
+        ),
+      );
+    } else if (buttonAvailability.startButtonEnabled) {
+      return TextButton(
+        style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.green),
+            fixedSize: const WidgetStatePropertyAll(Size.fromWidth(100))),
+        onPressed: () => provider.executeDownloadCommand(
+            widget.downloadId, DownloadCommand.start),
+        child: const Text('Start', style: TextStyle(color: Colors.white)),
+      );
+    } else {
+      return TextButton(
+        style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.grey),
+            fixedSize: const WidgetStatePropertyAll(Size.fromWidth(100))),
+        onPressed: null,
+        child: const Text('Wait', style: TextStyle(color: Colors.white)),
+      );
+    }
+  }
+
+  double resolveButtonsXMargin(Size size) {
+    double margin = 70;
     if (size.width < 835) {
       margin = 20;
     }
@@ -390,40 +413,53 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
   }
 
   double resolveDetailsHeight(Size size) {
-    double height = size.height * 0.30;
-    if (size.height < 990) {
-      height = size.height * 0.27;
+    double height = resolveWindowHeight(size) - 190;
+    if (size.height <= 830) {
+      height = size.height * 0.29;
     }
-    if (size.height < 850) {
-      height = size.height * 0.2;
+    if (size.height <= 805) {
+      height = size.height * 0.26;
     }
-    if (size.height < 750) {
-      height = size.height * 0.15;
+    if (size.height <= 772) {
+      height = size.height * 0.24;
     }
-    if (size.height < 710) {
-      height = size.height * 0.1;
+    if (size.height <= 752) {
+      height = size.height * 0.22;
     }
-    if (size.height < 680) {
-      height = size.height * 0.1;
+    if (size.height <= 732) {
+      height -= 20;
     }
-    if (size.height < 650) {
-      height = size.height * 0.06;
+    if (size.height <= 707) {
+      height -= 20;
     }
-    if (size.height < 640) {
-      setState(() => showDetails = false);
+    if (size.height <= 680) {
+      height -= 20;
+    }
+    if (size.height <= 655) {
+      height -= 30;
+    }
+    if (size.height < 620) {
+      setState(() {
+        showDetails = false;
+        showDetailAvailable = false;
+      });
+    } else {
+      setState(() {
+        showDetailAvailable = true;
+      });
     }
     return height;
   }
 
   double resolveStatusTextPadding(Size size) {
     double padding = 8;
-    if (size.height < 480) {
+    if (size.height < 524) {
       padding = 3;
     }
-    if (size.height < 450) {
+    if (size.height < 495) {
       padding = 1;
     }
-    if (size.height < 420) {
+    if (size.height < 482) {
       padding = 0;
     }
     return padding;
@@ -438,54 +474,21 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
   }
 
   double resolveWindowHeight(Size size) {
-    double height = size.height * 0.60;
-    if (size.height > 900) {
-      height = 530;
+    print(size.height);
+    if (size.height >= 650) {
+      return 450;
     }
-    if (size.height < 800) {
-      height = size.height * 0.78 - 50;
-    }
-    if (size.height < 680) {
-      height = size.height * 0.8;
-    } else {
-      setState(() => showDetailAvailable = true);
-    }
-    if (size.height < 630) {
-      setState(() => showDetailAvailable = false);
-    }
-    if (size.height < 600) {
-      height = size.height * 0.9;
-    }
-    if (size.height < 550) {
-      height = size.height * 0.99;
-    }
-    if (size.height < 500) {
-      height = size.height;
-    }
-    return height;
+    return 450;
   }
 
   double resolveButtonsYMargin(Size size) {
-    double margin = 65;
-    if (size.height < 850) {
-      margin = 50;
+    if (size.height < 535) {
+      return 20;
     }
-    if (size.height < 600) {
-      margin = 30;
+    if (size.height < 525) {
+      return 10;
     }
-    if (size.height < 500) {
-      margin = 15;
-    }
-    if (size.height < 400) {
-      margin = 10;
-    }
-    if (size.height < 370) {
-      margin = 5;
-    }
-    if (size.height < 350) {
-      margin = 2;
-    }
-    return margin;
+    return 30;
   }
 
   Widget statusTextPadding(Size size) {

@@ -977,8 +977,7 @@ class HttpDownloadEngine {
       downloadProgress.status = DownloadStatus.assembleFailed;
       downloadProgress.downloadItem.status = DownloadStatus.assembleFailed;
     }
-    downloadProgress.pauseButtonEnabled = false;
-    downloadProgress.startButtonEnabled = false;
+    downloadProgress.buttonAvailability = ButtonAvailability(false, false);
     downloadProgress.transferRate = "";
   }
 
@@ -1063,23 +1062,25 @@ class HttpDownloadEngine {
     if (_connectionProgresses[downloadId] == null) return;
     final progresses = _connectionProgresses[downloadId]!.values;
     if (totalProgress >= 1) {
-      progress.pauseButtonEnabled = false;
-      progress.startButtonEnabled = false;
+      progress.buttonAvailability = ButtonAvailability(false, false);
       return;
     }
     final unfinishedConnections = progresses
         .where((p) => p.detailsStatus != DownloadStatus.connectionComplete)
         .toList();
 
-    progress.pauseButtonEnabled = unfinishedConnections.every(
-          (c) => c.pauseButtonEnabled,
+    final pauseButtonEnabled = unfinishedConnections.every(
+          (c) => c.buttonAvailability.pauseButtonEnabled,
         ) &&
         engineChannel!.isPauseButtonWaitComplete;
 
-    progress.startButtonEnabled = unfinishedConnections.every(
-          (c) => c.startButtonEnabled,
+    final startButtonEnabled = unfinishedConnections.every(
+          (c) => c.buttonAvailability.startButtonEnabled,
         ) &&
         engineChannel!.isStartButtonWaitComplete;
+
+    progress.buttonAvailability =
+        ButtonAvailability(pauseButtonEnabled, startButtonEnabled);
   }
 
   static double _calculateTotalDownloadProgress(int id) {
