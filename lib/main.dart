@@ -191,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void didChangeDependencies() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // registerDefaultDownloadAdditionHotKey(context);
+      registerDefaultDownloadAdditionHotKey(context);
       BrowserExtensionServer.setup(context);
       checkForUpdate(context);
     });
@@ -224,7 +224,6 @@ class _MyHomePageState extends State<MyHomePage>
   Widget build(BuildContext context) {
     final queueProvider = Provider.of<QueueProvider>(context);
     return LoaderOverlay(
-      useDefaultLoading: false,
       overlayWidgetBuilder: (progress) => FileInfoLoader(
         onCancelPressed: () => DownloadAdditionUiUtil.cancelRequest(context),
       ),
