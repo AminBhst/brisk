@@ -5,7 +5,7 @@ publisher: Amin Beheshti
 publisher_url: https://github.com/AminBhst/brisk
 display_name: Brisk
 create_desktop_icon: true
-install_dir_name: "{autopf}\\Brisk"
+install_dir_name: "Brisk"
 setup_icon_file: assets\icons\logo.ico
 locales:
   - en
