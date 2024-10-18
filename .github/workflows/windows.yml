@@ -46,7 +46,7 @@ jobs:
       - name: Set proper icon path
         run: |
           $iconPath = "${{ github.workspace }}\\assets\\icons\\logo.ico"
-          (Get-Content brisk/windows/packaging/exe/make_config.yaml) -replace 'PLACEHOLDER_ICON_PATH', $iconPath | Set-Content brisk/windows/packaging/exe/make_config.yaml
+          (Get-Content windows/packaging/exe/make_config.yaml) -replace 'PLACEHOLDER_ICON_PATH', $iconPath | Set-Content windows/packaging/exe/make_config.yaml
         
       - name: Enable windows build
         run: flutter config --enable-windows-desktop
