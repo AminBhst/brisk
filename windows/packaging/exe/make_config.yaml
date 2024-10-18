@@ -5,6 +5,6 @@ publisher: AminBhst
 publisher_url: https://github.com/AminBhst/brisk
 display_name: Brisk
 create_desktop_icon: true
-install_dir_name: "Brisk"
+install_dir_name: C:\Program Files (x86)\Brisk
 locales:
   - en
