@@ -54,6 +54,9 @@ dependencies:
   tray_manager: ^0.2.1
   launch_at_startup: ^0.2.2
   dartx: ^1.2.0
+  intl: ^0.18.0
+  rxdart: ^0.27.7
+  collection: ^1.17.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
