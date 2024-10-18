@@ -4,6 +4,7 @@ import 'package:brisk/model/download_item.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/model/file_metadata.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
@@ -28,15 +29,17 @@ class MultiDownloadAdditionDialog extends StatefulWidget {
 
 class _MultiDownloadAdditionDialogState
     extends State<MultiDownloadAdditionDialog> {
-  @override
   Widget build(BuildContext context) {
     widget.provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     final size = MediaQuery.of(context).size;
     return ClosableWindow(
         disableCloseButton: true,
         height: 600,
         width: 700,
+        backgroundColor: theme.backgroundColor,
         content: Container(
           height: resolveMainContainerHeight(size),
           width: 600,
@@ -91,7 +94,8 @@ class _MultiDownloadAdditionDialogState
     for (final item in downloadItems.toSet()) {
       await HiveUtil.instance.addDownloadItem(item);
       widget.provider.insertRows([
-        DownloadProgressMessage(downloadItem: DownloadItemModel.fromDownloadItem(item))
+        DownloadProgressMessage(
+            downloadItem: DownloadItemModel.fromDownloadItem(item))
       ]);
     }
     if (!mounted) return;
