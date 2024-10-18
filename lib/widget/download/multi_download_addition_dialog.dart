@@ -120,8 +120,7 @@ class _MultiDownloadAdditionDialogState
   }
 
   bool checkDownloadDuplication(DownloadItem item) {
-    return DownloadAdditionUiUtil.checkDownloadDuplication(item.fileName) ||
-        FileUtil.checkFileDuplication(item.fileName);
+    return DownloadAdditionUiUtil.checkDownloadDuplication(item.fileName);
   }
 
   double resolveScrollViewHeight(Size size) {
