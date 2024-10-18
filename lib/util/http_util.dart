@@ -14,7 +14,6 @@ import '../model/file_metadata.dart';
 import '../model/setting.dart';
 import '../widget/base/confirmation_dialog.dart';
 
-
 // Removed usage because of status 400 in google drive. also it doesn't seem necessary anyway
 const Map<String, String> contentType_MultiPartByteRanges = {
   'content-type': 'multipart/byteranges;'
@@ -35,7 +34,7 @@ String? extractFilenameFromHeaders(Map<String, String> headers) {
       filename = !tokens[i].contains('"')
           ? tokens[i].substring(tokens[i].indexOf("=") + 1, tokens[i].length)
           : tokens[i]
-          .substring(tokens[i].indexOf("=") + 2, tokens[i].length - 1);
+              .substring(tokens[i].indexOf("=") + 2, tokens[i].length - 1);
     }
   }
   return filename;
@@ -63,10 +62,12 @@ List<int> calculateByteStartAndByteEnd(
 }
 
 Future<List<FileInfo>?> requestFileInfoBatch(
-    List<DownloadItem> downloadItems) async {
+  List<DownloadItem> downloadItems,
+) async {
   List<FileInfo> fileInfos = [];
   for (final item in downloadItems) {
-    final fileInfo = await requestFileInfo(item, ignoreException: true);
+    final fileInfo = await requestFileInfo(item, ignoreException: true)
+        .onError((error, stackTrace) => null);
     if (fileInfo == null) continue;
     fileInfo.url = item.downloadUrl;
     fileInfos.add(fileInfo);
@@ -106,7 +107,9 @@ Future<FileInfo?> requestFileInfo(DownloadItem downloadItem,
       downloadItem.contentLength,
     );
     completer.complete(data);
-  }, onError: (e) => completer.completeError(e), cancelOnError: true);
+  },
+      onError: ignoreException ? (e) => completer.completeError(e) : null,
+      cancelOnError: !ignoreException);
   return completer.future;
 }
 
@@ -149,7 +152,7 @@ void checkForUpdate(BuildContext context) async {
       context: context,
       builder: (context) => ConfirmationDialog(
         title:
-        "New version of Brisk is available. Do you want to download the latest version?",
+            "New version of Brisk is available. Do you want to download the latest version?",
         onConfirmPressed: () => launchUrlString(
           "https://github.com/AminBhst/brisk/releases/latest",
         ),
