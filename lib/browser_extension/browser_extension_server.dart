@@ -28,6 +28,7 @@ class BrowserExtensionServer {
       final server = await HttpServer.bind(InternetAddress.loopbackIPv4, port);
       handleExtensionRequests(server, context);
     } catch (e) {
+      print("ERROR $e");
       if (e.toString().contains("Invalid port")) {
         _showInvalidPortError(context, port.toString());
         return;
@@ -69,13 +70,15 @@ class BrowserExtensionServer {
   static void _handleMultiDownloadRequest(jsonBody, context, request) {
     List downloadHrefs = jsonBody["data"]["downloadHrefs"];
     if (downloadHrefs.isEmpty) return;
-    downloadHrefs = downloadHrefs.toSet().toList(); // Removes duplicates
-    final downloadItems = downloadHrefs.map((e) => DownloadItem.fromUrl(e));
+    downloadHrefs = downloadHrefs.toSet().toList() // removes duplicates
+      ..removeWhere((url) => !isUrlValid(url));
+    final downloadItems =
+        downloadHrefs.map((e) => DownloadItem.fromUrl(e)).toList();
     _cancelClicked = false;
     _showLoadingDialog(context);
     requestFileInfoBatch(downloadItems.toList()).then((fileInfos) {
-      if (_cancelClicked || fileInfos == null) {
-        return;
+      if (_cancelClicked || fileInfos == null || fileInfos.isEmpty) {
+        return onFileInfoRetrievalError(context);
       }
       Navigator.of(context).pop();
       showDialog(
