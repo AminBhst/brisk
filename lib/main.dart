@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage>
         windowManager.hide();
         break;
       case AppClosureBehaviour.exit:
-        windowManager.destroy();
+        windowManager.destroy().then((_) => exit(0));
         break;
     }
   }
@@ -138,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage>
           if (rememberChecked) {
             await saveNewAppClosureBehaviour(AppClosureBehaviour.exit);
           }
-          await windowManager.destroy();
+          windowManager.destroy().then((_) => exit(0));
         },
         onMinimizeToTrayPressed: (rememberChecked) {
           if (rememberChecked) {
