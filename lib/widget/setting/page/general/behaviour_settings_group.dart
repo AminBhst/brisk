@@ -28,7 +28,7 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
     final size = MediaQuery.of(context).size;
     return SettingsGroup(
       height: 300,
-      title: "Behaviour",
+      title: "Behavior",
       children: [
         SwitchSetting(
           text: "Launch at startup",
@@ -37,12 +37,6 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
               setState(() => SettingsCache.launchOnStartUp = val),
         ),
         const SizedBox(height: 5),
-        SwitchSetting(
-          text: "Low Resource Mode",
-          switchValue: SettingsCache.lowResourceMode,
-          onChanged: (val) =>
-              setState(() => SettingsCache.lowResourceMode = val),
-        ),
         const SizedBox(height: 5),
         SwitchSetting(
           text: "Open download progress window when a new download starts",
@@ -58,7 +52,7 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
           value: _appClosureActionToDropDownTxt(
             SettingsCache.appClosureBehaviour,
           ),
-          text: "App closure behaviour",
+          text: "App closure behavior",
           onChanged: _onAppClosureDropDownChanged,
           items: const [
             dropDownMinimizeToTrayStr,

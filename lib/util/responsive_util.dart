@@ -11,10 +11,12 @@ double resolveSideMenuWidth(Size size) {
 }
 
 double resolveWindowWidth(Size size) {
-  if (size.width < 1300) {
+  // if (size.width < 1300) {
     return size.width - minimizedSideMenuWidth;
-  }
+  // }
   return size.width * 0.8;
 }
 
-bool minimizedSideMenu(Size size) => size.width < 1300;
+
+bool minimizedSideMenu(Size size) => true;
+// bool minimizedSideMenu(Size size) => size.width < 1300;

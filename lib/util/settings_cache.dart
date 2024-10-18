@@ -6,19 +6,20 @@ import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/setting.dart';
+import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/parse_util.dart';
-import './file_util.dart';
+import 'file_util.dart';
 
 class SettingsCache {
   /// General
+  static late String applicationThemeId;
   static late bool notificationOnDownloadCompletion;
   static late bool notificationOnDownloadFailure;
   static late bool launchOnStartUp;
   static late bool openDownloadProgressWindow;
   static late bool enableWindowToFront;
-  static late bool lowResourceMode;
   static late int extensionPort;
 
   /// File
@@ -38,6 +39,10 @@ class SettingsCache {
   static late int connectionRetryTimeout;
 
   static final Map<String, List<String>> defaultSettings = {
+    SettingOptions.applicationThemeId.name: [
+      SettingType.general.name,
+      ApplicationThemeHolder.themes.first.themeId,
+    ],
     SettingOptions.notificationOnDownloadCompletion.name: [
       SettingType.general.name,
       "false",
@@ -47,10 +52,6 @@ class SettingsCache {
       "true",
     ],
     SettingOptions.launchOnStartUp.name: [
-      SettingType.general.name,
-      "false",
-    ],
-    SettingOptions.lowResourceMode.name: [
       SettingType.general.name,
       "false",
     ],
@@ -125,6 +126,9 @@ class SettingsCache {
     for (var setting in settings) {
       final value = setting.value;
       switch (parseSettingOptions(setting.name)) {
+        case SettingOptions.applicationThemeId:
+          applicationThemeId = value.toString();
+          break;
         case SettingOptions.notificationOnDownloadCompletion:
           notificationOnDownloadCompletion = parseBool(value);
           break;
@@ -133,9 +137,6 @@ class SettingsCache {
           break;
         case SettingOptions.launchOnStartUp:
           launchOnStartUp = parseBool(value);
-          break;
-        case SettingOptions.lowResourceMode:
-          lowResourceMode = parseBool(value);
           break;
         case SettingOptions.openDownloadProgressWindow:
           openDownloadProgressWindow = parseBool(value);
@@ -191,6 +192,8 @@ class SettingsCache {
     final allSettings = HiveUtil.instance.settingBox.values;
     for (var setting in allSettings) {
       switch (parseSettingOptions(setting.name)) {
+        case SettingOptions.applicationThemeId:
+          setting.value = SettingsCache.applicationThemeId.toString();
         case SettingOptions.notificationOnDownloadCompletion:
           setting.value =
               parseBoolStr(SettingsCache.notificationOnDownloadCompletion);
@@ -201,9 +204,6 @@ class SettingsCache {
           break;
         case SettingOptions.launchOnStartUp:
           setting.value = parseBoolStr(SettingsCache.launchOnStartUp);
-          break;
-        case SettingOptions.lowResourceMode:
-          setting.value = parseBoolStr(SettingsCache.lowResourceMode);
           break;
         case SettingOptions.openDownloadProgressWindow:
           setting.value =

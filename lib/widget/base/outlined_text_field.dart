@@ -1,5 +1,7 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class OutLinedTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -23,6 +25,12 @@ class OutLinedTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context)
+        .activeTheme
+        .settingTheme
+        .pageTheme
+        .widgetColor
+        .textFieldColor;
     return TextField(
         readOnly: readOnly,
         keyboardType: keyboardType,
@@ -30,17 +38,24 @@ class OutLinedTextField extends StatelessWidget {
         cursorColor: Colors.white,
         controller: controller,
         onChanged: onChanged,
-        style: const TextStyle(color: Colors.white, fontSize: 13),
+        style: TextStyle(color: theme.textColor, fontSize: 13),
         decoration: InputDecoration(
           focusColor: Colors.white38,
-          fillColor: Colors.black12,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          fillColor: theme.fillColor,
+          hoverColor: theme.hoverColor,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: theme.borderColor, width: 1.0),
+          ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.blueGrey, width: 2.0),
+            borderSide: BorderSide(color: theme.focusBorderColor, width: 2.0),
             borderRadius: BorderRadius.circular(10.0),
           ),
           filled: true,
-          iconColor: Colors.red,
+          // iconColor: Colors.red,
         ));
   }
 }

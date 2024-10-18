@@ -28,7 +28,15 @@ class BrowserExtensionServer {
       final server = await HttpServer.bind(InternetAddress.loopbackIPv4, port);
       handleExtensionRequests(server, context);
     } catch (e) {
-      _showPortInUseError(context, port.toString());
+      if (e.toString().contains("Invalid port")) {
+        _showInvalidPortError(context, port.toString());
+        return;
+      }
+      if (e.toString().contains("Only one usage of each socket address")) {
+        _showPortInUseError(context, port.toString());
+        return;
+      }
+      _showUnexpectedError(context, port.toString(), e);
     }
   }
 
@@ -80,6 +88,7 @@ class BrowserExtensionServer {
 
   /// TODO add log file
   static onFileInfoRetrievalError(context) {
+    print("ER");
     Navigator.of(context).pop();
     showDialog(
       context: context,
@@ -135,5 +144,33 @@ class BrowserExtensionServer {
             text:
                 "\nFor optimal browser integration, please change the extension port in [Settings->Extension->Port] then restart the app."
                 " Finally, set the same port number for the browser extension by clicking on its icon."));
+  }
+
+  static void _showInvalidPortError(BuildContext context, String port) {
+    showDialog(
+      context: context,
+      builder: (context) => ErrorDialog(
+          width: 750,
+          height: 85,
+          textHeight: 40,
+          textSpaceBetween: 18,
+          title: "Port $port is invalid!",
+          text:
+              "Please set a valid port value in app settings, then set the same value for the browser extension"),
+    );
+  }
+
+  static void _showUnexpectedError(BuildContext context, String port, e) {
+    showDialog(
+      context: context,
+      builder: (context) => ErrorDialog(
+        width: 750,
+        height: 200,
+        textHeight: 40,
+        textSpaceBetween: 10,
+        title: "Failed to listen to port $port! ${e.runtimeType}",
+        text: e.toString(),
+      ),
+    );
   }
 }

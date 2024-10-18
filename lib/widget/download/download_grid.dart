@@ -1,16 +1,22 @@
 import 'package:brisk/constants/file_type.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/provider/download_request_provider.dart';
+import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/queue_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/responsive_util.dart';
-import 'package:brisk/widget/download/download_row_pop_up_menu_button.dart';
+import 'package:brisk/widget/download/add_url_dialog.dart';
+import 'package:brisk/widget/download/download_progress_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../db/hive_util.dart';
+import 'download_info_dialog.dart';
 
 class DownloadGrid extends StatefulWidget {
   @override
@@ -19,6 +25,9 @@ class DownloadGrid extends StatefulWidget {
 
 class _DownloadGridState extends State<DownloadGrid> {
   late List<PlutoColumn> columns;
+  DownloadRequestProvider? provider;
+  QueueProvider? queueProvider;
+  PlutoGridCheckRowProvider? plutoProvider;
 
   @override
   void didChangeDependencies() {
@@ -37,6 +46,14 @@ class _DownloadGridState extends State<DownloadGrid> {
         type: PlutoColumnType.number(),
       ),
       PlutoColumn(
+        readOnly: true,
+        hide: true,
+        width: 80,
+        title: 'Uid',
+        field: 'uid',
+        type: PlutoColumnType.text(),
+      ),
+      PlutoColumn(
         enableRowChecked: true,
         width: 400,
         title: 'File Name',
@@ -44,12 +61,9 @@ class _DownloadGridState extends State<DownloadGrid> {
         type: PlutoColumnType.text(),
         renderer: (rendererContext) {
           final fileName = rendererContext.row.cells["file_name"]!.value;
-          final id = rendererContext.row.cells["id"]!.value;
-          final status = rendererContext.row.cells["status"]!.value;
           final fileType = FileUtil.detectFileType(fileName);
           return Row(
             children: [
-              DownloadRowPopUpMenuButton(status: status, id: id),
               SizedBox(
                 width: resolveIconSize(fileType),
                 height: resolveIconSize(fileType),
@@ -91,7 +105,7 @@ class _DownloadGridState extends State<DownloadGrid> {
       ),
       PlutoColumn(
         readOnly: true,
-        width: 90,
+        width: 130,
         title: "Status",
         field: "status",
         type: PlutoColumnType.text(),
@@ -147,9 +161,14 @@ class _DownloadGridState extends State<DownloadGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final provider =
-        Provider.of<DownloadRequestProvider>(context, listen: false);
-    final queueProvider = Provider.of<QueueProvider>(context);
+    provider = Provider.of<DownloadRequestProvider>(context, listen: false);
+    final downloadGridTheme =
+        Provider.of<ThemeProvider>(context).activeTheme.downloadGridTheme;
+    plutoProvider = Provider.of<PlutoGridCheckRowProvider>(
+      context,
+      listen: false,
+    );
+    queueProvider = Provider.of<QueueProvider>(context);
     final size = MediaQuery.of(context).size;
     return Material(
       type: MaterialType.transparency,
@@ -160,38 +179,194 @@ class _DownloadGridState extends State<DownloadGrid> {
         child: PlutoGrid(
           key: UniqueKey(),
           mode: PlutoGridMode.selectWithOneTap,
-          configuration: const PlutoGridConfiguration(
+          configuration: PlutoGridConfiguration(
             style: PlutoGridStyleConfig.dark(
               activatedBorderColor: Colors.transparent,
-              borderColor: Colors.black26,
-              gridBorderColor: Colors.black54,
-              activatedColor: Colors.black26,
-              gridBackgroundColor: Color.fromRGBO(40, 46, 58, 1),
-              rowColor: Color.fromRGBO(49, 56, 72, 1),
-              checkedColor: Colors.blueGrey,
+              borderColor: downloadGridTheme.borderColor,
+              gridBorderColor: downloadGridTheme.borderColor,
+              activatedColor: downloadGridTheme.activeRowColor,
+              gridBackgroundColor: downloadGridTheme.backgroundColor,
+              rowColor: downloadGridTheme.rowColor,
+              checkedColor: downloadGridTheme.checkedRowColor,
             ),
           ),
           columns: columns,
           rows: [],
-          onLoaded: (event) async {
-            PlutoGridUtil.setStateManager(event.stateManager);
-            PlutoGridUtil.plutoStateManager
-                ?.setSelectingMode(PlutoGridSelectingMode.row);
-            if (queueProvider.selectedQueueId == null) {
-              provider.fetchRows(
-                  HiveUtil.instance.downloadItemsBox.values.toList());
-            } else {
-              final queueId = queueProvider.selectedQueueId!;
-              final queue =
-                  await HiveUtil.instance.downloadQueueBox.get(queueId);
-              if (queue?.downloadItemsIds == null) return;
-              final downloads = queue!.downloadItemsIds!
-                  .map((e) => HiveUtil.instance.downloadItemsBox.get(e)!)
-                  .toList();
-              provider.fetchRows(downloads);
-            }
-          },
+          onSelected: onSelected,
+          onRowChecked: (row) => plutoProvider?.notifyListeners(),
+          onRowDoubleTap: onRowDoubleTap,
+          onLoaded: onLoaded,
+          onRowSecondaryTap: (event) => showSecondaryTapMenu(context, event),
         ),
+      ),
+    );
+  }
+
+  void onSelected(event) {
+    final stateManger = PlutoGridUtil.plutoStateManager;
+    stateManger!.checkedRows.forEach((row) {
+      if (row.checkedViaSelect != null && row.checkedViaSelect!) {
+        stateManger.setRowChecked(row, false, checkedViaSelect: false);
+      }
+    });
+    if (stateManger.checkedRows.contains(event.row!)) {
+      stateManger.setRowChecked(
+        event.row!,
+        false,
+        checkedViaSelect: true,
+      );
+    } else {
+      stateManger.setRowChecked(
+        event.row!,
+        true,
+        checkedViaSelect: true,
+      );
+    }
+    stateManger.notifyListeners();
+    plutoProvider?.notifyListeners();
+  }
+
+  void showSecondaryTapMenu(
+    BuildContext context,
+    PlutoGridOnRowSecondaryTapEvent event,
+  ) {
+    final provider =
+        Provider.of<DownloadRequestProvider>(context, listen: false);
+    final id = event.row.cells["id"]!.value;
+    final status = event.row.cells["status"]!.value;
+    final downloadProgress = provider.downloads[id];
+    final downloadExists = downloadProgress != null;
+    final downloadComplete = status == DownloadStatus.assembleComplete;
+    final updateUrlEnabled = downloadExists
+        ? (downloadProgress.status != DownloadStatus.assembleComplete ||
+            downloadProgress.status != DownloadStatus.downloading)
+        : (!downloadComplete || status == DownloadStatus.paused);
+    showMenu(
+      color: const Color.fromRGBO(20, 20, 20, 1),
+      context: context,
+      position: RelativeRect.fromLTRB(
+        event.offset.dx,
+        event.offset.dy,
+        event.offset.dx,
+        event.offset.dy,
+      ),
+      items: [
+        PopupMenuItem(
+          value: "Open Progress Window",
+          child: Text("Open Progress Window"),
+          enabled: downloadExists,
+        ),
+        PopupMenuItem(
+          value: "Open File",
+          child: Text("Open File"),
+          enabled: downloadComplete,
+        ),
+        PopupMenuItem(
+          value: "Open File Location",
+          child: Text("Open File Location"),
+          enabled: downloadComplete,
+        ),
+        PopupMenuItem(
+          value: "Update URL",
+          child: Text("Update URL"),
+          enabled: updateUrlEnabled,
+        ),
+        PopupMenuItem(
+          value: "Properties",
+          child: Text("Properties"),
+        ),
+      ],
+    ).then((value) => onMenuItemClicked(value, event));
+  }
+
+  void onMenuItemClicked(String? value, PlutoGridOnRowSecondaryTapEvent event) {
+    if (value == null) {
+      return;
+    }
+    final downloadId = event.row.cells["id"]!.value;
+    final downloadItem = HiveUtil.instance.downloadItemsBox.get(downloadId);
+    if (downloadItem == null) {
+      return;
+    }
+    switch (value) {
+      case "Open Progress Window":
+        showDialog(
+          context: context,
+          builder: (_) => DownloadProgressWindow(downloadItem.key),
+          barrierDismissible: false,
+        );
+        break;
+      case "Open File":
+        launchUrlString("file:${downloadItem.filePath}");
+        break;
+      case "Open File Location":
+        openFileLocation(downloadItem);
+        break;
+      case "Update URL":
+        showDialog(
+          context: context,
+          builder: (context) =>
+              AddUrlDialog(downloadId: downloadItem.key, updateDialog: true),
+        );
+        break;
+      case "Properties":
+        showDialog(
+          context: context,
+          builder: (context) => DownloadInfoDialog(
+            downloadItem,
+            showActionButtons: false,
+            showFileActionButtons:
+                downloadItem.status == DownloadStatus.assembleComplete,
+          ),
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  void onLoaded(event) async {
+    PlutoGridUtil.setStateManager(event.stateManager);
+    PlutoGridUtil.plutoStateManager
+        ?.setSelectingMode(PlutoGridSelectingMode.row);
+    if (queueProvider!.selectedQueueId == null) {
+      provider!.fetchRows(HiveUtil.instance.downloadItemsBox.values.toList());
+    } else {
+      final queueId = queueProvider!.selectedQueueId!;
+      final queue = await HiveUtil.instance.downloadQueueBox.get(queueId);
+      if (queue?.downloadItemsIds == null) return;
+      final downloads = queue!.downloadItemsIds!
+          .map((e) => HiveUtil.instance.downloadItemsBox.get(e)!)
+          .toList();
+      provider!.fetchRows(downloads);
+    }
+    PlutoGridUtil.plutoStateManager?.setFilter(PlutoGridUtil.filter);
+  }
+
+  void onRowDoubleTap(event) {
+    final status = event.row.cells["status"]?.value;
+    final id = event.row.cells["id"]?.value;
+    final downloadItem = HiveUtil.instance.downloadItemsBox.get(id);
+    final downloadProgress = provider!.downloads[id];
+    if (status == null || downloadItem == null) {
+      return;
+    }
+    if (downloadProgress != null &&
+        downloadProgress.status != DownloadStatus.assembleComplete) {
+      showDialog(
+        context: context,
+        builder: (_) => DownloadProgressWindow(id),
+        barrierDismissible: false,
+      );
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (context) => DownloadInfoDialog(
+        downloadItem,
+        showActionButtons: false,
+        showFileActionButtons:
+            downloadItem.status == DownloadStatus.assembleComplete,
       ),
     );
   }

@@ -1,5 +1,7 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AppExitDialog extends StatefulWidget {
   final Function(bool) onExitPressed;
@@ -20,7 +22,11 @@ class _AppExitDialogState extends State<AppExitDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return AlertDialog(
+      backgroundColor: theme.backgroundColor,
+      surfaceTintColor: theme.backgroundColor,
       content: Container(
         height: 80,
         width: 500,

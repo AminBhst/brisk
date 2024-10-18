@@ -22,7 +22,7 @@ class HiveUtil {
   late final Box<GeneralData> generalDataBox;
 
   Future<void> initHive() async {
-    await Hive.initFlutter("Brisk");
+    await Hive.initFlutter("Brisk_v2");
     Hive.registerAdapter(DownloadItemAdapter());
     Hive.registerAdapter(DownloadQueueAdapter());
     Hive.registerAdapter(SettingAdapter());

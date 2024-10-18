@@ -1,4 +1,6 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SettingsGroup extends StatelessWidget {
   final double height;
@@ -20,6 +22,8 @@ class SettingsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
     final size = MediaQuery.of(context).size;
     return SizedBox(
       height: height,
@@ -33,7 +37,8 @@ class SettingsGroup extends StatelessWidget {
             padding: const EdgeInsets.all(10.0),
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
+                color: theme.groupTitleTextColor,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -43,7 +48,7 @@ class SettingsGroup extends StatelessWidget {
             width: containerWidth,
             height: containerHeight,
             decoration: BoxDecoration(
-              color: const Color.fromRGBO(42, 43, 43, 1),
+              color: theme.groupBackgroundColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Padding(

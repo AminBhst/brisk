@@ -16,6 +16,7 @@ class _NotificationSettingsGroupState extends State<NotificationSettingsGroup> {
   @override
   Widget build(BuildContext context) {
     return SettingsGroup(
+      height: 170,
       title: "Notification",
       children: [
         SwitchSetting(

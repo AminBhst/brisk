@@ -1,5 +1,6 @@
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_queue.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +30,13 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
 
   @override
   Widget build(BuildContext context) {
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     final size = MediaQuery.of(context).size;
     return ClosableWindow(
       width: 800,
       height: 500,
+      backgroundColor: theme.backgroundColor,
       disableCloseButton: true,
       padding: EdgeInsets.only(top: 60),
       content: SizedBox(
@@ -45,65 +49,105 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 600,
-                    height: resolveListHeight(size),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.fromBorderSide(
-                        BorderSide(color: Colors.white12),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: ReorderableListView.builder(
-                        buildDefaultDragHandles: false,
-                        itemBuilder: (context, index) {
-                          final dl = HiveUtil.instance.downloadItemsBox.get(
-                              HiveUtil.instance.downloadQueueBox
-                                  .get(widget.queue.key)!
-                                  .downloadItemsIds![index])!;
-                          return ListTile(
-                            key: ValueKey(dl.key),
-                            leading: SizedBox(
-                              width: 25,
-                              height: 25,
-                              child: SvgPicture.asset(
-                                FileUtil.resolveFileTypeIconPath(dl.fileType),
+                  downloadIds == null || downloadIds!.isEmpty
+                      ? Container(
+                          width: 600,
+                          height: resolveListHeight(size),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.fromBorderSide(
+                              BorderSide(
+                                  color: theme.innerContainerBorderColor),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                "assets/icons/blank.svg",
+                                height: 90,
+                                width: 90,
                                 colorFilter: ColorFilter.mode(
-                                  FileUtil.resolveFileTypeIconColor(
-                                      dl.fileType),
+                                  theme.placeHolderIconColor,
                                   BlendMode.srcIn,
                                 ),
                               ),
-                            ),
-                            title: Text(dl.fileName,
-                                style: TextStyle(color: Colors.white)),
-                            trailing: SizedBox(
-                              width: 100,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () => onRemovePressed(index),
-                                  ),
-                                  ReorderableDragStartListener(
-                                    index: index,
-                                    child: const Icon(Icons.drag_handle,
-                                        color: Colors.white),
-                                  ),
-                                ],
+                              const SizedBox(height: 10),
+                              Text(
+                                "Queue is empty",
+                                style: TextStyle(
+                                  color: theme.placeHolderIconColor,
+                                  fontSize: 18,
+                                ),
                               ),
+                            ],
+                          ),
+                        )
+                      : Container(
+                          width: 600,
+                          height: resolveListHeight(size),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.fromBorderSide(
+                              BorderSide(color: Colors.white12),
                             ),
-                          );
-                        },
-                        itemCount: itemCount,
-                        onReorder: onReorder,
-                      ),
-                    ),
-                  )
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: ReorderableListView.builder(
+                              buildDefaultDragHandles: false,
+                              itemBuilder: (context, index) {
+                                final dl = HiveUtil.instance.downloadItemsBox
+                                    .get(HiveUtil.instance.downloadQueueBox
+                                        .get(widget.queue.key)!
+                                        .downloadItemsIds![index])!;
+                                return ListTile(
+                                  key: ValueKey(dl.key),
+                                  leading: SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: SvgPicture.asset(
+                                      FileUtil.resolveFileTypeIconPath(
+                                          dl.fileType),
+                                      colorFilter: ColorFilter.mode(
+                                        FileUtil.resolveFileTypeIconColor(
+                                            dl.fileType),
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text(dl.fileName,
+                                      style: TextStyle(color: Colors.white)),
+                                  trailing: SizedBox(
+                                    width: 100,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.delete,
+                                              color: Colors.red),
+                                          onPressed: () =>
+                                              onRemovePressed(index),
+                                        ),
+                                        ReorderableDragStartListener(
+                                          index: index,
+                                          child: const Icon(Icons.drag_handle,
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              itemCount: itemCount,
+                              onReorder: onReorder,
+                            ),
+                          ),
+                        )
                 ],
               ),
             ),
@@ -114,17 +158,23 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
               children: [
                 RoundedOutlinedButton(
                   onPressed: onCancelPressed,
-                  borderColor: Colors.red,
-                  textColor: Colors.red,
-                  width: 100,
+                  borderColor: theme.cancelButtonColor.borderColor,
+                  hoverTextColor: theme.cancelButtonColor.hoverTextColor,
+                  hoverBackgroundColor:
+                      theme.cancelButtonColor.hoverBackgroundColor,
+                  textColor: theme.cancelButtonColor.textColor,
+                  width: 95,
                   text: "Cancel",
                 ),
                 const SizedBox(width: 50),
                 RoundedOutlinedButton(
                   onPressed: onSavePressed,
-                  borderColor: Colors.green,
-                  textColor: Colors.green,
-                  width: 100,
+                  borderColor: theme.addButtonColor.borderColor,
+                  hoverTextColor: theme.addButtonColor.hoverTextColor,
+                  hoverBackgroundColor:
+                      theme.addButtonColor.hoverBackgroundColor,
+                  textColor: theme.addButtonColor.textColor,
+                  width: 95,
                   text: "Save",
                 )
               ],

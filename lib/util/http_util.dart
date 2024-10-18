@@ -14,6 +14,7 @@ import '../model/file_metadata.dart';
 import '../model/setting.dart';
 import '../widget/base/confirmation_dialog.dart';
 
+
 // Removed usage because of status 400 in google drive. also it doesn't seem necessary anyway
 const Map<String, String> contentType_MultiPartByteRanges = {
   'content-type': 'multipart/byteranges;'
@@ -34,7 +35,7 @@ String? extractFilenameFromHeaders(Map<String, String> headers) {
       filename = !tokens[i].contains('"')
           ? tokens[i].substring(tokens[i].indexOf("=") + 1, tokens[i].length)
           : tokens[i]
-              .substring(tokens[i].indexOf("=") + 2, tokens[i].length - 1);
+          .substring(tokens[i].indexOf("=") + 2, tokens[i].length - 1);
     }
   }
   return filename;
@@ -76,6 +77,7 @@ Future<List<FileInfo>?> requestFileInfoBatch(
 /// Sends a HEAD request to the url given in the [downloadItem] object.
 /// Determines pause/resume functionality support by the server,
 /// total file size and the content-type of the request.
+/// TODO handle status codes other than 200
 Future<FileInfo?> requestFileInfo(DownloadItem downloadItem,
     {bool ignoreException = false}) async {
   final request = http.Request("HEAD", Uri.parse(downloadItem.downloadUrl));
@@ -96,11 +98,7 @@ Future<FileInfo?> requestFileInfo(DownloadItem downloadItem,
       throw Exception({"Could not retrieve result from the given URL"});
     }
     downloadItem.contentLength = int.parse(headers["content-length"]!);
-    try {
-      downloadItem.fileName = Uri.decodeComponent(downloadItem.fileName);
-    } catch (e) {
-      downloadItem.fileName = utf8.decode(downloadItem.fileName.codeUnits);
-    }
+    downloadItem.fileName = Uri.decodeComponent(downloadItem.fileName);
     final supportsPause = checkDownloadPauseSupport(headers);
     final data = FileInfo(
       supportsPause,
@@ -130,39 +128,36 @@ void checkForUpdate(BuildContext context) async {
   var lastUpdateCheck = HiveUtil.getSetting(SettingOptions.lastUpdateCheck);
   if (lastUpdateCheck == null) {
     lastUpdateCheck = Setting(
-      name: SettingOptions.lastUpdateCheck.name,
+      name: "lastUpdateCheck",
       value: "0",
       settingType: SettingType.system.name,
     );
     await HiveUtil.instance.settingBox.add(lastUpdateCheck);
   }
   if (int.parse(lastUpdateCheck.value) + 86400000 >
-      DateTime.now().millisecondsSinceEpoch) {
-    return;
-  }
+      DateTime.now().millisecondsSinceEpoch) return;
 
   final json = await checkLatestBriskRelease();
-  if (json == null || json['tag_name'] == null) {
-    return;
-  }
+  if (json == null || json['tag_name'] == null) return;
 
+  String tagName = json['tag_name'];
+  tagName = tagName.replaceAll(".", "").replaceAll("v", "");
   String latestVersion = (json['tag_name'] as String).replaceAll("v", "");
   final packageInfo = await PackageInfo.fromPlatform();
-  if (!_isNewVersionAvailable(latestVersion, packageInfo)) {
-    return;
-  }
-  showDialog(
-    context: context,
-    builder: (context) => ConfirmationDialog(
-      title:
-          "New version of Brisk is available. Do you want to download the latest version?",
-      onConfirmPressed: () => launchUrlString(
-        "https://github.com/AminBhst/brisk/releases/latest",
+  if (_isNewVersionAvailable(latestVersion, packageInfo)) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmationDialog(
+        title:
+        "New version of Brisk is available. Do you want to download the latest version?",
+        onConfirmPressed: () => launchUrlString(
+          "https://github.com/AminBhst/brisk/releases/latest",
+        ),
       ),
-    ),
-  );
-  lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
-  await lastUpdateCheck.save();
+    );
+    lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
+    await lastUpdateCheck.save();
+  }
 }
 
 bool _isNewVersionAvailable(String latestVersion, PackageInfo packageInfo) {

@@ -1,5 +1,6 @@
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_queue.dart';
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/queue/queue_details_window.dart';
 import 'package:flutter/material.dart';
@@ -9,26 +10,29 @@ import '../../provider/queue_provider.dart';
 
 class QueueListItem extends StatelessWidget {
   QueueListItem({super.key, required this.queue});
+
   DownloadQueue queue;
 
   @override
   Widget build(BuildContext context) {
+    final queueTheme =
+        Provider.of<ThemeProvider>(context).activeTheme.queuePageTheme;
     return Material(
       type: MaterialType.transparency,
       child: ListTile(
-        hoverColor: Colors.white12,
+        hoverColor: queueTheme.queueItemHoverColor,
         onTap: () => onQueueTap(context),
         leading: Padding(
           padding: EdgeInsets.only(left: 10),
           child: Icon(
             Icons.queue_rounded,
-            color: Colors.white38,
+            color: queueTheme.queueItemIconColor,
           ),
         ),
         title: Text(queue.name, style: TextStyle(color: Colors.white)),
         subtitle: Text(
           "${queue.downloadItemsIds == null ? 0 : queue.downloadItemsIds!.length} Downloads in queue",
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: queueTheme.queueItemTitleDetailsTextColor),
         ),
         trailing: SizedBox(
           width: 100,

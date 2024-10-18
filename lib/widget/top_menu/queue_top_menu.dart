@@ -1,3 +1,4 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/queue/create_queue_window.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
@@ -12,11 +13,13 @@ class QueueTopMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
+    final topMenuTheme =
+        Provider.of<ThemeProvider>(context).activeTheme.topMenuTheme;
     final size = MediaQuery.of(context).size;
     return Container(
       width: resolveWindowWidth(size),
       height: 70,
-      color: const Color.fromRGBO(46, 54, 67, 1),
+      color: topMenuTheme.backgroundColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -27,8 +30,11 @@ class QueueTopMenu extends StatelessWidget {
               onTap: () => onCreateQueuePressed(context),
               title: 'Create Queue',
               fontSize: 11.5,
-              icon: const Icon(Icons.add_rounded, color: Colors.white),
-              onHoverColor: Colors.green,
+              icon: Icon(
+                Icons.add_rounded,
+                color: topMenuTheme.createQueueColor.iconColor,
+              ),
+              onHoverColor: topMenuTheme.createQueueColor.hoverBackgroundColor,
             ),
           ),
         ],

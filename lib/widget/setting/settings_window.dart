@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:brisk/provider/settings_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/setting/page/settings_page.dart';
@@ -18,15 +20,19 @@ class SettingsWindow extends StatefulWidget {
 }
 
 class _SettingsWindowState extends State<SettingsWindow> {
-  SettingsProvider? provider;
+  SettingsProvider? settingsProvider;
+  ThemeProvider? themeProvider;
 
   @override
   Widget build(BuildContext context) {
-    provider = Provider.of<SettingsProvider>(context);
+    settingsProvider = Provider.of<SettingsProvider>(context);
+    themeProvider = Provider.of<ThemeProvider>(context);
+    final settingTheme = themeProvider!.activeTheme.settingTheme;
     final size = MediaQuery.of(context).size;
     return ClosableWindow(
+      backgroundColor: settingTheme.windowBackgroundColor,
       width: size.width * 0.6,
-      height: size.height * 0.79,
+      height: resolveWindowHeight(size),
       padding: const EdgeInsets.all(0),
       onWindowClosed: SettingsCache.setCachedSettings,
       content: SizedBox(
@@ -54,26 +60,37 @@ class _SettingsWindowState extends State<SettingsWindow> {
               children: [
                 RoundedOutlinedButton(
                   text: "Cancel",
-                  // width: 140,
+                  width: 140,
                   onPressed: _onCancelPressed,
-                  borderColor: Colors.red,
-                  textColor: Colors.red,
+                  borderColor: settingTheme.cancelButtonColor.borderColor,
+                  textColor: settingTheme.cancelButtonColor.textColor,
+                  hoverBackgroundColor:
+                      settingTheme.cancelButtonColor.hoverBackgroundColor,
+                  hoverTextColor: settingTheme.cancelButtonColor.hoverTextColor,
                 ),
                 const SizedBox(width: 20),
                 RoundedOutlinedButton(
                   text: "Save Changes",
                   width: 140,
                   onPressed: _onApplyPressed,
-                  borderColor: Colors.green,
-                  textColor: Colors.green,
+                  borderColor: settingTheme.saveButtonColor.borderColor,
+                  textColor: settingTheme.saveButtonColor.textColor,
+                  hoverBackgroundColor:
+                      settingTheme.saveButtonColor.hoverBackgroundColor,
+                  hoverTextColor: settingTheme.saveButtonColor.hoverTextColor,
                 ),
                 const SizedBox(width: 20),
                 RoundedOutlinedButton(
                   text: "Reset Default",
                   width: 140,
                   onPressed: _onResetDefaultPressed,
-                  borderColor: Colors.blueGrey,
-                  textColor: Colors.blueGrey,
+                  borderColor:
+                      settingTheme.resetDefaultsButtonColor.borderColor,
+                  textColor: settingTheme.resetDefaultsButtonColor.textColor,
+                  hoverBackgroundColor: settingTheme
+                      .resetDefaultsButtonColor.hoverBackgroundColor,
+                  hoverTextColor:
+                      settingTheme.resetDefaultsButtonColor.hoverTextColor,
                 ),
               ],
             ),
@@ -95,19 +112,21 @@ class _SettingsWindowState extends State<SettingsWindow> {
   }
 
   void _onApplyPressed() {
-    final tempPath = provider?.tempPath;
-    final savePath = provider?.savePath;
+    final tempPath = settingsProvider?.tempPath;
+    final savePath = settingsProvider?.savePath;
     if (validatePathSettings(tempPath)) {
       SettingsCache.temporaryDir = Directory(tempPath!);
     } else {
-      provider?.tempPath = SettingsCache.temporaryDir.path;
+      settingsProvider?.tempPath = SettingsCache.temporaryDir.path;
     }
     if (validatePathSettings(savePath)) {
       SettingsCache.saveDir = Directory(savePath!);
     } else {
-      provider?.savePath = SettingsCache.saveDir.path;
+      settingsProvider?.savePath = SettingsCache.saveDir.path;
     }
     SettingsCache.saveCachedSettingsToDB();
+    ApplicationThemeHolder.setActiveTheme();
+    themeProvider?.updateActiveTheme();
     Navigator.of(context).pop();
   }
 
@@ -117,13 +136,28 @@ class _SettingsWindowState extends State<SettingsWindow> {
     return dir.existsSync();
   }
 
+  double resolveWindowHeight(Size size) {
+    double height = size.height * 0.75;
+    if (size.height < 645) {
+      height -= 60;
+    }
+    if (size.height < 690) {
+      height = size.height * 0.77;
+    }
+    return height;
+  }
+
   double resolveHeight(double sizeHeight) {
+    print(sizeHeight);
     double height = sizeHeight * 0.79 * 0.8;
     if (height < 500) {
       height * 0.9;
     }
     if (height < 700) {
       height * 0.5;
+    }
+    if (sizeHeight < 645) {
+      height = height * 0.93;
     }
     return height;
   }

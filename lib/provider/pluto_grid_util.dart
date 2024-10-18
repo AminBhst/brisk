@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:brisk/constants/download_status.dart';
-import 'package:brisk/model/download_progress.dart';
+import 'package:brisk/download_engine/download_status.dart';
+import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
@@ -11,7 +11,9 @@ class PlutoGridUtil {
   static Timer? cacheClearTimer;
   static final List<PlutoRow> cachedRows = [];
 
-  static void updateRowCells(DownloadProgress progress) {
+  static bool Function(PlutoRow)? filter = null;
+
+  static void updateRowCells(DownloadProgressMessage progress) {
     final id = progress.downloadItem.id;
     final row = findCachedRow(id) ?? findRowById(id);
     if (row == null) return;
@@ -30,12 +32,11 @@ class PlutoGridUtil {
     _runPeriodicCachedRowClear();
   }
 
-
   static void _runPeriodicCachedRowClear() {
     if (cacheClearTimer != null) return;
     cacheClearTimer = Timer.periodic(
       const Duration(seconds: 3),
-          (timer) => cachedRows.clear(),
+      (timer) => cachedRows.clear(),
     );
   }
 
@@ -63,14 +64,16 @@ class PlutoGridUtil {
 
   static void setFilter(String cellName, String filterValue,
       {bool negate = false}) {
-    _stateManager?.setFilter((row) {
+    filter = (row) {
       final cellValue = row.cells[cellName]?.value;
       return negate ? cellValue != filterValue : cellValue == filterValue;
-    });
+    };
+    _stateManager?.setFilter(filter);
     _stateManager?.notifyListeners();
   }
 
   static void removeFilters() {
+    filter = null;
     _stateManager?.setFilter(null);
     _stateManager?.notifyListeners();
   }
@@ -84,7 +87,16 @@ class PlutoGridUtil {
         0;
   }
 
-  static void doOperationOnCheckedRows(Function(int id, PlutoRow row) operation) {
+  static bool get selectedRowExists => !selectedRowIds.isEmpty;
+
+  static List<int> get selectedRowIds => _stateManager?.checkedRows == null
+      ? []
+      : _stateManager!.checkedRows
+          .map((row) => int.parse(row.cells["id"]!.value.toString()))
+          .toList();
+
+  static void doOperationOnCheckedRows(
+      Function(int id, PlutoRow row) operation) {
     final selectedRows = _stateManager?.checkedRows;
     if (selectedRows == null) return;
     for (var row in selectedRows) {

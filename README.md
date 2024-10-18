@@ -10,7 +10,9 @@
 ## Download
 
 Installation files for Windows and Linux are available
-at [Github Releases](https://github.com/AminBhst/brisk/releases/)
+at [Github Releases](https://github.com/AminBhst/brisk/releases/).
+
+Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin)
 
 ## Browser Integration
 Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-extension) that allows for capturing downloads from the browser and adding them directly into the app.

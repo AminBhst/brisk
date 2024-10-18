@@ -8,6 +8,7 @@ class ClosableWindow extends StatelessWidget {
   final VoidCallback? onWindowClosed;
   final EdgeInsets padding;
   final bool disableCloseButton;
+  final Color backgroundColor;
 
   const ClosableWindow({
     super.key,
@@ -18,6 +19,7 @@ class ClosableWindow extends StatelessWidget {
     this.actions = const [],
     this.padding = const EdgeInsets.all(20),
     this.disableCloseButton = false,
+    this.backgroundColor = const Color.fromRGBO(25, 25, 25, 1),
   });
 
   @override
@@ -35,7 +37,7 @@ class ClosableWindow extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(25),
             border: Border.fromBorderSide(BorderSide(color: Colors.white24)),
-            color: const Color.fromRGBO(25, 25, 25, 1),
+            color: backgroundColor,
           ),
           child: Column(
             children: [
@@ -44,7 +46,7 @@ class ClosableWindow extends StatelessWidget {
                 child: Stack(
                   children: [
                     Visibility(
-                      visible : !disableCloseButton,
+                      visible: !disableCloseButton,
                       child: Align(
                         alignment: Alignment.topRight,
                         child: Material(

@@ -4,8 +4,11 @@ import 'package:brisk/browser_extension//browser_extension_server.dart';
 import 'package:brisk/constants/app_closure_behaviour.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/download_request_provider.dart';
+import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
+import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/http_util.dart';
@@ -26,11 +29,14 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
-import './util/file_util.dart';
+import 'util/file_util.dart';
 import 'util/settings_cache.dart';
 
 // TODO add current version in settings
-// TODO Add log files for errors
+// TODO Fix resizing the window when a row is selected
+// TODO handle stop all button availability as well as download and stop buttons in queue top menu
+/// TODO fix assemble file called multiple times, ending up with multiple files
+/// TODO Remove logs for succeeding downloads
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
@@ -42,18 +48,34 @@ void main() async {
   await HiveUtil.instance.putInitialBoxValues();
   await SettingsCache.setCachedSettings();
   await updateLaunchAtStartupSetting();
+  ApplicationThemeHolder.setActiveTheme();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<DownloadRequestProvider>(
-          create: (_) => DownloadRequestProvider(),
-        ),
         ChangeNotifierProvider<SettingsProvider>(
           create: (_) => SettingsProvider(),
         ),
         ChangeNotifierProvider<QueueProvider>(
           create: (_) => QueueProvider(),
+        ),
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (_) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider<PlutoGridCheckRowProvider>(
+          create: (_) => PlutoGridCheckRowProvider(),
+        ),
+        ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
+            DownloadRequestProvider>(
+          create: (_) => DownloadRequestProvider(PlutoGridCheckRowProvider()),
+          update: (context, plutoProvider, downloadProvider) {
+            if (downloadProvider == null) {
+              return DownloadRequestProvider(plutoProvider);
+            } else {
+              downloadProvider.plutoProvider = plutoProvider;
+              return downloadProvider;
+            }
+          },
         ),
       ],
       child: const MyApp(),
@@ -129,7 +151,6 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
 
-
   Future<void> saveNewAppClosureBehaviour(AppClosureBehaviour behaviour) async {
     SettingsCache.appClosureBehaviour = behaviour;
     await SettingsCache.saveCachedSettingsToDB();
@@ -169,9 +190,11 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void didChangeDependencies() {
-    registerDefaultDownloadAdditionHotKey(context);
-    BrowserExtensionServer.setup(context);
-    checkForUpdate(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // registerDefaultDownloadAdditionHotKey(context);
+      BrowserExtensionServer.setup(context);
+      checkForUpdate(context);
+    });
     super.didChangeDependencies();
   }
 
@@ -193,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage>
     if (menuItem.key == 'show_window') {
       windowManager.show();
     } else if (menuItem.key == 'exit_app') {
-      windowManager.destroy();
+      windowManager.close();
     }
   }
 
@@ -201,7 +224,6 @@ class _MyHomePageState extends State<MyHomePage>
   Widget build(BuildContext context) {
     final queueProvider = Provider.of<QueueProvider>(context);
     return LoaderOverlay(
-      useDefaultLoading: false,
       overlayWidgetBuilder: (progress) => FileInfoLoader(
         onCancelPressed: () => DownloadAdditionUiUtil.cancelRequest(context),
       ),
@@ -214,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SideMenu(),
+                  SideMenu(),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
