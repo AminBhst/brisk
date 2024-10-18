@@ -1,0 +1,11 @@
+# The value of AppId uniquely identifies this application.
+# Do not use the same AppId value in installers for other applications.
+app_id: 5B599538-42B1-4826-A479-AF079F21A65D
+publisher: Amin Beheshti
+publisher_url: https://github.com/AminBhst/brisk
+display_name: Brisk
+create_desktop_icon: true
+install_dir_name: "{autopf}\\Brisk"
+setup_icon_file: PLACEHOLDER_ICON_PATH
+locales:
+  - en

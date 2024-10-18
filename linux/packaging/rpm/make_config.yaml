@@ -1,0 +1,28 @@
+display_name: Brisk
+icon: linux/assets/logo.png
+summary: A cross platform download manager
+group: Applications
+vendor: AminBhst
+packager: AminBhst
+packagerEmail: gameali774@gmail.com
+license: GPL 3.0
+url: https://github.com/AminBhst/brisk
+
+build_arch: x86_64
+
+requires:
+  - keybinder3-doc
+  - keybinder3
+  - keybinder3-devel
+  - libayatana-appindicator-gtk3
+
+keywords:
+  - Brisk
+
+generic_name: Brisk
+
+categories:
+  - Applications
+  - Utility
+
+startup_notify: true

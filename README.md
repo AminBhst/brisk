@@ -36,7 +36,7 @@ Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-e
 
 ### appindicator3-0.1
 - Debian/Ubuntu : ```libayatana-appindicator3-dev```
-- Fedora/RHEL/CentOS : ```libappindicator-gtk3-devel```
+- Fedora/RHEL/CentOS : ```libayatana-appindicator-gtk3```
 - Arch Linux : ```libappindicator-gtk3```
 
 ## Features
