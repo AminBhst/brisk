@@ -391,10 +391,10 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
 
 class PlutoVisibilityLayoutId extends LayoutId {
   PlutoVisibilityLayoutId({
-    super.key,
+    Key? key,
     required super.id,
-    required PlutoVisibilityLayoutChild super.child,
-  });
+    required PlutoVisibilityLayoutChild child,
+  }) : super(key: key, child: child);
 
   PlutoVisibilityLayoutChild get layoutChild =>
       child as PlutoVisibilityLayoutChild;

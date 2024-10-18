@@ -286,11 +286,11 @@ class _CellContainerState extends PlutoStateWithChange<_CellContainer> {
         color: isGroupedRowCell ? cellColorGroupedRow : null,
         border: enableCellVerticalBorder
             ? BorderDirectional(
-                end: BorderSide(
-                  color: borderColor,
-                  width: 1.0,
-                ),
-              )
+          end: BorderSide(
+            color: borderColor,
+            width: 1.0,
+          ),
+        )
             : null,
       );
     }

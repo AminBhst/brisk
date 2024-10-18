@@ -77,6 +77,7 @@ Future<List<FileInfo>?> requestFileInfoBatch(
 /// Sends a HEAD request to the url given in the [downloadItem] object.
 /// Determines pause/resume functionality support by the server,
 /// total file size and the content-type of the request.
+/// TODO handle status codes other than 200
 Future<FileInfo?> requestFileInfo(DownloadItem downloadItem,
     {bool ignoreException = false}) async {
   final request = http.Request("HEAD", Uri.parse(downloadItem.downloadUrl));

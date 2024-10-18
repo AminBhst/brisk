@@ -68,8 +68,8 @@ class PlutoDualGrid extends StatefulWidget {
     this.onSelected,
     this.display,
     this.divider = const PlutoDualGridDivider(),
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 
   static const double dividerWidth = 10;
 
@@ -262,8 +262,8 @@ class PlutoDualGridDividerWidget extends StatefulWidget {
     required this.indicatorColor,
     required this.draggingColor,
     required this.dragCallback,
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<PlutoDualGridDividerWidget> createState() =>

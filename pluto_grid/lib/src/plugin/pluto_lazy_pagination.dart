@@ -413,7 +413,9 @@ class _PaginationWidgetState extends State<_PaginationWidget> {
                         ? SystemMouseCursors.basic
                         : SystemMouseCursors.click,
                   ),
-                  ..._pageNumbers.map(_makeNumberButton),
+                  ..._pageNumbers
+                      .map(_makeNumberButton)
+                      .toList(growable: false),
                   IconButton(
                     onPressed: _isLastPage ? null : _nextPage,
                     icon: const Icon(Icons.navigate_next),

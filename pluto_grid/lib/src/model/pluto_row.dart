@@ -173,9 +173,9 @@ class PlutoRow {
   /// final rowGroup = PlutoRow.fromJson(json, childrenField: 'children');
   /// ```
   factory PlutoRow.fromJson(
-    Map<String, dynamic> json, {
-    String? childrenField,
-  }) {
+      Map<String, dynamic> json, {
+        String? childrenField,
+      }) {
     final Map<String, PlutoCell> cells = {};
 
     final bool hasChildren =
@@ -289,7 +289,7 @@ class PlutoRow {
     final List<Map<String, dynamic>> children = type.group.children
         .map(
           (e) => e.toJson(childrenField: childrenField),
-        )
+    )
         .toList();
 
     json[childrenField] = children;

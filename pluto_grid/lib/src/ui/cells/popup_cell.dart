@@ -15,8 +15,8 @@ abstract class PopupCell extends StatefulWidget {
     required this.cell,
     required this.column,
     required this.row,
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 }
 
 abstract class GridPopupProps {
@@ -62,7 +62,7 @@ mixin PopupCellState<T extends PopupCell> on State<T>
       ..text =
           widget.column.formattedValueForDisplayInEditing(widget.cell.value);
 
-    textFocus = FocusNode(onKeyEvent: _handleKeyboardFocusOnKey);
+    textFocus = FocusNode(onKey: _handleKeyboardFocusOnKey);
   }
 
   @override
@@ -175,7 +175,7 @@ mixin PopupCellState<T extends PopupCell> on State<T>
     }
   }
 
-  KeyEventResult _handleKeyboardFocusOnKey(FocusNode node, KeyEvent event) {
+  KeyEventResult _handleKeyboardFocusOnKey(FocusNode node, RawKeyEvent event) {
     var keyManager = PlutoKeyManagerEvent(
       focusNode: node,
       event: event,

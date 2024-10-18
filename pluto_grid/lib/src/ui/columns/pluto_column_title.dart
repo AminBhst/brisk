@@ -205,8 +205,8 @@ class PlutoGridColumnIcon extends StatelessWidget {
     this.icon = Icons.dehaze,
     this.ascendingIcon,
     this.descendingIcon,
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -248,7 +248,8 @@ class _DraggableWidget extends StatelessWidget {
     required this.stateManager,
     required this.column,
     required this.child,
-  });
+    Key? key,
+  }) : super(key: key);
 
   void _handleOnPointerMove(PointerMoveEvent event) {
     stateManager.eventManager!.addEvent(PlutoGridScrollUpdateEvent(
@@ -306,10 +307,11 @@ class _SortableWidget extends StatelessWidget {
   final Widget child;
 
   const _SortableWidget({
+    Key? key,
     required this.stateManager,
     required this.column,
     required this.child,
-  });
+  }) : super(key: key);
 
   void _onTap() {
     stateManager.toggleSortColumn(column);
@@ -341,7 +343,8 @@ class _ColumnWidget extends StatelessWidget {
     required this.stateManager,
     required this.column,
     required this.height,
-  });
+    Key? key,
+  }) : super(key: key);
 
   EdgeInsets get padding =>
       column.titlePadding ??
@@ -354,16 +357,17 @@ class _ColumnWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DragTarget<PlutoColumn>(
-      onWillAcceptWithDetails: (DragTargetDetails<PlutoColumn> details) {
-        return details.data.key != column.key &&
+      onWillAccept: (PlutoColumn? columnToDrag) {
+        return columnToDrag != null &&
+            columnToDrag.key != column.key &&
             !stateManager.limitMoveColumn(
-              column: details.data,
+              column: columnToDrag,
               targetColumn: column,
             );
       },
-      onAcceptWithDetails: (DragTargetDetails<PlutoColumn> details) {
-        if (details.data.key != column.key) {
-          stateManager.moveColumn(column: details.data, targetColumn: column);
+      onAccept: (PlutoColumn columnToMove) {
+        if (columnToMove.key != column.key) {
+          stateManager.moveColumn(column: columnToMove, targetColumn: column);
         }
       },
       builder: (dragContext, candidate, rejected) {
@@ -415,7 +419,8 @@ class _ColumnWidget extends StatelessWidget {
 class CheckboxAllSelectionWidget extends PlutoStatefulWidget {
   final PlutoGridStateManager stateManager;
 
-  const CheckboxAllSelectionWidget({required this.stateManager, super.key});
+  const CheckboxAllSelectionWidget({required this.stateManager, Key? key})
+      : super(key: key);
 
   @override
   CheckboxAllSelectionWidgetState createState() =>
@@ -491,7 +496,8 @@ class _ColumnTextWidget extends PlutoStatefulWidget {
     required this.stateManager,
     required this.column,
     required this.height,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   _ColumnTextWidgetState createState() => _ColumnTextWidgetState();

@@ -41,14 +41,18 @@ class PlutoBaseRow extends StatelessWidget {
     return true;
   }
 
-  bool _handleOnWillAccept(DragTargetDetails<PlutoRow> details) {
-    return !_checkSameDragRows(details.data);
+  bool _handleOnWillAccept(PlutoRow? draggingRow) {
+    if (draggingRow == null) {
+      return false;
+    }
+
+    return !_checkSameDragRows(draggingRow);
   }
 
-  void _handleOnAccept(DragTargetDetails<PlutoRow> details) async {
+  void _handleOnAccept(PlutoRow draggingRow) async {
     final draggingRows = stateManager.currentSelectingRows.isNotEmpty
         ? stateManager.currentSelectingRows
-        : [details.data];
+        : [draggingRow];
 
     stateManager.eventManager!.addEvent(
       PlutoGridDragRowsEvent(
@@ -107,8 +111,8 @@ class PlutoBaseRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DragTarget<PlutoRow>(
-      onWillAcceptWithDetails: _handleOnWillAccept,
-      onAcceptWithDetails: _handleOnAccept,
+      onWillAccept: _handleOnWillAccept,
+      onAccept: _handleOnAccept,
       builder: _dragTargetBuilder,
     );
   }
@@ -188,8 +192,8 @@ class _RowContainerWidget extends PlutoStatefulWidget {
     required this.row,
     required this.enableRowColorAnimation,
     required this.child,
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<_RowContainerWidget> createState() => _RowContainerWidgetState();
@@ -357,7 +361,8 @@ class _AnimatedOrNormalContainer extends StatelessWidget {
     required this.enable,
     required this.child,
     required this.decoration,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

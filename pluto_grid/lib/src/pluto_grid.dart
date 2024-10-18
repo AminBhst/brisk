@@ -55,7 +55,7 @@ typedef PlutoRowColorCallback = Color Function(
 /// Also, the popup to set the filter or column inside the grid is implemented through the setting of [PlutoGrid].
 class PlutoGrid extends PlutoStatefulWidget {
   const PlutoGrid({
-    super.key,
+    Key? key,
     required this.columns,
     required this.rows,
     this.columnGroups,
@@ -76,7 +76,7 @@ class PlutoGrid extends PlutoStatefulWidget {
     this.configuration = const PlutoGridConfiguration(),
     this.notifierFilterResolver,
     this.mode = PlutoGridMode.normal,
-  });
+  }) : super(key: key);
 
   /// {@template pluto_grid_property_columns}
   /// The [PlutoColumn] column is delivered as a list and can be added or deleted after grid creation.
@@ -593,7 +593,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
     }
   }
 
-  KeyEventResult _handleGridFocusOnKey(FocusNode focusNode, KeyEvent event) {
+  KeyEventResult _handleGridFocusOnKey(FocusNode focusNode, RawKeyEvent event) {
     if (_keyManager.eventResult.isSkip == false) {
       _keyManager.subject.add(PlutoKeyManagerEvent(
         focusNode: focusNode,
@@ -608,7 +608,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
   Widget build(BuildContext context) {
     return FocusScope(
       onFocusChange: _stateManager.setKeepFocus,
-      onKeyEvent: _handleGridFocusOnKey,
+      onKey: _handleGridFocusOnKey,
       child: _GridContainer(
         stateManager: _stateManager,
         child: LayoutBuilder(
@@ -1204,7 +1204,8 @@ class _GridContainer extends StatelessWidget {
   const _GridContainer({
     required this.stateManager,
     required this.child,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1367,17 +1368,17 @@ abstract class PlutoGridOnRowCheckedEvent {
 /// Argument of [PlutoGrid.onRowChecked] callback when the checkbox of the row is tapped.
 class PlutoGridOnRowCheckedOneEvent extends PlutoGridOnRowCheckedEvent {
   const PlutoGridOnRowCheckedOneEvent({
-    required PlutoRow super.row,
-    required int super.rowIdx,
-    required super.isChecked,
-  });
+    required PlutoRow row,
+    required int rowIdx,
+    required bool? isChecked,
+  }) : super(row: row, rowIdx: rowIdx, isChecked: isChecked);
 }
 
 /// Argument of [PlutoGrid.onRowChecked] callback when all checkboxes of the column are tapped.
 class PlutoGridOnRowCheckedAllEvent extends PlutoGridOnRowCheckedEvent {
   const PlutoGridOnRowCheckedAllEvent({
-    super.isChecked,
-  }) : super(row: null, rowIdx: null);
+    bool? isChecked,
+  }) : super(row: null, rowIdx: null, isChecked: isChecked);
 }
 
 /// The argument of the [PlutoGrid.onRowDoubleTap] callback

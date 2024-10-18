@@ -242,10 +242,6 @@ class _DownloadGridState extends State<DownloadGrid> {
             downloadProgress.status != DownloadStatus.downloading)
         : (!downloadComplete || status == DownloadStatus.paused);
     showMenu(
-      popUpAnimationStyle: AnimationStyle(
-        curve: Easing.emphasizedAccelerate,
-        duration: Durations.short3,
-      ),
       color: const Color.fromRGBO(20, 20, 20, 1),
       context: context,
       position: RelativeRect.fromLTRB(

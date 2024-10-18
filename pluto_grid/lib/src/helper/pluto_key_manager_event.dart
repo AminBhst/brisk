@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 class PlutoKeyManagerEvent {
   FocusNode focusNode;
-  KeyEvent event;
+  RawKeyEvent event;
 
   PlutoKeyManagerEvent({
     required this.focusNode,
@@ -12,9 +12,9 @@ class PlutoKeyManagerEvent {
 
   bool get needsThrottle => isMoving || isTab || isPageUp || isPageDown;
 
-  bool get isKeyDownEvent => event.runtimeType == KeyDownEvent;
+  bool get isKeyDownEvent => event.runtimeType == RawKeyDownEvent;
 
-  bool get isKeyUpEvent => event.runtimeType == KeyUpEvent;
+  bool get isKeyUpEvent => event.runtimeType == RawKeyUpEvent;
 
   bool get isMoving => isHorizontal || isVertical;
 
@@ -94,16 +94,15 @@ class PlutoKeyManagerEvent {
   }
 
   bool get isShiftPressed {
-    return HardwareKeyboard.instance.isShiftPressed;
+    return event.isShiftPressed;
   }
 
   bool get isCtrlPressed {
-    return HardwareKeyboard.instance.isMetaPressed ||
-        HardwareKeyboard.instance.isControlPressed;
+    return event.isMetaPressed || event.isControlPressed;
   }
 
   bool get isAltPressed {
-    return HardwareKeyboard.instance.isAltPressed;
+    return event.isAltPressed;
   }
 
   bool get isModifierPressed {

@@ -193,7 +193,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                     ? () => setState(() => showDetails = !showDetails)
                     : null,
                 style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(
+                    backgroundColor: MaterialStatePropertyAll(
                         showDetailAvailable ? Colors.blueGrey : Colors.grey)),
                 child: Row(
                   children: [
@@ -218,13 +218,13 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                   style: ButtonStyle(
                     // backgroundColor: MaterialStatePropertyAll(
                     //           Color.fromRGBO(56, 159, 140, 1)),
-                    backgroundColor: WidgetStatePropertyAll(
+                    backgroundColor: MaterialStatePropertyAll(
                       (buttonEnabled.pauseButtonEnabled ||
                               buttonEnabled.startButtonEnabled)
                           ? Colors.blueGrey
                           : Colors.grey,
                     ),
-                    fixedSize: WidgetStatePropertyAll(Size.fromWidth(100)),
+                    fixedSize: MaterialStatePropertyAll(Size.fromWidth(100)),
                   ),
                   onPressed: buttonEnabled.pauseButtonEnabled ||
                           buttonEnabled.startButtonEnabled
@@ -358,8 +358,8 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
     if (buttonAvailability.pauseButtonEnabled) {
       return TextButton(
         style: ButtonStyle(
-          backgroundColor: WidgetStatePropertyAll(Colors.redAccent),
-          fixedSize: const WidgetStatePropertyAll(Size.fromWidth(100)),
+          backgroundColor: MaterialStatePropertyAll(Colors.redAccent),
+          fixedSize: const MaterialStatePropertyAll(Size.fromWidth(100)),
         ),
         onPressed: () => provider.executeDownloadCommand(
           widget.downloadId,
@@ -373,8 +373,8 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
     } else if (buttonAvailability.startButtonEnabled) {
       return TextButton(
         style: ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(Colors.green),
-            fixedSize: const WidgetStatePropertyAll(Size.fromWidth(100))),
+            backgroundColor: MaterialStatePropertyAll(Colors.green),
+            fixedSize: const MaterialStatePropertyAll(Size.fromWidth(100))),
         onPressed: () => provider.executeDownloadCommand(
             widget.downloadId, DownloadCommand.start),
         child: const Text('Start', style: TextStyle(color: Colors.white)),
@@ -382,8 +382,8 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
     } else {
       return TextButton(
         style: ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(Colors.grey),
-            fixedSize: const WidgetStatePropertyAll(Size.fromWidth(100))),
+            backgroundColor: MaterialStatePropertyAll(Colors.grey),
+            fixedSize: const MaterialStatePropertyAll(Size.fromWidth(100))),
         onPressed: null,
         child: const Text('Wait', style: TextStyle(color: Colors.white)),
       );

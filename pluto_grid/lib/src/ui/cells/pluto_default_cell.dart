@@ -22,8 +22,8 @@ class PlutoDefaultCell extends PlutoStatefulWidget {
     required this.rowIdx,
     required this.row,
     required this.stateManager,
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<PlutoDefaultCell> createState() => _PlutoDefaultCellState();
@@ -219,7 +219,8 @@ class _RowDragIconWidget extends StatelessWidget {
     required this.stateManager,
     required this.dragIcon,
     required this.feedbackWidget,
-  });
+    Key? key,
+  }) : super(key: key);
 
   List<PlutoRow> get _draggingRows {
     if (stateManager.currentSelectingRows.isEmpty) {
@@ -421,7 +422,8 @@ class _DefaultCellWidget extends StatelessWidget {
     required this.row,
     required this.column,
     required this.cell,
-  });
+    Key? key,
+  }) : super(key: key);
 
   bool get _showText {
     if (!stateManager.enabledRowGroups) {

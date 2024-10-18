@@ -191,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void didChangeDependencies() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      registerDefaultDownloadAdditionHotKey(context);
+      // registerDefaultDownloadAdditionHotKey(context);
       BrowserExtensionServer.setup(context);
       checkForUpdate(context);
     });
@@ -216,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage>
     if (menuItem.key == 'show_window') {
       windowManager.show();
     } else if (menuItem.key == 'exit_app') {
-      windowManager.destroy();
+      windowManager.close();
     }
   }
 
