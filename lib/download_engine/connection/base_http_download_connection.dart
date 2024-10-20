@@ -756,6 +756,13 @@ abstract class BaseHttpDownloadConnection {
     _notifyProgress(completionSignal: true);
   }
 
+  /// Force closing the client leads to a clientException to be thrown. When that happens,
+  /// the stream is completed and the [_onDownloadComplete] is called. However,
+  /// since sometimes, for example, when a connection is reset, we don't want the
+  /// [_onDownloadComplete] to be called as it sends a completionSignal to the engine
+  /// despite the connection not really being completed (the designated segment is not downloaded yet).
+  /// Therefore, we handle the mentioned exception here in a way that [_onDownloadComplete] will be called
+  /// only when a download is actually completed.
   void _onError(dynamic error, [dynamic s]) {
     try {
       client.close();
