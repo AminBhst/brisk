@@ -620,7 +620,10 @@ class HttpDownloadEngine {
     final downloadId = progress.downloadItem.id;
     final engineChannel = _engineChannels[downloadId];
     final conn = engineChannel!.connectionChannels[progress.connectionNumber]!;
-    _engineChannels[downloadId]!.connectionReuseQueue.add(conn);
+    final reuseQueue = _engineChannels[downloadId]!.connectionReuseQueue;
+    if (!reuseQueue.contains(conn)) {
+      reuseQueue.add(conn);
+    }
   }
 
   static void _setSegmentComplete(DownloadProgressMessage progress) {

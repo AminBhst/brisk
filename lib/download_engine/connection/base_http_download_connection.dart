@@ -70,7 +70,9 @@ abstract class BaseHttpDownloadConnection {
 
   bool paused = false;
 
-  bool reset = true;
+  bool reset = false;
+
+  bool terminatedOnCompletion = false;
 
   String detailsStatus = "";
 
@@ -218,6 +220,7 @@ abstract class BaseHttpDownloadConnection {
     // }
     paused = false;
     reset = false;
+    terminatedOnCompletion = false;
     totalRequestReceivedBytes = 0;
   }
 
@@ -402,6 +405,7 @@ abstract class BaseHttpDownloadConnection {
     }
     if (receivedBytesMatchEndByte) {
       _onByteExactMatch();
+      _notifyProgress();
       return;
     }
     if (tempReceivedBytes > _dynamicFlushThreshold) {
@@ -425,7 +429,7 @@ abstract class BaseHttpDownloadConnection {
     client.close();
     _flushBuffer();
     _setDownloadComplete();
-    _notifyProgress();
+    terminatedOnCompletion = true;
   }
 
   void _onByteExceeded() {
@@ -434,6 +438,7 @@ abstract class BaseHttpDownloadConnection {
     _flushBuffer();
     _fixTempFiles();
     _setDownloadComplete();
+    terminatedOnCompletion = true;
   }
 
   /// Flushes the buffer containing the received bytes to the disk.
@@ -757,7 +762,8 @@ abstract class BaseHttpDownloadConnection {
     } catch (e) {}
     _clearBuffer();
     _notifyProgress();
-    if (!(error is http.ClientException && paused)) {
+    if (!(error is http.ClientException &&
+        (paused || terminatedOnCompletion))) {
       logger?.error("connection $connectionNumber error : $error \n $s");
       reset = true; // set to prevent sending a completion signal to the engine
       throw error;
