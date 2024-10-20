@@ -1024,6 +1024,7 @@ class HttpDownloadEngine {
         ..logBuffer.clear()
         ..flushTimer?.cancel()
         ..logFile.deleteSync();
+      _engineChannels.remove(engineChannel);
     }
     return assembleSuccessful;
   }
