@@ -148,7 +148,6 @@ class _SettingsWindowState extends State<SettingsWindow> {
   }
 
   double resolveHeight(double sizeHeight) {
-    print(sizeHeight);
     double height = sizeHeight * 0.79 * 0.8;
     if (height < 500) {
       height * 0.9;
