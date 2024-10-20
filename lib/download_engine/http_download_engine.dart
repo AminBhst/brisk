@@ -979,14 +979,24 @@ class HttpDownloadEngine {
     final tempFies = getTempFilesSorted(tempDir);
     File fileToWrite = File(downloadItem.filePath);
     if (fileToWrite.existsSync()) {
-      final newFilePath = FileUtil.getFilePath(
+      var newFilePath = FileUtil.getFilePath(
         downloadItem.fileName,
         baseSaveDir: downloadSettings.baseSaveDir,
         checkFileDuplicationOnly: true,
       );
       fileToWrite = File(newFilePath);
     }
-    fileToWrite.createSync(recursive: true);
+    try {
+      fileToWrite.createSync(recursive: true);
+    } catch (e) {
+      var newFilePath = FileUtil.getFilePath(
+        downloadItem.uid + extension(downloadItem.fileName),
+        baseSaveDir: downloadSettings.baseSaveDir,
+        checkFileDuplicationOnly: true,
+      );
+      fileToWrite = File(newFilePath);
+      fileToWrite.createSync(recursive: true);
+    }
     logger?.info("Creating file...");
     for (var file in tempFies) {
       final bytes = file.readAsBytesSync();
