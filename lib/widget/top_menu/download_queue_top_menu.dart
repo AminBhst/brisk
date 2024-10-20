@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
+import 'package:brisk/widget/top_menu/top_menu_util.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +19,7 @@ import '../base/confirmation_dialog.dart';
 import '../queue/add_to_queue_window.dart';
 import '../queue/start_queue_window.dart';
 
+/// TODO merge with top menu
 class DownloadQueueTopMenu extends StatelessWidget {
   DownloadQueueTopMenu({Key? key}) : super(key: key);
   Timer? timer;
@@ -32,6 +35,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
+    Provider.of<PlutoGridCheckRowProvider>(context);
     final topMenuTheme =
         Provider.of<ThemeProvider>(context).activeTheme.topMenuTheme;
     final size = MediaQuery.of(context).size;
@@ -67,22 +71,32 @@ class DownloadQueueTopMenu extends StatelessWidget {
             onHoverColor: topMenuTheme.stopQueueColor.hoverBackgroundColor,
           ),
           TopMenuButton(
-            onTap: onDownloadPressed,
+            onTap: isDownloadButtonEnabled(provider) ? onDownloadPressed : null,
             title: 'Download',
             icon: Icon(
               Icons.download_rounded,
-              color: topMenuTheme.downloadColor.iconColor,
+              color: isDownloadButtonEnabled(provider)
+                  ? topMenuTheme.downloadColor.iconColor
+                  : Color.fromRGBO(79, 79, 79, 0.5),
             ),
             onHoverColor: topMenuTheme.downloadColor.hoverBackgroundColor,
+            textColor: isDownloadButtonEnabled(provider)
+                ? topMenuTheme.downloadColor.textColor
+                : Color.fromRGBO(79, 79, 79, 1),
           ),
           TopMenuButton(
-            onTap: onStopPressed,
+            onTap: isPauseButtonEnabled(provider) ? onStopPressed : null,
             title: 'Stop',
             icon: Icon(
               Icons.stop_rounded,
-              color: topMenuTheme.stopColor.iconColor,
+              color: isPauseButtonEnabled(provider)
+                  ? topMenuTheme.stopColor.iconColor
+                  : Color.fromRGBO(79, 79, 79, 0.5),
             ),
             onHoverColor: topMenuTheme.stopColor.hoverBackgroundColor,
+            textColor: isPauseButtonEnabled(provider)
+                ? topMenuTheme.stopColor.textColor
+                : Color.fromRGBO(79, 79, 79, 1),
           ),
           TopMenuButton(
             onTap: () => onRemovePressed(context),
