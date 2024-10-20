@@ -70,6 +70,8 @@ abstract class BaseHttpDownloadConnection {
 
   bool paused = false;
 
+  bool reset = true;
+
   String detailsStatus = "";
 
   int totalRequestWrittenBytes = 0;
@@ -118,6 +120,8 @@ abstract class BaseHttpDownloadConnection {
   bool _isWritingTempFile = false;
 
   ConnectionSettings settings;
+
+  bool notifyResetSuccessOnNextChunk = false;
 
   BaseHttpDownloadConnection({
     required this.downloadItem,
@@ -172,7 +176,6 @@ abstract class BaseHttpDownloadConnection {
       );
       return;
     }
-    // _runConnectionResetTimer(); /// TODO uncomment
     if (_isDownloadCompleted()) {
       logger?.info("Download is already completed! skipping...");
       _setDownloadComplete();
@@ -182,6 +185,10 @@ abstract class BaseHttpDownloadConnection {
     logger?.info("Download is incomplete. starting a new download request...");
     _init(connectionReset, progressCallback, reuseConnection);
     _notifyProgress();
+
+    if (connectionReset) {
+      notifyResetSuccessOnNextChunk = true;
+    }
 
     final request = buildDownloadRequest(reuseConnection);
     sendDownloadRequest(request);
@@ -210,6 +217,7 @@ abstract class BaseHttpDownloadConnection {
     _initClient();
     // }
     paused = false;
+    reset = false;
     totalRequestReceivedBytes = 0;
   }
 
@@ -256,24 +264,15 @@ abstract class BaseHttpDownloadConnection {
     }
   }
 
-  // TODO USE THIS
-  void _runConnectionResetTimer() {
-    if (connectionResetTimer != null) return;
-    connectionResetTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      if (connectionRetryAllowed) {
-        resetConnection();
-        _retryCount++;
-      }
-    });
-  }
-
   void resetConnection() {
-    client.close();
+    logger?.info("Resetting connection....");
+    closeClient_withCatch();
     totalConnectionReceivedBytes =
         totalConnectionReceivedBytes - tempReceivedBytes;
-    totalRequestReceivedBytes = totalConnectionReceivedBytes;
+    totalRequestReceivedBytes = totalRequestReceivedBytes - tempReceivedBytes;
     _clearBuffer();
     _dynamicFlushThreshold = double.infinity;
+    reset = true;
     start(progressCallback!, connectionReset: true);
   }
 
@@ -726,6 +725,12 @@ abstract class BaseHttpDownloadConnection {
         : splitByte + this.startByte + totalRequestReceivedBytes;
   }
 
+  void closeClient_withCatch() {
+    try {
+      client.close();
+    } catch (e) {}
+  }
+
   void _clearBuffer() {
     buffer.clear();
     tempReceivedBytes = 0;
@@ -733,7 +738,7 @@ abstract class BaseHttpDownloadConnection {
 
   /// Flushes the remaining bytes in the buffer and completes the download.
   void _onDownloadComplete() {
-    if (paused) return;
+    if (paused || reset) return;
     bytesTransferRate = 0;
     downloadProgress = totalRequestReceivedBytes / segment.length;
     totalDownloadProgress =
@@ -754,6 +759,7 @@ abstract class BaseHttpDownloadConnection {
     _notifyProgress();
     if (!(error is http.ClientException && paused)) {
       logger?.error("connection $connectionNumber error : $error \n $s");
+      reset = true; // set to prevent sending a completion signal to the engine
       throw error;
     }
   }

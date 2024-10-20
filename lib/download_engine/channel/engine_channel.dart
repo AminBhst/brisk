@@ -44,6 +44,9 @@ class EngineChannel extends IsolateChannelWrapper {
 
   int lastStartTimeMillis = DateTime.now().millisecondsSinceEpoch;
 
+  bool get awaitingConnectionResetResponse =>
+      connectionChannels.values.any((conn) => conn.awaitingResetResponse);
+
   @override
   void onEventReceived(message) {
     if (!(message is DownloadIsolateMessage)) {

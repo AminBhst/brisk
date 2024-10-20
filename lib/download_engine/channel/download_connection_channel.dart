@@ -15,6 +15,9 @@ class DownloadConnectionChannel extends IsolateChannelWrapper {
   String status = "";
   String detailsStatus = "";
   double bytesTransferRate = 0;
+  int lastResponseTime = DateTime.now().millisecondsSinceEpoch;
+  int resetCount = 0;
+  bool awaitingResetResponse = false;
 
   DownloadConnectionChannel({
     required super.channel,
@@ -36,5 +39,6 @@ class DownloadConnectionChannel extends IsolateChannelWrapper {
     this.detailsStatus = event.detailsStatus;
     this.bytesTransferRate = event.bytesTransferRate;
     this.segment = event.segment;
+    this.lastResponseTime = DateTime.now().millisecondsSinceEpoch;
   }
 }

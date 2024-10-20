@@ -47,9 +47,11 @@ class HttpDownloadEngine {
 
   static const _CONNECTION_REUSE_TIMER_DURATION_SEC = 2;
 
-  static const _CONNECTION_SPAWNER_TIMER_DURATION_SEC = 3;
+  static const _CONNECTION_SPAWNER_TIMER_DURATION_SEC = 2;
 
   static const _BUTTON_AVAILABILITY_NOTIFIER_TIMER_DURATION_SEC = 1;
+
+  static const _CONNECTION_RESET_TIMER_DURATION_SEC = 4;
 
   static const BUTTON_AVAILABILITY_WAIT_SEC = 2;
 
@@ -80,6 +82,7 @@ class HttpDownloadEngine {
   static Timer? _dynamicConnectionReuseTimer = null;
   static Timer? _dynamicConnectionSpawnerTimer = null;
   static Timer? _buttonAvailabilityTimer = null;
+  static Timer? _connectionResetTimer = null;
 
   static late DownloadSettings downloadSettings;
 
@@ -124,6 +127,49 @@ class HttpDownloadEngine {
     });
   }
 
+  static void _startConnectionResetTimer() {
+    if (_connectionResetTimer != null) {
+      return;
+    }
+    _connectionResetTimer = Timer.periodic(
+      Duration(seconds: _CONNECTION_RESET_TIMER_DURATION_SEC),
+      (_) => _runConnectionResetTimer(),
+    );
+  }
+
+  static void _runConnectionResetTimer() {
+    _engineChannels.forEach((downloadId, engineChannel) {
+      if (engineChannel.downloadItem == null || engineChannel.paused) {
+        return;
+      }
+      final connectionsToReset = engineChannel.connectionChannels.values
+          .where((conn) =>
+              conn.detailsStatus != DownloadStatus.paused &&
+              conn.detailsStatus != DownloadStatus.canceled &&
+              conn.detailsStatus != DownloadStatus.connectionComplete)
+          .toList()
+          .where((conn) =>
+              (conn.resetCount < downloadSettings.maxConnectionRetryCount ||
+                  downloadSettings.maxConnectionRetryCount == -1) &&
+              conn.lastResponseTime + downloadSettings.connectionRetryTimeout <
+                  _nowMillis)
+          .toList();
+
+      for (final connection in connectionsToReset) {
+        final message = DownloadIsolateMessage(
+          command: DownloadCommand.resetConnection,
+          downloadItem: engineChannel.downloadItem!,
+          settings: downloadSettings,
+          connectionNumber: connection.connectionNumber,
+        );
+        engineChannel.connectionChannels[connection.connectionNumber]
+            ?.awaitingResetResponse = true;
+        connection.sendMessage(message);
+        connection.resetCount++;
+      }
+    });
+  }
+
   /// Manages connection reuse which allows for completed connections to receive
   /// the remaining bytes of other connections, thus keeping the maximum number
   /// of connections active throughout the entirety of the download.
@@ -153,6 +199,9 @@ class HttpDownloadEngine {
       final prog = _downloadProgresses[downloadId]?.totalDownloadProgress ?? 0;
       if (queue.isEmpty ||
           _shouldCreateNewConnections(downloadId) ||
+          // engineChannel.connectionChannels.length <
+          //     downloadSettings.totalConnections ||
+          engineChannel.awaitingConnectionResetResponse ||
           prog >= 1) {
         return;
       }
@@ -202,6 +251,7 @@ class HttpDownloadEngine {
     _startDynamicConnectionSpawnerTimer();
     _startDynamicConnectionReuseTimer();
     _startButtonAvailabilityNotifierTimer();
+    _startConnectionResetTimer();
   }
 
   static void _setConnectionSpawnIgnoreList(DownloadIsolateMessage data) {
@@ -538,6 +588,10 @@ class HttpDownloadEngine {
       transferRate: convertByteTransferRateToReadableStr(totalByteTransferRate),
     );
     _setEstimation(downloadProgress, totalProgress);
+    if (progress.status == DownloadStatus.downloading) {
+      engineChannel.connectionChannels[progress.connectionNumber]
+          ?.awaitingResetResponse = false;
+    }
     _setButtonAvailability(downloadProgress, totalProgress);
     _setStatus(downloadId, downloadProgress); // TODO broken
     if (progress.completionSignal) {
@@ -852,6 +906,13 @@ class HttpDownloadEngine {
         logger?.info("Found bad length :: ${basename(file.path)}");
         tempFilesToDelete.add(file);
       }
+      if (start > downloadItem.contentLength ||
+          end > downloadItem.contentLength) {
+        logger?.info(
+          "Found byte range exceeding contentLength :: ${basename(file.path)}",
+        );
+        tempFilesToDelete.add(file);
+      }
       if (i == tempFies.length - 1) {
         continue;
       }
@@ -889,7 +950,7 @@ class HttpDownloadEngine {
       }
     }
     if (deleteCorruptedTempFiles) {
-      tempFilesToDelete.forEach((file) {
+      tempFilesToDelete.toSet().forEach((file) {
         logger?.info("Deleting bad temp file ${basename(file.path)}...");
         file.deleteSync(recursive: true);
       });
@@ -1108,7 +1169,8 @@ class HttpDownloadEngine {
     final nodes =
         _engineChannels[downloadItem.id]!.segmentTree!.lowestLevelNodes;
     nodes.forEach((element) {
-      logger?.info("LowestLevelNode:: ${element.segment}");
+      logger?.info(
+          "LowestLevelNode:: ${element.segment} :: ${element.segmentStatus}");
     });
     return missingBytes.length == 0;
   }
