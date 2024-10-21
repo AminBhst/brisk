@@ -661,7 +661,7 @@ abstract class BaseHttpDownloadConnection {
       requestedSegment: segment,
       reuseConnection: reuseConnection,
     );
-    if (this.status == DownloadStatus.connectionComplete) {
+    if (this.detailsStatus == DownloadStatus.connectionComplete) {
       message.internalMessage = message_refreshSegmentRefused(reuseConnection);
       progressCallback!.call(message);
       logger?.info(
