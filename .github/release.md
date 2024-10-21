@@ -51,7 +51,7 @@ named `Celestial Dark`. The old theme is still available and can be selected via
 
 ## :pencil: Note
 
-Due to the massive breaking engine changes of this major release, the unfinished downloads of older versions of Brisk
+Due to the massive engine changes of this major release, the unfinished downloads of older versions of Brisk
 cannot be continued with the new 2.0.0 version. This version uses a different path for its database so you can delete the old `Brisk`
 directory inside your documents directory if you no longer need the older Brisk versions.
 
