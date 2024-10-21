@@ -6,17 +6,11 @@ Brisk's download engine has been fully redesigned to consistently deliver the hi
 throughout the entire download process.
 <p>The new engine comes with two major features:
 
-- **Dynamic Connection Spawn:** The download now starts with a single connection and as
-  it progresses, new connections are added on the fly and without interfering with each other. This ensures that a higher
-  number of connections are used only when necessary, significantly improving the download speed of small-to-medium
-  sized files.
+- **Dynamic Connection Spawn:** Downloads now starts with a single connection and as they progress, new connections are added on the fly and without interfering with one another. This ensures that a higher number of connections are used only when necessary, significantly improving the download speed of small-to-medium sized files.
 
 <p>
 
-- **Dynamic Connection Reuse:** After a connection has finished receiving its designated byte range, it will be
-  reassigned to a new one. In other words, completed connections now help other busy connections by receiving parts of their byte
-  range. This feature allows for having the total number of connections as active as possible to ensure the that download speed
-  is always at its peak.
+- **Dynamic Connection Reuse:** After a connection completes receiving its designated byte range,  it is immediately reassigned to assist another connection. This means that finished connections actively contribute to the overall download process by handling portions of other busy connections' byte ranges. As a result, the engine maintains as many active connections as possible, ensuring that download speeds remain consistently at their peak.
 
 ## :sparkles: Improved UX
 
