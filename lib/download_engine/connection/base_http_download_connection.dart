@@ -627,6 +627,9 @@ abstract class BaseHttpDownloadConnection {
     _dynamicFlushThreshold = bytesTransferRate * 2 < eightMegaBytes
         ? bytesTransferRate * 2
         : eightMegaBytes;
+    if (_dynamicFlushThreshold <= 8192) {
+      _dynamicFlushThreshold = 64000;
+    }
   }
 
   void pause(DownloadProgressCallback? progressCallback) {
