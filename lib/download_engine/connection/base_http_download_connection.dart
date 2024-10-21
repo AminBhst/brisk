@@ -403,7 +403,7 @@ abstract class BaseHttpDownloadConnection {
       _notifyProgress();
       return;
     }
-    if (receivedBytesMatchEndByte) {
+    if (receivedBytesMatchEndByte && endByte != downloadItem.contentLength) {
       _onByteExactMatch();
       _notifyProgress();
       return;
