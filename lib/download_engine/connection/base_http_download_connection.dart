@@ -930,8 +930,9 @@ abstract class BaseHttpDownloadConnection {
   /// Determines if the user is permitted to hit the start (Resume) button or not
   bool get isStartButtonEnabled => paused;
 
+  /// The endByte is non-inclusive. We therefore add 1 to prevent premature buffer flush
   bool get receivedBytesMatchEndByte =>
-      this.startByte + totalRequestReceivedBytes == this.endByte;
+      this.startByte + totalRequestReceivedBytes + 1 == this.endByte;
 
   bool get receivedBytesExceededEndByte =>
       this.startByte + totalRequestReceivedBytes >
