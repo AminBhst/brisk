@@ -42,7 +42,7 @@ throughout the entire download process.
 ## :art: New Default Theme
 
 To reflect the major improvements of Brisk's new release, a new default dark-mode theme has been added
-named `Celestial Dark`. The old theme is still available and can be selected (`Settings -> User Interface -> Active Theme -> Signature Blue`)
+named `Celestial Dark`. The old theme is still available and can be selected via `Settings -> User Interface -> Active Theme -> Signature Blue`
 
 ## :hammer_and_wrench: Bug Fixes
 
