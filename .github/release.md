@@ -14,8 +14,7 @@ throughout the entire download process.
 <p>
 
 - **Dynamic Connection Reuse:** After a connection has finished receiving its designated byte range, it will be
-  reassigned
-  to a new one. In other words, completed connections now help other busy connections by receiving parts of their byte
+  reassigned to a new one. In other words, completed connections now help other busy connections by receiving parts of their byte
   range. This feature allows for having the total number of connections as active as possible to ensure the that download speed
   is always at its peak.
 
@@ -51,9 +50,8 @@ named `Celestial Dark`. The old theme is still available and can be selected via
 
 ## :pencil: Note
 
-Due to the massive engine changes of this major release, the unfinished downloads of older versions of Brisk
-cannot be continued with the new 2.0.0 version. This version uses a different path for its database so you can delete the old `Brisk`
-directory inside your documents directory if you no longer need the older Brisk versions.
+Due to the massive engine changes in this major release, the unfinished downloads of older versions of Brisk
+cannot be continued with the new 2.0.0 version. This version uses a different path for its database so you can delete the old `Brisk` directory inside your documents directory if you no longer need the older Brisk versions.
 
 ## :heart: Credits
 Special thanks to [AliML111](https://github.com/AliML111) for his work on the projects' GitHub Actions.
