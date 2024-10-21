@@ -11,8 +11,8 @@ class PlutoShadowLine extends StatelessWidget {
     this.reverse,
     this.color,
     this.shadow,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

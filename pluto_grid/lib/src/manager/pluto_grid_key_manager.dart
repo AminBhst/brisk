@@ -79,7 +79,7 @@ class PlutoGridKeyManager {
     if (stateManager.configuration.shortcut.handle(
       keyEvent: keyEvent,
       stateManager: stateManager,
-      state: RawKeyboard.instance,
+      state: HardwareKeyboard.instance,
     )) {
       return;
     }

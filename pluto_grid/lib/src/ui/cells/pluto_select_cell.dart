@@ -21,8 +21,8 @@ class PlutoSelectCell extends StatefulWidget implements PopupCell {
     required this.cell,
     required this.column,
     required this.row,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   PlutoSelectCellState createState() => PlutoSelectCellState();

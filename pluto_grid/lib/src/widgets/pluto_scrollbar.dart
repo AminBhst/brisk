@@ -34,7 +34,7 @@ const double _kScrollbarCrossAxisMargin = 3.0;
 
 class PlutoScrollbar extends StatefulWidget {
   const PlutoScrollbar({
-    Key? key,
+    super.key,
     this.horizontalController,
     this.verticalController,
     this.isAlwaysShown = false,
@@ -60,8 +60,7 @@ class PlutoScrollbar extends StatefulWidget {
         crossAxisMargin = crossAxisMargin ?? _kScrollbarCrossAxisMargin,
         scrollBarColor = scrollBarColor ?? _kScrollbarColor,
         scrollBarTrackColor = scrollBarTrackColor ?? _kTrackColor,
-        longPressDuration = longPressDuration ?? _kScrollbarLongPressDuration,
-        super(key: key);
+        longPressDuration = longPressDuration ?? _kScrollbarLongPressDuration;
   final ScrollController? horizontalController;
 
   final ScrollController? verticalController;
@@ -678,6 +677,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// [Color] of the thumb. Mustn't be null.
   Color get color => _color;
   Color _color;
+
   set color(Color value) {
     if (color == value) return;
 
@@ -688,6 +688,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// [Color] of the track. Mustn't be null.
   Color get trackColor => _trackColor;
   Color _trackColor;
+
   set trackColor(Color value) {
     if (trackColor == value) return;
 
@@ -698,6 +699,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// [Color] of the track border. Mustn't be null.
   Color get trackBorderColor => _trackBorderColor;
   Color _trackBorderColor;
+
   set trackBorderColor(Color value) {
     if (trackBorderColor == value) return;
 
@@ -710,6 +712,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// Scrollbar's track will be rectangular if [trackRadius] is null.
   Radius? get trackRadius => _trackRadius;
   Radius? _trackRadius;
+
   set trackRadius(Radius? value) {
     if (trackRadius == value) return;
 
@@ -722,6 +725,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// calling paint.
   TextDirection? get textDirection => _textDirection;
   TextDirection? _textDirection;
+
   set textDirection(TextDirection? value) {
     assert(value != null);
     if (textDirection == value) return;
@@ -733,6 +737,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// Thickness of the scrollbar in its cross-axis in logical pixels. Mustn't be null.
   double get thickness => _thickness;
   double _thickness;
+
   set thickness(double value) {
     if (thickness == value) return;
 
@@ -751,6 +756,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// Mustn't be null and defaults to 0.
   double get mainAxisMargin => _mainAxisMargin;
   double _mainAxisMargin;
+
   set mainAxisMargin(double value) {
     if (mainAxisMargin == value) return;
 
@@ -764,6 +770,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// Must not be null and defaults to 0.
   double get crossAxisMargin => _crossAxisMargin;
   double _crossAxisMargin;
+
   set crossAxisMargin(double value) {
     if (crossAxisMargin == value) return;
 
@@ -776,6 +783,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// Scrollbar will be rectangular if [radius] is null.
   Radius? get radius => _radius;
   Radius? _radius;
+
   set radius(Radius? value) {
     assert(shape == null || value == null);
     if (radius == value) return;
@@ -796,6 +804,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   ///
   OutlinedBorder? get shape => _shape;
   OutlinedBorder? _shape;
+
   set shape(OutlinedBorder? value) {
     assert(radius == null || value == null);
     if (shape == value) return;
@@ -815,6 +824,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// directions must be greater than or equal to zero.
   EdgeInsets get padding => _padding;
   EdgeInsets _padding;
+
   set padding(EdgeInsets value) {
     if (padding == value) return;
 
@@ -835,6 +845,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// [minOverscrollLength], which in turn is >= 0. Defaults to 18.0.
   double get minLength => _minLength;
   double _minLength;
+
   set minLength(double value) {
     if (minLength == value) return;
 
@@ -854,6 +865,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// When null, it will default to the value of [minLength].
   double get minOverscrollLength => _minOverscrollLength;
   double _minOverscrollLength;
+
   set minOverscrollLength(double value) {
     if (minOverscrollLength == value) return;
 
@@ -881,6 +893,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// {@endtemplate}
   ScrollbarOrientation? get scrollbarOrientation => _scrollbarOrientation;
   ScrollbarOrientation? _scrollbarOrientation;
+
   set scrollbarOrientation(ScrollbarOrientation? value) {
     if (scrollbarOrientation == value) return;
 
@@ -891,6 +904,7 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   /// Whether the painter will be ignored during hit testing.
   bool get ignorePointer => _ignorePointer;
   bool _ignorePointer;
+
   set ignorePointer(bool value) {
     if (ignorePointer == value) return;
 
@@ -1148,17 +1162,22 @@ class _ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   bool get _isVertical =>
       _lastAxisDirection == AxisDirection.down ||
       _lastAxisDirection == AxisDirection.up;
+
   bool get _isReversed =>
       _lastAxisDirection == AxisDirection.up ||
       _lastAxisDirection == AxisDirection.left;
+
   // The amount of scroll distance before and after the current position.
   double get _beforeExtent =>
       _isReversed ? _lastMetrics!.extentAfter : _lastMetrics!.extentBefore;
+
   double get _afterExtent =>
       _isReversed ? _lastMetrics!.extentBefore : _lastMetrics!.extentAfter;
+
   // Padding of the thumb track.
   double get _mainAxisPadding =>
       _isVertical ? padding.vertical : padding.horizontal;
+
   // The size of the thumb track.
   double get _trackExtent =>
       _lastMetrics!.viewportDimension - 2 * mainAxisMargin - _mainAxisPadding;
@@ -1384,19 +1403,11 @@ String shortHash(Object? object) {
 // thumb and ignores everything else.
 class _ThumbPressGestureRecognizer extends LongPressGestureRecognizer {
   _ThumbPressGestureRecognizer({
-    double? postAcceptSlopTolerance,
-    Set<PointerDeviceKind>? supportedDevices,
     required GlobalKey customPaintKey,
-    required Object debugOwner,
-    required Duration duration,
+    required Object super.debugOwner,
+    required Duration super.duration,
     this.onlyDraggingThumb = false,
-  })  : _customPaintKey = customPaintKey,
-        super(
-          postAcceptSlopTolerance: postAcceptSlopTolerance,
-          supportedDevices: supportedDevices,
-          debugOwner: debugOwner,
-          duration: duration,
-        );
+  }) : _customPaintKey = customPaintKey;
 
   final GlobalKey _customPaintKey;
   final bool onlyDraggingThumb;
@@ -1442,6 +1453,8 @@ enum _HoverAxis {
   none;
 
   bool get isVertical => this == _HoverAxis.vertical;
+
   bool get isHorizontal => this == _HoverAxis.horizontal;
+
   bool get isNone => this == _HoverAxis.none;
 }

@@ -23,8 +23,8 @@ class PlutoNumberCell extends StatefulWidget implements TextCell {
     required this.cell,
     required this.column,
     required this.row,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   PlutoNumberCellState createState() => PlutoNumberCellState();

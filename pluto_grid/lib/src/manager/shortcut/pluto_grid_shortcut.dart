@@ -27,7 +27,7 @@ class PlutoGridShortcut {
   bool handle({
     required PlutoKeyManagerEvent keyEvent,
     required PlutoGridStateManager stateManager,
-    required RawKeyboard state,
+    required HardwareKeyboard state,
   }) {
     for (final action in actions.entries) {
       if (action.key.accepts(keyEvent.event, state)) {

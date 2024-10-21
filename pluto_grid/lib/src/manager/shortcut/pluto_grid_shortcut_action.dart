@@ -250,7 +250,7 @@ class PlutoGridActionDefaultTab extends PlutoGridShortcutAction {
 
     final saveIsEditing = stateManager.isEditing;
 
-    keyEvent.event.isShiftPressed
+    HardwareKeyboard.instance.isShiftPressed
         ? _moveCellPrevious(stateManager)
         : _moveCellNext(stateManager);
 
@@ -408,7 +408,7 @@ class PlutoGridActionDefaultEnterKey extends PlutoGridShortcutAction {
     }
 
     if (enterKeyAction.isEditingAndMoveDown) {
-      if (keyEvent.event.isShiftPressed) {
+      if (HardwareKeyboard.instance.isShiftPressed) {
         stateManager.moveCurrentCell(
           PlutoMoveDirection.up,
           notify: false,
@@ -420,7 +420,7 @@ class PlutoGridActionDefaultEnterKey extends PlutoGridShortcutAction {
         );
       }
     } else if (enterKeyAction.isEditingAndMoveRight) {
-      if (keyEvent.event.isShiftPressed) {
+      if (HardwareKeyboard.instance.isShiftPressed) {
         stateManager.moveCurrentCell(
           PlutoMoveDirection.left,
           force: true,

@@ -16,7 +16,7 @@ class PlutoShadowContainer extends StatelessWidget {
   final Widget child;
 
   const PlutoShadowContainer({
-    Key? key,
+    super.key,
     required this.width,
     required this.height,
     required this.child,
@@ -26,7 +26,7 @@ class PlutoShadowContainer extends StatelessWidget {
     this.backgroundColor = Colors.white,
     this.borderColor = const Color(0xFFA1A5AE),
     this.alignment = Alignment.centerLeft,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

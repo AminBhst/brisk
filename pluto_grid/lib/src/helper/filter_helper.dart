@@ -504,11 +504,11 @@ class PlutoGridFilterPopupHeader extends StatelessWidget {
   final SetFilterPopupHandler? handleAddNewFilter;
 
   const PlutoGridFilterPopupHeader({
-    Key? key,
+    super.key,
     this.stateManager,
     this.configuration,
     this.handleAddNewFilter,
-  }) : super(key: key);
+  });
 
   void handleAddButton() {
     handleAddNewFilter!(stateManager);

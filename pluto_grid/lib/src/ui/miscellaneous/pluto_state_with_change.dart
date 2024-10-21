@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 abstract class PlutoStatefulWidget extends StatefulWidget {
-  const PlutoStatefulWidget({Key? key}) : super(key: key);
+  const PlutoStatefulWidget({super.key});
 }
 
 abstract class PlutoStateWithChange<T extends PlutoStatefulWidget>
