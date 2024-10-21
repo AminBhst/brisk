@@ -44,7 +44,7 @@ throughout the entire download process.
 To reflect the major improvements of Brisk's new release, a new default dark-mode theme has been added
 named `Celestial Dark`. The old theme is still available and can be selected via `Settings -> User Interface -> Active Theme -> Signature Blue`
 
-## :hammer_and_wrench: Bug Fixes
+## :hammer_and_wrench: Bug Fixes and Improvements
 
 - Fixed browser-integration occasionally not working
 - Fixed failing to extract download links from a selected text area in the browser if that area contained invalid URLs.
