@@ -145,10 +145,15 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4.1.5
 
-      - name: Download artifact package
+      - name: Download linux artifact
         uses: actions/download-artifact@v4.1.0
         with:
           name: brisk-package
+
+      - name: Download windows package
+        uses: actions/download-artifact@v4.1.0
+        with:
+          name: brisk-windows
 
       - name: Release the changes
         uses: softprops/action-gh-release@v2.0.5
