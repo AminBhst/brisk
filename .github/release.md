@@ -16,8 +16,7 @@ throughout the entire download process.
 - **Dynamic Connection Reuse:** After a connection has finished receiving its designated byte range, it will be
   reassigned
   to a new one. In other words, completed connections now help other busy connections by receiving parts of their byte
-  range.
-  This feature allows for having the total number of connections as active as possible to ensure the that download speed
+  range. This feature allows for having the total number of connections as active as possible to ensure the that download speed
   is always at its peak.
 
 ## :sparkles: Improved UX
