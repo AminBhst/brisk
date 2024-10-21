@@ -7,8 +7,7 @@ throughout the entire download process.
 <p>The new engine comes with two major features:
 
 - **Dynamic Connection Spawn:** The download now starts with a single connection and as
-  it progresses, new connections are added on the fly and without interfering with each other. This ensures that a
-  higher
+  it progresses, new connections are added on the fly and without interfering with each other. This ensures that a higher
   number of connections are used only when necessary, significantly improving the download speed of small-to-medium
   sized files.
 
@@ -29,9 +28,7 @@ throughout the entire download process.
 <p>
 
 - **Double Taps:** Double-tapping a download now does two actions depending on the state of the download; If the file is
-  currently being downloaded,
-  double-tapping opens the download progress window. Otherwise, the download info dialog will be
-  opened.
+  currently being downloaded, double-tapping opens the download progress window. Otherwise, the download info dialog will be opened.
 
 <p>
 
@@ -45,8 +42,7 @@ throughout the entire download process.
 ## :art: New Default Theme
 
 To reflect the major improvements of brisk's new release, a new default dark-mode theme has been added
-named `Celestial Dark`. The old
-theme is still available and can be selected (`Settings -> User Interface -> Active Theme -> Signature Blue`)
+named `Celestial Dark`. The old theme is still available and can be selected (`Settings -> User Interface -> Active Theme -> Signature Blue`)
 
 ## :hammer_and_wrench: Bug Fixes
 
@@ -56,6 +52,8 @@ theme is still available and can be selected (`Settings -> User Interface -> Act
 ## Note
 
 Due to the massive breaking engine changes of this major release, the unfinished downloads of older versions of brisk
-cannot be continued
-with the new 2.0.0 version. This version uses a different path for its database so you can delete the old `Brisk`
+cannot be continued with the new 2.0.0 version. This version uses a different path for its database so you can delete the old `Brisk`
 directory inside your documents directory if you no longer need the older brisk versions.
+
+## :heart: Credits
+Special thanks to [AliML111](https://github.com/AliML111) for his work on the projects' GitHub Actions.
