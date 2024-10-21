@@ -72,7 +72,7 @@ jobs:
           path: Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
           retention-days: 1
 
-  Build-package:
+  Build-linux:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -132,7 +132,7 @@ jobs:
 
   Release:
     runs-on: ubuntu-latest
-    needs: [Build-package, version]
+    needs: [Build-linux, Build-windows, Build version]
     permissions:
       contents: write
     steps:
