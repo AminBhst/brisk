@@ -70,6 +70,10 @@ abstract class BaseHttpDownloadConnection {
 
   bool paused = false;
 
+  bool reset = false;
+
+  bool terminatedOnCompletion = false;
+
   String detailsStatus = "";
 
   int totalRequestWrittenBytes = 0;
@@ -118,6 +122,8 @@ abstract class BaseHttpDownloadConnection {
   bool _isWritingTempFile = false;
 
   ConnectionSettings settings;
+
+  bool notifyResetSuccessOnNextChunk = false;
 
   BaseHttpDownloadConnection({
     required this.downloadItem,
@@ -172,7 +178,6 @@ abstract class BaseHttpDownloadConnection {
       );
       return;
     }
-    // _runConnectionResetTimer(); /// TODO uncomment
     if (_isDownloadCompleted()) {
       logger?.info("Download is already completed! skipping...");
       _setDownloadComplete();
@@ -182,6 +187,10 @@ abstract class BaseHttpDownloadConnection {
     logger?.info("Download is incomplete. starting a new download request...");
     _init(connectionReset, progressCallback, reuseConnection);
     _notifyProgress();
+
+    if (connectionReset) {
+      notifyResetSuccessOnNextChunk = true;
+    }
 
     final request = buildDownloadRequest(reuseConnection);
     sendDownloadRequest(request);
@@ -210,6 +219,8 @@ abstract class BaseHttpDownloadConnection {
     _initClient();
     // }
     paused = false;
+    reset = false;
+    terminatedOnCompletion = false;
     totalRequestReceivedBytes = 0;
   }
 
@@ -256,24 +267,15 @@ abstract class BaseHttpDownloadConnection {
     }
   }
 
-  // TODO USE THIS
-  void _runConnectionResetTimer() {
-    if (connectionResetTimer != null) return;
-    connectionResetTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      if (connectionRetryAllowed) {
-        resetConnection();
-        _retryCount++;
-      }
-    });
-  }
-
   void resetConnection() {
-    client.close();
+    logger?.info("Resetting connection....");
+    closeClient_withCatch();
     totalConnectionReceivedBytes =
         totalConnectionReceivedBytes - tempReceivedBytes;
-    totalRequestReceivedBytes = totalConnectionReceivedBytes;
+    totalRequestReceivedBytes = totalRequestReceivedBytes - tempReceivedBytes;
     _clearBuffer();
     _dynamicFlushThreshold = double.infinity;
+    reset = true;
     start(progressCallback!, connectionReset: true);
   }
 
@@ -403,6 +405,7 @@ abstract class BaseHttpDownloadConnection {
     }
     if (receivedBytesMatchEndByte) {
       _onByteExactMatch();
+      _notifyProgress();
       return;
     }
     if (tempReceivedBytes > _dynamicFlushThreshold) {
@@ -426,7 +429,7 @@ abstract class BaseHttpDownloadConnection {
     client.close();
     _flushBuffer();
     _setDownloadComplete();
-    _notifyProgress();
+    terminatedOnCompletion = true;
   }
 
   void _onByteExceeded() {
@@ -435,6 +438,7 @@ abstract class BaseHttpDownloadConnection {
     _flushBuffer();
     _fixTempFiles();
     _setDownloadComplete();
+    terminatedOnCompletion = true;
   }
 
   /// Flushes the buffer containing the received bytes to the disk.
@@ -726,6 +730,12 @@ abstract class BaseHttpDownloadConnection {
         : splitByte + this.startByte + totalRequestReceivedBytes;
   }
 
+  void closeClient_withCatch() {
+    try {
+      client.close();
+    } catch (e) {}
+  }
+
   void _clearBuffer() {
     buffer.clear();
     tempReceivedBytes = 0;
@@ -733,7 +743,7 @@ abstract class BaseHttpDownloadConnection {
 
   /// Flushes the remaining bytes in the buffer and completes the download.
   void _onDownloadComplete() {
-    if (paused) return;
+    if (paused || reset) return;
     bytesTransferRate = 0;
     downloadProgress = totalRequestReceivedBytes / segment.length;
     totalDownloadProgress =
@@ -746,14 +756,23 @@ abstract class BaseHttpDownloadConnection {
     _notifyProgress(completionSignal: true);
   }
 
+  /// Force closing the client leads to a clientException to be thrown. When that happens,
+  /// the stream is completed and the [_onDownloadComplete] is called. However,
+  /// since sometimes, for example, when a connection is reset or paused, we don't want the
+  /// [_onDownloadComplete] to be called as it sends a completionSignal to the engine
+  /// despite the connection not really being completed (the designated segment is not downloaded yet).
+  /// Therefore, we handle the mentioned exception here in a way that [_onDownloadComplete] will be called
+  /// only when a download is actually completed.
   void _onError(dynamic error, [dynamic s]) {
     try {
       client.close();
     } catch (e) {}
     _clearBuffer();
     _notifyProgress();
-    if (!(error is http.ClientException && paused)) {
+    if (!(error is http.ClientException &&
+        (paused || terminatedOnCompletion))) {
       logger?.error("connection $connectionNumber error : $error \n $s");
+      reset = true; // set to prevent sending a completion signal to the engine
       throw error;
     }
   }

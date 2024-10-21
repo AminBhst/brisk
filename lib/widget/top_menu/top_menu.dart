@@ -11,6 +11,7 @@ import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
+import 'package:brisk/widget/top_menu/top_menu_util.dart';
 import 'package:path/path.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
@@ -80,30 +81,30 @@ class _TopMenuState extends State<TopMenu> {
           //   onHoverColor: Colors.red,
           // ),
           TopMenuButton(
-            onTap: isDownloadButtonEnabled ? onDownloadPressed : null,
+            onTap: isDownloadButtonEnabled(provider) ? onDownloadPressed : null,
             title: 'Download',
             icon: Icon(
               Icons.download_rounded,
-              color: isDownloadButtonEnabled
+              color: isDownloadButtonEnabled(provider)
                   ? topMenuTheme.downloadColor.iconColor
                   : Color.fromRGBO(79, 79, 79, 0.5),
             ),
             onHoverColor: topMenuTheme.downloadColor.hoverBackgroundColor,
-            textColor: isDownloadButtonEnabled
+            textColor: isDownloadButtonEnabled(provider)
                 ? topMenuTheme.downloadColor.textColor
                 : Color.fromRGBO(79, 79, 79, 1),
           ),
           TopMenuButton(
-            onTap: isPauseButtonEnabled ? onStopPressed : null,
+            onTap: isPauseButtonEnabled(provider) ? onStopPressed : null,
             title: 'Stop',
             icon: Icon(
               Icons.stop_rounded,
-              color: isPauseButtonEnabled
+              color: isPauseButtonEnabled(provider)
                   ? topMenuTheme.stopColor.iconColor
                   : Color.fromRGBO(79, 79, 79, 0.5),
             ),
             onHoverColor: topMenuTheme.stopColor.hoverBackgroundColor,
-            textColor: isPauseButtonEnabled
+            textColor: isPauseButtonEnabled(provider)
                 ? topMenuTheme.stopColor.textColor
                 : Color.fromRGBO(79, 79, 79, 1),
           ),
@@ -264,30 +265,5 @@ class _TopMenuState extends State<TopMenu> {
     HiveUtil.instance.downloadItemsBox.delete(id);
     HiveUtil.instance.removeDownloadFromQueues(id);
     provider.downloads.removeWhere((key, _) => key == id);
-  }
-
-  bool get isDownloadButtonEnabled {
-    final selectedRowIds = PlutoGridUtil.selectedRowIds;
-    final completedDownloadSelected = selectedRowIds
-        .map((id) => HiveUtil.instance.downloadItemsBox.get(id))
-        .toList()
-        .any((download) =>
-            download != null &&
-            download.status == DownloadStatus.assembleComplete);
-    return (selectedRowIds.isEmpty || completedDownloadSelected)
-        ? false
-        : (provider.downloads.values
-                .where((item) => selectedRowIds.contains(item.downloadItem.id))
-                .every((item) => item.buttonAvailability.startButtonEnabled) ||
-            provider.downloads.values.isEmpty);
-  }
-
-  bool get isPauseButtonEnabled {
-    final selectedRowIds = PlutoGridUtil.selectedRowIds;
-    return (selectedRowIds.isEmpty || provider.downloads.values.isEmpty)
-        ? false
-        : provider.downloads.values
-            .where((item) => selectedRowIds.contains(item.downloadItem.id))
-            .every((item) => item.buttonAvailability.pauseButtonEnabled);
   }
 }

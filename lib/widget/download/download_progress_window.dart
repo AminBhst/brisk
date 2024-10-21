@@ -474,7 +474,6 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
   }
 
   double resolveWindowHeight(Size size) {
-    print(size.height);
     if (size.height >= 650) {
       return 450;
     }

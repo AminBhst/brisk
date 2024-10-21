@@ -128,9 +128,10 @@ class DownloadConnectionInvoker {
       case DownloadCommand.start_ReuseConnection:
         if (!forcedConnectionReuse) {
           connection.segment = data.segment!;
-          if (connection.detailsStatus == DownloadStatus.paused) {
+          if (connection.detailsStatus == DownloadStatus.paused ||
+              connection.reset) {
             connection.logger?.info(
-              "Invoker:: received start_ConnectionReuse command in paused status",
+              "Invoker:: received start_ConnectionReuse command in paused status! reset? ${connection.reset}",
             );
             forceApplyReuseConnections[id] ??= HashSet();
             forceApplyReuseConnections[id]!.add(connectionNumber!);
@@ -161,6 +162,13 @@ class DownloadConnectionInvoker {
         break;
       case DownloadCommand.refreshSegment_reuseConnection:
         connection.refreshSegment(data.segment!, reuseConnection: true);
+        break;
+      case DownloadCommand.resetConnection:
+        if (!connection.connectionRetryAllowed) {
+          break;
+        }
+        connection.previousBufferEndByte = 0;
+        connection.resetConnection();
         break;
     }
   }

@@ -10,7 +10,8 @@ enum DownloadCommand {
   refreshSegment_reuseConnection,
   cancel,
   forceCancel,
-  clearConnections
+  clearConnections,
+  resetConnection,
 }
 
 class TrackedDownloadCommand {
