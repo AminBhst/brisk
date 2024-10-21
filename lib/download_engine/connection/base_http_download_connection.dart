@@ -56,7 +56,7 @@ abstract class BaseHttpDownloadConnection {
 
   String transferRate = "";
 
-  String status = "Stopped";
+  String overallStatus = "Stopped";
 
   /// Time used to calculate the elapsed milliseconds between data chunk transfers
   int _tmpTime = DateTime.now().millisecondsSinceEpoch;
@@ -74,7 +74,7 @@ abstract class BaseHttpDownloadConnection {
 
   bool terminatedOnCompletion = false;
 
-  String detailsStatus = "";
+  String connectionStatus = "";
 
   int totalRequestWrittenBytes = 0;
 
@@ -174,7 +174,7 @@ abstract class BaseHttpDownloadConnection {
     if (startNotAllowed) {
       logger?.info(
         "Start is not allowed for connection $connectionNumber!"
-        "status: $status detailsStatus: $detailsStatus paused: $paused",
+        "status: $overallStatus detailsStatus: $connectionStatus paused: $paused",
       );
       return;
     }
@@ -202,7 +202,7 @@ abstract class BaseHttpDownloadConnection {
     tempReceivedBytes = 0;
     totalRequestWrittenBytes = 0;
     totalRequestReceivedBytes = 0;
-    detailsStatus = DownloadStatus.connecting;
+    connectionStatus = DownloadStatus.connecting;
     previousBufferEndByte = 0;
   }
 
@@ -211,9 +211,9 @@ abstract class BaseHttpDownloadConnection {
     DownloadProgressCallback progressCallback,
     bool reuseConnection,
   ) {
-    detailsStatus =
+    connectionStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
-    status = detailsStatus;
+    overallStatus = connectionStatus;
     this.progressCallback = progressCallback;
     // if (!reuseConnection) {
     _initClient();
@@ -251,7 +251,7 @@ abstract class BaseHttpDownloadConnection {
     pauseButtonEnabled = true;
     downloadProgress = 1;
     totalConnectionWriteProgress = 1;
-    detailsStatus = DownloadStatus.connectionComplete;
+    connectionStatus = DownloadStatus.connectionComplete;
     final totalExistingLength = getTotalWrittenBytesLength();
     totalDownloadProgress = totalExistingLength / downloadItem.contentLength;
   }
@@ -285,7 +285,7 @@ abstract class BaseHttpDownloadConnection {
     _clearBuffer();
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
     _updateStatus(status);
-    detailsStatus = status;
+    connectionStatus = status;
     _notifyProgress();
   }
 
@@ -392,7 +392,7 @@ abstract class BaseHttpDownloadConnection {
     _updateStatus(DownloadStatus.downloading);
     lastResponseTimeMillis = _nowMillis;
     pauseButtonEnabled = downloadItem.supportsPause;
-    detailsStatus = transferRate;
+    connectionStatus = transferRate;
     _calculateTransferRate(chunk);
     _calculateDynamicFlushThreshold();
     buffer.add(chunk);
@@ -480,7 +480,7 @@ abstract class BaseHttpDownloadConnection {
         totalConnectionWrittenBytes / downloadItem.contentLength;
     totalRequestWriteProgress = totalRequestReceivedBytes / segment.length;
     if (totalRequestWriteProgress == 1) {
-      detailsStatus = DownloadStatus.connectionComplete;
+      connectionStatus = DownloadStatus.connectionComplete;
     }
     _isWritingTempFile = false;
   }
@@ -641,7 +641,7 @@ abstract class BaseHttpDownloadConnection {
     }
     _flushBuffer();
     _updateStatus(DownloadStatus.paused);
-    detailsStatus = DownloadStatus.paused;
+    connectionStatus = DownloadStatus.paused;
     client.close();
     pauseButtonEnabled = false;
     _notifyProgress();
@@ -651,7 +651,7 @@ abstract class BaseHttpDownloadConnection {
   void refreshSegment(Segment segment, {bool reuseConnection = false}) {
     final prevEndByte = this.endByte;
     logger?.info(
-        "Refresh requested for connection $connectionNumber with status ${this.status} ${this.detailsStatus}");
+        "Refresh requested for connection $connectionNumber with status ${this.overallStatus} ${this.connectionStatus}");
     logger?.info(
         "Inside refresh segment conn num $connectionNumber :: ${this.startByte} - ${this.endByte} ");
     logger?.info(
@@ -661,7 +661,7 @@ abstract class BaseHttpDownloadConnection {
       requestedSegment: segment,
       reuseConnection: reuseConnection,
     );
-    if (this.detailsStatus == DownloadStatus.connectionComplete) {
+    if (this.connectionStatus == DownloadStatus.connectionComplete) {
       message.internalMessage = message_refreshSegmentRefused(reuseConnection);
       progressCallback!.call(message);
       logger?.info(
@@ -749,7 +749,7 @@ abstract class BaseHttpDownloadConnection {
     totalDownloadProgress =
         totalConnectionReceivedBytes / downloadItem.contentLength;
     _flushBuffer();
-    detailsStatus = DownloadStatus.connectionComplete;
+    connectionStatus = DownloadStatus.connectionComplete;
     logger?.info("Download complete with completion signal");
     logger?.info("connection progress : $downloadProgress");
     _setDownloadComplete();
@@ -796,8 +796,8 @@ abstract class BaseHttpDownloadConnection {
   }
 
   void _updateStatus(String status) {
-    this.status = status;
-    downloadItem.status = this.status;
+    this.overallStatus = status;
+    downloadItem.status = this.overallStatus;
   }
 
   bool isStartNotAllowed(bool connectionReset, bool connectionReuse) {
@@ -813,8 +813,8 @@ abstract class BaseHttpDownloadConnection {
     final isAllowed = (paused && _isWritingTempFile) ||
         (!paused && downloadProgress > 0) ||
         downloadItem.status == DownloadStatus.connectionComplete ||
-        status == DownloadStatus.connectionComplete ||
-        detailsStatus == DownloadStatus.connectionComplete;
+        overallStatus == DownloadStatus.connectionComplete ||
+        connectionStatus == DownloadStatus.connectionComplete;
 
     return isAllowed && !connectionReset;
   }
@@ -945,10 +945,10 @@ abstract class BaseHttpDownloadConnection {
   bool get connectionRetryAllowed =>
       lastResponseTimeMillis + settings.connectionRetryTimeout < _nowMillis &&
       !_isWritingTempFile &&
-      status != DownloadStatus.paused &&
-      status != DownloadStatus.connectionComplete &&
-      detailsStatus != DownloadStatus.canceled &&
-      detailsStatus != DownloadStatus.connectionComplete &&
+      overallStatus != DownloadStatus.paused &&
+      overallStatus != DownloadStatus.connectionComplete &&
+      connectionStatus != DownloadStatus.canceled &&
+      connectionStatus != DownloadStatus.connectionComplete &&
       (_retryCount < settings.maxConnectionRetryCount ||
           settings.maxConnectionRetryCount == -1);
 }

@@ -55,7 +55,7 @@ class DownloadProgressMessage {
     final downloadProgress = DownloadProgressMessage(
       downloadProgress: request.downloadProgress,
       transferRate: request.transferRate,
-      status: request.status,
+      status: request.overallStatus,
       estimatedRemaining: request.estimatedRemaining,
       paused: request.paused,
       totalConnectionWriteProgress: request.totalConnectionWriteProgress,
@@ -68,7 +68,7 @@ class DownloadProgressMessage {
       bytesTransferRate: request.bytesTransferRate,
       totalDownloadProgress: request.totalDownloadProgress,
       totalReceivedBytes: request.totalConnectionReceivedBytes,
-      detailsStatus: request.detailsStatus,
+      detailsStatus: request.connectionStatus,
       connectionNumber: request.connectionNumber,
       segment: request.segment,
     );
