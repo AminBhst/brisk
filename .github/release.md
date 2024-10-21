@@ -49,7 +49,7 @@ named `Celestial Dark`. The old theme is still available and can be selected (`S
 - Fixed browser-integration occasionally not working
 - Fixed failing to extract download links from a selected text area in the browser if that area contained invalid URLs.
 
-## Note
+## :pencil: Note
 
 Due to the massive breaking engine changes of this major release, the unfinished downloads of older versions of Brisk
 cannot be continued with the new 2.0.0 version. This version uses a different path for its database so you can delete the old `Brisk`
