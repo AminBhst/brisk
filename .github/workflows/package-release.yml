@@ -132,7 +132,7 @@ jobs:
 
   Release:
     runs-on: ubuntu-latest
-    needs: [Build-linux, Build-windows, Build version]
+    needs: [Build-Linux, Build-windows, version]
     permissions:
       contents: write
     steps:
