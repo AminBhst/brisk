@@ -48,6 +48,7 @@ named `Celestial Dark`. The old theme is still available and can be selected via
 
 - Fixed browser-integration occasionally not working
 - Fixed failing to extract download links from a selected text area in the browser if that area contained invalid URLs.
+- Upgraded Flutter to version 3.22.0
 
 ## :pencil: Note
 
