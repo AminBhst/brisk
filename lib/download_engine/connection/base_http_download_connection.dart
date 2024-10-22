@@ -504,6 +504,8 @@ abstract class BaseHttpDownloadConnection {
         tempFilesToDelete.add(file);
         continue;
       }
+
+      /// TODO may need <=
       if (this.endByte < tempEndByte) {
         logger?.info("File to cut: ${basename(file.path)}");
         newBufferStartByte = tempStartByte;
@@ -938,8 +940,8 @@ abstract class BaseHttpDownloadConnection {
       this.startByte + totalRequestReceivedBytes + 1 == this.endByte;
 
   bool get receivedBytesExceededEndByte =>
-      this.startByte + totalRequestReceivedBytes >
-      this.endByte; // TODO what if equals
+      this.startByte + totalRequestReceivedBytes + 1 >
+      this.endByte;
 
   int get startByte => segment.startByte;
 
