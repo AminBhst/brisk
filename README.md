@@ -49,7 +49,9 @@ Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-e
 
 ## :film_projector: Demo With Browser Integration
 
-<img align="center" width="850" src="assets/Brisk-Demo.gif">
+
+https://github.com/user-attachments/assets/7ddef1b9-a4a4-4ab5-88c5-01693e60cd07
+
 
 ## :key: Linux Prerequisites
 
