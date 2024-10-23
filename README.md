@@ -31,7 +31,7 @@ Brisk Download Manager is powered by a high-performance engine that delivers the
 
 The key features of the engine include:
 - **Dynamic Connection Spawn:** Downloads begin with a single connection, with more connections dynamically added on the fly.
-- **Dynamic Connection Reuse:** Completed connections are reassigned to assist other active connections, maintaining the maximum number of concurrent connections to maintaining the highest possible download speed.
+- **Dynamic Connection Reuse:** Completed connections are reassigned to assist other active connections, maintaining the maximum number of concurrent connections to maintain the highest possible download speed.
 - **Automatic connection reset:** Hanging connections will be reset automatically.
 
 ## :globe_with_meridians: Browser Integration
