@@ -31,7 +31,7 @@ import '../util/readability_util.dart';
 
 /// Coordinates and manages download connections.
 /// By default, each download request consists of 8 download connections that are tasked to receive their designated bytes and save them as temporary files.
-/// For each download item, [startDownloadRequest] will be called in a designated isolate spawned by the [DownloadRequestProvider].
+/// For each download item, [start] will be called in a designated isolate spawned by the [DownloadRequestProvider].
 /// The engine will track the state of the download connections, retrieve and aggregate data such as the overall download speed and progress,
 /// manage the availability of pause/resume buttons and assemble the file when the all connections have finished receiving and writing their data.
 ///
@@ -213,7 +213,7 @@ class HttpDownloadEngine {
     });
   }
 
-  static void startDownloadRequest(IsolateArgsPair<int> args) async {
+  static void start(IsolateArgsPair<int> args) async {
     final providerChannel = IsolateChannel.connectSend(args.sendPort);
     final engineChannel = EngineChannel(channel: providerChannel);
     _engineChannels[args.obj] = engineChannel;
@@ -1025,8 +1025,7 @@ class HttpDownloadEngine {
       logger
         ?..writeLogBuffer()
         ..logBuffer.clear()
-        ..flushTimer?.cancel()
-        ..logFile.deleteSync();
+        ..flushTimer?.cancel();
       _engineChannels.remove(engineChannel);
     }
     return assembleSuccessful;

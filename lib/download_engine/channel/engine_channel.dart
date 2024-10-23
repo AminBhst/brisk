@@ -65,7 +65,7 @@ class EngineChannel extends IsolateChannelWrapper {
   }
 
   void buildLogger(DownloadIsolateMessage message) {
-    if (logger != null) return;
+    if (logger != null || !message.settings.loggerEnabled) return;
     this.logger = Logger(
       downloadUid: downloadItem!.uid,
       logBaseDir: message.settings.baseTempDir,

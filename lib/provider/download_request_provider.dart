@@ -98,7 +98,7 @@ class DownloadRequestProvider with ChangeNotifier {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
     final isolate = await Isolate.spawn(
-      HttpDownloadEngine.startDownloadRequest,
+      HttpDownloadEngine.start,
       IsolateArgsPair(rPort.sendPort, id),
       errorsAreFatal: false,
     );

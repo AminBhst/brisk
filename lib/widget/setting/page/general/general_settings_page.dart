@@ -1,4 +1,5 @@
 import 'package:brisk/widget/setting/page/general/behaviour_settings_group.dart';
+import 'package:brisk/widget/setting/page/general/logging_group.dart';
 import 'package:brisk/widget/setting/page/general/notification_settings_group.dart';
 import 'package:brisk/widget/setting/page/general/ui_setting_group.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class GeneralSettingsPage extends StatelessWidget {
             NotificationSettingsGroup(),
             UISettingGroup(),
             BehaviourSettingsGroup(),
+            LoggingGroup(),
           ],
         ),
       ),

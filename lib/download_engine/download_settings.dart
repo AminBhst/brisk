@@ -9,6 +9,7 @@ class DownloadSettings extends ConnectionSettings {
   DownloadSettings({
     required this.baseSaveDir,
     required this.totalConnections,
+    required super.loggerEnabled,
     required super.baseTempDir,
     required super.connectionRetryTimeout,
     required super.maxConnectionRetryCount,
@@ -21,6 +22,7 @@ class DownloadSettings extends ConnectionSettings {
       totalConnections: SettingsCache.connectionsNumber,
       connectionRetryTimeout: SettingsCache.connectionRetryTimeout * 1000,
       maxConnectionRetryCount: SettingsCache.connectionRetryCount,
+      loggerEnabled: SettingsCache.loggerEnabled,
     );
   }
 }
@@ -29,10 +31,12 @@ class ConnectionSettings {
   final Directory baseTempDir;
   final int connectionRetryTimeout;
   final int maxConnectionRetryCount;
+  final bool loggerEnabled;
 
   ConnectionSettings({
     required this.baseTempDir,
     required this.connectionRetryTimeout,
     required this.maxConnectionRetryCount,
+    required this.loggerEnabled,
   });
 }

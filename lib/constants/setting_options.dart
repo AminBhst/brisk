@@ -15,6 +15,7 @@ enum SettingOptions {
   programFormats,
   fileDuplicationBehaviour,
   appClosureBehaviour,
+  loggerEnabled,
   connectionsNumber,
   connectionRetryCount,
   connectionRetryTimeout,

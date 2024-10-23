@@ -59,7 +59,9 @@ class DownloadConnectionInvoker {
       setTrackedCommand(data, channel);
       if (conn == null) {
         conn = _buildDownloadConnection(data);
-        conn.initLogger();
+        if (data.settings.loggerEnabled) {
+          conn.initLogger();
+        }
         _connections[id]![connectionNumber] = conn;
       }
       _executeCommand(data, channel);

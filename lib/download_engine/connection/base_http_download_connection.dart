@@ -115,7 +115,7 @@ abstract class BaseHttpDownloadConnection {
   /// Connection retry
   int lastResponseTimeMillis = DateTime.now().millisecondsSinceEpoch;
 
-  Timer? connectionResetTimer;
+  Timer? logFlushTimer;
 
   int _retryCount = 0;
 
@@ -159,8 +159,8 @@ abstract class BaseHttpDownloadConnection {
     bool connectionReset = false,
     bool reuseConnection = false,
   }) {
+    _startLogFlushTimer();
     _initTempFilesCache();
-    initLogger();
     logger?.info(
       "Starting download for segment $startByte - $endByte with "
       "reuseConnection: $reuseConnection "
@@ -281,7 +281,7 @@ abstract class BaseHttpDownloadConnection {
 
   void cancel({bool failure = false}) {
     client.close();
-    _cancelConnectionResetTimer();
+    _cancelLogFlushTimer();
     _clearBuffer();
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
     _updateStatus(status);
@@ -289,9 +289,16 @@ abstract class BaseHttpDownloadConnection {
     _notifyProgress();
   }
 
-  void _cancelConnectionResetTimer() {
-    connectionResetTimer?.cancel();
-    connectionResetTimer = null;
+  void _startLogFlushTimer() {
+    if (logFlushTimer == null) {
+      logFlushTimer =
+          Timer.periodic(Duration(seconds: 4), (timer) => sendLogBuffer());
+    }
+  }
+
+  void _cancelLogFlushTimer() {
+    logFlushTimer?.cancel();
+    logFlushTimer = null;
   }
 
   /// TODO don't create a new obj every time
@@ -640,7 +647,7 @@ abstract class BaseHttpDownloadConnection {
     }
     paused = true;
     logger?.info("Paused connection $connectionNumber");
-    _cancelConnectionResetTimer();
+    _cancelLogFlushTimer();
     if (progressCallback != null) {
       this.progressCallback = progressCallback;
     }
@@ -940,8 +947,7 @@ abstract class BaseHttpDownloadConnection {
       this.startByte + totalRequestReceivedBytes + 1 == this.endByte;
 
   bool get receivedBytesExceededEndByte =>
-      this.startByte + totalRequestReceivedBytes + 1 >
-      this.endByte;
+      this.startByte + totalRequestReceivedBytes + 1 > this.endByte;
 
   int get startByte => segment.startByte;
 

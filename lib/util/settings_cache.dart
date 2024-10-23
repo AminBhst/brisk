@@ -21,6 +21,7 @@ class SettingsCache {
   static late bool openDownloadProgressWindow;
   static late bool enableWindowToFront;
   static late int extensionPort;
+  static late bool loggerEnabled;
 
   /// File
   static late Directory temporaryDir;
@@ -95,6 +96,7 @@ class SettingsCache {
       SettingType.general.name,
       AppClosureBehaviour.ask.name,
     ],
+    SettingOptions.loggerEnabled.name: [SettingType.general.name, "false"],
     SettingOptions.connectionsNumber.name: [
       SettingType.connection.name,
       "8",
@@ -168,6 +170,9 @@ class SettingsCache {
         case SettingOptions.appClosureBehaviour:
           appClosureBehaviour = parseAppCloseBehaviour(value);
           break;
+        case SettingOptions.loggerEnabled:
+          loggerEnabled = parseBool(value);
+          break;
         case SettingOptions.connectionsNumber:
           connectionsNumber = int.parse(value);
           break;
@@ -208,6 +213,9 @@ class SettingsCache {
         case SettingOptions.openDownloadProgressWindow:
           setting.value =
               parseBoolStr(SettingsCache.openDownloadProgressWindow);
+          break;
+        case SettingOptions.loggerEnabled:
+          setting.value = parseBoolStr(SettingsCache.loggerEnabled);
           break;
         case SettingOptions.temporaryPath:
           setting.value = SettingsCache.temporaryDir.path;

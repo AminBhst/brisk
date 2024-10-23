@@ -57,9 +57,23 @@ class Logger {
 
   void log(LogLevel logLevel, String message, {bool newLine = true}) {
     if (newLine) {
-      this.logBuffer.writeln(logLevel.name + ":: " + message);
+      this.logBuffer.writeln(
+            "@" +
+                DateTime.now().millisecondsSinceEpoch.toString() +
+                " " +
+                logLevel.name +
+                ":: " +
+                message,
+          );
     } else {
-      this.logBuffer.write(logLevel.name + ":: " + message);
+      this.logBuffer.write(
+            "@" +
+                DateTime.now().millisecondsSinceEpoch.toString() +
+                " " +
+                logLevel.name +
+                ":: " +
+                message,
+          );
     }
     print(logLevel.name + ":: " + message);
   }
