@@ -1,4 +1,4 @@
-name: Windows
+name: Windows Release
 on:
   workflow_dispatch:
   

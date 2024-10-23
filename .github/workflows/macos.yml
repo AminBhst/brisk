@@ -1,4 +1,4 @@
-name: Macos Release Test
+name: Macos Release
 
 on:
   workflow_dispatch:

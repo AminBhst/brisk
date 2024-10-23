@@ -1,4 +1,4 @@
-name: package release
+name: Release All Platforms
 
 on:
 
