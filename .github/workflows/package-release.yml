@@ -3,34 +3,34 @@ name: package release
 on:
 
   workflow_dispatch:
-    # inputs:
-    
-    #   tag:
-    #     description: 'Enter a tag for this release'
-    #     required: true
-    #     type: string
-        
-      # Release_note:
-      #   description: 'Enter your release notes'
-      #   required: true
-      #   type: string
+  # inputs:
+
+  #   tag:
+  #     description: 'Enter a tag for this release'
+  #     required: true
+  #     type: string
+
+  # Release_note:
+  #   description: 'Enter your release notes'
+  #   required: true
+  #   type: string
 
 jobs:
   version:
     runs-on: windows-latest
     permissions:
-      contents: read 
+      contents: read
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
     steps:
       - uses: actions/checkout@v4.1.5
-      
+
       - name: Extract Version from pubspec.yaml
         id: extract_version
         run: |
-           $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
-           echo version=$VERSION >> $env:GITHUB_OUTPUT
-           
+          $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
+          echo version=$VERSION >> $env:GITHUB_OUTPUT
+
   Build-windows:
     runs-on: windows-latest
     permissions:
@@ -135,9 +135,79 @@ jobs:
           path: ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.*
           retention-days: 1
 
+  Build-macos:
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    needs: version
+    steps:
+
+      - name: Checkout the code
+        uses: actions/checkout@v4.1.5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install npm dependencies
+        run: npm install -g appdmg
+
+      - name: Install flutter
+        uses: subosito/flutter-action@v2.14.0
+        with:
+          flutter-version: "3.22.0"
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+
+      - name: Enable linux-desktop for flutter
+        run: flutter config --enable-macos-desktop && export PATH="$PATH":"$HOME/.pub-cache/bin"
+
+      - name: Copy MacOS related files
+        run: |
+          cp macos/Runner/Release.entitlements .
+          cp -r macos/Runner/Assets.xcassets .
+          cp -r macos/packaging .
+
+      - name: Recreate MacOS directory
+        run: |
+          rm -rf macos
+          flutter create --platform macos .
+
+      - name: Replace MacOS files
+        run: |
+          mv packaging macos/
+          cp -f Release.entitlements macos/Runner/
+          cp -rf Assets.xcassets macos/Runner/
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Install flutter_distributor
+        run: dart pub global activate flutter_distributor
+
+      - name: Start the build process
+        run: flutter_distributor package --platform macos --targets dmg
+
+      - name: Debug
+        run: ls dist/${{ needs.version.outputs.version }}
+
+      - name: Rename dmg File
+        run: mv dist/${{ needs.version.outputs.version }}/brisk-${{ needs.version.outputs.version }}+${{ needs.version.outputs.version }}-macos.dmg ./Brisk-${{ needs.version.outputs.version }}-macos-x64.dmg
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: brisk-dmg
+          path: Brisk-${{ needs.version.outputs.version }}-macos-x64.dmg
+          retention-days: 1
+
+
   Release:
     runs-on: ubuntu-latest
-    needs: [Build-Linux, Build-windows, version]
+    needs: [Build-Linux, Build-windows, Build-macos, version]
     permissions:
       contents: write
     steps:
@@ -155,6 +225,11 @@ jobs:
         with:
           name: brisk-windows
 
+      - name: Download macos package
+        uses: actions/download-artifact@v4.1.0
+        with:
+          name: brisk-dmg
+
       - name: Release the changes
         uses: softprops/action-gh-release@v2.0.5
         env:
@@ -164,9 +239,8 @@ jobs:
           body_path: ./.github/release.md
           #body: ${{ inputs.Release_note }}
           files: |
-           ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.rpm
-           ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.deb
-           ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz
-           ./Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
-      
- 
+            ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.rpm
+            ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.deb
+            ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz
+            ./Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
+            ./Brisk-${{ needs.version.outputs.version }}-macos-x64.dmg
