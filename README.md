@@ -27,7 +27,7 @@ MacOS builds are unfortunately not available. If you're interested in this proje
 - Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
 
 ## :gear: Brisk's Download Engine
-Brisk Download Manager is powered by a high-performance engine that delivers the highest possible download speed across the entire duration of the download.
+Brisk is powered by a high-performance engine that delivers the highest possible download speed across the entire duration of the download.
 
 The key features of the engine include:
 - **Dynamic Connection Spawn:** Downloads begin with a single connection, with more connections dynamically added on the fly.
