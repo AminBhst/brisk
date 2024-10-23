@@ -226,10 +226,10 @@ jobs:
         with:
           name: brisk-windows
 
-      - name: Download macos package
-        uses: actions/download-artifact@v4.1.0
-        with:
-          name: brisk-dmg
+#      - name: Download macos package
+#        uses: actions/download-artifact@v4.1.0
+#        with:
+#          name: brisk-dmg
 
       - name: Release the changes
         uses: softprops/action-gh-release@v2.0.5
