@@ -7,7 +7,7 @@
 <p align="center">Ultra-fast, modern download manager for desktop</pal>
 </p>
 
-## :package: Download
+## :package: Installation
 
 Installation files for Windows and Linux are available at [Github Releases](https://github.com/AminBhst/brisk/releases/).
 
