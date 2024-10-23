@@ -4,20 +4,39 @@
 [![platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20MacOS-blue)]()
 <p align="center">
 <img width="100" src="assets/icons/logo.png" alt="Brisk">
-<p align="center"> Fast, multithreaded, cross-platform download manager</pal>
+<p align="center">Ultra-fast, modern download manager for desktop</pal>
 </p>
 
-## Download
+## :package: Download
 
-Installation files for Windows and Linux are available
-at [Github Releases](https://github.com/AminBhst/brisk/releases/).
+Installation files for Windows and Linux are available at [Github Releases](https://github.com/AminBhst/brisk/releases/).
 
-Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin)
+If you encountered a "Windows Protected your PC" error, click `more info -> run anyway`
 
-## Browser Integration
+For Linux, make sure to read the [Linux Prerequisites](#key-linux-prerequisites).
+
+Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin) (v1.4.6).
+
+MacOS builds are unfortunately not available. If you're interested in this project and would like to contribute by providing MacOS builds for each release, please open an issue to let me know.
+
+## :rocket: Key Features
+
+- [Powerful Download Engine](#gear-brisks-download-engine)
+- [Browser Integration](#globe_with_meridians-browser-integration)
+- Download Queues
+- Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
+
+## :gear: Brisk's Download Engine
+Brisk Download Manager is powered by a high-performance engine that delivers the highest possible download speed across the entire duration of the download.
+
+The key features of the engine include:
+- **Dynamic Connection Spawn:** Downloads begin with a single connection, with more connections dynamically added on the fly.
+- **Dynamic Connection Reuse:** Completed connections are reassigned to assist other active connections, maintaining the maximum number of concurrent connections to maintaining the highest possible download speed.
+- **Automatic connection reset:** Hanging connections will be reset automatically.
+
+## :globe_with_meridians: Browser Integration
 Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-extension) that allows for capturing downloads from the browser and adding them directly into the app.
 
-### Installing The Browser Extension
 #### Chrome / Edge / Opera
 [link-chrome]: https://github.com/AminBhst/brisk-browser-extension/releases/latest 'Version published on Chrome Web Store'
 
@@ -27,46 +46,36 @@ Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-e
 [link-firefox]: https://addons.mozilla.org/en-US/firefox/addon/brisk/
 
 [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox.svg" width="48" alt="Firefox" valign="middle">][link-firefox]
-## Linux Prerequisites
 
-### keybinder-3
-- Debian/Ubuntu : ```libkeybinder-3.0-0```
-- Fedora/RHEL/CentOS : ```keybinder3```
-- Arch Linux : ```libkeybinder3```
-
-### appindicator3-0.1
-- Debian/Ubuntu : ```libayatana-appindicator3-dev```
-- Fedora/RHEL/CentOS : ```libayatana-appindicator-gtk3```
-- Arch Linux : ```libappindicator-gtk3```
-
-## Features
-
-- Browser Integration
-- Multi-segment file downloading
-- Download Queues
-- Smart connection reset
-- Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
-
-## Demo With Browser Integration
+## :film_projector: Demo With Browser Integration
 
 <img align="center" width="850" src="assets/Brisk-Demo.gif">
 
-## Build From Source
+## :key: Linux Prerequisites
 
-Download the Flutter SDK (Recommended version 3.16.9) and set the path variable
+  - **keybinder-3**
+     - Debian/Ubuntu : ```libkeybinder-3.0-0```
+     - Fedora/RHEL/CentOS : ```keybinder3```
+     - Arch Linux : ```libkeybinder3```
+
+  - **appindicator3-0.1**
+     - Debian/Ubuntu : ```libayatana-appindicator3-dev```
+     - Fedora/RHEL/CentOS : ```libayatana-appindicator-gtk3```
+     - Arch Linux : ```libappindicator-gtk3```
+
+
+## :hammer_and_wrench: Build From Source
+
+Download the Flutter SDK v2.22.0 and set the path variable
 
 ```bash
 flutter build macos|windows|linux
 ```
 
-## Features to come
+## :heart: Credits and Contributors
+Contributions are welcome and appreciated.
 
-- Dynamic file segmentation for highest download speed
-- Download speed limiter
-- Download Scheduling
-
-If you have a feature request, please open an issue and explain it in details.
-
-## Credits
-- GitHub Actions : [AliML111](https://github.com/AliML111)
-- MacOS support : [Norman-w](https://github.com/Norman-w)
+### :trophy: Special thanks to:
+- [AliML111](https://github.com/AliML111)
+- [Zorin FOSS](https://github.com/ZorinFoss)
+- [Norman Wang](https://github.com/Norman-w)
