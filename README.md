@@ -15,7 +15,7 @@ If you encountered a "Windows Protected your PC" error, click `more info -> run 
 
 For Linux, make sure to read the [Linux Prerequisites](#key-linux-prerequisites).
 
-Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin) (v1.4.6).
+Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin)
 
 MacOS builds are unfortunately not available. If you're interested in this project and would like to contribute by providing MacOS builds for each release, please open an issue to let me know.
 
