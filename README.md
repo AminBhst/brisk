@@ -1,7 +1,7 @@
 [![license](https://img.shields.io/github/license/AminBhst/brisk)](https://github.com/AminBhst/brisk/blob/main/LICENSE)
 [![release](https://img.shields.io/github/v/release/AminBhst/brisk)](https://github.com/AminBhst/brisk/releases)
 ![Downloads](https://img.shields.io/github/downloads/AminBhst/brisk/total.svg)
-[![platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20MacOS-blue)]()
+![Discord](https://img.shields.io/discord/1298990692000989225)
 <p align="center">
 <img width="100" src="assets/icons/logo.png" alt="Brisk">
 <p align="center">Ultra-fast, modern download manager for desktop</pal>
