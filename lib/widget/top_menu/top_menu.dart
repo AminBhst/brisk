@@ -166,6 +166,19 @@ class _TopMenuState extends State<TopMenu> {
             onHoverColor: topMenuTheme.extensionColor.hoverBackgroundColor,
             textColor: topMenuTheme.extensionColor.textColor,
           ),
+          TopMenuButton(
+            title: 'Community',
+            fontSize: 12,
+            icon: Icon(
+              Icons.people_alt,
+              color: topMenuTheme.extensionColor.iconColor,
+            ),
+            onTap: () => launchUrlString(
+              'https://github.com/AminBhst/brisk-browser-extension',
+            ),
+            onHoverColor: topMenuTheme.extensionColor.hoverBackgroundColor,
+            textColor: topMenuTheme.extensionColor.textColor,
+          ),
           SizedBox(width: 5),
           // Container(color: Colors.white, width: 1, height: 40),
           // TopMenuButton(

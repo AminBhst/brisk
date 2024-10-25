@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:isolate';
 
-import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/util/settings_cache.dart';
+import 'package:brisk_engine/brisk_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +10,6 @@ import 'package:provider/provider.dart';
 import '../constants/file_duplication_behaviour.dart';
 import '../db/hive_util.dart';
 import '../model/download_item.dart';
-import '../model/file_metadata.dart';
-import '../model/isolate/isolate_args_pair.dart';
 import '../provider/download_request_provider.dart';
 import '../widget/base/confirmation_dialog.dart';
 import '../widget/base/error_dialog.dart';
@@ -43,31 +41,28 @@ class DownloadAdditionUiUtil {
       return;
     }
     final item = DownloadItem.fromUrl(url);
-    _spawnFileInfoRetrieverIsolate(item).then((rPort) {
+    HttpDownloadEngine.requestFileInfo(url).then((fileInfo) {
       context.loaderOverlay.show();
-      retrieveFileInfo(rPort).then((fileInfo) {
-        fileInfo.url = url;
-        context.loaderOverlay.hide();
-        if (updateDialog) {
-          handleUpdateDownloadUrl(fileInfo, context, downloadId!);
-        } else {
-          addDownload(item, fileInfo, context, additionalPop);
-        }
-      }).onError(
-        (e, s) {
-          /// TODO Add log files
-          print(e);
-          _cancelRequest(context);
-          showDialog(
-            context: context,
-            builder: (_) => const ErrorDialog(
-              textHeight: 0,
-              title: "Could not retrieve file information!",
-            ),
-          );
-        },
-      );
-    });
+      context.loaderOverlay.hide();
+      if (updateDialog) {
+        handleUpdateDownloadUrl(fileInfo!, context, downloadId!);
+      } else {
+        addDownload(item, fileInfo!, context, additionalPop);
+      }
+    }).onError(
+      (e, s) {
+        /// TODO Add log files
+        print(e);
+        _cancelRequest(context);
+        showDialog(
+          context: context,
+          builder: (_) => const ErrorDialog(
+            textHeight: 0,
+            title: "Could not retrieve file information!",
+          ),
+        );
+      },
+    );
   }
 
   static void addDownload(
@@ -80,7 +75,7 @@ class DownloadAdditionUiUtil {
     item.contentLength = fileInfo.contentLength;
     item.fileName = fileInfo.fileName;
     item.fileType = FileUtil.detectFileType(fileInfo.fileName).name;
-    // final fileExists = FileUtil.checkFileDuplication(item.fileName);
+// final fileExists = FileUtil.checkFileDuplication(item.fileName);
     final dlDuplication = checkDownloadDuplication(item.fileName);
     if (dlDuplication) {
       final behaviour = SettingsCache.fileDuplicationBehaviour;
@@ -148,20 +143,20 @@ class DownloadAdditionUiUtil {
     Navigator.of(context).pop();
   }
 
-  static Future<ReceivePort> _spawnFileInfoRetrieverIsolate(
-      DownloadItem item) async {
-    final ReceivePort receivePort = ReceivePort();
-    fileInfoExtractorIsolate =
-        await Isolate.spawn<IsolateArgsPair<DownloadItem>>(
-      requestFileInfoIsolate,
-      IsolateArgsPair(receivePort.sendPort, item),
-      paused: true,
-    );
-    fileInfoExtractorIsolate?.addErrorListener(receivePort.sendPort);
-    fileInfoExtractorIsolate
-        ?.resume(fileInfoExtractorIsolate!.pauseCapability!);
-    return receivePort;
-  }
+  // static Future<ReceivePort> _spawnFileInfoRetrieverIsolate(
+  //     DownloadItem item) async {
+  //   final ReceivePort receivePort = ReceivePort();
+  //   fileInfoExtractorIsolate =
+  //       await Isolate.spawn<IsolateArgsPair<DownloadItem>>(
+  //     requestFileInfoIsolate,
+  //     IsolateArgsPair(receivePort.sendPort, item),
+  //     paused: true,
+  //   );
+  //   fileInfoExtractorIsolate?.addErrorListener(receivePort.sendPort);
+  //   fileInfoExtractorIsolate
+  //       ?.resume(fileInfoExtractorIsolate!.pauseCapability!);
+  //   return receivePort;
+  // }
 
   static void _cancelRequest(BuildContext context) {
     fileInfoExtractorIsolate?.kill();
@@ -255,7 +250,7 @@ class DownloadAdditionUiUtil {
   }
 }
 
-Future<void> requestFileInfoIsolate(IsolateArgsPair args) async {
-  final result = await requestFileInfo(args.obj);
-  args.sendPort.send(result);
-}
+// Future<void> requestFileInfoIsolate(IsolateArgsPair args) async {
+//   final result = await requestFileInfo(args.obj);
+//   args.sendPort.send(result);
+// }

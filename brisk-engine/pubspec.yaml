@@ -1,0 +1,20 @@
+name: brisk_engine
+description: A starting point for Dart libraries or applications.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.4.0
+
+# Add regular dependencies here.
+dependencies:
+  stream_channel: ^2.1.2
+  path: ^1.8.0
+  path_provider: ^2.1.4
+  dartx: ^1.2.0
+  http: ^1.2.2
+  uuid: ^4.5.1
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.24.0
