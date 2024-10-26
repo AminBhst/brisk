@@ -36,17 +36,8 @@ The key features of the engine include:
 - **Automatic connection reset:** Hanging connections will be reset automatically.
 
 ## :globe_with_meridians: Browser Integration
-Brisk supports [Browser Integration](https://github.com/AminBhst/brisk-browser-extension) that allows for capturing downloads from the browser and adding them directly into the app.
+Brisk supports browser integration that allows for capturing downloads from the browser and adding them directly into the app. Please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension) for installation.
 
-#### Chrome / Edge / Opera
-[link-chrome]: https://github.com/AminBhst/brisk-browser-extension/releases/latest 'Version published on Chrome Web Store'
-
-[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" width="48" alt="Chrome" valign="middle">][link-chrome] [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/edge/edge.svg" width="48" alt="Edge" valign="middle">][link-chrome] [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/opera/opera.svg" width="48" alt="Opera" valign="middle">][link-chrome]
-
-#### Firefox
-[link-firefox]: https://addons.mozilla.org/en-US/firefox/addon/brisk/
-
-[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox.svg" width="48" alt="Firefox" valign="middle">][link-firefox]
 
 ## :film_projector: Demo With Browser Integration
 
