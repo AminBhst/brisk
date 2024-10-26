@@ -36,7 +36,11 @@ The key features of the engine include:
 - **Automatic connection reset:** Hanging connections will be reset automatically.
 
 ## :globe_with_meridians: Browser Integration
-Brisk supports browser integration that allows for capturing downloads from the browser and adding them directly into the app. Please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension) for installation.
+The features of the browser extension include:
+- Capturing download requests from the browser and directly adding them to Brisk
+- Extracting all download links from a selected text and adding them to Brisk all at once
+
+Please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension) for installation.
 
 
 ## :film_projector: Demo With Browser Integration
