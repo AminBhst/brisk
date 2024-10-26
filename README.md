@@ -76,7 +76,7 @@ Join our [discord server](https://discord.gg/g8fwgZ84) for dedicated spaces wher
 ## :heart: Credits and Contributors
 Contributions are welcome and appreciated.
 
-### :trophy: Special thanks to all contributors:
+#### :trophy: Special thanks to all contributors:
 - [AliML111](https://github.com/AliML111)
 - [Zorin FOSS](https://github.com/ZorinFoss)
 - [Norman Wang](https://github.com/Norman-w)
