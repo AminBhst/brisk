@@ -1,5 +1,5 @@
 name: brisk
-description: Fast, cross-platform, cross platform download manager
+description: Ultra-fast, modern download manager for desktop 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
