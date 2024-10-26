@@ -70,6 +70,9 @@ Download the Flutter SDK v2.22.0 and set the path variable
 flutter build macos|windows|linux
 ```
 
+## :busts_in_silhouette: Community
+Join our [discord server](https://discord.gg/g8fwgZ84) for dedicated spaces where both developers and regular users can ask questions, get support, and connect. We’d love to have you as part of the community!
+
 ## :heart: Credits and Contributors
 Contributions are welcome and appreciated.
 
