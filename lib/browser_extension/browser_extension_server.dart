@@ -44,12 +44,17 @@ class BrowserExtensionServer {
   static Future<void> handleExtensionRequests(server, context) async {
     await for (HttpRequest request in server) {
       await for (final body in request) {
+        addCORSHeaders(request);
         final jsonBody = jsonDecode(String.fromCharCodes(body));
         if (_windowToFrontEnabled) {
           await windowManager.show();
           WindowToFront.activate();
         }
-        await _handleDownloadAddition(jsonBody, context, request);
+        try {
+          await _handleDownloadAddition(jsonBody, context, request);
+        } catch (e) {
+          print(e);
+        }
       }
     }
   }
@@ -63,9 +68,13 @@ class BrowserExtensionServer {
     if (type == "multi") {
       _handleMultiDownloadRequest(jsonBody, context, request);
     }
-    addCORSHeaders(request);
     await request.response.flush();
     await request.response.close();
+  }
+
+  static void addCORSHeaders(HttpRequest httpRequest) {
+    httpRequest.response.headers.add("Access-Control-Allow-Origin", "*");
+    httpRequest.response.headers.add("Access-Control-Allow-Headers", "*");
   }
 
   static void _handleMultiDownloadRequest(jsonBody, context, request) {
@@ -120,11 +129,6 @@ class BrowserExtensionServer {
       jsonBody['data']['url'],
     );
     request.response.statusCode = HttpStatus.ok;
-  }
-
-  static void addCORSHeaders(HttpRequest httpRequest) {
-    httpRequest.response.headers.add("Access-Control-Allow-Origin", "*");
-    httpRequest.response.headers.add("Access-Control-Allow-Headers", "*");
   }
 
   static int get _extensionPort => int.parse(
