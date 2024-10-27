@@ -63,6 +63,7 @@ class BrowserExtensionServer {
     if (type == "multi") {
       _handleMultiDownloadRequest(jsonBody, context, request);
     }
+    addCORSHeaders(request);
     await request.response.flush();
     await request.response.close();
   }
@@ -118,7 +119,6 @@ class BrowserExtensionServer {
       context,
       jsonBody['data']['url'],
     );
-    addCORSHeaders(request);
     request.response.statusCode = HttpStatus.ok;
   }
 
