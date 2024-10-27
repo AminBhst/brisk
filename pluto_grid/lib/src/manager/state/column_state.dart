@@ -700,8 +700,7 @@ mixin ColumnState implements IPlutoGridState {
     if (!unitFactors.containsKey(unit)) {
       throw FormatException('Unknown unit: $unit');
     }
-    final val =  (value * unitFactors[unit]!).round();
-    return val;
+    return (value * unitFactors[unit]!).round();
   }
 
   @override
