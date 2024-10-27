@@ -656,10 +656,16 @@ mixin ColumnState implements IPlutoGridState {
 
     if (sortOnlyEvent) return;
 
-    compare(a, b) => column.type.compare(
+    var compare = (a, b) => column.type.compare(
           a.cells[column.field]!.valueForSorting,
           b.cells[column.field]!.valueForSorting,
         );
+    if (column.field == "size") {
+      compare = (a, b) => PlutoColumnType.number().compare(
+            readableSizeToBytes(a.cells[column.field]!.valueForSorting),
+            readableSizeToBytes(b.cells[column.field]!.valueForSorting),
+          );
+    }
 
     if (enabledRowGroups) {
       sortRowGroup(column: column, compare: compare);
@@ -670,6 +676,34 @@ mixin ColumnState implements IPlutoGridState {
     notifyListeners(notify, sortAscending.hashCode);
   }
 
+  int readableSizeToBytes(String size) {
+    final regex = RegExp(
+      r'^(\d+(?:\.\d+)?)\s*([KMGTP]?B)$',
+      caseSensitive: false,
+    );
+
+    final match = regex.firstMatch(size.trim());
+    if (match == null) {
+      throw const FormatException('Invalid size format');
+    }
+    final double value = double.parse(match.group(1)!);
+    final String unit = match.group(2)!.toUpperCase();
+    const unitFactors = {
+      'B': 1,
+      'KB': 1024,
+      'MB': 1024 * 1024,
+      'GB': 1024 * 1024 * 1024,
+      'TB': 1024 * 1024 * 1024 * 1024,
+      'PB': 1024 * 1024 * 1024 * 1024 * 1024,
+    };
+
+    if (!unitFactors.containsKey(unit)) {
+      throw FormatException('Unknown unit: $unit');
+    }
+    final val =  (value * unitFactors[unit]!).round();
+    return val;
+  }
+
   @override
   void sortDescending(PlutoColumn column, {bool notify = true}) {
     _updateBeforeColumnSort();
@@ -678,10 +712,16 @@ mixin ColumnState implements IPlutoGridState {
 
     if (sortOnlyEvent) return;
 
-    compare(b, a) => column.type.compare(
-          a.cells[column.field]!.valueForSorting,
-          b.cells[column.field]!.valueForSorting,
-        );
+    var compare = (b, a) => column.type.compare(
+      a.cells[column.field]!.valueForSorting,
+      b.cells[column.field]!.valueForSorting,
+    );
+    if (column.field == "size") {
+      compare = (b, a) => PlutoColumnType.number().compare(
+        readableSizeToBytes(a.cells[column.field]!.valueForSorting),
+        readableSizeToBytes(b.cells[column.field]!.valueForSorting),
+      );
+    }
 
     if (enabledRowGroups) {
       sortRowGroup(column: column, compare: compare);
