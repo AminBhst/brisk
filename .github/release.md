@@ -8,6 +8,7 @@
 
 - Fixed "Failed to retrieve file information" for servers that reject HEAD requests
 - Fixed browser integration bugs
+- Fixed sorting by file size not working correctly caused by library limitations
 - Released a new browser extension version (v1.2.3) with bug fixes for Chrome
 
 ## :pencil: Note
