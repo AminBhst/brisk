@@ -147,7 +147,9 @@ Future<FileInfo?> sendFileInfoRequest(
         downloadItem.contentLength,
       );
       completer.complete(data);
-      client.close();
+      if (useGet) {
+        client.close();
+      }
     }).onError((e) {
       if (!ignoreException) {
         completer.completeError(e);
