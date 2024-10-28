@@ -16,17 +16,14 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:window_to_front/window_to_front.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:yaml/yaml.dart';
 
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static late String extensionVersion;
+  static const String extensionVersion = "1.1.3";
 
   static void setup(BuildContext context) async {
-    await setExtensionVersion();
     if (_isServerRunning) return;
-    print(extensionVersion);
 
     final port = _extensionPort;
     try {
@@ -107,12 +104,6 @@ class BrowserExtensionServer {
   static void addCORSHeaders(HttpRequest httpRequest) {
     httpRequest.response.headers.add("Access-Control-Allow-Origin", "*");
     httpRequest.response.headers.add("Access-Control-Allow-Headers", "*");
-  }
-
-  static Future<void> setExtensionVersion() async {
-    final pubspec = File('pubspec.yaml').readAsStringSync();
-    final yamlMap = loadYaml(pubspec) as YamlMap;
-    extensionVersion = yamlMap["extension_version"];
   }
 
   static void _handleMultiDownloadRequest(jsonBody, context, request) {
