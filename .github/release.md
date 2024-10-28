@@ -3,6 +3,7 @@
 ## :sparkles: Improved UX
 
 - **New UI for multi download addition dialog:** The dialog that appears when brisk captures multiple download requests from the extension (when "download selected links with Brisk" is clicked) now has an improved UI. You'll be able to sort by file name and size and also delete the selected download items using the delete key on your keyboard.
+- **Custom Save Path**: In that same dialog, you'll be able to select a custom save path for all files in that list.
 
 ## :hammer_and_wrench: Bug Fixes and Improvements
 
