@@ -1,12 +1,17 @@
 import 'dart:async';
 
+import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
+import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class PlutoGridUtil {
   static PlutoGridStateManager? _stateManager;
+  static PlutoGridStateManager? _multiDownloadAdditionStateManager;
 
   static Timer? cacheClearTimer;
   static final List<PlutoRow> cachedRows = [];
@@ -40,6 +45,46 @@ class PlutoGridUtil {
     );
   }
 
+  static Row fileNameColumnRenderer(
+      PlutoColumnRendererContext rendererContext) {
+    final fileName = rendererContext.row.cells["file_name"]!.value;
+    final fileType = FileUtil.detectFileType(fileName);
+    return Row(
+      children: [
+        SizedBox(
+          width: resolveIconSize(fileType),
+          height: resolveIconSize(fileType),
+          child: SvgPicture.asset(
+            FileUtil.resolveFileTypeIconPath(fileType.name),
+            colorFilter: ColorFilter.mode(
+              FileUtil.resolveFileTypeIconColor(fileType.name),
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+        const SizedBox(width: 5),
+        Expanded(
+          child: Text(
+            rendererContext.row.cells[rendererContext.column.field]!.value
+                .toString(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+
+  static double resolveIconSize(DLFileType fileType) {
+    if (fileType == DLFileType.documents || fileType == DLFileType.program)
+      return 25;
+    else if (fileType == DLFileType.music)
+      return 28;
+    else
+      return 30;
+  }
+
   static void removeCachedRow(int id) {
     cachedRows.removeWhere((row) => row.cells["id"]?.value == id);
   }
@@ -60,6 +105,12 @@ class PlutoGridUtil {
 
   static void setStateManager(PlutoGridStateManager plutoStateManager) {
     _stateManager = plutoStateManager;
+  }
+
+  static void setMultiAdditionStateManager(
+    PlutoGridStateManager plutoStateManager,
+  ) {
+    _multiDownloadAdditionStateManager = plutoStateManager;
   }
 
   static void setFilter(String cellName, String filterValue,
@@ -108,4 +159,7 @@ class PlutoGridUtil {
   }
 
   static PlutoGridStateManager? get plutoStateManager => _stateManager;
+
+  static PlutoGridStateManager? get multiDownloadAdditionStateManager =>
+      _multiDownloadAdditionStateManager;
 }

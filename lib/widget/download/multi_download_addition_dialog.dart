@@ -4,14 +4,19 @@ import 'package:brisk/model/download_item.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/model/file_metadata.dart';
+import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/readability_util.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
+import 'package:brisk/widget/download/multi_download_addition_grid.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as path;
 
 import '../../provider/download_request_provider.dart';
 import '../../util/file_util.dart';
@@ -19,6 +24,7 @@ import '../../util/file_util.dart';
 class MultiDownloadAdditionDialog extends StatefulWidget {
   List<FileInfo> fileInfos = [];
   late DownloadRequestProvider provider;
+  String? customSavePath;
 
   MultiDownloadAdditionDialog(this.fileInfos);
 
@@ -36,62 +42,107 @@ class _MultiDownloadAdditionDialogState
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     final size = MediaQuery.of(context).size;
     return ClosableWindow(
-        disableCloseButton: true,
-        height: 600,
-        width: 700,
-        backgroundColor: theme.backgroundColor,
-        content: Container(
-          height: resolveMainContainerHeight(size),
-          width: 600,
-          child: Column(
-            children: [
-              Container(
-                width: 600,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Color.fromRGBO(220, 220, 220, 0.2)),
-                ),
-                height: resolveScrollViewHeight(size),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      ...widget.fileInfos.map((e) => getListTileItem(e, size))
-                    ],
+      disableCloseButton: true,
+      height: 600,
+      width: 700,
+      backgroundColor: theme.backgroundColor,
+      content: Container(
+        height: resolveMainContainerHeight(size),
+        width: 600,
+        child: Column(
+          children: [
+            Container(
+              width: 600,
+              decoration: BoxDecoration(
+                // borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Color.fromRGBO(220, 220, 220, 0.2)),
+              ),
+              height: resolveScrollViewHeight(size),
+              child: SingleChildScrollView(
+                child: Container(
+                  height: resolveMainContainerHeight(size),
+                  width: 600,
+                  child: MultiDownloadAdditionGrid(
+                    onDeleteKeyPressed: onDeleteKeyPressed,
+                    files: widget.fileInfos,
                   ),
                 ),
               ),
-              Spacer(),
-              Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RoundedOutlinedButton(
-                      width: 100,
-                      onPressed: () => Navigator.of(context).pop(),
-                      borderColor: Colors.red,
-                      text: "Cancel",
-                      textColor: Colors.red,
-                    ),
-                    const SizedBox(width: 10),
-                    RoundedOutlinedButton(
-                      width: 100,
-                      onPressed: onAddPressed,
-                      borderColor: Colors.green,
-                      text: "Add",
-                      textColor: Colors.green,
-                    ),
-                  ])
-            ],
-          ),
-        ));
+            ),
+            Spacer(),
+            Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RoundedOutlinedButton(
+                    width: 100,
+                    onPressed: () => Navigator.of(context).pop(),
+                    borderColor: Colors.red,
+                    text: "Cancel",
+                    textColor: Colors.red,
+                  ),
+                  const SizedBox(width: 10),
+                  RoundedOutlinedButton(
+                    width: 170,
+                    onPressed: onSelectSavePathPressed,
+                    borderColor: Colors.blueGrey,
+                    text: "Select Save Path",
+                    textColor: Colors.blueGrey,
+                  ),
+                  const SizedBox(width: 10),
+                  RoundedOutlinedButton(
+                    width: 100,
+                    onPressed: onAddPressed,
+                    borderColor: Colors.green,
+                    text: "Add",
+                    textColor: Colors.green,
+                  ),
+                ])
+          ],
+        ),
+      ),
+    );
+  }
+
+  void onDeleteKeyPressed() {
+    setState(() {
+      PlutoGridUtil.multiDownloadAdditionStateManager!.checkedRows
+          .forEach((row) {
+        final fileName = row.cells["file_name"]!.value;
+        widget.fileInfos.removeWhere((f) => f.fileName == fileName);
+      });
+    });
+  }
+
+  List<FileInfo> getOrderedFileInfos() {
+    final fileNamesOrdered = PlutoGridUtil
+        .multiDownloadAdditionStateManager!.rows
+        .map((r) => r.cells["file_name"]!.value)
+        .toList();
+    List<FileInfo> fileInfos = [];
+    for (final fileName in fileNamesOrdered) {
+      fileInfos.add(
+        widget.fileInfos.where((f) => f.fileName == fileName).first,
+      );
+    }
+    return fileInfos;
+  }
+
+  void onSelectSavePathPressed() async {
+    widget.customSavePath = await FilePicker.platform.getDirectoryPath(
+      initialDirectory: SettingsCache.saveDir.path,
+    );
   }
 
   void onAddPressed() async {
     final downloadItems =
-        widget.fileInfos.map((e) => DownloadItem.fromFileInfo(e)).toList();
+        getOrderedFileInfos().map((e) => DownloadItem.fromFileInfo(e)).toList();
 
     await updateDuplicateUrls(downloadItems);
     for (final item in downloadItems.toSet()) {
+      if (widget.customSavePath != null) {
+        item.filePath = path.join(widget.customSavePath!, item.fileName);
+      }
       await HiveUtil.instance.addDownloadItem(item);
       widget.provider.insertRows([
         DownloadProgressMessage(
