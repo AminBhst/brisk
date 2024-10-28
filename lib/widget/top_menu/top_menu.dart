@@ -3,17 +3,13 @@ import 'dart:io';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/db/hive_util.dart';
-import 'package:brisk/download_engine/download_status.dart';
-import 'package:brisk/download_engine/segment/segment.dart';
-import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/widget/top_menu/top_menu_util.dart';
-import 'package:path/path.dart';
-import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
@@ -162,6 +158,24 @@ class _TopMenuState extends State<TopMenu> {
             ),
             onTap: () => launchUrlString(
               'https://github.com/AminBhst/brisk-browser-extension',
+            ),
+            onHoverColor: topMenuTheme.extensionColor.hoverBackgroundColor,
+            textColor: topMenuTheme.extensionColor.textColor,
+          ),
+          TopMenuButton(
+            title: 'Discord',
+            fontSize: 11.5,
+            icon: SvgPicture.asset(
+              "assets/icons/discord.svg",
+              height: 30,
+              width: 30,
+              colorFilter: ColorFilter.mode(
+                Color.fromRGBO(96, 100, 244,1),
+                BlendMode.srcIn,
+              ),
+            ),
+            onTap: () => launchUrlString(
+              'https://discord.gg/g8fwgZ84',
             ),
             onHoverColor: topMenuTheme.extensionColor.hoverBackgroundColor,
             textColor: topMenuTheme.extensionColor.textColor,
