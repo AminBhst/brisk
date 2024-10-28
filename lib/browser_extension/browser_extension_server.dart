@@ -8,19 +8,25 @@ import 'package:brisk/model/download_item.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/parse_util.dart';
+import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/download/multi_download_addition_dialog.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:window_to_front/window_to_front.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:yaml/yaml.dart';
 
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
+  static late String extensionVersion;
 
   static void setup(BuildContext context) async {
+    await setExtensionVersion();
     if (_isServerRunning) return;
+    print(extensionVersion);
 
     final port = _extensionPort;
     try {
@@ -28,7 +34,6 @@ class BrowserExtensionServer {
       final server = await HttpServer.bind(InternetAddress.loopbackIPv4, port);
       handleExtensionRequests(server, context);
     } catch (e) {
-      print("ERROR $e");
       if (e.toString().contains("Invalid port")) {
         _showInvalidPortError(context, port.toString());
         return;
@@ -45,18 +50,42 @@ class BrowserExtensionServer {
     await for (HttpRequest request in server) {
       await for (final body in request) {
         addCORSHeaders(request);
-        final jsonBody = jsonDecode(String.fromCharCodes(body));
-        if (_windowToFrontEnabled) {
-          await windowManager.show();
-          WindowToFront.activate();
-        }
         try {
+          final jsonBody = jsonDecode(String.fromCharCodes(body));
+          final targetVersion = jsonBody["extensionVersion"];
+          print(extensionVersion);
+          print(targetVersion);
+          if (targetVersion == null ||
+              isNewVersionAvailable(extensionVersion, targetVersion)) {
+            showNewBrowserExtensionVersion(context);
+            await flushAndCloseRequest(request);
+            continue;
+          }
+          if (_windowToFrontEnabled) {
+            await windowManager.show();
+            WindowToFront.activate();
+          }
           await _handleDownloadAddition(jsonBody, context, request);
         } catch (e) {
           print(e);
         }
       }
+      await flushAndCloseRequest(request);
     }
+  }
+
+  static void showNewBrowserExtensionVersion(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmationDialog(
+        title:
+            "A new version of Brisk browser extension is available. The extension will not function until you update to the latest version."
+            "\nDo you want to be redirected to the extension download page?",
+        onConfirmPressed: () => launchUrlString(
+          "https://github.com/AminBhst/brisk-browser-extension/releases/latest",
+        ),
+      ),
+    );
   }
 
   static Future<void> _handleDownloadAddition(
@@ -68,6 +97,9 @@ class BrowserExtensionServer {
     if (type == "multi") {
       _handleMultiDownloadRequest(jsonBody, context, request);
     }
+  }
+
+  static Future<void> flushAndCloseRequest(HttpRequest request) async {
     await request.response.flush();
     await request.response.close();
   }
@@ -75,6 +107,12 @@ class BrowserExtensionServer {
   static void addCORSHeaders(HttpRequest httpRequest) {
     httpRequest.response.headers.add("Access-Control-Allow-Origin", "*");
     httpRequest.response.headers.add("Access-Control-Allow-Headers", "*");
+  }
+
+  static Future<void> setExtensionVersion() async {
+    final pubspec = File('pubspec.yaml').readAsStringSync();
+    final yamlMap = loadYaml(pubspec) as YamlMap;
+    extensionVersion = yamlMap["extension_version"];
   }
 
   static void _handleMultiDownloadRequest(jsonBody, context, request) {
@@ -87,7 +125,10 @@ class BrowserExtensionServer {
     _cancelClicked = false;
     _showLoadingDialog(context);
     requestFileInfoBatch(downloadItems.toList()).then((fileInfos) {
-      if (_cancelClicked || fileInfos == null || fileInfos.isEmpty) {
+      if (_cancelClicked) {
+        return;
+      }
+      if (fileInfos == null || fileInfos.isEmpty) {
         return onFileInfoRetrievalError(context);
       }
       Navigator.of(context).pop();
@@ -101,7 +142,6 @@ class BrowserExtensionServer {
 
   /// TODO add log file
   static onFileInfoRetrievalError(context) {
-    print("ER");
     Navigator.of(context).pop();
     showDialog(
       context: context,
