@@ -123,34 +123,40 @@ Future<FileInfo?> sendFileInfoRequest(
         .asStream()
         .timeout(Duration(seconds: 10))
         .listen((streamedResponse) {
-      final headers = streamedResponse.headers;
-      var filename = extractFilenameFromHeaders(headers);
-      if (filename != null) {
-        downloadItem.fileName = filename;
-      }
-      if (headers["content-length"] == null ||
-          !streamedResponse.statusCode.toString().startsWith("2")) {
-        if (ignoreException) {
-          completer.complete(null);
+      try {
+        final headers = streamedResponse.headers;
+        var filename = extractFilenameFromHeaders(headers);
+        if (filename != null) {
+          downloadItem.fileName = filename;
+        }
+        if (headers["content-length"] == null ||
+            !streamedResponse.statusCode.toString().startsWith("2")) {
+          if (ignoreException) {
+            completer.complete(null);
+            return;
+          }
+          completer.completeError(
+              Exception("Could not retrieve result from the given URL"));
           return;
         }
-        completer.completeError(
-            Exception("Could not retrieve result from the given URL"));
-        return;
-      }
-      downloadItem.contentLength = int.parse(headers["content-length"]!);
-      downloadItem.fileName = Uri.decodeComponent(downloadItem.fileName);
-      final supportsPause = checkDownloadPauseSupport(headers);
-      final data = FileInfo(
-        supportsPause,
-        downloadItem.fileName,
-        downloadItem.contentLength,
-      );
-      completer.complete(data);
-      if (useGet) {
-        client.close();
+        downloadItem.contentLength = int.parse(headers["content-length"]!);
+        downloadItem.fileName = Uri.decodeComponent(downloadItem.fileName);
+        final supportsPause = checkDownloadPauseSupport(headers);
+        final data = FileInfo(
+          supportsPause,
+          downloadItem.fileName,
+          downloadItem.contentLength,
+        );
+        completer.complete(data);
+      } finally {
+        if (useGet) {
+          client.close();
+        }
       }
     }).onError((e) {
+      completer.completeError(
+        Exception("Could not retrieve result from the given URL"),
+      );
       if (!ignoreException) {
         completer.completeError(e);
       }
