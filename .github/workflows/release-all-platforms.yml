@@ -28,7 +28,7 @@ jobs:
       - name: Extract Version from pubspec.yaml
         id: extract_version
         run: |
-          $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "version: (\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
+          $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "^\s*version:\s*(\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
           echo version=$VERSION >> $env:GITHUB_OUTPUT
 
   Build-windows:
