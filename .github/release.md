@@ -10,7 +10,7 @@
 - Fixed "Failed to retrieve file information" for servers that reject HEAD requests
 - Fixed browser integration bugs
 - Fixed sorting by file size not working correctly caused by library limitations
-- Released a new browser extension version (v1.2.3) with bug fixes for Chrome. [Install it now]
+- Released a new browser extension version (v1.2.3) with bug fixes for Chrome (must be installed regardless of your browser). 
 
 ## :pencil: Note
 To prevent compatibility issues, Brisk will capture requests from an outdated version of the browser extension. If you're using an older version of the extension, there will be an error indicating that the extension version is outdated and you'll be prompted to Install the new one. For Firefox, the new version is already available in the official Firefox Addons webite.
