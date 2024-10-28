@@ -19,6 +19,11 @@ const Map<String, String> contentType_MultiPartByteRanges = {
   'content-type': 'multipart/byteranges;'
 };
 
+const Map<String, String> userAgentHeader = {
+  "User-Agent":
+      "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;",
+};
+
 bool checkDownloadPauseSupport(Map<String, String> headers) {
   var value = headers['Accept-Ranges'] ?? headers['accept-ranges'];
   return value != null && value == 'bytes';
@@ -82,6 +87,7 @@ Future<List<FileInfo>?> requestFileInfoBatch(
 Future<FileInfo?> requestFileInfo(DownloadItem downloadItem,
     {bool ignoreException = false}) async {
   final request = http.Request("HEAD", Uri.parse(downloadItem.downloadUrl));
+  request.headers.addAll(userAgentHeader);
   final client = http.Client();
   var response = client.send(request);
   Completer<FileInfo?> completer = Completer();
@@ -147,7 +153,7 @@ void checkForUpdate(BuildContext context) async {
   tagName = tagName.replaceAll(".", "").replaceAll("v", "");
   String latestVersion = (json['tag_name'] as String).replaceAll("v", "");
   final packageInfo = await PackageInfo.fromPlatform();
-  if (_isNewVersionAvailable(latestVersion, packageInfo)) {
+  if (isNewVersionAvailable(latestVersion, packageInfo.version)) {
     showDialog(
       context: context,
       builder: (context) => ConfirmationDialog(
@@ -163,9 +169,9 @@ void checkForUpdate(BuildContext context) async {
   }
 }
 
-bool _isNewVersionAvailable(String latestVersion, PackageInfo packageInfo) {
+bool isNewVersionAvailable(String latestVersion, String targetVersion) {
   final latestSplit = latestVersion.split(".");
-  final currentSplit = packageInfo.version.split(".");
+  final currentSplit = targetVersion.split(".");
   for (int i = 0; i < latestSplit.length; i++) {
     final splitVersion = int.parse(latestSplit[i]);
     final splitCurrent = int.parse(currentSplit[i]);
