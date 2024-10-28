@@ -42,6 +42,9 @@ String? extractFilenameFromHeaders(Map<String, String> headers) {
               .substring(tokens[i].indexOf("=") + 2, tokens[i].length - 1);
     }
   }
+  if (filename != null && filename.startsWith("UTF-8''")) {
+    filename = filename.replaceAll("UTF-8''", "");
+  }
   return filename;
 }
 
@@ -80,42 +83,80 @@ Future<List<FileInfo>?> requestFileInfoBatch(
   return fileInfos;
 }
 
+Future<FileInfo?> requestFileInfo(
+  DownloadItem downloadItem, {
+  ignoreException = false,
+}) async {
+  return await sendFileInfoRequest(
+    downloadItem,
+    ignoreException: ignoreException,
+  ).catchError((e) async {
+    final fileInfo = await sendFileInfoRequest(
+      downloadItem,
+      ignoreException: ignoreException,
+      useGet: true,
+    );
+    return fileInfo;
+  });
+}
+
 /// Sends a HEAD request to the url given in the [downloadItem] object.
 /// Determines pause/resume functionality support by the server,
 /// total file size and the content-type of the request.
 /// TODO handle status codes other than 200
-Future<FileInfo?> requestFileInfo(DownloadItem downloadItem,
-    {bool ignoreException = false}) async {
-  final request = http.Request("HEAD", Uri.parse(downloadItem.downloadUrl));
+Future<FileInfo?> sendFileInfoRequest(
+  DownloadItem downloadItem, {
+  bool ignoreException = false,
+  bool useGet = false,
+}) async {
+  final request = http.Request(
+    useGet ? "GET" : "HEAD",
+    Uri.parse(downloadItem.downloadUrl),
+  );
   request.headers.addAll(userAgentHeader);
   final client = http.Client();
   var response = client.send(request);
   Completer<FileInfo?> completer = Completer();
-  response.asStream().timeout(Duration(seconds: 10)).listen((streamedResponse) {
-    final headers = streamedResponse.headers;
-    var filename = extractFilenameFromHeaders(headers);
-    if (filename != null) {
-      downloadItem.fileName = filename;
-    }
-    if (headers["content-length"] == null) {
-      if (ignoreException) {
-        completer.complete(null);
+
+  try {
+    response
+        .asStream()
+        .timeout(Duration(seconds: 10))
+        .listen((streamedResponse) {
+      final headers = streamedResponse.headers;
+      var filename = extractFilenameFromHeaders(headers);
+      if (filename != null) {
+        downloadItem.fileName = filename;
+      }
+      if (headers["content-length"] == null ||
+          !streamedResponse.statusCode.toString().startsWith("2")) {
+        if (ignoreException) {
+          completer.complete(null);
+          return;
+        }
+        completer.completeError(
+            Exception("Could not retrieve result from the given URL"));
         return;
       }
-      throw Exception({"Could not retrieve result from the given URL"});
-    }
-    downloadItem.contentLength = int.parse(headers["content-length"]!);
-    downloadItem.fileName = Uri.decodeComponent(downloadItem.fileName);
-    final supportsPause = checkDownloadPauseSupport(headers);
-    final data = FileInfo(
-      supportsPause,
-      downloadItem.fileName,
-      downloadItem.contentLength,
-    );
-    completer.complete(data);
-  },
-      onError: ignoreException ? (e) => completer.completeError(e) : null,
-      cancelOnError: !ignoreException);
+      downloadItem.contentLength = int.parse(headers["content-length"]!);
+      downloadItem.fileName = Uri.decodeComponent(downloadItem.fileName);
+      final supportsPause = checkDownloadPauseSupport(headers);
+      final data = FileInfo(
+        supportsPause,
+        downloadItem.fileName,
+        downloadItem.contentLength,
+      );
+      completer.complete(data);
+      client.close();
+    }).onError((e) {
+      if (!ignoreException) {
+        completer.completeError(e);
+      }
+    });
+  } catch (e) {
+    completer.completeError(e);
+  }
+
   return completer.future;
 }
 
