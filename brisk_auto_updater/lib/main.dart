@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void relaunchBrisk() {
     String executablePath = Platform.resolvedExecutable;
     final briskPath = path.join(
-      Directory(executablePath).parent.path,
+      Directory(executablePath).parent.parent.path,
       "brisk.exe",
     );
     Process.run(briskPath, [])
