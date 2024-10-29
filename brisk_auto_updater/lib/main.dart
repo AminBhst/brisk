@@ -73,8 +73,13 @@ class _MyHomePageState extends State<MyHomePage> {
       Directory(executablePath).parent.parent.path,
       "brisk.exe",
     );
-    Process.run(briskPath, [])
-        .then((_) => windowManager.destroy().then(exit(0)));
+    final processResult = await Process.run(briskPath, []);
+    if (processResult.exitCode == 0) {
+      await windowManager.destroy();
+      exit(0);
+    } else {
+      print("Failed to launch brisk.exe: ${processResult.stderr}");
+    }
   }
 
   @override
