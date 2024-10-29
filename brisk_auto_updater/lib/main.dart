@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:brisk_auto_updater/downloader/update_downloader.dart';
@@ -56,6 +57,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Timer? forceCloseTimer;
+
   @override
   void initState() {
     super.initState();
@@ -73,13 +76,15 @@ class _MyHomePageState extends State<MyHomePage> {
       Directory(executablePath).parent.parent.path,
       "brisk.exe",
     );
-    final processResult = await Process.run(briskPath, []);
-    if (processResult.exitCode == 0) {
-      await windowManager.destroy();
-      exit(0);
-    } else {
-      print("Failed to launch brisk.exe: ${processResult.stderr}");
-    }
+    Process.run(briskPath, [])
+        .then((_) => forceCloseTimer = Timer.periodic(
+              Duration(milliseconds: 300),
+              (_) {
+                windowManager.destroy().then((_) => exit(0));
+              },
+            ))
+        .then((_) => windowManager.destroy())
+        .then(exit(0));
   }
 
   @override
