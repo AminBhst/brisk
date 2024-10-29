@@ -99,6 +99,10 @@ class UpdateDownloader {
     final zipBytes = _writeToUin8List(buffer);
     final archive = ZipDecoder().decodeBytes(zipBytes);
     for (final file in archive) {
+      if (file.name.startsWith("updater/") ||
+          file.name.startsWith("updater\\")) {
+        continue;
+      }
       final filename = join(
         Directory(executablePath).parent.parent.path,
         file.name,
