@@ -28,7 +28,7 @@ MacOS builds are unfortunately not available. If you're interested in this proje
 - Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
 
 ## :gear: Brisk's Download Engine
-Brisk is powered by a custom-built, high-performance engine that delivers the maximum download speed throughout the entire download process.
+Brisk is powered by a custom-built, high-performance engine that delivers the maximum download speed throughout the entire download process. The engine is built entirely from scratch only using Dart's [http](https://github.com/dart-lang/http), without relying on external libraries or download utilites like aria2.
 
 The key features of the engine include:
 - **Dynamic Connection Spawn:** Downloads starts with a single connection and as they progress, new connections are added on the fly and without interfering with one another. This ensures that a higher number of connections are used only when necessary, significantly improving the download speed of small-to-medium sized files.
