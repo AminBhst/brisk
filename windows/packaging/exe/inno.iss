@@ -12,6 +12,7 @@ OutputDir=OUTPUT_DIR
 OutputBaseFilename=Brisk
 SetupIconFile=SETUP_ICON_FILE
 Compression=lzma
+DisableDirPage=no
 SolidCompression=yes
 WizardStyle=modern
 
