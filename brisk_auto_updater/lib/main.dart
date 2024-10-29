@@ -73,8 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
       Directory(executablePath).parent.parent.path,
       "brisk.exe",
     );
-    Process.run(briskPath, []);
-    windowManager.destroy().then(exit(0));
+    Process.run(briskPath, [])
+        .then((_) => windowManager.destroy().then(exit(0)));
   }
 
   @override
