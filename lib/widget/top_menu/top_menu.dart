@@ -162,24 +162,24 @@ class _TopMenuState extends State<TopMenu> {
             onHoverColor: topMenuTheme.extensionColor.hoverBackgroundColor,
             textColor: topMenuTheme.extensionColor.textColor,
           ),
-          TopMenuButton(
-            title: 'Discord',
-            fontSize: 11.5,
-            icon: SvgPicture.asset(
-              "assets/icons/discord.svg",
-              height: 30,
-              width: 30,
-              colorFilter: ColorFilter.mode(
-                Color.fromRGBO(96, 100, 244,1),
-                BlendMode.srcIn,
-              ),
-            ),
-            onTap: () => launchUrlString(
-              'https://discord.gg/g8fwgZ84',
-            ),
-            onHoverColor: topMenuTheme.extensionColor.hoverBackgroundColor,
-            textColor: topMenuTheme.extensionColor.textColor,
-          ),
+          // TopMenuButton(
+          //   title: 'Discord',
+          //   fontSize: 11.5,
+          //   icon: SvgPicture.asset(
+          //     "assets/icons/discord.svg",
+          //     height: 30,
+          //     width: 30,
+          //     colorFilter: ColorFilter.mode(
+          //       Color.fromRGBO(96, 100, 244,1),
+          //       BlendMode.srcIn,
+          //     ),
+          //   ),
+          //   onTap: () => launchUrlString(
+          //     'https://discord.gg/g8fwgZ84',
+          //   ),
+          //   onHoverColor: topMenuTheme.extensionColor.hoverBackgroundColor,
+          //   textColor: topMenuTheme.extensionColor.textColor,
+          // ),
           SizedBox(width: 5),
           // Container(color: Colors.white, width: 1, height: 40),
           // TopMenuButton(

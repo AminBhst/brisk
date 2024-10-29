@@ -15,6 +15,7 @@ import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/notification_util.dart';
 import 'package:brisk/widget/base/app_exit_dialog.dart';
+import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/download_grid.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:brisk/widget/queue/download_queue_list.dart';
@@ -28,6 +29,7 @@ import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:path/path.dart' as path;
 
 import 'util/file_util.dart';
 import 'util/settings_cache.dart';
@@ -193,7 +195,30 @@ class _MyHomePageState extends State<MyHomePage>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       registerDefaultDownloadAdditionHotKey(context);
       BrowserExtensionServer.setup(context);
-      checkForUpdate(context);
+      // checkForUpdate(context);
+      showDialog(
+        context: context,
+        builder: (context) => ConfirmationDialog(
+          title:
+              "New version of Brisk is available. Do you want to download the latest version?",
+          onConfirmPressed: () {
+            String executablePath = Platform.resolvedExecutable;
+            final paath = path.join(
+              Directory(executablePath).parent.path,
+              "updater",
+              "brisk_auto_updater.exe",
+            );
+            print(paath);
+            String command = 'Start-Process -FilePath "$paath" -Verb RunAs';
+            Process.run('powershell', ['-command', command], runInShell: true)
+                .then(
+              (_) {
+                windowManager.destroy().then((value) => exit(0));
+              },
+            );
+          },
+        ),
+      );
     });
     super.didChangeDependencies();
   }
