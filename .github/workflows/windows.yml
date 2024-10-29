@@ -26,6 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.5
 
+
       - name: Replace iss placeholders
         run: |
           $outputDir = "${{ github.workspace }}"
@@ -39,6 +40,8 @@ jobs:
           (Get-Content windows/packaging/exe/inno.iss) -replace 'BASE_DIR', $baseDir | Set-Content windows/packaging/exe/inno.iss
           (Get-Content windows/packaging/exe/inno.iss) -replace 'EXE_NAME', $exeName | Set-Content windows/packaging/exe/inno.iss
           (Get-Content windows/packaging/exe/inno.iss) -replace 'OUTPUT_BASE_FILE_NAME', $outputBaseFileName | Set-Content windows/packaging/exe/inno.iss
+
+
 
       - name: Display Inno Setup File Content
         shell: pwsh
