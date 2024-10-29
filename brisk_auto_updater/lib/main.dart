@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     Process.run(briskPath, [])
         .then((_) => forceCloseTimer = Timer.periodic(
-              Duration(milliseconds: 300),
+              Duration(seconds: 2),
               (_) {
                 windowManager.destroy().then((_) => exit(0));
               },
