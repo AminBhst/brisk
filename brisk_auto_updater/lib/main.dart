@@ -57,8 +57,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Timer? forceCloseTimer;
-
   @override
   void initState() {
     super.initState();
@@ -76,13 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Directory(executablePath).parent.parent.path,
       "brisk.exe",
     );
-    Process.run(briskPath, [])
-        .then((_) => forceCloseTimer = Timer.periodic(
-              Duration(seconds: 2),
-              (_) {
-                windowManager.destroy().then((_) => exit(0));
-              },
-            ))
+    Process.start(briskPath, [])
         .then((_) => windowManager.destroy())
         .then(exit(0));
   }
