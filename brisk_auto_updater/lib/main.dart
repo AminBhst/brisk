@@ -70,12 +70,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void relaunchBrisk() async {
     String executablePath = Platform.resolvedExecutable;
-    final briskPath = path.join(
-      Directory(executablePath).parent.parent.path,
-      "brisk.exe",
-    );
-    Process.start(briskPath, [], mode: ProcessStartMode.detached)
-        .then((_) => windowManager.destroy().then((value) => exit(0)));
+    final briskDirPath = Directory(executablePath).parent.parent.path;
+    if (Platform.isWindows) {
+      final briskPath = path.join(briskDirPath, "brisk.exe");
+      Process.start(briskPath, [], mode: ProcessStartMode.detached)
+          .then((_) => windowManager.destroy().then((value) => exit(0)));
+    } else if (Platform.isLinux) {
+      final briskPath = path.join(briskDirPath, "brisk");
+      Process.start(
+        briskPath,
+        [],
+        mode: ProcessStartMode.detached,
+      ).then((_) {
+        windowManager.destroy().then((value) => exit(0));
+      });
+    }
   }
 
   @override

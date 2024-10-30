@@ -15,7 +15,7 @@ class UpdateDownloader {
   static List<List<int>> buffer = [];
   static int totalReceivedBytes = 0;
   static String? downloadUrl =
-      "https://github.com/AliML111/brisk/releases/download/v2.0.1/Brisk-v2.0.1-windows-x86_64.zip";
+      "https://github.com/AliML111/brisk/releases/download/v2.0.1/Brisk-v2.0.1-linux-x86_64.tar.xz";
 
   static const Map<String, String> userAgentHeader = {
     "User-Agent":
@@ -97,8 +97,11 @@ class UpdateDownloader {
     /// TODO handle different OS
     try {
       String executablePath = Platform.resolvedExecutable;
-      final zipBytes = _writeToUin8List(buffer);
-      final archive = ZipDecoder().decodeBytes(zipBytes);
+      final package = _writeToUin8List(buffer);
+      final archive = Platform.isWindows
+          ? ZipDecoder().decodeBytes(package)
+          : TarDecoder().decodeBytes(XZDecoder().decodeBytes(package));
+
       for (final file in archive) {
         if (file.name.startsWith("updater/") ||
             file.name.startsWith("updater\\")) {

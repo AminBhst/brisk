@@ -201,26 +201,42 @@ class _MyHomePageState extends State<MyHomePage>
         builder: (context) => ConfirmationDialog(
           title:
               "New version of Brisk is available. Do you want to download the latest version?",
-          onConfirmPressed: () {
-            String executablePath = Platform.resolvedExecutable;
-            final paath = path.join(
-              Directory(executablePath).parent.path,
-              "updater",
-              "brisk_auto_updater.exe",
-            );
-            print(paath);
-            String command = 'Start-Process -FilePath "$paath" -Verb RunAs';
-            Process.run('powershell', ['-command', command], runInShell: true)
-                .then(
-              (_) {
-                windowManager.destroy().then((value) => exit(0));
-              },
-            );
-          },
+          onConfirmPressed: launchAutoUpdater,
         ),
       );
     });
     super.didChangeDependencies();
+  }
+
+  void launchAutoUpdater() {
+    String executablePath = Platform.resolvedExecutable;
+    if (Platform.isWindows) {
+      final updaterPath = path.join(
+        Directory(executablePath).parent.path,
+        "updater",
+        "brisk_auto_updater.exe",
+      );
+      print(updaterPath);
+      String command = 'Start-Process -FilePath "$updaterPath" -Verb RunAs';
+      Process.run('powershell', ['-command', command], runInShell: true).then(
+        (_) {
+          windowManager.destroy().then((value) => exit(0));
+        },
+      );
+    } else if (Platform.isLinux) {
+      final updaterPath = path.join(
+        Directory(executablePath).parent.path,
+        "updater",
+        "brisk_auto_updater",
+      );
+      Process.start(
+        updaterPath,
+        [],
+        mode: ProcessStartMode.detached,
+      ).then((_) {
+        windowManager.destroy().then((value) => exit(0));
+      });
+    }
   }
 
   @override
