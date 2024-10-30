@@ -179,7 +179,6 @@ class UpdateDownloader {
     try {
       response
           .asStream()
-          .timeout(Duration(seconds: 10))
           .listen((streamedResponse) {
         try {
           final headers = streamedResponse.headers;
