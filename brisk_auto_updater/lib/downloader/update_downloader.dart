@@ -84,7 +84,7 @@ class UpdateDownloader {
             buffer.add(chunk);
             provider.setProgress(totalReceivedBytes / fileInfo.contentLength);
           },
-          onDone: () => onComplete().then((_) => onInstallComplete()),
+          onDone: () => onComplete(provider).then((_) => onInstallComplete()),
           onError: _onError,
         );
       }).onError(_onError);
@@ -93,26 +93,34 @@ class UpdateDownloader {
     }
   }
 
-  static Future<void> onComplete() async {
+  static Future<void> onComplete(DownloadProgressProvider provider) async {
     /// TODO handle different OS
-    String executablePath = Platform.resolvedExecutable;
-    final zipBytes = _writeToUin8List(buffer);
-    final archive = ZipDecoder().decodeBytes(zipBytes);
-    for (final file in archive) {
-      if (file.name.startsWith("updater/") ||
-          file.name.startsWith("updater\\")) {
-        continue;
+    try {
+      String executablePath = Platform.resolvedExecutable;
+      final zipBytes = _writeToUin8List(buffer);
+      final archive = ZipDecoder().decodeBytes(zipBytes);
+      for (final file in archive) {
+        if (file.name.startsWith("updater/") ||
+            file.name.startsWith("updater\\")) {
+          continue;
+        }
+        var filename = join(
+          Directory(executablePath).parent.parent.path,
+          file.name,
+        );
+        if (file.isFile) {
+          final fileToWrite = File(filename);
+          if (!fileToWrite.existsSync()) {
+            fileToWrite.createSync(recursive: true);
+          }
+          fileToWrite.writeAsBytesSync(file.content as List<int>);
+        } else {
+          await Directory(filename).create(recursive: true);
+        }
       }
-      final filename = join(
-        Directory(executablePath).parent.parent.path,
-        file.name,
-      );
-      if (file.isFile) {
-        await File(filename)
-          ..writeAsBytesSync(file.content as List<int>);
-      } else {
-        await Directory(filename).create(recursive: true);
-      }
+    } catch (e) {
+      provider.setProgress(0);
+      provider.setError(e.toString());
     }
   }
 

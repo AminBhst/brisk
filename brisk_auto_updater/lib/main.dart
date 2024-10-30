@@ -74,10 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
       Directory(executablePath).parent.parent.path,
       "brisk.exe",
     );
-    Process.run(briskPath, [])
-        .then((_) => windowManager.close())
-        .then((_) => windowManager.destroy())
-        .then(exit(0));
+    Process.start(briskPath, [], mode: ProcessStartMode.detached)
+        .then((_) => windowManager.destroy().then((value) => exit(0)));
   }
 
   @override
@@ -94,9 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    provider.progress != 1
-                        ? "Downloading update..."
-                        : "Complete",
+                    provider.error != null ? provider.error! : "Downloading...",
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
