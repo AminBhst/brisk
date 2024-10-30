@@ -76,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Process.start(briskPath, [], mode: ProcessStartMode.detached)
           .then((_) => windowManager.destroy().then((value) => exit(0)));
     } else if (Platform.isLinux) {
+      final briskDirPath = Directory(executablePath).parent.path;
       final briskPath = path.join(briskDirPath, "brisk");
       Process.start(
         briskPath,
