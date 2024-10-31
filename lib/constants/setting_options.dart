@@ -20,4 +20,6 @@ enum SettingOptions {
   connectionRetryCount,
   connectionRetryTimeout,
   lastUpdateCheck,
+  updateRequested,
+  preUpdateVersion,
 }

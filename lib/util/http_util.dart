@@ -181,8 +181,7 @@ Future<dynamic> checkLatestBriskRelease() async {
   return completer.future;
 }
 
-// TODO Refactor and fix version check logic
-void checkForUpdate(BuildContext context) async {
+Future<bool> isNewBriskVersionAvailable() async {
   var lastUpdateCheck = HiveUtil.getSetting(SettingOptions.lastUpdateCheck);
   if (lastUpdateCheck == null) {
     lastUpdateCheck = Setting(
@@ -193,29 +192,18 @@ void checkForUpdate(BuildContext context) async {
     await HiveUtil.instance.settingBox.add(lastUpdateCheck);
   }
   if (int.parse(lastUpdateCheck.value) + 86400000 >
-      DateTime.now().millisecondsSinceEpoch) return;
+      DateTime.now().millisecondsSinceEpoch) return false;
 
   final json = await checkLatestBriskRelease();
-  if (json == null || json['tag_name'] == null) return;
+  if (json == null || json['tag_name'] == null) return false;
 
   String tagName = json['tag_name'];
   tagName = tagName.replaceAll(".", "").replaceAll("v", "");
   String latestVersion = (json['tag_name'] as String).replaceAll("v", "");
   final packageInfo = await PackageInfo.fromPlatform();
-  if (isNewVersionAvailable(latestVersion, packageInfo.version)) {
-    showDialog(
-      context: context,
-      builder: (context) => ConfirmationDialog(
-        title:
-            "New version of Brisk is available. Do you want to download the latest version?",
-        onConfirmPressed: () => launchUrlString(
-          "https://github.com/AminBhst/brisk/releases/latest",
-        ),
-      ),
-    );
-    lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
-    await lastUpdateCheck.save();
-  }
+  lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
+  await lastUpdateCheck.save();
+  return isNewVersionAvailable(latestVersion, packageInfo.version);
 }
 
 bool isNewVersionAvailable(String latestVersion, String targetVersion) {

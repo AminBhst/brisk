@@ -1,5 +1,7 @@
 import 'dart:io';
-
+import 'package:brisk/util/auto_updater_util.dart';
+import 'package:brisk/widget/other/brisk_change_log_dialog.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:brisk/browser_extension//browser_extension_server.dart';
 import 'package:brisk/constants/app_closure_behaviour.dart';
 import 'package:brisk/db/hive_util.dart';
@@ -24,10 +26,12 @@ import 'package:brisk/widget/top_menu/download_queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/top_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:tray_manager/tray_manager.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:path/path.dart' as path;
 
@@ -195,48 +199,9 @@ class _MyHomePageState extends State<MyHomePage>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       registerDefaultDownloadAdditionHotKey(context);
       BrowserExtensionServer.setup(context);
-      // checkForUpdate(context);
-      showDialog(
-        context: context,
-        builder: (context) => ConfirmationDialog(
-          title:
-              "New version of Brisk is available. Do you want to download the latest version?",
-          onConfirmPressed: launchAutoUpdater,
-        ),
-      );
+      handleBriskUpdateCheck(context);
     });
     super.didChangeDependencies();
-  }
-
-  void launchAutoUpdater() {
-    String executablePath = Platform.resolvedExecutable;
-    if (Platform.isWindows) {
-      final updaterPath = path.join(
-        Directory(executablePath).parent.path,
-        "updater",
-        "brisk_auto_updater.exe",
-      );
-      print(updaterPath);
-      String command = 'Start-Process -FilePath "$updaterPath" -Verb RunAs';
-      Process.run('powershell', ['-command', command], runInShell: true).then(
-        (_) {
-          windowManager.destroy().then((value) => exit(0));
-        },
-      );
-    } else if (Platform.isLinux) {
-      final updaterPath = path.join(
-        Directory(executablePath).parent.path,
-        "updater",
-        "brisk_auto_updater",
-      );
-      Process.start(
-        updaterPath,
-        [],
-        mode: ProcessStartMode.detached,
-      ).then((_) {
-        windowManager.destroy().then((value) => exit(0));
-      });
-    }
   }
 
   @override
