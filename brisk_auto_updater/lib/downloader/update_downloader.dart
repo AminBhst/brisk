@@ -103,8 +103,7 @@ class UpdateDownloader {
           : TarDecoder().decodeBytes(XZDecoder().decodeBytes(package));
 
       for (final file in archive) {
-        if (file.name.startsWith("updater/") ||
-            file.name.startsWith("updater\\")) {
+        if (file.name.contains("updater")) {
           continue;
         }
         var filename = join(
