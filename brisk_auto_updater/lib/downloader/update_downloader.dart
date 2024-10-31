@@ -103,7 +103,8 @@ class UpdateDownloader {
           : TarDecoder().decodeBytes(XZDecoder().decodeBytes(package));
 
       for (final file in archive) {
-        if (file.name.contains("updater")) {
+        if (file.name.startsWith("updater/") ||
+            file.name.startsWith("updater\\")) {
           continue;
         }
         var filename = join(
@@ -179,6 +180,7 @@ class UpdateDownloader {
     try {
       response
           .asStream()
+          .timeout(Duration(seconds: 10))
           .listen((streamedResponse) {
         try {
           final headers = streamedResponse.headers;
