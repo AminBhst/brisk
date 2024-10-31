@@ -1,4 +1,5 @@
 import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,6 +19,25 @@ class AboutPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            SettingsGroup(title: "Info", height: 100, children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 5),
+                  Icon(
+                    Icons.info_outline,
+                    color: theme.widgetColor.aboutIconColor,
+                    size: 30,
+                  ),
+                  const SizedBox(width: 30),
+                  Text(
+                    "Version: ${SettingsCache.currentVersion}",
+                    style: TextStyle(color: theme.titleTextColor),
+                  ),
+                ],
+              )
+            ]),
             SettingsGroup(
               height: 300,
               title: "Developer",

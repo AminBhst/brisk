@@ -10,9 +10,12 @@ import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/parse_util.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'file_util.dart';
 
 class SettingsCache {
+  static late String currentVersion;
+
   /// General
   static late String applicationThemeId;
   static late bool notificationOnDownloadCompletion;
@@ -191,6 +194,7 @@ class SettingsCache {
         default:
       }
     }
+    currentVersion = (await PackageInfo.fromPlatform()).version;
   }
 
   static Future<void> saveCachedSettingsToDB() async {
