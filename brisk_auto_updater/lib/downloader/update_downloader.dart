@@ -48,7 +48,7 @@ class UpdateDownloader {
     final version = latestTag["tag_name"];
     for (final asset in latestTag["assets"]) {
       if (Platform.isWindows &&
-          asset["name"] == "Brisk-$version-windows-x86_64.exe") {
+          asset["name"] == "Brisk-$version-windows-x86_64.zip") {
         downloadUrl = asset["browser_download_url"];
         break;
       }
