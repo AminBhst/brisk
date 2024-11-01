@@ -14,8 +14,7 @@ import 'package:provider/provider.dart';
 class UpdateDownloader {
   static List<List<int>> buffer = [];
   static int totalReceivedBytes = 0;
-  static String? downloadUrl =
-      "https://github.com/AliML111/brisk/releases/download/v2.0.1/Brisk-v2.0.1-linux-x86_64.tar.xz";
+  static String? downloadUrl;
 
   static const Map<String, String> userAgentHeader = {
     "User-Agent":
@@ -48,7 +47,13 @@ class UpdateDownloader {
     print("god json response");
     final version = latestTag["tag_name"];
     for (final asset in latestTag["assets"]) {
-      if (asset["name"] == "Brisk-$version-windows-x86_64.exe") {
+      if (Platform.isWindows &&
+          asset["name"] == "Brisk-$version-windows-x86_64.exe") {
+        downloadUrl = asset["browser_download_url"];
+        break;
+      }
+      if (Platform.isLinux &&
+          asset["name"] == "Brisk-$version-linux-x86_64.tar.xz") {
         downloadUrl = asset["browser_download_url"];
         break;
       }
