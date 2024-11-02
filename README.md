@@ -5,7 +5,7 @@
 
 <p align="center">
 <img width="100" src="assets/icons/logo.png" alt="Brisk">
-<p align="center">Ultra-fast, modern download manager for desktop</pal>
+<p align="center">Ultra-fast download manager for desktop</pal>
 </p>
 
 ## :package: Installation
