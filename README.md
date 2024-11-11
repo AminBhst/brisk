@@ -70,6 +70,11 @@ Download the Flutter SDK v2.22.0 and set the path variable
 flutter build macos|windows|linux
 ```
 
+## :money_with_wings:
+If find my projects useful, you can support me via:
+- ERC20: 0xcc506Cf21374B880B8eFA5294D8047C660DaD80D
+- TRC20: TDbP6HDUTtSzP1zRagEt27o5QYjB2oTFwE
+
 ## :busts_in_silhouette: Community
 Join our [discord server](https://discord.gg/g8fwgZ84) for dedicated spaces where both developers and regular users can ask questions, get support, and connect. You'll also be notified of every upcoming update coming to Brisk.
 
