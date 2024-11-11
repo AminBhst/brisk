@@ -70,7 +70,7 @@ Download the Flutter SDK v2.22.0 and set the path variable
 flutter build macos|windows|linux
 ```
 
-## :money_with_wings:
+## :money_with_wings: Donations
 If find my projects useful, you can support me via:
 - ERC20: 0xcc506Cf21374B880B8eFA5294D8047C660DaD80D
 - TRC20: TDbP6HDUTtSzP1zRagEt27o5QYjB2oTFwE
