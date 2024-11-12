@@ -77,6 +77,7 @@ class TopMenuTheme {
   final ButtonColor createQueueColor;
   final ButtonColor startQueueColor;
   final ButtonColor stopQueueColor;
+  final ButtonColor checkForUpdateColor;
 
   TopMenuTheme({
     required this.backgroundColor,
@@ -90,6 +91,7 @@ class TopMenuTheme {
     required this.createQueueColor,
     required this.startQueueColor,
     required this.stopQueueColor,
+    required this.checkForUpdateColor,
   });
 }
 

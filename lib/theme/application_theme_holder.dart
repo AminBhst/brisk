@@ -41,6 +41,11 @@ ApplicationTheme celestialDark = ApplicationTheme(
       hoverIconColor: Color.fromRGBO(163, 23, 30, 1),
       hoverBackgroundColor: Color.fromRGBO(163, 23, 30, 0.3),
     ),
+    checkForUpdateColor: const ButtonColor(
+      iconColor: Color.fromRGBO(0, 128, 128, 1),
+      hoverIconColor: Color.fromRGBO(0, 128, 128, 1),
+      hoverBackgroundColor: Color.fromRGBO(0, 128, 128, 0.3),
+    ),
     stopAllColor: const ButtonColor(
       iconColor: Color.fromRGBO(163, 23, 30, 1),
       hoverIconColor: Color.fromRGBO(163, 23, 30, 1),
@@ -262,6 +267,11 @@ ApplicationTheme signatureBlue = ApplicationTheme(
   topMenuTheme: TopMenuTheme(
     backgroundColor: const Color.fromRGBO(46, 54, 67, 1),
     addUrlColor: ButtonColor(
+      iconColor: Colors.white,
+      hoverIconColor: Colors.white,
+      hoverBackgroundColor: Colors.blueGrey,
+    ),
+    checkForUpdateColor: ButtonColor(
       iconColor: Colors.white,
       hoverIconColor: Colors.white,
       hoverBackgroundColor: Colors.blueGrey,

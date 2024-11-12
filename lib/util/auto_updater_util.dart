@@ -7,6 +7,7 @@ import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
+import 'package:brisk/widget/base/info_dialog.dart';
 import 'package:brisk/widget/other/brisk_change_log_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -17,7 +18,10 @@ import 'package:http/http.dart';
 
 import 'http_util.dart';
 
-void handleBriskUpdateCheck(BuildContext context) async {
+void handleBriskUpdateCheck(
+  BuildContext context, {
+  bool showUpdateNotAvailableDialog = false,
+}) async {
   final isNewVersionAvailable = await isNewBriskVersionAvailable();
   if (isNewVersionAvailable) {
     showDialog(
@@ -28,6 +32,17 @@ void handleBriskUpdateCheck(BuildContext context) async {
         onConfirmPressed: launchAutoUpdater,
       ),
     );
+  } else {
+    if (showUpdateNotAvailableDialog) {
+      showDialog(
+        context: context,
+        builder: (context) => InfoDialog(
+          title: "No new update is available yet",
+          onConfirmPressed: launchAutoUpdater,
+        ),
+      );
+      return;
+    }
   }
 
   final updateRequested = HiveUtil.getSetting(SettingOptions.updateRequested);

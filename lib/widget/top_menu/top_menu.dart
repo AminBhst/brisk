@@ -7,6 +7,7 @@ import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/widget/top_menu/top_menu_util.dart';
 import 'package:flutter_svg/svg.dart';
@@ -146,6 +147,20 @@ class _TopMenuState extends State<TopMenu> {
             textColor: PlutoGridUtil.selectedRowExists
                 ? topMenuTheme.addToQueueColor.textColor
                 : disabledButtonTextColor,
+          ),
+          TopMenuButton(
+            onTap: () => handleBriskUpdateCheck(
+              context,
+              showUpdateNotAvailableDialog: true,
+            ),
+            title: 'Check for Update',
+            icon: Icon(
+              Icons.update,
+              color: topMenuTheme.checkForUpdateColor.iconColor,
+            ),
+            fontSize: 10.5,
+            onHoverColor: topMenuTheme.addToQueueColor.hoverBackgroundColor,
+            textColor: topMenuTheme.checkForUpdateColor.textColor,
           ),
           SizedBox(width: 5),
           // Container(color: Colors.white, width: 1, height: 40),
