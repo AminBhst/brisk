@@ -11,12 +11,11 @@
 ## :package: Installation
 
 Installation files for Windows and Linux are available at [Github Releases](https://github.com/AminBhst/brisk/releases/).
+Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin).
 
 If you encountered a "Windows Protected your PC" error, click `more info -> run anyway`
 
 For Linux, make sure to read the [Linux Prerequisites](#key-linux-prerequisites).
-
-Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin)
 
 MacOS builds are unfortunately not available. If you're interested in this project and would like to contribute by providing MacOS builds for each release, please open an issue to let me know.
 
