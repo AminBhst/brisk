@@ -13,6 +13,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../../constants/download_command.dart';
 import '../../model/download_item.dart';
 import 'download_progress_window.dart';
 

@@ -22,11 +22,11 @@ class DownloadIsolateMessage {
 
   DownloadIsolateMessage clone() {
     return DownloadIsolateMessage(
-      command: this.command,
-      downloadItem: this.downloadItem,
-      segment: this.segment,
-      connectionNumber: this.connectionNumber,
-      settings: this.settings,
+      command: command,
+      downloadItem: downloadItem,
+      segment: segment,
+      connectionNumber: connectionNumber,
+      settings: settings,
     );
   }
 }

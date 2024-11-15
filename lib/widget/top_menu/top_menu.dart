@@ -15,6 +15,7 @@ import 'package:pluto_grid/src/model/pluto_row.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../../constants/download_command.dart';
 import '../../provider/download_request_provider.dart';
 import '../../util/file_util.dart';
 import '../queue/add_to_queue_window.dart';
@@ -257,7 +258,7 @@ class _TopMenuState extends State<TopMenu> {
   void deleteOnCheckedRows(PlutoRow row, int id, bool deleteFile) {
     PlutoGridUtil.plutoStateManager!.removeRows([row]);
     FileUtil.deleteDownloadTempDirectory(id);
-    provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
+    // provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
     if (deleteFile) {
       final downloadItem = HiveUtil.instance.downloadItemsBox.get(id);
       final file = File(downloadItem!.filePath);

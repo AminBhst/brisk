@@ -6,6 +6,8 @@ import 'package:brisk_engine/brisk_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../constants/download_command.dart';
+
 class DownloadProgressWindow extends StatefulWidget {
   final int downloadId;
 
