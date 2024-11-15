@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk_engine/src/download_engine/download_settings.dart';
-import 'package:brisk_engine/src/download_engine/download_status.dart';
+import 'package:brisk_engine/src/download_engine/constants/download_status.dart';
 import 'package:brisk_engine/src/download_engine/http_download_engine.dart';
 import 'package:brisk_engine/src/download_engine/log/logger.dart';
 import 'package:brisk_engine/src/download_engine/message/connection_segment_message.dart';
@@ -11,7 +11,7 @@ import 'package:brisk_engine/src/download_engine/message/internal_messages.dart'
 import 'package:brisk_engine/src/download_engine/message/log_message.dart';
 import 'package:brisk_engine/src/download_engine/model/download_item_model.dart';
 import 'package:brisk_engine/src/download_engine/segment/segment.dart';
-import 'package:brisk_engine/src/download_engine/types.dart';
+import 'package:brisk_engine/src/download_engine/constants/types.dart';
 import 'package:brisk_engine/src/download_engine/util/temp_file_util.dart';
 import 'package:dartx/dartx.dart';
 import 'package:path/path.dart';
@@ -945,7 +945,7 @@ abstract class BaseHttpDownloadConnection {
   int get endByte => segment.endByte;
 
   bool get connectionRetryAllowed =>
-      lastResponseTimeMillis + settings.connectionRetryTimeout < _nowMillis &&
+      lastResponseTimeMillis + settings.connectionRetryTimeoutMillis < _nowMillis &&
       !_isWritingTempFile &&
       overallStatus != DownloadStatus.paused &&
       overallStatus != DownloadStatus.connectionComplete &&

@@ -1,4 +1,4 @@
-import 'package:brisk_engine/src/download_engine/download_command.dart';
+import 'package:brisk_engine/src/download_engine/constants/download_command.dart';
 import 'package:brisk_engine/src/download_engine/download_settings.dart';
 import 'package:brisk_engine/src/download_engine/model/download_item_model.dart';
 import 'package:brisk_engine/src/download_engine/segment/segment.dart';

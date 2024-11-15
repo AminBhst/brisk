@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:brisk_engine/src/download_engine/channel/download_connection_channel.dart';
-import 'package:brisk_engine/src/download_engine/download_command.dart';
+import 'package:brisk_engine/src/download_engine/constants/download_command.dart';
 import 'package:brisk_engine/src/download_engine/http_download_engine.dart';
 import 'package:brisk_engine/src/download_engine/log/logger.dart';
 import 'package:brisk_engine/src/download_engine/message/connection_handshake_message.dart';

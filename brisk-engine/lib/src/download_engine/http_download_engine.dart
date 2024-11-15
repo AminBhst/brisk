@@ -11,8 +11,8 @@ import 'message/button_availability_message.dart';
 import 'package:http/http.dart' as http;
 import 'message/connection_handshake_message.dart';
 import 'message/connection_segment_message.dart';
-import 'download_command.dart';
-import 'download_status.dart';
+import 'constants/download_command.dart';
+import 'constants/download_status.dart';
 import 'channel/download_connection_channel.dart';
 import 'message/log_message.dart';
 import 'segment/download_segment_tree.dart';
@@ -152,7 +152,7 @@ class HttpDownloadEngine {
           .where((conn) =>
               (conn.resetCount < downloadSettings!.maxConnectionRetryCount ||
                   downloadSettings!.maxConnectionRetryCount == -1) &&
-              conn.lastResponseTime + downloadSettings!.connectionRetryTimeout <
+              conn.lastResponseTime + downloadSettings!.connectionRetryTimeoutMillis <
                   _nowMillis)
           .toList();
 

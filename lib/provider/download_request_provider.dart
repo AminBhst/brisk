@@ -69,7 +69,7 @@ class DownloadRequestProvider with ChangeNotifier {
       totalConnections: SettingsCache.connectionsNumber,
       loggerEnabled: SettingsCache.loggerEnabled,
       baseTempDir: SettingsCache.temporaryDir,
-      connectionRetryTimeout: SettingsCache.connectionRetryTimeout * 1000,
+      connectionRetryTimeoutMillis: SettingsCache.connectionRetryTimeout * 1000,
       maxConnectionRetryCount: SettingsCache.connectionRetryCount,
     );
     settings.totalConnections = totalConnections;

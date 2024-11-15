@@ -4,8 +4,8 @@ import 'dart:isolate';
 
 import 'package:brisk_engine/src/download_engine/connection/base_http_download_connection.dart';
 import 'package:brisk_engine/src/download_engine/connection/http_download_connection.dart';
-import 'package:brisk_engine/src/download_engine/download_command.dart';
-import 'package:brisk_engine/src/download_engine/download_status.dart';
+import 'package:brisk_engine/src/download_engine/constants/download_command.dart';
+import 'package:brisk_engine/src/download_engine/constants/download_status.dart';
 import 'package:brisk_engine/src/download_engine/message/connection_handshake_message.dart';
 import 'package:brisk_engine/src/download_engine/message/download_isolate_message.dart';
 import 'package:dartx/dartx.dart';

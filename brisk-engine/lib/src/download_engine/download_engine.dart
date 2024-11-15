@@ -1,10 +1,11 @@
 import 'dart:isolate';
 
+import 'package:brisk_engine/src/download_engine/util/isolate_args_pair.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 
 import '../../brisk_engine.dart';
-import 'download_command.dart';
+import 'constants/download_command.dart';
 
 class DownloadEngine {
   static final Map<String, StreamChannel?> engineChannels = {};

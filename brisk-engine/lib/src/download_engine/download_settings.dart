@@ -9,20 +9,20 @@ class DownloadSettings extends ConnectionSettings {
     required this.totalConnections,
     required super.loggerEnabled,
     required super.baseTempDir,
-    required super.connectionRetryTimeout,
+    required super.connectionRetryTimeoutMillis,
     required super.maxConnectionRetryCount,
   });
 }
 
 class ConnectionSettings {
   final Directory baseTempDir;
-  final int connectionRetryTimeout;
+  final int connectionRetryTimeoutMillis;
   final int maxConnectionRetryCount;
   final bool loggerEnabled;
 
   ConnectionSettings({
     required this.baseTempDir,
-    required this.connectionRetryTimeout,
+    required this.connectionRetryTimeoutMillis,
     required this.maxConnectionRetryCount,
     required this.loggerEnabled,
   });
