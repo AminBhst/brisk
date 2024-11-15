@@ -1,14 +1,11 @@
-import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
-import 'package:brisk/download_engine/model/download_item_model.dart';
-import 'package:brisk/download_engine/message/download_progress_message.dart';
-import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
+import 'package:brisk_engine/brisk_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -95,7 +92,9 @@ class _MultiDownloadAdditionDialogState
       await HiveUtil.instance.addDownloadItem(item);
       widget.provider.insertRows([
         DownloadProgressMessage(
-            downloadItem: DownloadItemModel.fromDownloadItem(item))
+            downloadItem:
+                DownloadItemModel(fileName: '', downloadUrl: '', progress: 0)
+                    .fromDownloadItem(item))
       ]);
     }
     if (!mounted) return;

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_item.dart';
+import 'package:brisk_engine/brisk_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
@@ -10,7 +11,6 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 import '../constants/setting_type.dart';
 import '../db/hive_util.dart';
-import '../model/file_metadata.dart';
 import '../model/setting.dart';
 import '../widget/base/confirmation_dialog.dart';
 

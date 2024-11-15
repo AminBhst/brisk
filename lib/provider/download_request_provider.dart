@@ -19,18 +19,15 @@ import '../util/readability_util.dart';
 import '../util/settings_cache.dart';
 
 class DownloadRequestProvider with ChangeNotifier {
-  Map<String, DownloadProgressMessage> downloads = {};
-  Map<String, StreamChannel?> engineChannels = {};
-  Map<String, Isolate?> engineIsolates = {};
+  Map<int, DownloadProgressMessage> downloads = {};
+  Map<int, StreamChannel?> engineChannels = {};
+  Map<int, Isolate?> engineIsolates = {};
 
   PlutoGridCheckRowProvider plutoProvider;
 
   DownloadRequestProvider(this.plutoProvider);
 
-  static int get _nowMillis =>
-      DateTime
-          .now()
-          .millisecondsSinceEpoch;
+  static int get _nowMillis => DateTime.now().millisecondsSinceEpoch;
 
   void addRequest(DownloadItem item) {
     final progress = DownloadProgressMessage(
@@ -46,11 +43,11 @@ class DownloadRequestProvider with ChangeNotifier {
     insertRows([
       DownloadProgressMessage(
           downloadItem: DownloadItemModel(
-            id: item.key,
-            fileName: item.fileName,
-            downloadUrl: item.downloadUrl,
-            progress: item.progress,
-          )),
+        id: item.key,
+        fileName: item.fileName,
+        downloadUrl: item.downloadUrl,
+        progress: item.progress,
+      )),
     ]);
     PlutoGridUtil.plutoStateManager?.notifyListeners();
     notifyListeners();
@@ -104,9 +101,7 @@ class DownloadRequestProvider with ChangeNotifier {
   int? getExistingConnectionCount(DownloadItemModel downloadItem) {
     final tempPath = join(SettingsCache.temporaryDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
-    return tempDir.existsSync() ? tempDir
-        .listSync()
-        .length : null;
+    return tempDir.existsSync() ? tempDir.listSync().length : null;
   }
 
   Future<StreamChannel> _spawnDownloadEngineIsolate(
@@ -118,10 +113,9 @@ class DownloadRequestProvider with ChangeNotifier {
       IsolateArgsPair(rPort.sendPort, downloadItem.uid),
       errorsAreFatal: false,
     );
-    engineIsolates[downloadItem.uid] = isolate;
-    engineChannels[downloadItem.uid] = channel;
-    return
-    channel;
+    engineIsolates[downloadItem.id!] = isolate;
+    engineChannels[downloadItem.id!] = channel;
+    return channel;
   }
 
   void _handleDownloadEngineMessage(message) {
@@ -144,8 +138,7 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   void _handleDownloadProgressMessage(DownloadProgressMessage progress) {
-    final uid = progress.downloadItem.uid;
-    downloads[uid] = progress;
+    downloads[progress.downloadItem.id!] = progress;
     _handleNotification(progress);
     final downloadItem = progress.downloadItem;
     notifyAllListeners(progress);
@@ -181,11 +174,16 @@ class DownloadRequestProvider with ChangeNotifier {
   Future<DownloadProgressMessage> _addDownloadProgress(int id) async {
     final downloadItem = HiveUtil.instance.downloadItemsBox.get(id)!;
     downloads.addAll({
-      downloadItem.uid: DownloadProgressMessage(
-          downloadItem: DownloadItemModel.fromDownloadItem(downloadItem))
+      downloadItem.key: DownloadProgressMessage(
+        downloadItem:
+            DownloadItemModel(fileName: '', downloadUrl: '', progress: 0)
+                .fromDownloadItem(downloadItem),
+      )
     });
     return DownloadProgressMessage(
-        downloadItem: DownloadItemModel.fromDownloadItem(downloadItem));
+        downloadItem:
+            DownloadItemModel(fileName: '', downloadUrl: '', progress: 0)
+                .fromDownloadItem(downloadItem));
   }
 
   void _killIsolateConnection(int id) {
@@ -195,8 +193,8 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   /// Updates the download request based on the incoming progress from handler isolate every 6 seconds
-  void _updateDownloadRequest(DownloadProgressMessage progress,
-      DownloadItem item) {
+  void _updateDownloadRequest(
+      DownloadProgressMessage progress, DownloadItem item) {
     final status = progress.status;
     if (isUpdateEligible(status)) {
       item.progress = progress.downloadProgress;
@@ -236,14 +234,14 @@ class DownloadRequestProvider with ChangeNotifier {
           ),
           "progress": PlutoCell(
             value:
-            convertPercentageNumberToReadableStr(e.downloadProgress * 100),
+                convertPercentageNumberToReadableStr(e.downloadProgress * 100),
           ),
           "status": PlutoCell(
             value: e.status == ""
                 ? (e.downloadItem.status == DownloadStatus.assembleComplete ||
-                e.downloadItem.status == DownloadStatus.paused)
-                ? e.downloadItem.status
-                : ""
+                        e.downloadItem.status == DownloadStatus.paused)
+                    ? e.downloadItem.status
+                    : ""
                 : e.status,
           ),
           "transfer_rate": PlutoCell(value: e.transferRate),
@@ -271,15 +269,37 @@ class DownloadRequestProvider with ChangeNotifier {
   Future<void> fetchRows(List<DownloadItem> items) async {
     PlutoGridUtil.cachedRows.clear();
     final requests = items
-        .map((e) =>
-        DownloadProgressMessage(
-            downloadItem: DownloadItemModel.fromDownloadItem(e),
-            downloadProgress: e.progress))
+        .map(
+          (e) => DownloadProgressMessage(
+              downloadItem:
+                  DownloadItemModel(fileName: '', downloadUrl: '', progress: 0)
+                      .fromDownloadItem(e),
+              downloadProgress: e.progress),
+        )
         .toList();
     final stateManager = PlutoGridUtil.plutoStateManager;
     stateManager?.removeAllRows();
     stateManager?.insertRows(0, buildRows(requests));
     stateManager?.setShowLoading(false);
     stateManager?.notifyListeners();
+  }
+}
+
+extension Factory on DownloadItemModel {
+  DownloadItemModel fromDownloadItem(DownloadItem e) {
+    return DownloadItemModel(
+      id: e.key,
+      uid: e.uid,
+      downloadUrl: e.downloadUrl,
+      fileName: e.fileName,
+      supportsPause: e.supportsPause,
+      progress: e.progress,
+      contentLength: e.contentLength,
+      filePath: e.filePath,
+      fileType: e.fileType,
+      finishDate: e.finishDate,
+      startDate: e.startDate,
+      status: e.status,
+    );
   }
 }

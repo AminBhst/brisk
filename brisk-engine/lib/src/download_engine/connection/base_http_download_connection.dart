@@ -232,6 +232,7 @@ abstract class BaseHttpDownloadConnection {
 
   void sendDownloadRequest(http.Request request) {
     try {
+      http.get(request.url);
       final response = client.send(request);
       response.asStream().cast<http.StreamedResponse>().listen((response) {
         response.stream.listen(

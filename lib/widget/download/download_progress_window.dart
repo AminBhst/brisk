@@ -1,12 +1,10 @@
-import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
+import 'package:brisk_engine/brisk_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../download_engine/message/download_progress_message.dart';
 
 class DownloadProgressWindow extends StatefulWidget {
   final int downloadId;
