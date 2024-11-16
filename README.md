@@ -4,6 +4,9 @@
 <a href="https://discord.gg/3mpSsVWF"><img alt="Discord Chat" src="https://img.shields.io/discord/1298990692000989225?color=5865F2&label=discord&style=flat-square"></a>
 [![Telegram Channel](https://img.shields.io/badge/Channel-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/ryedev)
 
+[//]: # (![Static Badge]&#40;https://img.shields.io/badge/Channel-Youtube-red?style=flat-square&logo=youtube&link=https%3A%2F%2Fwww.youtube.com%2F%40ryedev&#41;)
+
+
 <p align="center">
 <img width="100" src="assets/icons/logo.png" alt="Brisk">
 <p align="center">Ultra-fast download manager for desktop</pal>
