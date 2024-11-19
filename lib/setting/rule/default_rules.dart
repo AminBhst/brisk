@@ -3,7 +3,7 @@ import 'package:brisk/setting/rule/file_rule.dart';
 import 'package:brisk/util/file_extensions.dart';
 
 class DefaultRules {
-  static final List<FileRule> extensionIgnoreListRules = [
+  static final List<FileRule> extensionSkipCaptureRules = [
     FileRule(
       condition: FileCondition.fileExtensionIs,
       value: FileExtensions.image.join("-"),

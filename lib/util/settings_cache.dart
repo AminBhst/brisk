@@ -127,7 +127,7 @@ class SettingsCache {
     ],
     SettingOptions.extensionSkipCaptureRules.name: [
       SettingType.extension.name,
-      parseFileRulesToCsv(DefaultRules.extensionIgnoreListRules),
+      parseFileRulesToCsv(DefaultRules.extensionSkipCaptureRules),
     ],
     SettingOptions.lastUpdateCheck.name: [
       SettingType.system.name,
