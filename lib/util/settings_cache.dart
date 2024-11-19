@@ -6,6 +6,8 @@ import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/setting.dart';
+import 'package:brisk/setting/rule/default_rules.dart';
+import 'package:brisk/setting/rule/file_rule.dart';
 import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
@@ -23,7 +25,6 @@ class SettingsCache {
   static late bool launchOnStartUp;
   static late bool openDownloadProgressWindow;
   static late bool enableWindowToFront;
-  static late int extensionPort;
   static late bool loggerEnabled;
 
   /// File
@@ -41,6 +42,10 @@ class SettingsCache {
   static late int connectionsNumber;
   static late int connectionRetryCount;
   static late int connectionRetryTimeout;
+
+  /// Extension
+  static late int extensionPort;
+  static late List<FileRule> extensionSkipCaptureRules;
 
   static final Map<String, List<String>> defaultSettings = {
     SettingOptions.applicationThemeId.name: [
@@ -120,10 +125,14 @@ class SettingsCache {
       SettingType.extension.name,
       "3020",
     ],
+    SettingOptions.extensionSkipCaptureRules.name: [
+      SettingType.extension.name,
+      parseFileRulesToCsv(DefaultRules.extensionIgnoreListRules),
+    ],
     SettingOptions.lastUpdateCheck.name: [
       SettingType.system.name,
       "0",
-    ]
+    ],
   };
 
   static Future<void> setCachedSettings() async {
@@ -166,6 +175,9 @@ class SettingsCache {
           break;
         case SettingOptions.programFormats:
           programFormats = parseCsvToList(value);
+          break;
+        case SettingOptions.extensionSkipCaptureRules:
+          extensionSkipCaptureRules = parseCsvToFileRuleList(value);
           break;
         case SettingOptions.fileDuplicationBehaviour:
           fileDuplicationBehaviour = parseFileDuplicationBehaviour(value);
@@ -241,6 +253,10 @@ class SettingsCache {
           break;
         case SettingOptions.programFormats:
           setting.value = parseListToCsv(programFormats);
+          break;
+        case SettingOptions.extensionSkipCaptureRules:
+          setting.value =
+              parseFileRulesToCsv(SettingsCache.extensionSkipCaptureRules);
           break;
         case SettingOptions.fileDuplicationBehaviour:
           setting.value = SettingsCache.fileDuplicationBehaviour.name;

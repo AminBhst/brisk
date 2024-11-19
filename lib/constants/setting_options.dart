@@ -22,4 +22,5 @@ enum SettingOptions {
   lastUpdateCheck,
   updateRequested,
   preUpdateVersion,
+  extensionSkipCaptureRules,
 }
