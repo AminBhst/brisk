@@ -2,5 +2,6 @@ enum FileCondition {
   fileNameContains,
   fileSizeGreaterThan,
   fileSizeLessThan,
-  fileExtensionIs;
+  fileExtensionIs,
+  downloadUrlContains;
 }

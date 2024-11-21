@@ -343,7 +343,7 @@ ApplicationTheme signatureBlue = ApplicationTheme(
           hoverColor: Colors.greenAccent,
         ),
         dropDownColor: DropDownColor(
-          dropDownBackgroundColor: Colors.black26,
+          dropDownBackgroundColor: Color.fromRGBO(25, 25, 25, 1),
           ItemTextColor: Colors.white,
         ),
         textFieldColor: TextFieldColor(
