@@ -1,3 +1,4 @@
+import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/setting/rule/file_condition.dart';
 import 'package:path/path.dart';
@@ -51,20 +52,30 @@ class FileRule {
     return FileRule(condition: condition, value: value);
   }
 
-  bool isSatisfied(FileInfo fileInfo) {
+  bool isSatisfiedByFileInfo(FileInfo fileInfo) {
+    return isSatisfied(fileInfo.fileName, fileInfo.url, fileInfo.contentLength);
+  }
+
+  bool isSatisfiedByDownloadItem(DownloadItem downloadItem) {
+    return isSatisfied(
+      downloadItem.fileName,
+      downloadItem.downloadUrl,
+      downloadItem.contentLength,
+    );
+  }
+
+  bool isSatisfied(String fileName, String url, int fileSize) {
     switch (this.condition) {
       case FileCondition.fileNameContains:
-        return fileInfo.fileName.toLowerCase().contains(value.toLowerCase());
+        return fileName.toLowerCase().contains(value.toLowerCase());
       case FileCondition.fileExtensionIs:
-        return extension(fileInfo.fileName).contains(value.toLowerCase());
+        return extension(fileName).contains(value.toLowerCase());
       case FileCondition.fileSizeGreaterThan:
-        return fileInfo.contentLength >
-            (double.tryParse(value) ?? double.infinity);
+        return fileSize > (double.tryParse(value) ?? double.infinity);
       case FileCondition.fileSizeLessThan:
-        return fileInfo.contentLength <
-            (double.tryParse(value) ?? double.infinity);
+        return fileSize < (double.tryParse(value) ?? double.infinity);
       case FileCondition.downloadUrlContains:
-        return fileInfo.url.contains(value);
+        return url.contains(value);
     }
   }
 }

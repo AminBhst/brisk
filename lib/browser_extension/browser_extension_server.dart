@@ -175,7 +175,7 @@ class BrowserExtensionServer {
     final fileInfoResponse = DownloadAdditionUiUtil.requestFileInfo(url);
     fileInfoResponse.then((fileInfo) {
       final satisfied = SettingsCache.extensionSkipCaptureRules.any(
-        (rule) => rule.isSatisfied(fileInfo),
+        (rule) => rule.isSatisfiedByFileInfo(fileInfo),
       );
       if (satisfied) {
         completer.complete(false);

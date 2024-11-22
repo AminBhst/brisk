@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/util/settings_cache.dart';
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -246,7 +248,16 @@ class DownloadAdditionUiUtil {
     if (additionalPop) {
       Navigator.of(context).pop();
     }
-    item.filePath = FileUtil.getFilePath(item.fileName);
+    final rule = SettingsCache.fileSavePathRules.firstOrNullWhere(
+      (rule) => rule.isSatisfiedByDownloadItem(item),
+    );
+    item.filePath = rule == null
+        ? FileUtil.getFilePath(item.fileName)
+        : FileUtil.getFilePath(
+            item.fileName,
+            baseSaveDir: Directory(rule.savePath),
+            useTypeBasedSubDirs: false,
+          );
     showDialog(
       context: context,
       builder: (_) => DownloadInfoDialog(item),
