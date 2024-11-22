@@ -149,7 +149,7 @@ class _MultiDownloadAdditionDialogState
       if (widget.customSavePath != null) {
         item.filePath = path.join(widget.customSavePath!, item.fileName);
       } else if (rule != null) {
-        .filePath = FileUtil.getFilePath(
+        item.filePath = FileUtil.getFilePath(
           item.fileName,
           baseSaveDir: Directory(rule.savePath),
           useTypeBasedSubDirs: false,
