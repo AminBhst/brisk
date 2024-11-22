@@ -8,6 +8,7 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/setting/rule/default_rules.dart';
 import 'package:brisk/setting/rule/file_rule.dart';
+import 'package:brisk/setting/rule/file_save_path_rule.dart';
 import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
@@ -37,6 +38,7 @@ class SettingsCache {
   static late List<String> programFormats;
   static late FileDuplicationBehaviour fileDuplicationBehaviour;
   static late AppClosureBehaviour appClosureBehaviour;
+  static late List<FileSavePathRule> fileSavePathRules;
 
   // Connection
   static late int connectionsNumber;
@@ -75,6 +77,10 @@ class SettingsCache {
     SettingOptions.savePath.name: [
       SettingType.file.name,
       FileUtil.defaultSaveDir.path,
+    ],
+    SettingOptions.fileSavePathRules.name: [
+      SettingType.file.name,
+      "",
     ],
     SettingOptions.videoFormats.name: [
       SettingType.file.name,
@@ -161,6 +167,9 @@ class SettingsCache {
         case SettingOptions.savePath:
           saveDir = Directory(value);
           break;
+        case SettingOptions.fileSavePathRules:
+          fileSavePathRules = parseCsvToFileSavePathRuleList(value);
+          break;
         case SettingOptions.videoFormats:
           videoFormats = parseCsvToList(value);
           break;
@@ -238,6 +247,10 @@ class SettingsCache {
           break;
         case SettingOptions.savePath:
           setting.value = SettingsCache.saveDir.path;
+          break;
+        case SettingOptions.fileSavePathRules:
+          setting.value =
+              parseFileSavePathRulesToCsv(SettingsCache.fileSavePathRules);
           break;
         case SettingOptions.videoFormats:
           setting.value = parseListToCsv(SettingsCache.videoFormats);

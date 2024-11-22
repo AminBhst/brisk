@@ -1,10 +1,10 @@
 import 'package:brisk/setting/rule/file_condition.dart';
 import 'package:brisk/setting/rule/file_rule.dart';
 
-class FileSaveRule extends FileRule {
+class FileSavePathRule extends FileRule {
   final String savePath;
 
-  FileSaveRule({
+  FileSavePathRule({
     required this.savePath,
     required super.condition,
     required super.value,
@@ -13,7 +13,7 @@ class FileSaveRule extends FileRule {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other is! FileSaveRule) return false;
+    if (other is! FileSavePathRule) return false;
     return this.condition == other.condition &&
         this.value == other.value &&
         this.savePath == other.savePath;
@@ -24,10 +24,10 @@ class FileSaveRule extends FileRule {
     return "${condition.name}:$value@:/$savePath";
   }
 
-  factory FileSaveRule.fromString(String str) {
+  factory FileSavePathRule.fromString(String str) {
     final regex = RegExp(r'^(.+?):(.+?)@:/(.+)$');
     final match = regex.firstMatch(str)!;
-    return FileSaveRule(
+    return FileSavePathRule(
       condition: FileCondition.values.byName(match.group(1)!),
       value: match.group(2)!,
       savePath: match.group(3)!,

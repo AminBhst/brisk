@@ -1,11 +1,10 @@
 import 'package:brisk/setting/rule/file_condition.dart';
-import 'package:brisk/setting/rule/file_rule.dart';
-import 'package:brisk/setting/rule/file_save_rule.dart';
+import 'package:brisk/setting/rule/file_save_path_rule.dart';
 import 'package:brisk/setting/rule/rule_value_type.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/default_tooltip.dart';
 
 import 'package:brisk/widget/setting/base/external_link_setting.dart';
-import 'package:brisk/widget/setting/base/rule/file_rule_item_editor.dart';
 import 'package:brisk/widget/setting/base/rule/file_save_rule_item_editor.dart';
 import 'package:brisk/widget/setting/base/rule/rule_editor_window.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
@@ -16,7 +15,6 @@ class FileRulesGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return SettingsGroup(
       height: 150,
       title: "Rules",
@@ -26,16 +24,10 @@ class FileRulesGroup extends StatelessWidget {
           titleWidth: 140,
           linkText: "Open Rule Editor",
           onLinkPressed: () => showDialog(
-            builder: (context) => RuleEditorWindow<FileSaveRule>(
+            builder: (context) => RuleEditorWindow<FileSavePathRule>(
               ruleType: "File Save Path Rules",
-              rules: [
-                FileSaveRule(
-                  savePath: "C:\\RyeWell\\Hello\\This\\is\\new\\somehtingsg",
-                  condition: FileCondition.fileNameContains,
-                  value: "ABCD",
-                )
-              ],
-              buildItemTitle: (FileSaveRule rule) {
+              rules: [...SettingsCache.fileSavePathRules],
+              buildItemTitle: (FileSavePathRule rule) {
                 return SizedBox(
                   height: 40,
                   width: 230,
@@ -78,10 +70,36 @@ class FileRulesGroup extends StatelessWidget {
                   ),
                 );
               },
-              onSavePressed: (List<FileSaveRule> rules) {},
-              onEditPressed: (FileSaveRule rule,
-                  Function(FileSaveRule, FileSaveRule) update) {},
-              onAddPressed: (Function(FileSaveRule) addRule) {
+              onSavePressed: (List<FileSavePathRule> rules) {
+								SettingsCache.fileSavePathRules = rules;
+							},
+              onEditPressed: (
+                FileSavePathRule rule,
+                Function(FileSavePathRule oldRule, FileSavePathRule newRule) update,
+              ) {
+                showDialog(
+                  builder: (_) => FileSaveRuleItemEditor(
+                    condition: rule.condition,
+                    value: rule.valueWithTypeConsidered,
+                    ruleValueType: RuleValueType.fromRule(rule),
+                    onSaveClicked: (
+                      FileCondition condition,
+                      String value,
+                      String savePath
+                    ) {
+                      final newRule = FileSavePathRule(
+                        condition: condition,
+                        value: value,
+                        savePath: savePath,
+                      );
+                      update(rule, newRule);
+                    },
+                    savePath: rule.savePath,
+                  ),
+                  context: context,
+                );
+              },
+              onAddPressed: (Function(FileSavePathRule) addRule) {
                 showDialog(
                   context: context,
                   builder: (context) => FileSaveRuleItemEditor(
@@ -89,7 +107,7 @@ class FileRulesGroup extends StatelessWidget {
                     value: "",
                     ruleValueType: RuleValueType.Text,
                     onSaveClicked: (condition, value, savePath) {
-                      final rule = FileSaveRule(
+                      final rule = FileSavePathRule(
                         condition: condition,
                         value: value,
                         savePath: savePath,

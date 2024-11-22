@@ -58,7 +58,7 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
         break;
     }
     valueController = TextEditingController(text: widget.value);
-    savePathController = TextEditingController(text: "");
+    savePathController = TextEditingController(text: widget.savePath);
     super.initState();
   }
 
@@ -224,6 +224,10 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
     String? errorText = null;
     if (valueController.text.isEmpty) {
       errorText = "Empty value!";
+    }
+    if (valueController.text.contains(",") ||
+        savePathController.text.contains(",")) {
+      errorText = "Unsupported Character: \",\" ";
     }
     if (!Directory(savePathController.text).existsSync()) {
       errorText = "Invalid Save Path!";

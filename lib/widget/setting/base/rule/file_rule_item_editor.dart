@@ -184,10 +184,17 @@ class _FileRuleItemEditorState extends State<FileRuleItemEditor> {
   }
 
   void onSave() {
+    String? errorText = null;
     if (txtController.text.isEmpty) {
+      errorText = "Empty Value!";
+    }
+    if (txtController.text.contains(",")) {
+      errorText = "Unsupported Character: \",\" ";
+    }
+    if (errorText != null) {
       showDialog(
         context: context,
-        builder: (context) => ErrorDialog(text: "Empty Value!", textHeight: 20),
+        builder: (context) => ErrorDialog(text: errorText!, textHeight: 20),
       );
       return;
     }
