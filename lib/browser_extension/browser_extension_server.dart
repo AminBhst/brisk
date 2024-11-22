@@ -132,6 +132,11 @@ class BrowserExtensionServer {
       if (fileInfos == null || fileInfos.isEmpty) {
         return onFileInfoRetrievalError(context);
       }
+      fileInfos.removeWhere(
+        (fileInfo) => SettingsCache.extensionSkipCaptureRules.any(
+          (rule) => rule.isSatisfiedByFileInfo(fileInfo),
+        ),
+      );
       Navigator.of(context).pop();
       showDialog(
         context: context,

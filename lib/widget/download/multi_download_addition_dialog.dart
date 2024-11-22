@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
@@ -12,6 +14,7 @@ import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/download/multi_download_addition_grid.dart';
+import 'package:dartx/dartx.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -140,8 +143,17 @@ class _MultiDownloadAdditionDialogState
 
     await updateDuplicateUrls(downloadItems);
     for (final item in downloadItems.toSet()) {
+      final rule = SettingsCache.fileSavePathRules.firstOrNullWhere(
+        (rule) => rule.isSatisfiedByDownloadItem(item),
+      );
       if (widget.customSavePath != null) {
         item.filePath = path.join(widget.customSavePath!, item.fileName);
+      } else if (rule != null) {
+        .filePath = FileUtil.getFilePath(
+          item.fileName,
+          baseSaveDir: Directory(rule.savePath),
+          useTypeBasedSubDirs: false,
+        );
       }
       await HiveUtil.instance.addDownloadItem(item);
       widget.provider.insertRows([
