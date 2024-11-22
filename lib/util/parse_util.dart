@@ -59,20 +59,18 @@ String parseFileSavePathRulesToCsv(List<FileSavePathRule> rules) {
 }
 
 List<FileSavePathRule> parseCsvToFileSavePathRuleList(String csv) {
-	print("YOOOO");
-	print(csv.isNullOrBlank);
   if (csv.isNullOrBlank) return [];
   final rulesStr = parseCsvToList(csv);
   return rulesStr.map((str) => FileSavePathRule.fromString(str)).toList();
 }
 
 List<FileRule> parseCsvToFileRuleList(String csv) {
-  if (csv.isEmpty) return [];
+  if (csv.isNullOrBlank) return [];
   final rulesStr = parseCsvToList(csv);
   return rulesStr.map((str) => FileRule.fromString(str)).toList();
 }
 
 List<String> parseCsvToList(String csv) {
-  if (csv.isEmpty) return [];
+  if (csv.isNullOrBlank) return [];
   return csv.isEmpty ? [] : const CsvToListConverter().convert(csv)[0].cast();
 }
