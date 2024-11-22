@@ -21,7 +21,7 @@ import 'package:window_manager/window_manager.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.1.3";
+  static const String extensionVersion = "1.1.4";
 
   static void setup(BuildContext context) async {
     if (_isServerRunning) return;
@@ -47,22 +47,31 @@ class BrowserExtensionServer {
   static Future<void> handleExtensionRequests(server, context) async {
     await for (HttpRequest request in server) {
       await for (final body in request) {
+        bool responseClosed = false;
         addCORSHeaders(request);
         try {
           final jsonBody = jsonDecode(String.fromCharCodes(body));
           final targetVersion = jsonBody["extensionVersion"];
+          print(targetVersion);
           if (targetVersion == null ||
               isNewVersionAvailable(extensionVersion, targetVersion)) {
             showNewBrowserExtensionVersion(context);
-            await flushAndCloseResponse(request);
+            await flushAndCloseResponse(request, false);
+            responseClosed = true;
             continue;
           }
-          _handleDownloadAddition(jsonBody, context, request);
+          final success =
+              await _handleDownloadAddition(jsonBody, context, request);
+          await flushAndCloseResponse(request, success);
+          responseClosed = true;
         } catch (e) {
-          print(e);
+          print("Error:: $e");
+        } finally {
+          if (!responseClosed) {
+            await flushAndCloseResponse(request, false);
+          }
         }
       }
-      await flushAndCloseResponse(request);
     }
   }
 
@@ -80,19 +89,26 @@ class BrowserExtensionServer {
     );
   }
 
-  static void _handleDownloadAddition(jsonBody, context, request) {
+  static Future<bool> _handleDownloadAddition(
+      jsonBody, context, request) async {
     final type = jsonBody["type"];
     if (type == "single") {
-      _handleSingleDownloadRequest(jsonBody, context, request);
+      return _handleSingleDownloadRequest(jsonBody, context, request);
     }
     if (type == "multi") {
       _handleMultiDownloadRequest(jsonBody, context, request);
+      return true;
     }
+    return false;
   }
 
-  static Future<void> flushAndCloseResponse(HttpRequest request) async {
-    await request.response.flush();
-    request.response.write("");
+  static Future<void> flushAndCloseResponse(
+    HttpRequest request,
+    bool success,
+  ) async {
+    final body = jsonEncode({"captured": success});
+    request.response.write(body);
+    await request.response.close();
   }
 
   static void addCORSHeaders(HttpRequest httpRequest) {
@@ -148,12 +164,13 @@ class BrowserExtensionServer {
     );
   }
 
-  static void _handleSingleDownloadRequest(jsonBody, context, request) {
+  static Future<bool> _handleSingleDownloadRequest(
+      jsonBody, context, request) async {
     final url = jsonBody['data']['url'];
+    Completer<bool> completer = Completer();
     final downloadItem = DownloadItem.fromUrl(url);
     if (!isUrlValid(url)) {
-      request.response.statusCode = HttpStatus.badRequest;
-      return;
+      completer.complete(false);
     }
     final fileInfoResponse = DownloadAdditionUiUtil.requestFileInfo(url);
     fileInfoResponse.then((fileInfo) {
@@ -161,7 +178,7 @@ class BrowserExtensionServer {
         (rule) => rule.isSatisfied(fileInfo),
       );
       if (satisfied) {
-        request.response.statusCode = HttpStatus.notAcceptable;
+        completer.complete(false);
         return;
       }
       if (_windowToFrontEnabled) {
@@ -173,8 +190,9 @@ class BrowserExtensionServer {
         context,
         false,
       );
-      request.response.statusCode = HttpStatus.ok;
+      completer.complete(true);
     });
+    return completer.future;
   }
 
   static int get _extensionPort => int.parse(
