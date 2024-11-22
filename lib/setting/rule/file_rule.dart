@@ -1,4 +1,6 @@
+import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/setting/rule/file_condition.dart';
+import 'package:path/path.dart';
 
 class FileRule {
   final FileCondition condition;
@@ -49,7 +51,20 @@ class FileRule {
     return FileRule(condition: condition, value: value);
   }
 
-  bool isSatisfied() {
-    return false;
+  bool isSatisfied(FileInfo fileInfo) {
+    switch (this.condition) {
+      case FileCondition.fileNameContains:
+        return fileInfo.fileName.toLowerCase().contains(value.toLowerCase());
+      case FileCondition.fileExtensionIs:
+        return extension(fileInfo.fileName).contains(value.toLowerCase());
+      case FileCondition.fileSizeGreaterThan:
+        return fileInfo.contentLength >
+            (double.tryParse(value) ?? double.infinity);
+      case FileCondition.fileSizeLessThan:
+        return fileInfo.contentLength <
+            (double.tryParse(value) ?? double.infinity);
+      case FileCondition.downloadUrlContains:
+        return fileInfo.url.contains(value);
+    }
   }
 }

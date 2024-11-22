@@ -28,6 +28,22 @@ class DownloadAdditionUiUtil {
     context.loaderOverlay.hide();
   }
 
+  static Future<FileInfo> requestFileInfo(String url) async {
+    final Completer<FileInfo> completer = Completer();
+    var item = DownloadItem.fromUrl(url);
+    _spawnFileInfoRetrieverIsolate(item).then((rPort) {
+      retrieveFileInfo(rPort).then((fileInfo) {
+        completer.complete(fileInfo);
+      }).onError(
+        (e, s) {
+          _cancelRequest(null);
+          completer.completeError("Failed to get file information");
+        },
+      );
+    });
+    return completer.future;
+  }
+
   static void handleDownloadAddition(BuildContext context, String url,
       {bool updateDialog = false, int? downloadId, additionalPop = false}) {
     if (!isUrlValid(url)) {
@@ -163,9 +179,11 @@ class DownloadAdditionUiUtil {
     return receivePort;
   }
 
-  static void _cancelRequest(BuildContext context) {
+  static void _cancelRequest(BuildContext? context) {
     fileInfoExtractorIsolate?.kill();
-    context.loaderOverlay.hide();
+    if (context != null) {
+      context.loaderOverlay.hide();
+    }
   }
 
   static void showAskDuplicationActionDialog(BuildContext context,

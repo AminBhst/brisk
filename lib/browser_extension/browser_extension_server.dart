@@ -8,6 +8,7 @@ import 'package:brisk/model/download_item.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/parse_util.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/download/multi_download_addition_dialog.dart';
@@ -56,11 +57,7 @@ class BrowserExtensionServer {
             await flushAndCloseResponse(request);
             continue;
           }
-          if (_windowToFrontEnabled) {
-            await windowManager.show();
-            WindowToFront.activate();
-          }
-          await _handleDownloadAddition(jsonBody, context, request);
+          _handleDownloadAddition(jsonBody, context, request);
         } catch (e) {
           print(e);
         }
@@ -83,8 +80,7 @@ class BrowserExtensionServer {
     );
   }
 
-  static Future<void> _handleDownloadAddition(
-      jsonBody, context, request) async {
+  static void _handleDownloadAddition(jsonBody, context, request) {
     final type = jsonBody["type"];
     if (type == "single") {
       _handleSingleDownloadRequest(jsonBody, context, request);
@@ -96,7 +92,7 @@ class BrowserExtensionServer {
 
   static Future<void> flushAndCloseResponse(HttpRequest request) async {
     await request.response.flush();
-    await request.response.close();
+    request.response.write("");
   }
 
   static void addCORSHeaders(HttpRequest httpRequest) {
@@ -152,12 +148,33 @@ class BrowserExtensionServer {
     );
   }
 
-  static void _handleSingleDownloadRequest(jsonBody, context, request) async {
-    DownloadAdditionUiUtil.handleDownloadAddition(
-      context,
-      jsonBody['data']['url'],
-    );
-    request.response.statusCode = HttpStatus.ok;
+  static void _handleSingleDownloadRequest(jsonBody, context, request) {
+    final url = jsonBody['data']['url'];
+    final downloadItem = DownloadItem.fromUrl(url);
+    if (!isUrlValid(url)) {
+      request.response.statusCode = HttpStatus.badRequest;
+      return;
+    }
+    final fileInfoResponse = DownloadAdditionUiUtil.requestFileInfo(url);
+    fileInfoResponse.then((fileInfo) {
+      final satisfied = SettingsCache.extensionSkipCaptureRules.any(
+        (rule) => rule.isSatisfied(fileInfo),
+      );
+      if (satisfied) {
+        request.response.statusCode = HttpStatus.notAcceptable;
+        return;
+      }
+      if (_windowToFrontEnabled) {
+        windowManager.show().then((_) => WindowToFront.activate());
+      }
+      DownloadAdditionUiUtil.addDownload(
+        downloadItem,
+        fileInfo,
+        context,
+        false,
+      );
+      request.response.statusCode = HttpStatus.ok;
+    });
   }
 
   static int get _extensionPort => int.parse(
