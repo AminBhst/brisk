@@ -47,11 +47,14 @@ class DropDownSetting extends StatelessWidget {
               return DropdownMenuItem<String>(
                 value: value,
                 child: SizedBox(
-                    width: dropDownItemTextWidth,
-                    child: Text(value,
-                        style: TextStyle(
-                          color: theme.widgetColor.dropDownColor.ItemTextColor,
-                        ))),
+                  width: dropDownItemTextWidth,
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      color: theme.widgetColor.dropDownColor.ItemTextColor,
+                    ),
+                  ),
+                ),
               );
             }).toList(),
             onChanged: onChanged,

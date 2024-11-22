@@ -17,7 +17,7 @@ class WebExtensionSettingsPage extends StatelessWidget {
     return Center(
       child: SingleChildScrollView(
         child: SizedBox(
-          height: 650,
+          height: 500,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

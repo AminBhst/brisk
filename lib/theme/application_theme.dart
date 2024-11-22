@@ -190,6 +190,7 @@ class SettingPageTheme {
   final Color groupBackgroundColor;
   final Color groupTitleTextColor;
   final Color titleTextColor;
+  final Color itemAccentColor;
   final SettingWidgetColor widgetColor;
 
   SettingPageTheme({
@@ -198,6 +199,7 @@ class SettingPageTheme {
     required this.groupTitleTextColor,
     required this.titleTextColor,
     required this.widgetColor,
+    required this.itemAccentColor,
   });
 }
 

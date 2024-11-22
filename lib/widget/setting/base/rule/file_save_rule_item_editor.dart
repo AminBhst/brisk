@@ -1,42 +1,80 @@
+import 'dart:io';
+
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/setting/rule/file_condition.dart';
+import 'package:brisk/setting/rule/rule_value_type.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/closable_window.dart';
+import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/outlined_text_field.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class RuleItemEditor extends StatefulWidget {
-  const RuleItemEditor({super.key});
+class FileSaveRuleItemEditor extends StatefulWidget {
+  final FileCondition condition;
+  final String value;
+  final RuleValueType ruleValueType;
+  final String savePath;
+  final Function(FileCondition condition, String value, String savePath)
+      onSaveClicked;
+
+  const FileSaveRuleItemEditor({
+    super.key,
+    required this.condition,
+    required this.value,
+    required this.ruleValueType,
+    required this.onSaveClicked,
+    required this.savePath,
+  });
 
   @override
-  State<RuleItemEditor> createState() => _RuleItemEditorState();
+  State<FileSaveRuleItemEditor> createState() => _FileSaveRuleItemEditorState();
 }
 
-class _RuleItemEditorState extends State<RuleItemEditor> {
-  late TextEditingController txtController;
-  var selectedCondition = FileCondition.fileExtensionIs;
-  var selectedType = "MB"; // TODO fix these
-  var validTypes = ["KB", "MB", "GB"];
+class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
+  late TextEditingController valueController;
+  late TextEditingController savePathController;
+  late FileCondition selectedCondition;
+  late RuleValueType selectedType;
+  late List<RuleValueType> validTypes;
   final conditions = [...FileCondition.values.map((a) => a.name)];
 
   @override
   void initState() {
-    txtController = TextEditingController(text: "100");
+    selectedCondition = widget.condition;
+    selectedType = widget.ruleValueType;
+    switch (FileCondition.values.byName(selectedCondition.name)) {
+      case FileCondition.downloadUrlContains:
+      case FileCondition.fileNameContains:
+      case FileCondition.fileExtensionIs:
+        validTypes = [RuleValueType.Text];
+        break;
+      case FileCondition.fileSizeLessThan:
+      case FileCondition.fileSizeGreaterThan:
+        validTypes = [RuleValueType.KB, RuleValueType.MB, RuleValueType.GB];
+        break;
+    }
+    valueController = TextEditingController(text: widget.value);
+    savePathController = TextEditingController(text: "");
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context).activeTheme;
+    final size = MediaQuery.of(context).size;
+    print(size.width);
     return ClosableWindow(
       backgroundColor: theme.alertDialogTheme.backgroundColor,
-      height: 250,
+      height: 360,
       width: 600,
       content: Container(
         width: 600,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             titleRow(),
             const SizedBox(height: 10),
@@ -71,14 +109,15 @@ class _RuleItemEditorState extends State<RuleItemEditor> {
                   width: 100,
                   height: 50,
                   child: OutLinedTextField(
-                    controller: txtController,
-                    keyboardType: validTypes.contains("MB")
+                    controller: valueController,
+                    keyboardType: selectedType.isNumber()
                         ? TextInputType.number
                         : TextInputType.text,
-                    inputFormatters: validTypes.contains("MB")
+                    inputFormatters: selectedType.isNumber()
                         ? [
                             FilteringTextInputFormatter.allow(
-                                RegExp(r'^[0-9]*$'))
+                              RegExp(r'^\d*\.?\d*$'),
+                            )
                           ]
                         : [],
                   ),
@@ -88,16 +127,16 @@ class _RuleItemEditorState extends State<RuleItemEditor> {
                   width: 65,
                   height: 50,
                   child: DropdownButton<String>(
-                    value: selectedType,
+                    value: selectedType.name,
                     dropdownColor: theme.settingTheme.pageTheme.widgetColor
                         .dropDownColor.dropDownBackgroundColor,
-                    items: validTypes.map((String value) {
+                    items: validTypes.map((RuleValueType value) {
                       return DropdownMenuItem<String>(
-                        value: value,
+                        value: value.name,
                         child: SizedBox(
                           width: 40,
                           child: Text(
-                            value,
+                            value.name,
                             style: TextStyle(
                               color: theme.settingTheme.pageTheme.widgetColor
                                   .dropDownColor.ItemTextColor,
@@ -108,10 +147,30 @@ class _RuleItemEditorState extends State<RuleItemEditor> {
                     }).toList(),
                     onChanged: (a) {
                       if (a == null) return;
-                      setState(() => this.selectedType = a);
+                      setState(() =>
+                          this.selectedType = RuleValueType.values.byName(a));
                     },
                   ),
                 )
+              ],
+            ),
+            const SizedBox(height: 30),
+            titleRow2(),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                SizedBox(
+                  width: size.width > 686 ? 500 : size.width * 0.6,
+                  child: OutLinedTextField(controller: savePathController),
+                ),
+                const SizedBox(width: 5),
+                IconButton(
+                    onPressed: pickSaveLocation,
+                    icon: Icon(
+                      size: 30,
+                      Icons.open_in_new_rounded,
+                      color: Colors.white70,
+                    ))
               ],
             ),
             const SizedBox(height: 30),
@@ -133,7 +192,7 @@ class _RuleItemEditorState extends State<RuleItemEditor> {
                 ),
                 const SizedBox(width: 30),
                 RoundedOutlinedButton(
-                  onPressed: () {},
+                  onPressed: onSave,
                   borderColor:
                       theme.alertDialogTheme.addButtonColor.borderColor,
                   hoverTextColor:
@@ -145,7 +204,7 @@ class _RuleItemEditorState extends State<RuleItemEditor> {
                   text: "Save",
                 )
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -153,30 +212,82 @@ class _RuleItemEditorState extends State<RuleItemEditor> {
     );
   }
 
+  void pickSaveLocation() async {
+    final newLocation = await FilePicker.platform.getDirectoryPath(
+      initialDirectory: SettingsCache.saveDir.path,
+    );
+    if (newLocation == null) return;
+    savePathController.text = newLocation;
+  }
+
+  void onSave() {
+    String? errorText = null;
+    if (valueController.text.isEmpty) {
+      errorText = "Empty value!";
+    }
+    if (!Directory(savePathController.text).existsSync()) {
+      errorText = "Invalid Save Path!";
+    }
+    if (errorText != null) {
+      showDialog(
+        context: context,
+        builder: (context) => ErrorDialog(text: errorText!, textHeight: 20),
+      );
+      return;
+    }
+    String value;
+    switch (selectedType) {
+      case RuleValueType.KB:
+        value = (double.parse(valueController.text) * 1024).toString();
+        break;
+      case RuleValueType.MB:
+        value = (double.parse(valueController.text) * 1024 * 1024).toString();
+        break;
+      case RuleValueType.GB:
+        value = (double.parse(valueController.text) * 1024 * 1024 * 1024)
+            .toString();
+        break;
+      case RuleValueType.Text:
+        value = valueController.text;
+        break;
+    }
+    widget.onSaveClicked(selectedCondition, value, savePathController.text);
+    Navigator.of(context).pop();
+  }
+
   void onConditionChanged(String? value) {
     if (value == null) return;
-    List<String> validTypes = [];
-    String selectedType;
+    List<RuleValueType> validTypes = [];
+    RuleValueType selectedType;
     switch (FileCondition.values.byName(value)) {
       case FileCondition.downloadUrlContains:
       case FileCondition.fileNameContains:
       case FileCondition.fileExtensionIs:
-        validTypes = ["Text"];
-        selectedType = "Text";
+        validTypes = [RuleValueType.Text];
+        selectedType = RuleValueType.Text;
         break;
       case FileCondition.fileSizeLessThan:
       case FileCondition.fileSizeGreaterThan:
-        selectedType = "MB";
-        validTypes = ["KB", "MB", "GB"];
+        selectedType = RuleValueType.MB;
+        validTypes = [RuleValueType.KB, RuleValueType.MB, RuleValueType.GB];
         break;
     }
     setState(() {
       this.validTypes = validTypes;
       this.selectedType = selectedType;
       selectedCondition = FileCondition.values.byName(value);
-      txtController.clear();
+      valueController.clear();
     });
   }
+}
+
+Widget titleRow2() {
+  return Row(
+    children: [
+      Text("Save Path", style: TextStyle(color: Colors.grey)),
+      const Spacer(),
+    ],
+  );
 }
 
 Widget titleRow() {

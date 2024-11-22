@@ -53,7 +53,6 @@ class BriskChangeLogDialog extends StatelessWidget {
   }
 
   double resolveMainContainerHeight(Size size) {
-    print(size.height);
     double height = 500;
     if (size.height < 761) {
       height = size.height * 0.6;
