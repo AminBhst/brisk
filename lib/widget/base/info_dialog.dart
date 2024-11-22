@@ -1,15 +1,12 @@
 import 'package:brisk/provider/theme_provider.dart';
-import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class InfoDialog extends StatelessWidget {
-  final VoidCallback onConfirmPressed;
   final String title;
 
   const InfoDialog({
     super.key,
-    required this.onConfirmPressed,
     required this.title,
   });
 
