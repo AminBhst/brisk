@@ -4,9 +4,13 @@ import 'package:brisk/util/file_extensions.dart';
 
 class DefaultRules {
   static final List<FileRule> extensionSkipCaptureRules = [
-    FileRule(
-      condition: FileCondition.fileExtensionIs,
-      value: FileExtensions.image.join("-"),
+    ...FileExtensions.image.map(
+      (e) {
+        return FileRule(
+          condition: FileCondition.fileExtensionIs,
+          value: e,
+        );
+      },
     ),
     FileRule(
       condition: FileCondition.fileSizeLessThan,

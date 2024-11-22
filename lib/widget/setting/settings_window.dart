@@ -60,7 +60,7 @@ class _SettingsWindowState extends State<SettingsWindow> {
               children: [
                 RoundedOutlinedButton(
                   text: "Cancel",
-                  width: 140,
+                  width: size.width < 840 ? 95 : 140,
                   onPressed: _onCancelPressed,
                   borderColor: settingTheme.cancelButtonColor.borderColor,
                   textColor: settingTheme.cancelButtonColor.textColor,
@@ -68,10 +68,10 @@ class _SettingsWindowState extends State<SettingsWindow> {
                       settingTheme.cancelButtonColor.hoverBackgroundColor,
                   hoverTextColor: settingTheme.cancelButtonColor.hoverTextColor,
                 ),
-                const SizedBox(width: 20),
+                SizedBox(width: size.width < 880 ? 10 : 20),
                 RoundedOutlinedButton(
                   text: "Save Changes",
-                  width: 140,
+                  width: size.width < 840 ? 110 : 140,
                   onPressed: _onApplyPressed,
                   borderColor: settingTheme.saveButtonColor.borderColor,
                   textColor: settingTheme.saveButtonColor.textColor,
@@ -79,10 +79,10 @@ class _SettingsWindowState extends State<SettingsWindow> {
                       settingTheme.saveButtonColor.hoverBackgroundColor,
                   hoverTextColor: settingTheme.saveButtonColor.hoverTextColor,
                 ),
-                const SizedBox(width: 20),
+                SizedBox(width: size.width < 880 ? 10 : 20),
                 RoundedOutlinedButton(
                   text: "Reset Default",
-                  width: 140,
+                  width: size.width < 840 ? 110 : 140,
                   onPressed: _onResetDefaultPressed,
                   borderColor:
                       settingTheme.resetDefaultsButtonColor.borderColor,

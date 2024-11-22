@@ -1,4 +1,5 @@
 import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/widget/setting/page/extension/browser_extension_rules_group.dart';
 import 'package:brisk/widget/setting/page/extension/webextension_settings_download_group.dart';
 import 'package:brisk/widget/setting/page/extension/webextension_settings_group.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class WebExtensionSettingsPage extends StatelessWidget {
     return Center(
       child: SingleChildScrollView(
         child: SizedBox(
-          height: 450,
+          height: 500,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -27,6 +28,7 @@ class WebExtensionSettingsPage extends StatelessWidget {
                 style: TextStyle(color: theme.titleTextColor),
               ),
               const SizedBox(height: 10),
+              BrowserExtensionRulesGroup(),
               WebExtensionSettingsDownloadGroup(),
             ],
           ),

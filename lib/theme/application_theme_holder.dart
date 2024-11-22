@@ -104,29 +104,31 @@ ApplicationTheme celestialDark = ApplicationTheme(
   settingTheme: SettingTheme(
     windowBackgroundColor: const Color.fromRGBO(20, 20, 20, 1),
     pageTheme: SettingPageTheme(
-        pageBackgroundColor: const Color.fromRGBO(15, 15, 15, 1),
-        groupBackgroundColor: const Color.fromRGBO(42, 43, 43, 1),
-        groupTitleTextColor: Colors.white,
-        titleTextColor: Colors.white,
-        widgetColor: SettingWidgetColor(
-          launchIconColor: Colors.white,
-          switchColor: SwitchColor(
-            activeColor: Colors.green,
-            focusColor: Colors.lightGreen,
-          ),
-          dropDownColor: DropDownColor(
-            dropDownBackgroundColor: Color.fromRGBO(25, 25, 25, 1),
-            ItemTextColor: Colors.white,
-          ),
-          textFieldColor: TextFieldColor(
-            focusBorderColor: const Color.fromRGBO(53, 89, 143, 1),
-            borderColor: Colors.white70,
-            fillColor: Colors.black12,
-            textColor: Colors.white,
-            cursorColor: Colors.white,
-          ),
-          aboutIconColor: Colors.white70,
-        )),
+      pageBackgroundColor: const Color.fromRGBO(15, 15, 15, 1),
+      groupBackgroundColor: const Color.fromRGBO(42, 43, 43, 1),
+      groupTitleTextColor: Colors.white,
+      titleTextColor: Colors.white,
+      widgetColor: SettingWidgetColor(
+        launchIconColor: Colors.white,
+        switchColor: SwitchColor(
+          activeColor: Colors.green,
+          focusColor: Colors.lightGreen,
+        ),
+        dropDownColor: DropDownColor(
+          dropDownBackgroundColor: Color.fromRGBO(25, 25, 25, 1),
+          ItemTextColor: Colors.white,
+        ),
+        textFieldColor: TextFieldColor(
+          focusBorderColor: const Color.fromRGBO(53, 89, 143, 1),
+          borderColor: Colors.white70,
+          fillColor: Colors.black12,
+          textColor: Colors.white,
+          cursorColor: Colors.white,
+        ),
+        aboutIconColor: Colors.white70,
+      ),
+      itemAccentColor: Color.fromRGBO(52, 53, 54, 0.4),
+    ),
     sideMenuTheme: SettingSideMenuTheme(
       backgroundColor: const Color.fromRGBO(15, 15, 15, 1),
       activeTabBackgroundColor: const Color.fromRGBO(53, 89, 143, 1),
@@ -343,7 +345,7 @@ ApplicationTheme signatureBlue = ApplicationTheme(
           hoverColor: Colors.greenAccent,
         ),
         dropDownColor: DropDownColor(
-          dropDownBackgroundColor: Colors.black26,
+          dropDownBackgroundColor: Color.fromRGBO(33, 43, 49, 1.0),
           ItemTextColor: Colors.white,
         ),
         textFieldColor: TextFieldColor(
@@ -355,6 +357,7 @@ ApplicationTheme signatureBlue = ApplicationTheme(
         ),
         aboutIconColor: Colors.white70,
       ),
+      itemAccentColor: Color.fromRGBO(40, 52, 59, 1.0),
     ),
     sideMenuTheme: SettingSideMenuTheme(
       backgroundColor: Colors.black26,

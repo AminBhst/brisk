@@ -14,7 +14,7 @@ class WebExtensionSettingsDownloadGroup extends StatelessWidget {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
     return SettingsGroup(
-      height: 200,
+      height: 130,
       title: "Download Brisk Browser Extension",
       children: [
         Row(

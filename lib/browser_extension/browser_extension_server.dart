@@ -8,6 +8,7 @@ import 'package:brisk/model/download_item.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/parse_util.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/download/multi_download_addition_dialog.dart';
@@ -20,7 +21,7 @@ import 'package:window_manager/window_manager.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.1.3";
+  static const String extensionVersion = "1.1.4";
 
   static void setup(BuildContext context) async {
     if (_isServerRunning) return;
@@ -46,26 +47,31 @@ class BrowserExtensionServer {
   static Future<void> handleExtensionRequests(server, context) async {
     await for (HttpRequest request in server) {
       await for (final body in request) {
+        bool responseClosed = false;
         addCORSHeaders(request);
         try {
           final jsonBody = jsonDecode(String.fromCharCodes(body));
           final targetVersion = jsonBody["extensionVersion"];
+          print(targetVersion);
           if (targetVersion == null ||
               isNewVersionAvailable(extensionVersion, targetVersion)) {
             showNewBrowserExtensionVersion(context);
-            await flushAndCloseRequest(request);
+            await flushAndCloseResponse(request, false);
+            responseClosed = true;
             continue;
           }
-          if (_windowToFrontEnabled) {
-            await windowManager.show();
-            WindowToFront.activate();
-          }
-          await _handleDownloadAddition(jsonBody, context, request);
+          final success =
+              await _handleDownloadAddition(jsonBody, context, request);
+          await flushAndCloseResponse(request, success);
+          responseClosed = true;
         } catch (e) {
-          print(e);
+          print("Error:: $e");
+        } finally {
+          if (!responseClosed) {
+            await flushAndCloseResponse(request, false);
+          }
         }
       }
-      await flushAndCloseRequest(request);
     }
   }
 
@@ -83,19 +89,25 @@ class BrowserExtensionServer {
     );
   }
 
-  static Future<void> _handleDownloadAddition(
+  static Future<bool> _handleDownloadAddition(
       jsonBody, context, request) async {
     final type = jsonBody["type"];
     if (type == "single") {
-      _handleSingleDownloadRequest(jsonBody, context, request);
+      return _handleSingleDownloadRequest(jsonBody, context, request);
     }
     if (type == "multi") {
       _handleMultiDownloadRequest(jsonBody, context, request);
+      return true;
     }
+    return false;
   }
 
-  static Future<void> flushAndCloseRequest(HttpRequest request) async {
-    await request.response.flush();
+  static Future<void> flushAndCloseResponse(
+    HttpRequest request,
+    bool success,
+  ) async {
+    final body = jsonEncode({"captured": success});
+    request.response.write(body);
     await request.response.close();
   }
 
@@ -120,6 +132,11 @@ class BrowserExtensionServer {
       if (fileInfos == null || fileInfos.isEmpty) {
         return onFileInfoRetrievalError(context);
       }
+      fileInfos.removeWhere(
+        (fileInfo) => SettingsCache.extensionSkipCaptureRules.any(
+          (rule) => rule.isSatisfiedByFileInfo(fileInfo),
+        ),
+      );
       Navigator.of(context).pop();
       showDialog(
         context: context,
@@ -152,12 +169,35 @@ class BrowserExtensionServer {
     );
   }
 
-  static void _handleSingleDownloadRequest(jsonBody, context, request) async {
-    DownloadAdditionUiUtil.handleDownloadAddition(
-      context,
-      jsonBody['data']['url'],
-    );
-    request.response.statusCode = HttpStatus.ok;
+  static Future<bool> _handleSingleDownloadRequest(
+      jsonBody, context, request) async {
+    final url = jsonBody['data']['url'];
+    Completer<bool> completer = Completer();
+    final downloadItem = DownloadItem.fromUrl(url);
+    if (!isUrlValid(url)) {
+      completer.complete(false);
+    }
+    final fileInfoResponse = DownloadAdditionUiUtil.requestFileInfo(url);
+    fileInfoResponse.then((fileInfo) {
+      final satisfied = SettingsCache.extensionSkipCaptureRules.any(
+        (rule) => rule.isSatisfiedByFileInfo(fileInfo),
+      );
+      if (satisfied) {
+        completer.complete(false);
+        return;
+      }
+      if (_windowToFrontEnabled) {
+        windowManager.show().then((_) => WindowToFront.activate());
+      }
+      DownloadAdditionUiUtil.addDownload(
+        downloadItem,
+        fileInfo,
+        context,
+        false,
+      );
+      completer.complete(true);
+    });
+    return completer.future;
   }
 
   static int get _extensionPort => int.parse(

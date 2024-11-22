@@ -58,6 +58,7 @@ class FileUtil {
     String fileName, {
     Directory? baseSaveDir,
     bool checkFileDuplicationOnly = false,
+    bool useTypeBasedSubDirs = true,
   }) {
     final saveDir = baseSaveDir ?? SettingsCache.saveDir;
     if (!saveDir.existsSync()) {
@@ -84,7 +85,10 @@ class FileUtil {
       file = File(join(subDirFullPath, fileName));
     }
 
-    return join(saveDir.path, subDir, fileName);
+    if (useTypeBasedSubDirs) {
+      return join(saveDir.path, subDir, fileName);
+    }
+    return join(saveDir.path, fileName);
   }
 
   static bool checkDownloadDuplication(

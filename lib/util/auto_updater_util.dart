@@ -38,7 +38,6 @@ void handleBriskUpdateCheck(
         context: context,
         builder: (context) => InfoDialog(
           title: "No new update is available yet",
-          onConfirmPressed: launchAutoUpdater,
         ),
       );
       return;

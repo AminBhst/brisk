@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/util/settings_cache.dart';
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +28,22 @@ class DownloadAdditionUiUtil {
   static void cancelRequest(BuildContext context) {
     fileInfoExtractorIsolate?.kill();
     context.loaderOverlay.hide();
+  }
+
+  static Future<FileInfo> requestFileInfo(String url) async {
+    final Completer<FileInfo> completer = Completer();
+    var item = DownloadItem.fromUrl(url);
+    _spawnFileInfoRetrieverIsolate(item).then((rPort) {
+      retrieveFileInfo(rPort).then((fileInfo) {
+        completer.complete(fileInfo);
+      }).onError(
+        (e, s) {
+          _cancelRequest(null);
+          completer.completeError("Failed to get file information");
+        },
+      );
+    });
+    return completer.future;
   }
 
   static void handleDownloadAddition(BuildContext context, String url,
@@ -163,9 +181,11 @@ class DownloadAdditionUiUtil {
     return receivePort;
   }
 
-  static void _cancelRequest(BuildContext context) {
+  static void _cancelRequest(BuildContext? context) {
     fileInfoExtractorIsolate?.kill();
-    context.loaderOverlay.hide();
+    if (context != null) {
+      context.loaderOverlay.hide();
+    }
   }
 
   static void showAskDuplicationActionDialog(BuildContext context,
@@ -228,7 +248,16 @@ class DownloadAdditionUiUtil {
     if (additionalPop) {
       Navigator.of(context).pop();
     }
-    item.filePath = FileUtil.getFilePath(item.fileName);
+    final rule = SettingsCache.fileSavePathRules.firstOrNullWhere(
+      (rule) => rule.isSatisfiedByDownloadItem(item),
+    );
+    item.filePath = rule == null
+        ? FileUtil.getFilePath(item.fileName)
+        : FileUtil.getFilePath(
+            item.fileName,
+            baseSaveDir: Directory(rule.savePath),
+            useTypeBasedSubDirs: false,
+          );
     showDialog(
       context: context,
       builder: (_) => DownloadInfoDialog(item),
