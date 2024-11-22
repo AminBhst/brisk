@@ -13,10 +13,8 @@ class FileRule {
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other))
-      return true;
-    if (other is! FileRule)
-      return false;
+    if (identical(this, other)) return true;
+    if (other is! FileRule) return false;
     return this.condition == other.condition && this.value == other.value;
   }
 
@@ -49,5 +47,9 @@ class FileRule {
     final condition = FileCondition.values.byName(conditionStr);
     final value = str.substring(str.indexOf(":") + 1);
     return FileRule(condition: condition, value: value);
+  }
+
+  bool isSatisfied() {
+    return false;
   }
 }

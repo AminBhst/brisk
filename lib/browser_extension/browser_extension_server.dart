@@ -53,7 +53,7 @@ class BrowserExtensionServer {
           if (targetVersion == null ||
               isNewVersionAvailable(extensionVersion, targetVersion)) {
             showNewBrowserExtensionVersion(context);
-            await flushAndCloseRequest(request);
+            await flushAndCloseResponse(request);
             continue;
           }
           if (_windowToFrontEnabled) {
@@ -65,7 +65,7 @@ class BrowserExtensionServer {
           print(e);
         }
       }
-      await flushAndCloseRequest(request);
+      await flushAndCloseResponse(request);
     }
   }
 
@@ -94,7 +94,7 @@ class BrowserExtensionServer {
     }
   }
 
-  static Future<void> flushAndCloseRequest(HttpRequest request) async {
+  static Future<void> flushAndCloseResponse(HttpRequest request) async {
     await request.response.flush();
     await request.response.close();
   }
