@@ -17,11 +17,16 @@ class _AboutPageState extends State<AboutPage> {
   bool telegramHover = false;
   bool discordHover = false;
   bool githubHover = false;
+  bool donationHover = false;
 
   @override
   Widget build(BuildContext context) {
     final theme =
-        Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
+        Provider
+            .of<ThemeProvider>(context)
+            .activeTheme
+            .settingTheme
+            .pageTheme;
     return Center(
       child: SingleChildScrollView(
         child: Column(
@@ -68,7 +73,7 @@ class _AboutPageState extends State<AboutPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,7 +91,6 @@ class _AboutPageState extends State<AboutPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
                 // Row(
                 //   mainAxisAlignment: MainAxisAlignment.start,
                 //   crossAxisAlignment: CrossAxisAlignment.center,
@@ -114,6 +118,34 @@ class _AboutPageState extends State<AboutPage> {
                 //   ],
                 // ),
                 // const SizedBox(height: 30),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 3),
+                    Icon(
+                      Icons.attach_money_rounded,
+                      color: theme.widgetColor.aboutIconColor,
+                      size: 35,
+                    ),
+                    const SizedBox(width: 30),
+                    InkWell(
+                      onTap: () =>
+                          launchUrlString(
+                              "https://github.com/AminBhst/brisk?tab=readme-ov-file#money_with_wings-donations"),
+                      onHover: (val) => setState(() => donationHover = val),
+                      child: Text(
+                        "Donate",
+                        style: TextStyle(
+                            color: donationHover
+                                ? Colors.blue
+                                : theme.titleTextColor),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -143,7 +175,7 @@ class _AboutPageState extends State<AboutPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -173,7 +205,7 @@ class _AboutPageState extends State<AboutPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
