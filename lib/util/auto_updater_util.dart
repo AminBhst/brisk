@@ -25,6 +25,7 @@ void handleBriskUpdateCheck(
   final isNewVersionAvailable = await isNewBriskVersionAvailable();
   if (isNewVersionAvailable) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) => ConfirmationDialog(
         title:
