@@ -4,7 +4,7 @@ class Segment {
 
   Segment(this.startByte, this.endByte);
 
-  get length => this.endByte - this.startByte + 1;
+  int get length => this.endByte - this.startByte + 1;
 
   @override
   String toString() {

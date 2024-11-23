@@ -654,11 +654,11 @@ class HttpDownloadEngine {
       );
       return;
     }
-    nodes.sort((a, b) => a.lastUpdateMillis.compareTo(b.lastUpdateMillis));
+    nodes.sort((a, b) => a.segment.length.compareTo(b.segment.length));
     final targetNode = nodes
         .where((node) => node.segment != connectionChannel.segment)
         .toList()
-        .lastOrNull;
+        .firstOrNull;
     if (targetNode == null) {
       logger?.error(
         "_sendRefreshSegmentCommand_ReuseConnection:: Fatal! Target node is null!",
