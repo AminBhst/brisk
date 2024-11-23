@@ -86,10 +86,10 @@ Future<String> getLatestVersionChangeLog() async {
   return utf8.decode(response.bodyBytes);
 }
 
-void launchAutoUpdater() {
+void launchAutoUpdater() async {
   String executablePath = Platform.resolvedExecutable;
   if (Platform.isWindows) {
-    setUpdateRequested();
+    await setUpdateRequested();
     final updaterPath = join(
       Directory(executablePath).parent.path,
       "updater",
@@ -102,7 +102,7 @@ void launchAutoUpdater() {
       },
     );
   } else if (Platform.isLinux) {
-    setUpdateRequested();
+    await setUpdateRequested();
     final updaterPath = join(
       Directory(executablePath).parent.path,
       "updater",
@@ -122,7 +122,7 @@ void launchAutoUpdater() {
   }
 }
 
-void setUpdateRequested() async {
+Future<void> setUpdateRequested() async {
   var updateRequested = HiveUtil.getSetting(SettingOptions.updateRequested);
   var preUpdateVersion = HiveUtil.getSetting(SettingOptions.preUpdateVersion);
   final currentVersion = (await PackageInfo.fromPlatform()).version;
