@@ -229,6 +229,10 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
         savePathController.text.contains(",")) {
       errorText = "Unsupported Character: \",\" ";
     }
+    if (valueController.text.contains("@:/") ||
+        savePathController.text.contains("@:/")) {
+      errorText = "Unsupported Character: \"@:/\" ";
+    }
     if (!Directory(savePathController.text).existsSync()) {
       errorText = "Invalid Save Path!";
     }
