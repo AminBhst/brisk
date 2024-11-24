@@ -52,7 +52,7 @@ void handleBriskUpdateCheck(
       !parseBool(updateRequested.value)) return;
 
   final currentVersion = (await PackageInfo.fromPlatform()).version;
-  if (preUpdateVersion != currentVersion) {
+  if (preUpdateVersion.value != currentVersion) {
     String changeLog = await getLatestVersionChangeLog();
     showDialog(
       context: context,
