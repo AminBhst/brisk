@@ -152,6 +152,7 @@ class _TopMenuState extends State<TopMenu> {
             onTap: () => handleBriskUpdateCheck(
               context,
               showUpdateNotAvailableDialog: true,
+              ignoreLastUpdateCheck: true,
             ),
             title: 'Check for Update',
             icon: Icon(

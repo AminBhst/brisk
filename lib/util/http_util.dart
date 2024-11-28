@@ -3,16 +3,13 @@ import 'dart:convert';
 
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_item.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../constants/setting_type.dart';
 import '../db/hive_util.dart';
 import '../model/file_metadata.dart';
 import '../model/setting.dart';
-import '../widget/base/confirmation_dialog.dart';
 
 // Removed usage because of status 400 in google drive. also it doesn't seem necessary anyway
 const Map<String, String> contentType_MultiPartByteRanges = {
@@ -181,7 +178,9 @@ Future<dynamic> checkLatestBriskRelease() async {
   return completer.future;
 }
 
-Future<bool> isNewBriskVersionAvailable() async {
+Future<bool> isNewBriskVersionAvailable({
+  bool ignoreLastUpdateCheck = false,
+}) async {
   var lastUpdateCheck = HiveUtil.getSetting(SettingOptions.lastUpdateCheck);
   if (lastUpdateCheck == null) {
     lastUpdateCheck = Setting(
@@ -191,10 +190,14 @@ Future<bool> isNewBriskVersionAvailable() async {
     );
     await HiveUtil.instance.settingBox.add(lastUpdateCheck);
   }
-  if (int.parse(lastUpdateCheck.value) + 86400000 >
-      DateTime.now().millisecondsSinceEpoch) return false;
+  if (!ignoreLastUpdateCheck &&
+      int.parse(lastUpdateCheck.value) + 86400000 >
+          DateTime.now().millisecondsSinceEpoch) return false;
 
   final json = await checkLatestBriskRelease();
+  if (json["message"].toString().contains("rate limit")) {
+    throw Exception("GitHub API rate limit exceeded. Please try again later.");
+  }
   if (json == null || json['tag_name'] == null) return false;
 
   String tagName = json['tag_name'];

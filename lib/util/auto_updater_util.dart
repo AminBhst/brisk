@@ -21,8 +21,25 @@ import 'http_util.dart';
 void handleBriskUpdateCheck(
   BuildContext context, {
   bool showUpdateNotAvailableDialog = false,
+  bool ignoreLastUpdateCheck = false,
 }) async {
-  final isNewVersionAvailable = await isNewBriskVersionAvailable();
+  bool isNewVersionAvailable = false;
+  try {
+    isNewVersionAvailable = await isNewBriskVersionAvailable(
+      ignoreLastUpdateCheck: ignoreLastUpdateCheck,
+    );
+  } catch (e) {
+    showDialog(
+      context: context,
+      builder: (context) => ErrorDialog(
+        text: e.toString(),
+        textHeight: 20,
+        height: 60,
+        width: 430,
+      ),
+    );
+    return;
+  }
   if (isNewVersionAvailable) {
     showDialog(
       barrierDismissible: false,
