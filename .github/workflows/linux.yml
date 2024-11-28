@@ -55,25 +55,19 @@ jobs:
         run: flutter pub get
 
       - name: Start the build process
-        run: flutter build linux
+        run: flutter build linux --release
+
+      - name: Build Brisk Auto Updater
+        run: flutter build linux --release
+        working-directory: brisk_auto_updater
+
+      - name: Copy Auto Updater to Bundle
+        run: |
+           mkdir ${{ github.workspace }}/build/linux/x64/release/bundle/updater
+           cp -R ${{ github.workspace }}/brisk_auto_updater/build/linux/x64/release/bundle/* ${{ github.workspace }}/build/linux/x64/release/bundle/updater
          
       - name: Compress the release file
         run: tar -cJf Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
-
-      - name: Install flutter_distributor
-        run: dart pub global activate flutter_distributor
-
-      - name: Start the build process
-        run: flutter_distributor release --name=prod
-
-      - name: move the packages
-        run: find ./dist -name brisk* -execdir mv {} ../../ \;
-
-      - name: change the deb name
-        run: find ./ -name *.deb -execdir mv {} Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.deb \;
-      
-      - name: change the rpm name
-        run: find ./ -name *.rpm -execdir mv {} Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.rpm \;
           
       - name: Upload artifact 
         uses: actions/upload-artifact@v4.3.3
@@ -106,8 +100,6 @@ jobs:
           body_path: ./.github/release.md 
           #body: ${{ inputs.Release_note }} 
           files: |
-           ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.rpm
-           ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.deb
            ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz
      
         
