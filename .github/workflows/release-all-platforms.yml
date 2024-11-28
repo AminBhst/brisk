@@ -135,30 +135,30 @@ jobs:
           retention-days: 1
 
 
-  Build-linux:
+  Build-Linux:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: read 
     needs: version
     steps:
-
+    
       - name: Checkout the code
         uses: actions/checkout@v4.1.5
-
+      
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0
         with:
           flutter-version: "3.22.0"
           channel: 'stable'
           cache: true
-          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
-          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' 
           architecture: x64
 
-      - name: Install required tools
+      - name: Install required tools     
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y keybinder-3.0 clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev rpm patchelf libayatana-appindicator3-dev
+           sudo apt-get update -y
+           sudo apt-get install -y keybinder-3.0 clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev rpm patchelf libayatana-appindicator3-dev
       - name: Enable linux-desktop for flutter
         run: flutter config --enable-linux-desktop && export PATH="$PATH":"$HOME/.pub-cache/bin"
 
@@ -166,27 +166,21 @@ jobs:
         run: flutter pub get
 
       - name: Start the build process
-        run: flutter build linux
+        run: flutter build linux --release
 
+      - name: Build Brisk Auto Updater
+        run: flutter build linux --release
+        working-directory: brisk_auto_updater
+
+      - name: Copy Auto Updater to Bundle
+        run: |
+           mkdir ${{ github.workspace }}/build/linux/x64/release/bundle/updater
+           cp -R ${{ github.workspace }}/brisk_auto_updater/build/linux/x64/release/bundle/* ${{ github.workspace }}/build/linux/x64/release/bundle/updater
+         
       - name: Compress the release file
         run: tar -cJf Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
-
-      - name: Install flutter_distributor
-        run: dart pub global activate flutter_distributor
-
-      - name: Start the build process
-        run: flutter_distributor release --name=prod
-
-      - name: move the packages
-        run: find ./dist -name brisk* -execdir mv {} ../../ \;
-
-      - name: change the deb name
-        run: find ./ -name *.deb -execdir mv {} Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.deb \;
-
-      - name: change the rpm name
-        run: find ./ -name *.rpm -execdir mv {} Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.rpm \;
-
-      - name: Upload artifact
+          
+      - name: Upload artifact 
         uses: actions/upload-artifact@v4.3.3
         with:
           name: brisk-package
@@ -297,8 +291,6 @@ jobs:
           tag_name: v${{ needs.version.outputs.version }}
           body_path: ./.github/release.md
           files: |
-            ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.rpm
-            ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.deb
             ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz
             ./Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.zip
             ./Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
