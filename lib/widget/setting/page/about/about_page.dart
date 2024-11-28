@@ -196,7 +196,7 @@ class _AboutPageState extends State<AboutPage> {
                           launchUrlString("https://discord.gg/hGBDWNDHG3"),
                       onHover: (val) => setState(() => discordHover = val),
                       child: Text(
-                        "Discord Sever",
+                        "Discord Server",
                         style: TextStyle(
                             color: discordHover
                                 ? Colors.blue
