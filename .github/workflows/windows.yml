@@ -41,14 +41,11 @@ jobs:
           (Get-Content windows/packaging/exe/inno.iss) -replace 'EXE_NAME', $exeName | Set-Content windows/packaging/exe/inno.iss
           (Get-Content windows/packaging/exe/inno.iss) -replace 'OUTPUT_BASE_FILE_NAME', $outputBaseFileName | Set-Content windows/packaging/exe/inno.iss
 
-
-
       - name: Display Inno Setup File Content
         shell: pwsh
         run: |
           Get-Content "windows/packaging/exe/inno.iss" | ForEach-Object { Write-Output $_ }
           Write-Output "End of inno.iss content."
-
 
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0

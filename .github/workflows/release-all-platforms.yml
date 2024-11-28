@@ -38,6 +38,27 @@ jobs:
     needs: version
     steps:
       - uses: actions/checkout@v4.1.5
+
+      - name: Replace iss placeholders
+        run: |
+          $outputDir = "${{ github.workspace }}"
+          $setupIconFile = "${{ github.workspace }}\assets\icons\logo.ico"
+          $baseDir = "${{ github.workspace }}"
+          $briskVersion = "${{ needs.version.outputs.version }}"
+          $outputBaseFileName = "Brisk-v${{ needs.version.outputs.version }}-windows-x86_64"
+          (Get-Content windows/packaging/exe/inno.iss) -replace 'OUTPUT_DIR', $outputDir | Set-Content windows/packaging/exe/inno.iss
+          (Get-Content windows/packaging/exe/inno.iss) -replace 'BRISK_VERSION', $briskVersion | Set-Content windows/packaging/exe/inno.iss
+          (Get-Content windows/packaging/exe/inno.iss) -replace 'SETUP_ICON_FILE', $setupIconFile | Set-Content windows/packaging/exe/inno.iss
+          (Get-Content windows/packaging/exe/inno.iss) -replace 'BASE_DIR', $baseDir | Set-Content windows/packaging/exe/inno.iss
+          (Get-Content windows/packaging/exe/inno.iss) -replace 'EXE_NAME', $exeName | Set-Content windows/packaging/exe/inno.iss
+          (Get-Content windows/packaging/exe/inno.iss) -replace 'OUTPUT_BASE_FILE_NAME', $outputBaseFileName | Set-Content windows/packaging/exe/inno.iss
+
+      - name: Display Inno Setup File Content
+        shell: pwsh
+        run: |
+          Get-Content "windows/packaging/exe/inno.iss" | ForEach-Object { Write-Output $_ }
+          Write-Output "End of inno.iss content."
+
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0
         with:
@@ -52,6 +73,8 @@ jobs:
         run: |
           flutter pub get
           dart pub global activate flutter_distributor
+          choco install innosetup --yes
+          echo "Inno Setup installed."
 
       - name: Generate intermediates
         run: flutter pub run build_runner build --delete-conflicting-outputs
@@ -64,18 +87,53 @@ jobs:
       - name: Enable windows build
         run: flutter config --enable-windows-desktop
 
-      - name: Build artifacts
-        run: flutter_distributor package --platform windows --targets exe
+      - name: Build Brisk
+        run: flutter build windows
 
-      - name: change name of .exe
-        run: Get-ChildItem -Recurse -Path .\dist\ -Filter "*.exe" -File | Move-Item -Destination .\Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
+      - name: Build Brisk Auto Updater
+        run: flutter build windows --release
+        working-directory: brisk_auto_updater
+
+      - name: Zip the build output
+        run: |
+          $mainAppPath = "${{ github.workspace }}\build\windows\x64\runner\Release"
+          $updaterPath = "${{ github.workspace }}\brisk_auto_updater\build\windows\x64\runner\Release"
+          $zipFileName = "${{ github.workspace }}\Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.zip"
+          $updaterAppPath = "$mainAppPath\updater"
+          mkdir $updaterAppPath  
+          
+          # Copy updater application including the data folder
+          Copy-Item -Path "$updaterPath\*" -Destination "$updaterAppPath" -Recurse
+          
+          # Copy data folder as a whole to avoid merging its contents
+          # $dataFolderPath = "${{ github.workspace }}\brisk_auto_updater\build\windows\x64\runner\Release\data"
+          # Copy-Item -Path $dataFolderPath -Destination "$updaterDest" -Recurse
+          
+          # Create the zip archive
+          Compress-Archive -Path "$mainAppPath\*" -DestinationPath "$zipFileName" -Force
+
+      - name: Create Installer with Inno Setup
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "${{ github.workspace }}\windows\packaging\exe\inno.iss"
+
+
+      - name: Raname exe file
+        run: Rename-Item -Path "${{ github.workspace }}\Brisk.exe" -NewName "Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.3
         with:
-          name: brisk-windows
+          name: brisk-windows-exe
           path: Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
           retention-days: 1
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: brisk-windows-zip
+          path: Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.zip
+          retention-days: 1
+
 
   Build-linux:
     runs-on: ubuntu-latest
@@ -135,7 +193,7 @@ jobs:
           path: ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.*
           retention-days: 1
 
-#  Build-macos:
+  #  Build-macos:
 #    runs-on: macos-latest
 #    permissions:
 #      contents: read
@@ -221,15 +279,15 @@ jobs:
         with:
           name: brisk-package
 
-      - name: Download windows package
+      - name: Download artifact package
         uses: actions/download-artifact@v4.1.0
         with:
-          name: brisk-windows
+          name: brisk-windows-exe
 
-#      - name: Download macos package
-#        uses: actions/download-artifact@v4.1.0
-#        with:
-#          name: brisk-dmg
+      - name: Download artifact package
+        uses: actions/download-artifact@v4.1.0
+        with:
+          name: brisk-windows-zip
 
       - name: Release the changes
         uses: softprops/action-gh-release@v2.0.5
@@ -242,5 +300,5 @@ jobs:
             ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.rpm
             ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.deb
             ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz
+            ./Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.zip
             ./Brisk-v${{ needs.version.outputs.version }}-windows-x86_64.exe
-#            ./Brisk-${{ needs.version.outputs.version }}-macos-x64.dmg
