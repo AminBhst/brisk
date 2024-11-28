@@ -74,7 +74,7 @@ void handleBriskUpdateCheck(
     showDialog(
       context: context,
       builder: (context) => BriskChangeLogDialog(
-        updatedVersion: "${preUpdateVersion.value} -> ${currentVersion} ",
+        updatedVersion: currentVersion,
         changeLog: changeLog,
       ),
       barrierDismissible: false,
