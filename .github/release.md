@@ -1,16 +1,31 @@
 # Change Log
 
-## :sparkles: Improved UX
+## :rocket: File Rules Feature
+You can define an unlimited number of file rules for two functionalities:
+- **Browser Extension Capture Skip**:
+Rules that will define which files should be excluded from being captured by brisk via browser extension
 
-- **New UI for multi download addition dialog:** The dialog that appears when brisk captures multiple download requests from the extension (when "download selected links with Brisk" is clicked) now has an improved UI. You'll be able to sort by file name and size and also delete the selected download items using the delete key on your keyboard.
-- **Custom Save Path**: In that same dialog, you'll be able to select a custom save path for all files in that list.
+- **File Save Location Rules**:
+Rules that will define in which locations should files be saved.
 
-## :hammer_and_wrench: Bug Fixes and Improvements
+Rules are defined by a condition and a value.
 
-- Fixed "Failed to retrieve file information" for servers that reject HEAD requests
-- Fixed browser integration bugs
-- Fixed sorting by file size not working correctly caused by library limitations
-- Released a new browser extension version (v1.2.3) with bug fixes for Chrome (must be installed regardless of your browser). 
+Conditions:
+FileSizeGreaterThan, FileSizeLessThan, FileNameContains, FileExtensionIs, FileTypeIs, DownloadUrlContains
+
+Example of File Rules:
+
+Browser Extension Capture Skip Rule: 
+
+- **Condition:** FileSizeLessThan **Value:** 1 MB 
+
+Based on the above condition, files that are less than 1MB in size, will not be captured by the browser extension.
+For "File Save Location Rules", you can also define rules and files that follow such rules will be saved in a defined location.
+You can find these options in [**Settings --> File --> Rules**] and [**Settings --> Extension --> Rules**]
+
+## :arrows_counterclockwise: Automatic Update Feature
+Brisk is now shipped with an automatic update feature which allows for automatically downloading and installing the latest version without the need for manual installation, as well as displaying the change log related to the downloaded version.
 
 ## :pencil: Note
-To prevent compatibility issues, Brisk will capture requests from an outdated version of the browser extension. If you're using an older version of the extension, there will be an error indicating that the extension version is outdated and you'll be prompted to Install the new one. For Firefox, the new version is already available in the official Firefox Addons webite.
+- Unfortunately, due to the added complexity of packaging the brisk_auto_update module for .rpm and .deb, support for these packages are dropped from this version forward.
+- On linux, make sure to extract Brisk's binaries in a location which does not require elevated permissions in order for the automatic update to work properly.
