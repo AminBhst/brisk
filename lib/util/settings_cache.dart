@@ -110,7 +110,10 @@ class SettingsCache {
       SettingType.general.name,
       AppClosureBehaviour.ask.name,
     ],
-    SettingOptions.loggerEnabled.name: [SettingType.general.name, "false"],
+    SettingOptions.loggerEnabled.name: [
+      SettingType.general.name,
+      "false",
+    ],
     SettingOptions.connectionsNumber.name: [
       SettingType.connection.name,
       "8",

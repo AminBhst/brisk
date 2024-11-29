@@ -37,10 +37,8 @@ class HiveUtil {
     generalDataBox = await Hive.openBox<GeneralData>("general_data");
   }
 
-
   static Setting? getSetting(SettingOptions option) {
-    return HiveUtil.instance.settingBox
-        .values
+    return HiveUtil.instance.settingBox.values
         .where((setting) => setting.name == option.name)
         .firstOrNull;
   }
@@ -72,6 +70,45 @@ class HiveUtil {
   /// To be used for specific cases where some db values need to be updated
   /// based on specific version bumps
   Future<void> performRequiredAppVersionUpdates() async {
+    if (getAppVersionData().value == "2.0.0") {
+      await migrateV2_0_2();
+    }
+  }
+
+  GeneralData getAppVersionData() {
+    return generalDataBox.values
+        .where((element) => element.fieldName == "appVersion")
+        .first;
+  }
+
+  Future<void> migrateV2_0_2() async {
+    final loggerEnabled =
+        SettingsCache.defaultSettings[SettingOptions.loggerEnabled.name]!;
+    final fileSavePathRules =
+        SettingsCache.defaultSettings[SettingOptions.fileSavePathRules.name]!;
+    final extensionSkipCaptureRule = SettingsCache
+        .defaultSettings[SettingOptions.extensionSkipCaptureRules.name]!;
+    final newSettings = [
+      Setting(
+        name: SettingOptions.loggerEnabled.name,
+        value: loggerEnabled[0],
+        settingType: loggerEnabled[1],
+      ),
+      Setting(
+        name: SettingOptions.fileSavePathRules.name,
+        value: fileSavePathRules[0],
+        settingType: fileSavePathRules[1],
+      ),
+      Setting(
+        name: SettingOptions.extensionSkipCaptureRules.name,
+        value: extensionSkipCaptureRule[0],
+        settingType: extensionSkipCaptureRule[1],
+      )
+    ];
+    await settingBox.addAll(newSettings);
+    final appVersion = getAppVersionData();
+    appVersion.value = "2.0.2";
+    await appVersion.save();
   }
 
   Future<void> addDownloadItem(DownloadItem downloadItem) async {
