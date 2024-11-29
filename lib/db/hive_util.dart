@@ -70,7 +70,8 @@ class HiveUtil {
   /// To be used for specific cases where some db values need to be updated
   /// based on specific version bumps
   Future<void> performRequiredAppVersionUpdates() async {
-    if (getAppVersionData().value == "2.0.0") {
+    final appVersion = getAppVersionData().value;
+    if (appVersion == "2.0.0" || appVersion == "2.0.1") {
       await migrateV2_0_2();
     }
   }
@@ -91,18 +92,18 @@ class HiveUtil {
     final newSettings = [
       Setting(
         name: SettingOptions.loggerEnabled.name,
-        value: loggerEnabled[0],
-        settingType: loggerEnabled[1],
+        value: loggerEnabled[1],
+        settingType: loggerEnabled[0],
       ),
       Setting(
         name: SettingOptions.fileSavePathRules.name,
-        value: fileSavePathRules[0],
-        settingType: fileSavePathRules[1],
+        value: fileSavePathRules[1],
+        settingType: fileSavePathRules[0],
       ),
       Setting(
         name: SettingOptions.extensionSkipCaptureRules.name,
-        value: extensionSkipCaptureRule[0],
-        settingType: extensionSkipCaptureRule[1],
+        value: extensionSkipCaptureRule[1],
+        settingType: extensionSkipCaptureRule[0],
       )
     ];
     await settingBox.addAll(newSettings);
