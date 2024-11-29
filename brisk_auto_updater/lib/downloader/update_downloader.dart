@@ -27,7 +27,6 @@ class UpdateDownloader {
     required Function onInstallComplete,
     bool reset = false,
   }) async {
-    print("Inside download");
     final provider = Provider.of<DownloadProgressProvider>(
       context,
       listen: false,
@@ -70,15 +69,11 @@ class UpdateDownloader {
     Function onInstallComplete,
   ) async {
     totalReceivedBytes = 0;
-    print("Sending download request...");
     final fileInfo = await requestFileInfo(downloadUrl!);
     client = http.Client();
     buffer.clear();
     final request = http.Request('GET', Uri.parse(downloadUrl!));
-    request.headers.addAll({
-      userAgentHeader.keys.first: userAgentHeader.values.first,
-      "Range": "bytes=0-${fileInfo!.contentLength}",
-    });
+    request.headers.addAll(userAgentHeader);
     try {
       final response = client.send(request);
       response.asStream().cast<http.StreamedResponse>().listen((response) {
@@ -86,7 +81,7 @@ class UpdateDownloader {
           (chunk) {
             totalReceivedBytes += chunk.length;
             buffer.add(chunk);
-            provider.setProgress(totalReceivedBytes / fileInfo.contentLength);
+            provider.setProgress(totalReceivedBytes / fileInfo!.contentLength);
           },
           onDone: () => onComplete(provider).then((_) => onInstallComplete()),
           onError: _onError,
@@ -176,7 +171,7 @@ class UpdateDownloader {
       Uri.parse(url),
     );
     request.headers.addAll(userAgentHeader);
-    final client = http.Client();
+    client = http.Client();
     var response = client.send(request);
     Completer<FileInfo?> completer = Completer();
 
