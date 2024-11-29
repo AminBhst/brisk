@@ -17,7 +17,6 @@ import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/notification_util.dart';
 import 'package:brisk/widget/base/app_exit_dialog.dart';
-import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/download_grid.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:brisk/widget/queue/download_queue_list.dart';
@@ -26,19 +25,17 @@ import 'package:brisk/widget/top_menu/download_queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/top_menu.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:tray_manager/tray_manager.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:path/path.dart' as path;
 
 import 'util/file_util.dart';
 import 'util/settings_cache.dart';
 
 // TODO Fix resizing the window when a row is selected
+// TODO fix responsiveness of queue dialog
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();

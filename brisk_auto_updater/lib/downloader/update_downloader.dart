@@ -7,7 +7,6 @@ import 'package:brisk_auto_updater/downloader/file_info.dart';
 import 'package:brisk_auto_updater/provider/download_progress_provider.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 

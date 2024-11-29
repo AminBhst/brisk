@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:brisk_auto_updater/downloader/update_downloader.dart';
