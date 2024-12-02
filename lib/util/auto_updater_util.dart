@@ -81,15 +81,15 @@ void handleBriskUpdateCheck(
     );
   } else {
     showDialog(
-        context: context,
-        builder: (context) => ErrorDialog(
-              width: 500,
-              height: 70,
-              textHeight: 30,
-              textSpaceBetween: 10,
-              text:
-                  "Update Failed! Please manually download and install the latest version.",
-            ));
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ConfirmationDialog(
+        title:
+            "Failed to automatically update brisk to the latest version! Do you want to manually download the latest version?",
+        onConfirmPressed: () =>
+            launchUrlString("https://github.com/AminBhst/Brisk"),
+      ),
+    );
   }
   await updateRequested
     ..value = "false"
