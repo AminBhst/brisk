@@ -138,10 +138,6 @@ class SettingsCache {
       SettingType.extension.name,
       parseFileRulesToCsv(DefaultRules.extensionSkipCaptureRules),
     ],
-    SettingOptions.lastUpdateCheck.name: [
-      SettingType.system.name,
-      "0",
-    ],
   };
 
   static Future<void> setCachedSettings() async {
