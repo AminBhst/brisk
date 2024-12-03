@@ -29,3 +29,4 @@ Brisk is now shipped with an automatic update feature which allows for automatic
 ## :pencil: Note
 - Unfortunately, due to the added complexity of packaging the brisk_auto_update module for .rpm and .deb, support for these packages are dropped from this version forward.
 - On linux, make sure to extract Brisk's binaries in a location which does not require elevated permissions in order for the automatic update to work properly.
+- This version requires browser extension v1.1.4
