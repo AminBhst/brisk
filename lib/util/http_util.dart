@@ -204,6 +204,7 @@ Future<bool> isNewBriskVersionAvailable({
   tagName = tagName.replaceAll(".", "").replaceAll("v", "");
   String latestVersion = (json['tag_name'] as String).replaceAll("v", "");
   final packageInfo = await PackageInfo.fromPlatform();
+  lastUpdateCheck = HiveUtil.getSetting(SettingOptions.lastUpdateCheck)!;
   lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
   await lastUpdateCheck.save();
   return isNewVersionAvailable(latestVersion, packageInfo.version);
