@@ -87,7 +87,7 @@ void handleBriskUpdateCheck(
         title:
             "Failed to automatically update brisk to the latest version! Do you want to manually download the latest version?",
         onConfirmPressed: () =>
-            launchUrlString("https://github.com/AminBhst/Brisk"),
+            launchUrlString("https://github.com/AminBhst/brisk/releases/latest"),
       ),
     );
   }
