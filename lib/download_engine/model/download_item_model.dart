@@ -25,6 +25,8 @@ class DownloadItemModel {
 
   String status;
 
+  String? m3u8FilePath;
+
   DownloadItemModel({
     required this.id,
     this.uid = "",
@@ -38,6 +40,7 @@ class DownloadItemModel {
     this.fileType = "other",
     this.supportsPause = false,
     this.status = "In Queue",
+    this.m3u8FilePath,
   });
 
   factory DownloadItemModel.fromDownloadItem(DownloadItem item) {
@@ -54,6 +57,7 @@ class DownloadItemModel {
       status: item.status,
       supportsPause: item.supportsPause,
       uid: item.uid,
+      m3u8FilePath: item.m3u8FilePath,
     );
   }
 }

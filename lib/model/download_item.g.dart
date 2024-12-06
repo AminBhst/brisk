@@ -28,13 +28,14 @@ class DownloadItemAdapter extends TypeAdapter<DownloadItem> {
       fileType: fields[9] as String,
       supportsPause: fields[10] as bool,
       status: fields[11] as String,
+      m3u8FilePath: fields[12] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DownloadItem obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(1)
       ..write(obj.uid)
       ..writeByte(2)
@@ -56,7 +57,9 @@ class DownloadItemAdapter extends TypeAdapter<DownloadItem> {
       ..writeByte(10)
       ..write(obj.supportsPause)
       ..writeByte(11)
-      ..write(obj.status);
+      ..write(obj.status)
+      ..writeByte(12)
+      ..write(obj.m3u8FilePath);
   }
 
   @override

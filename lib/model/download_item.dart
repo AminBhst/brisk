@@ -7,8 +7,7 @@ import 'package:uuid/uuid.dart';
 part 'download_item.g.dart';
 
 @HiveType(typeId: 0)
-class DownloadItem extends HiveObject{
-
+class DownloadItem extends HiveObject {
   @HiveField(1)
   String uid;
 
@@ -42,6 +41,9 @@ class DownloadItem extends HiveObject{
   @HiveField(11)
   String status;
 
+  @HiveField(12)
+  String? m3u8FilePath;
+
   DownloadItem({
     this.uid = "",
     required this.fileName,
@@ -54,6 +56,7 @@ class DownloadItem extends HiveObject{
     this.fileType = "other",
     this.supportsPause = false,
     this.status = "In Queue",
+    this.m3u8FilePath = "",
   });
 
   factory DownloadItem.fromUrl(String url) {
@@ -78,5 +81,4 @@ class DownloadItem extends HiveObject{
     item.filePath = FileUtil.getFilePath(item.fileName);
     return item;
   }
-
 }

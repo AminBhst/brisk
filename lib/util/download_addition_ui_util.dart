@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:dartx/dartx.dart';
@@ -94,11 +95,18 @@ class DownloadAdditionUiUtil {
     BuildContext context,
     bool additionalPop,
   ) {
-    item.supportsPause = fileInfo.supportsPause;
-    item.contentLength = fileInfo.contentLength;
-    item.fileName = fileInfo.fileName;
-    item.fileType = FileUtil.detectFileType(fileInfo.fileName).name;
-    // final fileExists = FileUtil.checkFileDuplication(item.fileName);
+    // item.supportsPause = fileInfo.supportsPause;
+    // item.contentLength = fileInfo.contentLength;
+    // item.fileName = fileInfo.fileName;
+    // item.fileType = FileUtil.detectFileType(fileInfo.fileName).name;
+    item
+      ..supportsPause = true
+      ..downloadUrl = ""
+      ..fileName = "mu.m3u8"
+      ..fileType = DLFileType.m3u8.toString()
+      ..filePath = "C:\\Users\\RyeWell\\Desktop\\dir\\output.ts"
+      ..m3u8FilePath = "C:\\Users\\RyeWell\\Desktop\\mu.m3u8";
+
     final dlDuplication = checkDownloadDuplication(item.fileName);
     if (dlDuplication) {
       final behaviour = SettingsCache.fileDuplicationBehaviour;

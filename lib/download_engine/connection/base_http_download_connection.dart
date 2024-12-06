@@ -89,7 +89,7 @@ abstract class BaseHttpDownloadConnection {
   /// Threshold is currently only dynamically decided (2 times the byte transfer rate per second -
   /// and less than 8 MB)
   // static const _staticFlushThreshold = 524288;
-  double _dynamicFlushThreshold = 52428800;
+  double dynamicFlushThreshold = 52428800;
 
   double totalConnectionWriteProgress = 0;
 
@@ -119,11 +119,9 @@ abstract class BaseHttpDownloadConnection {
 
   int _retryCount = 0;
 
-  bool _isWritingTempFile = false;
+  bool isWritingTempFile = false;
 
   ConnectionSettings settings;
-
-  bool notifyResetSuccessOnNextChunk = false;
 
   BaseHttpDownloadConnection({
     required this.downloadItem,
@@ -159,8 +157,8 @@ abstract class BaseHttpDownloadConnection {
     bool connectionReset = false,
     bool reuseConnection = false,
   }) {
-    _startLogFlushTimer();
-    _initTempFilesCache();
+    startLogFlushTimer();
+    initTempFilesCache();
     logger?.info(
       "Starting download for segment $startByte - $endByte with "
       "reuseConnection: $reuseConnection "
@@ -168,7 +166,7 @@ abstract class BaseHttpDownloadConnection {
     );
     final startNotAllowed = isStartNotAllowed(connectionReset, reuseConnection);
     if (reuseConnection) {
-      _resetStatus();
+      resetStatus();
     }
 
     if (startNotAllowed) {
@@ -181,22 +179,17 @@ abstract class BaseHttpDownloadConnection {
     if (_isDownloadCompleted()) {
       logger?.info("Download is already completed! skipping...");
       _setDownloadComplete();
-      _notifyProgress();
+      notifyProgress();
       return;
     }
     logger?.info("Download is incomplete. starting a new download request...");
-    _init(connectionReset, progressCallback, reuseConnection);
-    _notifyProgress();
-
-    if (connectionReset) {
-      notifyResetSuccessOnNextChunk = true;
-    }
-
+    init(connectionReset, progressCallback, reuseConnection);
+    notifyProgress();
     final request = buildDownloadRequest(reuseConnection);
     sendDownloadRequest(request);
   }
 
-  void _resetStatus() {
+  void resetStatus() {
     downloadProgress = 0;
     totalRequestWriteProgress = 0;
     tempReceivedBytes = 0;
@@ -206,7 +199,7 @@ abstract class BaseHttpDownloadConnection {
     previousBufferEndByte = 0;
   }
 
-  void _init(
+  void init(
     bool connectionReset,
     DownloadProgressCallback progressCallback,
     bool reuseConnection,
@@ -243,7 +236,7 @@ abstract class BaseHttpDownloadConnection {
       }).onError(_onError);
     } catch (e) {
       _onError(e);
-      _notifyProgress();
+      notifyProgress();
     }
   }
 
@@ -256,7 +249,7 @@ abstract class BaseHttpDownloadConnection {
     totalDownloadProgress = totalExistingLength / downloadItem.contentLength;
   }
 
-  void _updateDownloadProgress() {
+  void updateDownloadProgress() {
     downloadProgress = totalRequestReceivedBytes / segment.length;
     totalDownloadProgress =
         totalConnectionReceivedBytes / downloadItem.contentLength;
@@ -274,35 +267,35 @@ abstract class BaseHttpDownloadConnection {
         totalConnectionReceivedBytes - tempReceivedBytes;
     totalRequestReceivedBytes = totalRequestReceivedBytes - tempReceivedBytes;
     _clearBuffer();
-    _dynamicFlushThreshold = double.infinity;
+    dynamicFlushThreshold = double.infinity;
     reset = true;
     start(progressCallback!, connectionReset: true);
   }
 
   void cancel({bool failure = false}) {
     client.close();
-    _cancelLogFlushTimer();
+    cancelLogFlushTimer();
     _clearBuffer();
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
-    _updateStatus(status);
+    updateStatus(status);
     connectionStatus = status;
-    _notifyProgress();
+    notifyProgress();
   }
 
-  void _startLogFlushTimer() {
+  void startLogFlushTimer() {
     if (logFlushTimer == null) {
       logFlushTimer =
           Timer.periodic(Duration(seconds: 4), (timer) => sendLogBuffer());
     }
   }
 
-  void _cancelLogFlushTimer() {
+  void cancelLogFlushTimer() {
     logFlushTimer?.cancel();
     logFlushTimer = null;
   }
 
   /// TODO don't create a new obj every time
-  void _notifyProgress({bool completionSignal = false}) {
+  void notifyProgress({bool completionSignal = false}) {
     final data = DownloadProgressMessage.loadFromHttpDownloadRequest(this);
     data.completionSignal = completionSignal;
     progressCallback!(data);
@@ -359,7 +352,7 @@ abstract class BaseHttpDownloadConnection {
         logger?.error("Previous buffer endByte is a negative number!");
       }
     }
-    _notifyProgress();
+    notifyProgress();
   }
 
   int _getNewStartByte() {
@@ -381,7 +374,7 @@ abstract class BaseHttpDownloadConnection {
 
   void _processChunk(List<int> chunk) {
     try {
-      _doProcessChunk(chunk);
+      doProcessChunk(chunk);
     } catch (e) {
       if (e is http.ClientException && paused) return;
       logger?.info("Error! $e");
@@ -391,34 +384,34 @@ abstract class BaseHttpDownloadConnection {
   }
 
   /// Processes each data [chunk] in [streamedResponse].
-  /// Once the [tempReceivedBytes] hits the [_dynamicFlushThreshold], the buffer is
+  /// Once the [tempReceivedBytes] hits the [dynamicFlushThreshold], the buffer is
   /// flushed to the disk. This process continues until the download has been
   /// finished. The buffer will be emptied after each flush
-  void _doProcessChunk(List<int> chunk) {
+  void doProcessChunk(List<int> chunk) {
     if (chunk.isEmpty) return;
-    _updateStatus(DownloadStatus.downloading);
+    updateStatus(DownloadStatus.downloading);
     lastResponseTimeMillis = _nowMillis;
     pauseButtonEnabled = downloadItem.supportsPause;
     connectionStatus = transferRate;
-    _calculateTransferRate(chunk);
-    _calculateDynamicFlushThreshold();
+    calculateTransferRate(chunk);
+    calculateDynamicFlushThreshold();
     buffer.add(chunk);
     _updateReceivedBytes(chunk);
-    _updateDownloadProgress();
+    updateDownloadProgress();
     if (receivedBytesExceededEndByte) {
       _onByteExceeded();
-      _notifyProgress();
+      notifyProgress();
       return;
     }
     if (receivedBytesMatchEndByte && endByte != downloadItem.contentLength) {
       _onByteExactMatch();
-      _notifyProgress();
+      notifyProgress();
       return;
     }
-    if (tempReceivedBytes > _dynamicFlushThreshold) {
-      _flushBuffer();
+    if (tempReceivedBytes > dynamicFlushThreshold) {
+      flushBuffer();
     }
-    _notifyProgress();
+    notifyProgress();
   }
 
   void _onByteExactMatch() {
@@ -434,7 +427,7 @@ abstract class BaseHttpDownloadConnection {
           totalConnectionReceivedBytes / downloadItem.contentLength;
     }
     client.close();
-    _flushBuffer();
+    flushBuffer();
     _setDownloadComplete();
     terminatedOnCompletion = true;
   }
@@ -442,7 +435,7 @@ abstract class BaseHttpDownloadConnection {
   void _onByteExceeded() {
     logger?.info("Received bytes exceeded endByte");
     client.close();
-    _flushBuffer();
+    flushBuffer();
     _fixTempFiles();
     _setDownloadComplete();
     terminatedOnCompletion = true;
@@ -452,9 +445,9 @@ abstract class BaseHttpDownloadConnection {
   /// All flush operations write temp files with their corresponding connection number
   /// and byte ranges
   /// e.g. 0#100-2500 => connectionNumber#startByte-endByte
-  void _flushBuffer() {
+  void flushBuffer() {
     if (buffer.isEmpty) return;
-    _isWritingTempFile = true;
+    isWritingTempFile = true;
     final bytes = _writeToUin8List(buffer);
     final filePath = join(
       tempDirectory.path,
@@ -489,7 +482,7 @@ abstract class BaseHttpDownloadConnection {
     if (totalRequestWriteProgress == 1) {
       connectionStatus = DownloadStatus.connectionComplete;
     }
-    _isWritingTempFile = false;
+    isWritingTempFile = false;
   }
 
   // TODO add doc
@@ -601,7 +594,7 @@ abstract class BaseHttpDownloadConnection {
     return true;
   }
 
-  void _calculateTransferRate(List<int> chunk) {
+  void calculateTransferRate(List<int> chunk) {
     _transferRateChunkBuffer.add(chunk);
     final nowMillis = _nowMillis;
     if (_tmpTime + _transferRateCalculationWindowMillis > nowMillis) return;
@@ -631,33 +624,17 @@ abstract class BaseHttpDownloadConnection {
     }
   }
 
-  void _calculateDynamicFlushThreshold() {
+  void calculateDynamicFlushThreshold() {
     const double eightMegaBytes = 8388608;
-    _dynamicFlushThreshold = bytesTransferRate * 2 < eightMegaBytes
+    dynamicFlushThreshold = bytesTransferRate * 2 < eightMegaBytes
         ? bytesTransferRate * 2
         : eightMegaBytes;
-    if (_dynamicFlushThreshold <= 8192) {
-      _dynamicFlushThreshold = 64000;
+    if (dynamicFlushThreshold <= 8192) {
+      dynamicFlushThreshold = 64000;
     }
   }
 
-  void pause(DownloadProgressCallback? progressCallback) {
-    if (_isWritingTempFile) {
-      logger?.info("Tried to pause while writing temp files!");
-    }
-    paused = true;
-    logger?.info("Paused connection $connectionNumber");
-    _cancelLogFlushTimer();
-    if (progressCallback != null) {
-      this.progressCallback = progressCallback;
-    }
-    _flushBuffer();
-    _updateStatus(DownloadStatus.paused);
-    connectionStatus = DownloadStatus.paused;
-    client.close();
-    pauseButtonEnabled = false;
-    _notifyProgress();
-  }
+  void pause(DownloadProgressCallback? progressCallback);
 
   /// TODO handle cases where a segment is refreshed while the download has already finished!
   void refreshSegment(Segment segment, {bool reuseConnection = false}) {
@@ -729,7 +706,7 @@ abstract class BaseHttpDownloadConnection {
       ":: message: ${message.internalMessage}",
     );
     logger?.info("Refresh Segment :: ${this.startByte} - ${this.endByte}");
-    _notifyProgress();
+    notifyProgress();
     return;
   }
 
@@ -760,12 +737,12 @@ abstract class BaseHttpDownloadConnection {
     downloadProgress = totalRequestReceivedBytes / segment.length;
     totalDownloadProgress =
         totalConnectionReceivedBytes / downloadItem.contentLength;
-    _flushBuffer();
+    flushBuffer();
     connectionStatus = DownloadStatus.connectionComplete;
     logger?.info("Download complete with completion signal");
     logger?.info("connection progress : $downloadProgress");
     _setDownloadComplete();
-    _notifyProgress(completionSignal: true);
+    notifyProgress(completionSignal: true);
   }
 
   /// Force closing the client leads to a clientException to be thrown. When that happens,
@@ -780,7 +757,7 @@ abstract class BaseHttpDownloadConnection {
       client.close();
     } catch (e) {}
     _clearBuffer();
-    _notifyProgress();
+    notifyProgress();
     if (!(error is http.ClientException &&
         (paused || terminatedOnCompletion))) {
       logger?.error("connection $connectionNumber error : $error \n $s");
@@ -807,7 +784,7 @@ abstract class BaseHttpDownloadConnection {
     tempReceivedBytes += chunk.length;
   }
 
-  void _updateStatus(String status) {
+  void updateStatus(String status) {
     this.overallStatus = status;
     downloadItem.status = this.overallStatus;
   }
@@ -822,7 +799,7 @@ abstract class BaseHttpDownloadConnection {
     if (connectionReuse) {
       return false;
     }
-    final isAllowed = (paused && _isWritingTempFile) ||
+    final isAllowed = (paused && isWritingTempFile) ||
         (!paused && downloadProgress > 0) ||
         downloadItem.status == DownloadStatus.connectionComplete ||
         overallStatus == DownloadStatus.connectionComplete ||
@@ -883,7 +860,7 @@ abstract class BaseHttpDownloadConnection {
       ..sort(sortByByteRanges);
   }
 
-  void _initTempFilesCache() {
+  void initTempFilesCache() {
     if (connectionCachedTempFiles.isNotEmpty || !tempDirectory.existsSync()) {
       return;
     }
@@ -955,7 +932,7 @@ abstract class BaseHttpDownloadConnection {
 
   bool get connectionRetryAllowed =>
       lastResponseTimeMillis + settings.connectionRetryTimeout < _nowMillis &&
-      !_isWritingTempFile &&
+      !isWritingTempFile &&
       overallStatus != DownloadStatus.paused &&
       overallStatus != DownloadStatus.connectionComplete &&
       connectionStatus != DownloadStatus.canceled &&

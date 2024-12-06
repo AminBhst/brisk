@@ -71,19 +71,12 @@ class DownloadConnectionInvoker {
   static BaseHttpDownloadConnection _buildDownloadConnection(
     DownloadIsolateMessage data,
   ) {
-    return data.downloadItem.downloadUrl == mockDownloadUrl
-        ? MockHttpDownloadConnection(
-            downloadItem: data.downloadItem,
-            segment: data.segment!,
-            connectionNumber: data.connectionNumber!,
-            settings: data.settings,
-          )
-        : HttpDownloadConnection(
-            downloadItem: data.downloadItem,
-            segment: data.segment!,
-            connectionNumber: data.connectionNumber!,
-            settings: data.settings,
-          );
+    return HttpDownloadConnection(
+      downloadItem: data.downloadItem,
+      segment: data.segment!,
+      connectionNumber: data.connectionNumber!,
+      settings: data.settings,
+    );
   }
 
   static void _setStopCommandTracker(

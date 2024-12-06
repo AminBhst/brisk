@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:encrypt/encrypt.dart';
-
 class M3U8 {
   final List<M3U8Segment> segments;
   final int mediaSequence;
@@ -13,7 +11,7 @@ class M3U8 {
     required this.encryptionDetails,
   });
 
-  static M3U8? parseFromFile(File file) {
+  static M3U8? fromFile(File file) {
     final lines = file.readAsLinesSync();
     int mediaSequence = 0;
     M3U8EncryptionDetails encryptionDetails = M3U8EncryptionDetails();
@@ -43,7 +41,7 @@ class M3U8 {
         reachedSegments = true;
         segments[currSegmentNum] = (segments[currSegmentNum] ?? M3U8Segment())
           ..extInf = extInfValue
-          ..segmentNumber = currSegmentNum;
+          ..sequenceNumber = currSegmentNum;
       } else if (line.startsWith("http")) {
         segments[currSegmentNum] = (segments[currSegmentNum] ?? M3U8Segment())
           ..url = line;
@@ -73,7 +71,7 @@ class M3U8 {
 
 class M3U8Segment {
   String url;
-  int segmentNumber;
+  int sequenceNumber;
   String extInf;
 
   /// Encryption details for m3u8 files with key rotation
@@ -81,7 +79,7 @@ class M3U8Segment {
 
   M3U8Segment({
     this.url = "",
-    this.segmentNumber = 0,
+    this.sequenceNumber = 0,
     this.extInf = "",
     this.encryptionDetails,
   });
