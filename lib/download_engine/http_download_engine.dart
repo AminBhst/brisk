@@ -921,6 +921,10 @@ class HttpDownloadEngine {
       }
       final nextFile = tempFies[i + 1];
       final startNext = getStartByteFromTempFile(nextFile);
+      if (startNext - end == 2) {
+        tempFilesToDelete.add(file);
+        tempFilesToDelete.add(tempFies[i - 1]);
+      }
       if (checkForMissingTempFile && startNext - 1 != end) {
         logger?.info(
           "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)}",
