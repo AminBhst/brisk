@@ -1,7 +1,49 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:path/path.dart';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:http/http.dart' as http;
+
+/// Decrypts an AES-128 encrypted file.
+/// If chunked mode is enabled, it decrypts the file in chunks to reduce memory usage.
+void decryptAes128File(
+  File file,
+  String key,
+  IV iv, {
+  bool chunked = false,
+}) async {
+  final aesKey = Key(utf8.encode(key));
+  final encrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
+  if (chunked) {
+    const chunkSize = 5 * 1024 * 1024;
+    final outputFile = File(join(file.parent.path, "Decrypted.ts"));
+    final outputFileOpen = outputFile.openWrite();
+    final inputStream = file.openSync();
+    try {
+      final buffer = Uint8List(chunkSize);
+      int bytesRead;
+      while ((bytesRead = inputStream.readIntoSync(buffer)) > 0) {
+        final chunk = Uint8List.sublistView(buffer, 0, bytesRead);
+        final decryptedBytes = encrypter.decryptBytes(Encrypted(chunk), iv: iv);
+        outputFileOpen.add(decryptedBytes);
+      }
+    } catch (e) {
+    } finally {
+      await outputFileOpen.close();
+      inputStream.closeSync();
+    }
+    file.deleteSync();
+    outputFile.renameSync(file.path);
+    return;
+  }
+  final decryptedBytes = encrypter.decryptBytes(
+    Encrypted(file.readAsBytesSync()),
+    iv: iv,
+  );
+  file.writeAsBytesSync(decryptedBytes, mode: FileMode.write);
+}
 
 /// Set decryption initialization vector based on the sequence number of the segment as a big-endian
 /// This is only used when the m3u8 requires a decryption process and does not provide an IV itself.

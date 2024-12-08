@@ -77,6 +77,10 @@ class M3U8Segment {
   /// Encryption details for m3u8 files with key rotation
   M3U8EncryptionDetails? encryptionDetails;
 
+  M3U8EncryptionMethod get encryptionMethod => encryptionDetails != null
+      ? encryptionDetails!.encryptionMethod
+      : M3U8EncryptionMethod.NONE;
+
   M3U8Segment({
     this.url = "",
     this.sequenceNumber = 0,

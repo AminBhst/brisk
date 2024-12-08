@@ -230,7 +230,7 @@ abstract class BaseHttpDownloadConnection {
       response.asStream().cast<http.StreamedResponse>().listen((response) {
         response.stream.listen(
           _processChunk,
-          onDone: _onDownloadComplete,
+          onDone: onDownloadComplete,
           onError: _onError,
         );
       }).onError(_onError);
@@ -731,7 +731,7 @@ abstract class BaseHttpDownloadConnection {
   }
 
   /// Flushes the remaining bytes in the buffer and completes the download.
-  void _onDownloadComplete() {
+  void onDownloadComplete() {
     if (paused || reset) return;
     bytesTransferRate = 0;
     downloadProgress = totalRequestReceivedBytes / segment.length;
@@ -746,11 +746,11 @@ abstract class BaseHttpDownloadConnection {
   }
 
   /// Force closing the client leads to a clientException to be thrown. When that happens,
-  /// the stream is completed and the [_onDownloadComplete] is called. However,
+  /// the stream is completed and the [onDownloadComplete] is called. However,
   /// since sometimes, for example, when a connection is reset or paused, we don't want the
-  /// [_onDownloadComplete] to be called as it sends a completionSignal to the engine
+  /// [onDownloadComplete] to be called as it sends a completionSignal to the engine
   /// despite the connection not really being completed (the designated segment is not downloaded yet).
-  /// Therefore, we handle the mentioned exception here in a way that [_onDownloadComplete] will be called
+  /// Therefore, we handle the mentioned exception here in a way that [onDownloadComplete] will be called
   /// only when a download is actually completed.
   void _onError(dynamic error, [dynamic s]) {
     try {

@@ -42,16 +42,16 @@ import 'util/settings_cache.dart';
 
 // TODO Fix resizing the window when a row is selected
 // TODO fix responsiveness of queue dialog
-// void main() async {
-//   // const m3u8File = 'C:\\Users\\RyeWell\\Downloads\\index-f2-v1-a1(2).m3u8';
-//   const m3u8File = 'C:\\Users\\RyeWell\\Desktop\\mu.m3u8';
-//   const keyUrl = 'https://hanime.tv/sign.bin';
-//   const outputDir = 'C:\\Users\\RyeWell\\Desktop\\dir';
-//   await Directory(outputDir).create(recursive: true);
-//   final aa = M3U8.fromFile(File(m3u8File));
-//   await processM3U8(aa!, outputDir);
-//   print('Decryption and merging completed!');
-// }
+void main() async {
+  // const m3u8File = 'C:\\Users\\RyeWell\\Downloads\\index-f2-v1-a1(2).m3u8';
+  const m3u8File = 'C:\\Users\\RyeWell\\Desktop\\mu.m3u8';
+  const keyUrl = 'https://hanime.tv/sign.bin';
+  const outputDir = 'C:\\Users\\RyeWell\\Desktop\\dir';
+  await Directory(outputDir).create(recursive: true);
+  final aa = M3U8.fromFile(File(m3u8File));
+  await processM3U8(aa!, outputDir);
+  print('Decryption and merging completed!');
+}
 
 // Helper to derive IV from sequence number.
 Uint8List deriveIV(int sequenceNumber) {
@@ -74,6 +74,9 @@ Future<void> decryptSegment(String segmentUrl, String key, int sequenceNumber,
     String outputPath) async {
   print("Downloading $segmentUrl ....");
   final response = await http.get(Uri.parse(segmentUrl));
+  print(response.headers);
+  final headers = response.headers;
+
   if (response.statusCode == 200) {
     final keyBytes = utf8.encode(key); // Ensure key is 16 bytes.
     final aesKey = encrypt.Key(keyBytes);
@@ -107,51 +110,51 @@ Future<void> processM3U8(M3U8 m3u8, String outputDir) async {
   // await sink.close();
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
-  tz.initializeTimeZones();
-  await HiveUtil.instance.initHive();
-  await setupLaunchAtStartup();
-  await FileUtil.setDefaultTempDir();
-  await FileUtil.setDefaultSaveDir();
-  await HiveUtil.instance.putInitialBoxValues();
-  await SettingsCache.setCachedSettings();
-  await updateLaunchAtStartupSetting();
-  ApplicationThemeHolder.setActiveTheme();
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<SettingsProvider>(
-          create: (_) => SettingsProvider(),
-        ),
-        ChangeNotifierProvider<QueueProvider>(
-          create: (_) => QueueProvider(),
-        ),
-        ChangeNotifierProvider<ThemeProvider>(
-          create: (_) => ThemeProvider(),
-        ),
-        ChangeNotifierProvider<PlutoGridCheckRowProvider>(
-          create: (_) => PlutoGridCheckRowProvider(),
-        ),
-        ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
-            DownloadRequestProvider>(
-          create: (_) => DownloadRequestProvider(PlutoGridCheckRowProvider()),
-          update: (context, plutoProvider, downloadProvider) {
-            if (downloadProvider == null) {
-              return DownloadRequestProvider(plutoProvider);
-            } else {
-              downloadProvider.plutoProvider = plutoProvider;
-              return downloadProvider;
-            }
-          },
-        ),
-      ],
-      child: const MyApp(),
-    ),
-  );
-}
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await windowManager.ensureInitialized();
+//   tz.initializeTimeZones();
+//   await HiveUtil.instance.initHive();
+//   await setupLaunchAtStartup();
+//   await FileUtil.setDefaultTempDir();
+//   await FileUtil.setDefaultSaveDir();
+//   await HiveUtil.instance.putInitialBoxValues();
+//   await SettingsCache.setCachedSettings();
+//   await updateLaunchAtStartupSetting();
+//   ApplicationThemeHolder.setActiveTheme();
+//
+//   runApp(
+//     MultiProvider(
+//       providers: [
+//         ChangeNotifierProvider<SettingsProvider>(
+//           create: (_) => SettingsProvider(),
+//         ),
+//         ChangeNotifierProvider<QueueProvider>(
+//           create: (_) => QueueProvider(),
+//         ),
+//         ChangeNotifierProvider<ThemeProvider>(
+//           create: (_) => ThemeProvider(),
+//         ),
+//         ChangeNotifierProvider<PlutoGridCheckRowProvider>(
+//           create: (_) => PlutoGridCheckRowProvider(),
+//         ),
+//         ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
+//             DownloadRequestProvider>(
+//           create: (_) => DownloadRequestProvider(PlutoGridCheckRowProvider()),
+//           update: (context, plutoProvider, downloadProvider) {
+//             if (downloadProvider == null) {
+//               return DownloadRequestProvider(plutoProvider);
+//             } else {
+//               downloadProvider.plutoProvider = plutoProvider;
+//               return downloadProvider;
+//             }
+//           },
+//         ),
+//       ],
+//       child: const MyApp(),
+//     ),
+//   );
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
