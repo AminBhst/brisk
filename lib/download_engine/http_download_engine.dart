@@ -199,8 +199,6 @@ class HttpDownloadEngine {
       final prog = _downloadProgresses[downloadId]?.totalDownloadProgress ?? 0;
       if (queue.isEmpty ||
           _shouldCreateNewConnections(downloadId) ||
-          // engineChannel.connectionChannels.length <
-          //     downloadSettings.totalConnections ||
           engineChannel.awaitingConnectionResetResponse ||
           prog >= 1) {
         return;
@@ -310,7 +308,13 @@ class HttpDownloadEngine {
     });
   }
 
-  // TODO take estimation into account
+  static bool isDownloadNearCompletion(int downloadId) {
+    final estimate = _downloadProgresses[downloadId]?.estimatedRemaining ?? "";
+    return estimate.contains("Seconds") &&
+        !estimate.contains(",") &&
+        ((int.tryParse(estimate.replaceAll(" Seconds", "")) ?? 100) < 5);
+  }
+
   static bool _shouldCreateNewConnections(int downloadId) {
     final progress = _downloadProgresses[downloadId]!;
     final engineChannel = _engineChannels[downloadId];
@@ -324,7 +328,8 @@ class HttpDownloadEngine {
         progress.connectionProgresses.length <
             downloadSettings.totalConnections &&
         engineChannel!.createdConnections < downloadSettings.totalConnections &&
-        !_connectionSpawnerIgnoreList.contains(downloadId);
+        !_connectionSpawnerIgnoreList.contains(downloadId) &&
+        !isDownloadNearCompletion(downloadId);
   }
 
   /// Handles the messages coming from [BaseHttpDownloadConnection]
@@ -921,6 +926,7 @@ class HttpDownloadEngine {
       }
       final nextFile = tempFies[i + 1];
       final startNext = getStartByteFromTempFile(nextFile);
+      // Cases where there is a single missing byte
       if (startNext - end == 2) {
         tempFilesToDelete.add(file);
         tempFilesToDelete.add(tempFies[i - 1]);
