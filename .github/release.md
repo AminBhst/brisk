@@ -7,4 +7,4 @@
   completion.
 
 ## :pencil: Note
-While this is a small hot-fix, it is highly recommended to install this version to prevent unexpected issues with your downloads.
+Although this is a minor hotfix, it is strongly recommended to update to this version to avoid potential issues with your downloads.
