@@ -25,7 +25,7 @@ jobs:
            echo version=$VERSION >> $env:GITHUB_OUTPUT
            
   Build-package:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read 
     needs: version
@@ -77,7 +77,7 @@ jobs:
           retention-days: 1
 
   Release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [Build-package, version]
     permissions:
       contents: write
