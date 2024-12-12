@@ -136,7 +136,7 @@ jobs:
 
 
   Build-Linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read 
     needs: version
@@ -258,7 +258,7 @@ jobs:
 
 
   Release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 #    needs: [Build-Linux, Build-windows, Build-macos, version]
     needs: [Build-Linux, Build-windows, version]
     permissions:
