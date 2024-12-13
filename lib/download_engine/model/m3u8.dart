@@ -73,6 +73,7 @@ class M3U8Segment {
   String url;
   int sequenceNumber;
   String extInf;
+  int? connectionNumber;
 
   /// Encryption details for m3u8 files with key rotation
   M3U8EncryptionDetails? encryptionDetails;

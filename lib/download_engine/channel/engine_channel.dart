@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:brisk/download_engine/channel/download_connection_channel.dart';
 import 'package:brisk/download_engine/download_command.dart';
-import 'package:brisk/download_engine/http_download_engine.dart';
+import 'package:brisk/download_engine/engine/http_download_engine.dart';
 import 'package:brisk/download_engine/log/logger.dart';
 import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';

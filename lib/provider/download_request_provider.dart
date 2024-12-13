@@ -6,8 +6,9 @@ import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/download_settings.dart';
-import 'package:brisk/download_engine/http_download_engine.dart';
+import 'package:brisk/download_engine/engine/http_download_engine.dart';
 import 'package:brisk/download_engine/message/button_availability_message.dart';
+import 'package:brisk/download_engine/message/http_download_isolate_message.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/model/download_item.dart';
@@ -68,7 +69,7 @@ class DownloadRequestProvider with ChangeNotifier {
         ? SettingsCache.connectionsNumber
         : 1;
 
-    final data = DownloadIsolateMessage(
+    final data = HttpDownloadIsolateMessage(
       command: command,
       downloadItem: downloadProgress.downloadItem,
       settings: DownloadSettings.fromSettingsCache(),

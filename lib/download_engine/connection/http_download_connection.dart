@@ -17,22 +17,4 @@ class HttpDownloadConnection extends BaseHttpDownloadConnection {
     return http.Client();
   }
 
-  @override
-  void pause(DownloadProgressCallback? progressCallback) {
-    if (isWritingTempFile) {
-      logger?.info("Tried to pause while writing temp files!");
-    }
-    paused = true;
-    logger?.info("Paused connection $connectionNumber");
-    cancelLogFlushTimer();
-    if (progressCallback != null) {
-      this.progressCallback = progressCallback;
-    }
-    flushBuffer();
-    updateStatus(DownloadStatus.paused);
-    connectionStatus = DownloadStatus.paused;
-    client.close();
-    pauseButtonEnabled = false;
-    notifyProgress();
-  }
 }

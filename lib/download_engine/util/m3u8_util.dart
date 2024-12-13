@@ -34,8 +34,9 @@ void decryptAes128File(
       await outputFileOpen.close();
       inputStream.closeSync();
     }
+    final filePath = file.path;
     file.deleteSync();
-    outputFile.renameSync(file.path);
+    outputFile.renameSync(filePath);
     return;
   }
   final decryptedBytes = encrypter.decryptBytes(

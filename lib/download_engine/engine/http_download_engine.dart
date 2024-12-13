@@ -9,6 +9,7 @@ import 'package:brisk/download_engine/message/connection_segment_message.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/channel/download_connection_channel.dart';
+import 'package:brisk/download_engine/message/http_download_isolate_message.dart';
 import 'package:brisk/download_engine/message/log_message.dart';
 import 'package:brisk/download_engine/segment/download_segment_tree.dart';
 import 'package:brisk/download_engine/download_settings.dart';
@@ -26,8 +27,8 @@ import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:path/path.dart';
 
-import '../util/file_util.dart';
-import '../util/readability_util.dart';
+import '../../util/file_util.dart';
+import '../../util/readability_util.dart';
 
 /// Coordinates and manages download connections.
 /// By default, each download request consists of 8 download connections that are tasked to receive their designated bytes and save them as temporary files.
@@ -156,7 +157,7 @@ class HttpDownloadEngine {
           .toList();
 
       for (final connection in connectionsToReset) {
-        final message = DownloadIsolateMessage(
+        final message = HttpDownloadIsolateMessage(
           command: DownloadCommand.resetConnection,
           downloadItem: engineChannel.downloadItem!,
           settings: downloadSettings,
@@ -218,7 +219,7 @@ class HttpDownloadEngine {
     final engineChannel = EngineChannel(channel: providerChannel);
     _engineChannels[args.obj] = engineChannel;
     _startEngineTimers();
-    engineChannel.listenToStream<DownloadIsolateMessage>((data) async {
+    engineChannel.listenToStream<HttpDownloadIsolateMessage>((data) async {
       downloadSettings = data.settings;
       _setConnectionSpawnIgnoreList(data);
       final downloadItem = data.downloadItem;
@@ -293,7 +294,7 @@ class HttpDownloadEngine {
         );
         return;
       }
-      final data = DownloadIsolateMessage(
+      final data = HttpDownloadIsolateMessage(
         command: DownloadCommand.refreshSegment,
         downloadItem: _downloadProgresses[downloadId]!.downloadItem,
         connectionNumber: connNum,
@@ -541,7 +542,7 @@ class HttpDownloadEngine {
     int connectionNumber,
     Segment segment,
   ) {
-    final data = DownloadIsolateMessage(
+    final data = HttpDownloadIsolateMessage(
       command: DownloadCommand.start_ReuseConnection,
       downloadItem: downloadItem,
       settings: downloadSettings,
@@ -713,7 +714,7 @@ class HttpDownloadEngine {
     logger?.info(
       "Sending refresh segment request to connection ${oldestSegmentConnection.connectionNumber}",
     );
-    final data = DownloadIsolateMessage(
+    final data = HttpDownloadIsolateMessage(
       command: DownloadCommand.refreshSegment_reuseConnection,
       downloadItem: connectionChannel.downloadItem!,
       connectionNumber: oldestSegmentConnection.connectionNumber,
@@ -729,7 +730,7 @@ class HttpDownloadEngine {
     int connectionNumber,
   ) async {
     final logger = _engineChannels[downloadItem.id]!.logger;
-    final data = DownloadIsolateMessage(
+    final data = HttpDownloadIsolateMessage(
       command: DownloadCommand.start_Initial,
       downloadItem: downloadItem,
       settings: downloadSettings,
@@ -743,7 +744,7 @@ class HttpDownloadEngine {
   }
 
   static Future<void> sendToDownloadIsolates(
-    DownloadIsolateMessage data,
+    HttpDownloadIsolateMessage data,
     IsolateChannel handlerChannel,
   ) async {
     final int id = data.downloadItem.id;
@@ -798,7 +799,7 @@ class HttpDownloadEngine {
     return completer.complete();
   }
 
-  static _spawnDownloadIsolates(DownloadIsolateMessage data) async {
+  static _spawnDownloadIsolates(HttpDownloadIsolateMessage data) async {
     final id = data.downloadItem.id;
     final segmentTree = _engineChannels[id]!.segmentTree!;
     segmentTree.lowestLevelNodes
@@ -1202,7 +1203,7 @@ class HttpDownloadEngine {
   /// connection exception occurs. Otherwise, we wouldn't be able to reset the
   /// connection because the isolate would already be dead.
   static _spawnSingleDownloadIsolate(
-    DownloadIsolateMessage data,
+    HttpDownloadIsolateMessage data,
     int connNum,
   ) async {
     final rPort = ReceivePort();

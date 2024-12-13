@@ -43,14 +43,35 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
       "connectionReset: $connectionReset "
       "url: ${m3u8segment.url}",
     );
+    if (isDownloadCompleted) {
+      logger?.info(
+        "Download segment ${m3u8segment.sequenceNumber} is already completed!",
+      );
+      return;
+    }
+    tempDirectory.listSync().forEach((file) => file.deleteSync);
     init(connectionReset, progressCallback, reuseConnection);
     if (connectionReset) {
       resetStatus();
     }
-    /// TODO check if the segment is completed, remove existing files if otherwise to reset the download (for pause/resume)
     notifyProgress();
     final request = buildDownloadRequest(false);
     sendDownloadRequest(request);
+  }
+
+  @override
+  bool get isDownloadCompleted {
+    final finalSegmentPath = join(
+      tempDirectory.path,
+      "Final_Segment_Complete.ts",
+    );
+    return File(finalSegmentPath).existsSync();
+  }
+
+  @override
+  void init(connectionReset, progressCallback, reuseConnection) {
+    super.init(connectionReset, progressCallback, reuseConnection);
+    previousBufferEndByte = 0;
   }
 
   @override
@@ -133,6 +154,7 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
 
   @override
   void pause(DownloadProgressCallback? progressCallback) {
+    super.pause(progressCallback);
     // TODO: implement pause
   }
 

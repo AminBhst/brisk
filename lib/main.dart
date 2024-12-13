@@ -36,6 +36,7 @@ import 'package:http/http.dart' as http;
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:puppeteer/puppeteer.dart';
 
 import 'util/file_util.dart';
 import 'util/settings_cache.dart';
@@ -43,14 +44,49 @@ import 'util/settings_cache.dart';
 // TODO Fix resizing the window when a row is selected
 // TODO fix responsiveness of queue dialog
 void main() async {
-  // const m3u8File = 'C:\\Users\\RyeWell\\Downloads\\index-f2-v1-a1(2).m3u8';
-  const m3u8File = 'C:\\Users\\RyeWell\\Desktop\\mu.m3u8';
-  const keyUrl = 'https://hanime.tv/sign.bin';
-  const outputDir = 'C:\\Users\\RyeWell\\Desktop\\dir';
-  await Directory(outputDir).create(recursive: true);
-  final aa = M3U8.fromFile(File(m3u8File));
-  await processM3U8(aa!, outputDir);
-  print('Decryption and merging completed!');
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+  tz.initializeTimeZones();
+  await HiveUtil.instance.initHive();
+  await setupLaunchAtStartup();
+  await FileUtil.setDefaultTempDir();
+  await FileUtil.setDefaultSaveDir();
+  await HiveUtil.instance.putInitialBoxValues();
+  await SettingsCache.setCachedSettings();
+  await updateLaunchAtStartupSetting();
+  ApplicationThemeHolder.setActiveTheme();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<SettingsProvider>(
+          create: (_) => SettingsProvider(),
+        ),
+        ChangeNotifierProvider<QueueProvider>(
+          create: (_) => QueueProvider(),
+        ),
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (_) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider<PlutoGridCheckRowProvider>(
+          create: (_) => PlutoGridCheckRowProvider(),
+        ),
+        ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
+            DownloadRequestProvider>(
+          create: (_) => DownloadRequestProvider(PlutoGridCheckRowProvider()),
+          update: (context, plutoProvider, downloadProvider) {
+            if (downloadProvider == null) {
+              return DownloadRequestProvider(plutoProvider);
+            } else {
+              downloadProvider.plutoProvider = plutoProvider;
+              return downloadProvider;
+            }
+          },
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 // Helper to derive IV from sequence number.

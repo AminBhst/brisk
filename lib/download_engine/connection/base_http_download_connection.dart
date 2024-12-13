@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:brisk/download_engine/http_download_engine.dart';
+import 'package:brisk/download_engine/engine/http_download_engine.dart';
 import 'package:brisk/download_engine/log/logger.dart';
 import 'package:brisk/download_engine/message/connection_segment_message.dart';
 import 'package:brisk/download_engine/message/log_message.dart';
@@ -176,7 +176,7 @@ abstract class BaseHttpDownloadConnection {
       );
       return;
     }
-    if (_isDownloadCompleted()) {
+    if (isDownloadCompleted) {
       logger?.info("Download is already completed! skipping...");
       _setDownloadComplete();
       notifyProgress();
@@ -541,7 +541,7 @@ abstract class BaseHttpDownloadConnection {
   }
 
   /// TODO improve: we could send the newEndByte in this method instead of doing another IO in [_getNewStartByte]
-  bool _isDownloadCompleted() {
+  bool get isDownloadCompleted {
     final tempFiles = getConnectionTempFilesSorted(thisByteRangeOnly: true);
     if (tempFiles.isEmpty) {
       logger?.info(
@@ -634,7 +634,23 @@ abstract class BaseHttpDownloadConnection {
     }
   }
 
-  void pause(DownloadProgressCallback? progressCallback);
+  void pause(DownloadProgressCallback? progressCallback) {
+    if (isWritingTempFile) {
+      logger?.warn("Tried to pause while writing temp files!");
+    }
+    paused = true;
+    logger?.info("Paused connection $connectionNumber");
+    cancelLogFlushTimer();
+    if (progressCallback != null) {
+      this.progressCallback = progressCallback;
+    }
+    flushBuffer();
+    updateStatus(DownloadStatus.paused);
+    connectionStatus = DownloadStatus.paused;
+    client.close();
+    pauseButtonEnabled = false;
+    notifyProgress();
+  }
 
   /// TODO handle cases where a segment is refreshed while the download has already finished!
   void refreshSegment(Segment segment, {bool reuseConnection = false}) {
