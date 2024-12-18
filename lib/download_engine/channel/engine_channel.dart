@@ -15,7 +15,7 @@ import 'package:brisk/download_engine/util/isolate_channel_wrapper.dart';
 /// This class is meant to be used as both a means of communication between the engine
 /// and the [DownloadRequestProvider] (which technically is the UI), and as a container
 /// for all things related to each download request.
-class EngineChannel extends IsolateChannelWrapper {
+class EngineChannel<T extends DownloadConnectionChannel> extends IsolateChannelWrapper {
   Logger? logger;
 
   EngineChannel({required super.channel});
@@ -25,9 +25,9 @@ class EngineChannel extends IsolateChannelWrapper {
   DownloadSegmentTree? segmentTree;
 
   /// Connection channels listened by [DownloadConnectionInvoker]
-  Map<int, DownloadConnectionChannel> connectionChannels = {};
+  Map<int, T> connectionChannels = {};
 
-  Queue<DownloadConnectionChannel> connectionReuseQueue = Queue();
+  Queue<T> connectionReuseQueue = Queue();
 
   List<EngineConnectionHandshake> pendingHandshakes = [];
 

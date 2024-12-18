@@ -1,4 +1,6 @@
+import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/download_engine/segment/segment.dart';
 
 import '../connection/base_http_download_connection.dart';
@@ -24,10 +26,13 @@ class DownloadProgressMessage {
   String detailsStatus;
   String message;
   Segment? segment;
+  M3U8Segment? m3u8segment;
   bool completionSignal;
+  DownloadType downloadType;
 
   DownloadProgressMessage({
     required this.downloadItem,
+    required this.downloadType,
     this.segment,
     this.connectionNumber = 0,
     this.downloadProgress = 0,
@@ -71,6 +76,7 @@ class DownloadProgressMessage {
       detailsStatus: request.connectionStatus,
       connectionNumber: request.connectionNumber,
       segment: request.segment,
+      downloadType: DownloadType.HTTP,
     );
     return downloadProgress;
   }

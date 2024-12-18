@@ -1,3 +1,4 @@
+import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/model/download_item.dart';
 
 class DownloadItemModel {
@@ -60,4 +61,9 @@ class DownloadItemModel {
       m3u8FilePath: item.m3u8FilePath,
     );
   }
+
+  DownloadType get downloadType =>
+      m3u8FilePath != null && m3u8FilePath!.isNotEmpty
+          ? DownloadType.M3U8
+          : DownloadType.HTTP;
 }

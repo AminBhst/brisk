@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:brisk/constants/http_constants.dart';
+import 'package:http/io_client.dart';
 import 'package:path/path.dart';
 
 import 'package:encrypt/encrypt.dart';
@@ -68,11 +70,25 @@ IV deriveExplicitIV(String ivString) {
 }
 
 /// Fetches the decryption key from the url specified in m3u8
-Future<String> fetchKey(String keyUrl) async {
-  final response = await http.get(Uri.parse(keyUrl));
-  if (response.statusCode == 200) {
-    return response.body.trim();
-  } else {
-    throw Exception('Failed to fetch decryption key.');
+Future<Uint8List> fetchDecryptionKey(String keyUrl) async {
+  final client = HttpClient()
+    ..findProxy = (url) {
+      return "PROXY localhost:10808;";
+    };
+  try {
+    final httpclient = IOClient(client);
+    final response = await httpclient.get(
+      Uri.parse(keyUrl),
+      headers: userAgentHeader,
+    );
+    if (response.statusCode == 200) {
+      return utf8.encode(response.body.trim());
+    } else {
+      print("Failed to fetch key... status code ${response.statusCode}");
+      throw Exception('Failed to fetch decryption key.');
+    }
+  } catch (e) {
+    print(e);
+    throw e;
   }
 }

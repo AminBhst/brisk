@@ -27,7 +27,7 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
     required super.connectionNumber,
     required super.settings,
     required this.m3u8segment,
-    required this.encryptionKey,
+    this.encryptionKey,
   });
 
   @override
@@ -36,6 +36,7 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
     bool connectionReset = false,
     bool reuseConnection = false,
   }) {
+    tempDirectory.createSync(recursive: true);
     startLogFlushTimer();
     logger?.info(
       "Starting download for m3u8 segment ${m3u8segment.sequenceNumber} with "

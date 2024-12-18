@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:brisk/download_engine/segment/segment_status.dart';
+import 'package:brisk/download_engine/util/m3u8_util.dart';
+
 class M3U8 {
   final List<M3U8Segment> segments;
   final int mediaSequence;
@@ -11,7 +14,7 @@ class M3U8 {
     required this.encryptionDetails,
   });
 
-  static M3U8? fromFile(File file) {
+  static Future<M3U8?> fromFile(File file) async {
     final lines = file.readAsLinesSync();
     int mediaSequence = 0;
     M3U8EncryptionDetails encryptionDetails = M3U8EncryptionDetails();
@@ -26,7 +29,7 @@ class M3U8 {
         final currEncryptionDetails = M3U8EncryptionDetails(
           encryptionKeyUrl: attrs["URI"],
           encryptionMethod:
-              M3U8EncryptionMethodParser.fromString(attrs["METHOD"]!),
+          M3U8EncryptionMethodParser.fromString(attrs["METHOD"]!),
           iv: attrs["IV"],
         );
         if (reachedSegments) {
@@ -48,11 +51,29 @@ class M3U8 {
       }
     }
 
-    return M3U8(
+    final m3u8 = M3U8(
       segments: segments.values.toList(),
       mediaSequence: mediaSequence,
       encryptionDetails: encryptionDetails,
     );
+    if (m3u8.encryptionDetails.encryptionMethod ==
+        M3U8EncryptionMethod.AES_128) {
+      m3u8.encryptionDetails.keyBytes = await fetchDecryptionKey(
+        m3u8.encryptionDetails.encryptionKeyUrl!,
+      );
+    }
+    for (var segment in m3u8.segments) {
+      if (segment.encryptionDetails == null ||
+          segment.encryptionDetails!.encryptionKeyUrl == null ||
+          segment.encryptionDetails!.encryptionKeyUrl!.isEmpty) {
+        continue;
+      }
+      segment.encryptionDetails!.keyBytes = await fetchDecryptionKey(
+        segment.encryptionDetails!.encryptionKeyUrl!,
+      );
+    }
+
+    return m3u8;
   }
 
   static Map<String, String> parseAttributes(String attributesLine) {
@@ -74,20 +95,36 @@ class M3U8Segment {
   int sequenceNumber;
   String extInf;
   int? connectionNumber;
+  SegmentStatus segmentStatus;
 
   /// Encryption details for m3u8 files with key rotation
   M3U8EncryptionDetails? encryptionDetails;
 
-  M3U8EncryptionMethod get encryptionMethod => encryptionDetails != null
-      ? encryptionDetails!.encryptionMethod
-      : M3U8EncryptionMethod.NONE;
+  M3U8EncryptionMethod get encryptionMethod =>
+      encryptionDetails != null
+          ? encryptionDetails!.encryptionMethod
+          : M3U8EncryptionMethod.NONE;
 
   M3U8Segment({
     this.url = "",
     this.sequenceNumber = 0,
     this.extInf = "",
     this.encryptionDetails,
+    this.segmentStatus = SegmentStatus.INITIAL,
   });
+
+  @override
+  String toString() {
+    return "Sequence Number $sequenceNumber Url: $url";
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is M3U8Segment &&
+        other.sequenceNumber == this.sequenceNumber &&
+        other.sequenceNumber == this.sequenceNumber &&
+        other.url == this.url;
+  }
 }
 
 enum M3U8EncryptionMethod {
@@ -111,10 +148,12 @@ class M3U8EncryptionDetails {
   final M3U8EncryptionMethod encryptionMethod;
   final String? encryptionKeyUrl;
   final String? iv;
+  List<int>? keyBytes;
 
   M3U8EncryptionDetails({
     this.encryptionMethod = M3U8EncryptionMethod.NONE,
     this.encryptionKeyUrl,
     this.iv,
+    this.keyBytes,
   });
 }

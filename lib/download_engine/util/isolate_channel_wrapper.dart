@@ -12,14 +12,14 @@ class IsolateChannelWrapper {
     this.channel.sink.add(message);
   }
 
-  void listenToStream<T>(Function(T data) callback) {
+  void listenToStream<T>(Function(T data) callback) async {
     if (_isListened) {
       return;
     }
     this._isListened = true;
-    channel.stream.cast<T>().listen((event) {
+    channel.stream.cast<T>().listen((event) async {
       onEventReceived(event);
-      callback.call(event);
+      await callback.call(event);
     });
   }
 

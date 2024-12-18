@@ -2,11 +2,15 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:isolate';
 
+import 'package:brisk/download_engine/connection/m3u8_download_connection.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/connection/http_download_connection.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';
 import 'package:brisk/download_engine/connection/mock_http_download_connection.dart';
+import 'package:brisk/download_engine/message/http_download_isolate_message.dart';
+import 'package:brisk/download_engine/message/m3u8_download_isolate_message.dart';
+import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
@@ -60,23 +64,35 @@ class DownloadConnectionInvoker {
       if (conn == null) {
         conn = _buildDownloadConnection(data);
         if (data.settings.loggerEnabled) {
-          conn.initLogger();
+          conn?.initLogger();
         }
-        _connections[id]![connectionNumber] = conn;
+        _connections[id]![connectionNumber] = conn!;
       }
       _executeCommand(data, channel);
     });
   }
 
-  static BaseHttpDownloadConnection _buildDownloadConnection(
+  static BaseHttpDownloadConnection? _buildDownloadConnection(
     DownloadIsolateMessage data,
   ) {
-    return HttpDownloadConnection(
-      downloadItem: data.downloadItem,
-      segment: data.segment!,
-      connectionNumber: data.connectionNumber!,
-      settings: data.settings,
-    );
+    if (data is HttpDownloadIsolateMessage) {
+      return HttpDownloadConnection(
+        downloadItem: data.downloadItem,
+        segment: data.segment!,
+        connectionNumber: data.connectionNumber!,
+        settings: data.settings,
+      );
+    }
+    if (data is M3u8DownloadIsolateMessage) {
+      return M3U8DownloadConnection(
+        downloadItem: data.downloadItem,
+        m3u8segment: data.segment!,
+        connectionNumber: data.connectionNumber!,
+        settings: data.settings,
+        segment: Segment(0, 0),
+      );
+    }
+    return null;
   }
 
   static void _setStopCommandTracker(
@@ -96,6 +112,60 @@ class DownloadConnectionInvoker {
 
   static void _executeCommand(
     DownloadIsolateMessage data,
+    IsolateChannel channel,
+  ) {
+    if (data is HttpDownloadIsolateMessage) {
+      _executeCommandHttp(data, channel);
+    }
+    if (data is M3u8DownloadIsolateMessage) {
+      _executeCommandM3u8(data, channel);
+    }
+  }
+
+  static void _executeCommandM3u8(
+    M3u8DownloadIsolateMessage data,
+    IsolateChannel channel,
+  ) {
+    final id = data.downloadItem.id;
+    final connectionNumber = data.connectionNumber;
+    final connection = _connections[id]![connectionNumber]!;
+    switch (data.command) {
+      case DownloadCommand.start_Initial:
+        // connection.previousBufferEndByte = data.previouslyWrittenByteLength;
+        connection.start(channel.sink.add);
+        channel.sink.add(ConnectionHandshake.fromIsolateMessage(data));
+        break;
+      case DownloadCommand.start:
+        connection.start(channel.sink.add);
+        break;
+      case DownloadCommand.pause:
+        connection.pause(channel.sink.add);
+        break;
+      case DownloadCommand.clearConnections: // TODO add sink.close()
+        _connections[id]?.clear();
+        break;
+      case DownloadCommand.cancel:
+        connection.cancel();
+        _connections[id]?.clear();
+        break;
+      case DownloadCommand.forceCancel:
+        connection.cancel(failure: true);
+        _connections[id]?.clear();
+        break;
+      case DownloadCommand.resetConnection:
+        if (!connection.connectionRetryAllowed) {
+          break;
+        }
+        connection.previousBufferEndByte = 0;
+        connection.resetConnection();
+        break;
+      default:
+        break;
+    }
+  }
+
+  static void _executeCommandHttp(
+    HttpDownloadIsolateMessage data,
     IsolateChannel channel,
   ) {
     final id = data.downloadItem.id;

@@ -36,7 +36,6 @@ import 'package:http/http.dart' as http;
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:puppeteer/puppeteer.dart';
 
 import 'util/file_util.dart';
 import 'util/settings_cache.dart';

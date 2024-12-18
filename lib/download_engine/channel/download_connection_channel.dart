@@ -5,7 +5,6 @@ import 'package:brisk/download_engine/message/download_progress_message.dart';
 
 class DownloadConnectionChannel extends IsolateChannelWrapper {
   final connectionNumber;
-  Segment? segment;
   bool segmentRefreshed = false;
   double progress = 0;
   int segmentLength = 0;
@@ -22,7 +21,6 @@ class DownloadConnectionChannel extends IsolateChannelWrapper {
   DownloadConnectionChannel({
     required super.channel,
     required this.connectionNumber,
-    required this.segment,
   });
 
   @override
@@ -38,7 +36,6 @@ class DownloadConnectionChannel extends IsolateChannelWrapper {
     this.status = event.status;
     this.detailsStatus = event.detailsStatus;
     this.bytesTransferRate = event.bytesTransferRate;
-    this.segment = event.segment;
     this.lastResponseTime = DateTime.now().millisecondsSinceEpoch;
   }
 }

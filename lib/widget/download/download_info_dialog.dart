@@ -1,3 +1,4 @@
+import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
@@ -284,7 +285,10 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
     await HiveUtil.instance.addDownloadItem(request);
     provider.insertRows([
       DownloadProgressMessage(
-          downloadItem: DownloadItemModel.fromDownloadItem(request))
+        downloadItem: DownloadItemModel.fromDownloadItem(request),
+        /// TODO handle type properly
+        downloadType: DownloadType.HTTP,
+      )
     ]);
     if (!mounted) return;
     Navigator.of(context).pop();

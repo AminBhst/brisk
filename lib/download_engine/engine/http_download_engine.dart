@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:brisk/constants/download_type.dart';
+import 'package:brisk/download_engine/channel/http_download_connection_channel.dart';
 import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
 import 'package:brisk/download_engine/message/button_availability_message.dart';
 import 'package:brisk/download_engine/message/connection_handshake_message.dart';
@@ -58,7 +60,8 @@ class HttpDownloadEngine {
 
   /// A map of all stream channels related to the running download requests
   /// key: downloadId
-  static final Map<int, EngineChannel> _engineChannels = {};
+  static final Map<int, EngineChannel<HttpDownloadConnectionChannel>>
+      _engineChannels = {};
 
   /// TODO Remove and use download channels
   static final Map<int, Map<int, DownloadProgressMessage>>
@@ -216,7 +219,9 @@ class HttpDownloadEngine {
 
   static void start(IsolateArgsPair<int> args) async {
     final providerChannel = IsolateChannel.connectSend(args.sendPort);
-    final engineChannel = EngineChannel(channel: providerChannel);
+    final engineChannel = EngineChannel<HttpDownloadConnectionChannel>(
+      channel: providerChannel,
+    );
     _engineChannels[args.obj] = engineChannel;
     _startEngineTimers();
     engineChannel.listenToStream<HttpDownloadIsolateMessage>((data) async {
@@ -587,6 +592,7 @@ class HttpDownloadEngine {
       downloadProgress: totalProgress,
       totalDownloadProgress: totalProgress,
       transferRate: convertByteTransferRateToReadableStr(totalByteTransferRate),
+      downloadType: DownloadType.HTTP,
     );
     _setEstimation(downloadProgress, totalProgress);
     if (progress.status == DownloadStatus.downloading) {
@@ -640,7 +646,7 @@ class HttpDownloadEngine {
 
   /// Reassigns a connection that has finished receiving its bytes to a new segment
   static void _sendRefreshSegmentCommand_ReuseConnection(
-    DownloadConnectionChannel connectionChannel,
+    HttpDownloadConnectionChannel connectionChannel,
   ) {
     final downloadId = connectionChannel.downloadItem!.id;
     final engineChannel = _engineChannels[downloadId]!;
@@ -969,7 +975,10 @@ class HttpDownloadEngine {
   }) {
     final engineChannel = _engineChannels[downloadItem.id]!;
     final progress = _downloadProgresses[downloadItem.id] ??
-        DownloadProgressMessage(downloadItem: downloadItem);
+        DownloadProgressMessage(
+          downloadItem: downloadItem,
+          downloadType: DownloadType.HTTP,
+        );
     progress
       ..downloadItem.status = DownloadStatus.assembling
       ..totalDownloadProgress = 1
@@ -1225,7 +1234,7 @@ class HttpDownloadEngine {
     channel.sink.add(data);
     _connectionIsolates[id] ??= {};
     _connectionIsolates[id]![connNum] = isolate;
-    final connectionChannel = DownloadConnectionChannel(
+    final connectionChannel = HttpDownloadConnectionChannel(
       channel: channel,
       connectionNumber: connNum,
       segment: data.segment!,
@@ -1254,6 +1263,7 @@ class HttpDownloadEngine {
       downloadItem: downloadItem,
       status: status,
       downloadProgress: 1,
+      downloadType: DownloadType.HTTP,
     );
     return progress;
   }
