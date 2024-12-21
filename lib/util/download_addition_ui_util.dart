@@ -81,7 +81,7 @@ class DownloadAdditionUiUtil {
             context: context,
             builder: (_) => const ErrorDialog(
               textHeight: 0,
-              title: "Could not retrieve file information!",
+              title: "Failed to retrieve file information!",
             ),
           );
         },
@@ -104,8 +104,8 @@ class DownloadAdditionUiUtil {
       ..downloadUrl = ""
       ..fileName = "mu.m3u8"
       ..fileType = DLFileType.m3u8.toString()
-      ..filePath = "C:\\Users\\RyeWell\\Desktop\\dir\\output.ts"
-      ..m3u8FilePath = "C:\\Users\\RyeWell\\Desktop\\mu.m3u8";
+      ..filePath = "C:\\Users\\RyeWell\\Desktop\\dir\\output.ts";
+      // ..m3u8FilePath = "C:\\Users\\RyeWell\\Desktop\\mu.m3u8";
 
     final dlDuplication = checkDownloadDuplication(item.fileName);
     if (dlDuplication) {

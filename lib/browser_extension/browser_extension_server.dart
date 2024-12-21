@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/download_engine/model/m3u8.dart';
+import 'package:brisk/download_engine/util/m3u8_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/http_util.dart';
@@ -11,6 +13,7 @@ import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
+import 'package:brisk/widget/download/m3u8_master_playlist_dialog.dart';
 import 'package:brisk/widget/download/multi_download_addition_dialog.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +24,12 @@ import 'package:window_manager/window_manager.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.1.4";
+  static const String extensionVersion = "2.0.0";
 
   static void setup(BuildContext context) async {
     if (_isServerRunning) return;
 
+    showDialog(context: context, builder: (context) => M3u8MasterPlaylistDialog(),);
     final port = _extensionPort;
     try {
       _isServerRunning = true;
@@ -91,15 +95,37 @@ class BrowserExtensionServer {
 
   static Future<bool> _handleDownloadAddition(
       jsonBody, context, request) async {
-    final type = jsonBody["type"];
-    if (type == "single") {
-      return _handleSingleDownloadRequest(jsonBody, context, request);
+    final type = jsonBody["type"] as String;
+    switch (type.toLowerCase()) {
+      case "single":
+        return _handleSingleDownloadRequest(jsonBody, context, request);
+      case "multi":
+        _handleMultiDownloadRequest(jsonBody, context, request);
+        return true;
+      case "m3u8":
+        _handleM3u8DownloadRequest(jsonBody, context, request);
+        return true;
+      default:
+        return false;
     }
-    if (type == "multi") {
-      _handleMultiDownloadRequest(jsonBody, context, request);
-      return true;
+  }
+
+  static void _handleM3u8DownloadRequest(jsonBody, context, request) async {
+    final url = jsonBody["url"] as String;
+    M3U8 m3u8;
+    try {
+      m3u8 = (await fetchM3u8(url))!;
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (_) => const ErrorDialog(
+          textHeight: 0,
+          title: "Failed to retrieve file information!",
+        ),
+      );
+      return;
     }
-    return false;
+
   }
 
   static Future<void> flushAndCloseResponse(

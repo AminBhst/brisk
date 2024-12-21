@@ -14,8 +14,6 @@ import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 
 class M3U8DownloadConnection extends BaseHttpDownloadConnection {
-  String? encryptionKey;
-
   M3U8Segment m3u8segment;
 
   /// TODO try with lower value as well
@@ -27,7 +25,6 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
     required super.connectionNumber,
     required super.settings,
     required this.m3u8segment,
-    this.encryptionKey,
   });
 
   @override
@@ -100,7 +97,7 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
   }
 
   @override
-  void onDownloadComplete() {
+  void onDownloadComplete() async {
     if (paused || reset) return;
     bytesTransferRate = 0;
 
@@ -108,14 +105,15 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
     flushBuffer();
     connectionStatus = DownloadStatus.connectionComplete;
     logger?.info("Download complete with completion signal");
-    assembleM3U8Segment();
+    await assembleM3U8Segment();
+    notifyProgress(completionSignal: true);
   }
 
   /// Merges all temporary files of an m3u8 segment into one file and decrypts it if required.
   /// The successful completion of this method's execution marks the segment as fully downloaded.
   /// It does so by renaming the file at the end of the operation which can be used by the engine
   /// to mark this segment as fully downloaded in order to ignore it for a resume operation.
-  void assembleM3U8Segment() {
+  Future<void> assembleM3U8Segment() async {
     final tempFiles = tempDirectory.listSync().map((e) => e as File).toList()
       ..sort(sortByByteRanges);
     final segmentFile = File(join(tempDirectory.path, "Final_Segment.ts"));
@@ -124,16 +122,13 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
       segmentFile.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
     }
     if (m3u8segment.encryptionMethod == M3U8EncryptionMethod.AES_128) {
-      if (segmentFile.lengthSync() > _maximumFileSizeForInMemoryDecryption) {
-        decryptAes128File(
-          segmentFile,
-          encryptionKey!,
-          decryptionIV!,
-          chunked: true,
-        );
-      } else {
-        decryptAes128File(segmentFile, encryptionKey!, decryptionIV!);
-      }
+      await decryptAes128File(
+        segmentFile,
+        m3u8segment.encryptionDetails!.keyBytes!,
+        decryptionIV!,
+        chunked:
+            segmentFile.lengthSync() > _maximumFileSizeForInMemoryDecryption,
+      );
     }
     final newPath = join(tempDirectory.path, "Final_Segment_Complete.ts");
     segmentFile.renameSync(newPath);

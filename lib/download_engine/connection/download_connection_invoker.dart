@@ -56,6 +56,7 @@ class DownloadConnectionInvoker {
     _runCommandTrackerTimer();
     channel.stream.cast<DownloadIsolateMessage>().listen((data) {
       final id = data.downloadItem.id;
+      print("Received command for conn ${data.connectionNumber}");
       _connections[id] ??= {};
       final connectionNumber = data.connectionNumber;
       BaseHttpDownloadConnection? conn = _connections[id]![connectionNumber!];
@@ -128,10 +129,14 @@ class DownloadConnectionInvoker {
   ) {
     final id = data.downloadItem.id;
     final connectionNumber = data.connectionNumber;
-    final connection = _connections[id]![connectionNumber]!;
+    final connection =
+        _connections[id]![connectionNumber]! as M3U8DownloadConnection;
+    print(
+        "Executing ${data.command} conn ${connectionNumber} segment ${data.segment}");
     switch (data.command) {
       case DownloadCommand.start_Initial:
         // connection.previousBufferEndByte = data.previouslyWrittenByteLength;
+        connection.m3u8segment = data.segment!;
         connection.start(channel.sink.add);
         channel.sink.add(ConnectionHandshake.fromIsolateMessage(data));
         break;

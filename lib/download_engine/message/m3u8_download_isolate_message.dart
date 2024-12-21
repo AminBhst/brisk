@@ -13,7 +13,7 @@ class M3u8DownloadIsolateMessage extends DownloadIsolateMessage {
   });
 
   @override
-  DownloadIsolateMessage clone() {
+  M3u8DownloadIsolateMessage clone() {
     return M3u8DownloadIsolateMessage(
       command: this.command,
       downloadItem: this.downloadItem,

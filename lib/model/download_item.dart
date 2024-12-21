@@ -42,7 +42,7 @@ class DownloadItem extends HiveObject {
   String status;
 
   @HiveField(12)
-  String? m3u8FilePath;
+  Map<String, dynamic> extraInfo;
 
   DownloadItem({
     this.uid = "",
@@ -56,8 +56,13 @@ class DownloadItem extends HiveObject {
     this.fileType = "other",
     this.supportsPause = false,
     this.status = "In Queue",
-    this.m3u8FilePath = "",
+    this.extraInfo = const {},
   });
+
+
+  void setM3u8Content(String m3u8Content) {
+    extraInfo["m3u8Content"] = m3u8Content;
+  }
 
   factory DownloadItem.fromUrl(String url) {
     final fileName = extractFileNameFromUrl(url);

@@ -2,21 +2,21 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk/constants/http_constants.dart';
+import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:http/io_client.dart';
 import 'package:path/path.dart';
 
 import 'package:encrypt/encrypt.dart';
-import 'package:http/http.dart' as http;
 
 /// Decrypts an AES-128 encrypted file.
 /// If chunked mode is enabled, it decrypts the file in chunks to reduce memory usage.
-void decryptAes128File(
+Future<void> decryptAes128File(
   File file,
-  String key,
+  Uint8List key,
   IV iv, {
   bool chunked = false,
 }) async {
-  final aesKey = Key(utf8.encode(key));
+  final aesKey = Key(key);
   final encrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
   if (chunked) {
     const chunkSize = 5 * 1024 * 1024;
@@ -67,6 +67,30 @@ IV deriveExplicitIV(String ivString) {
     (i) => int.parse(ivString.substring(i * 2, i * 2 + 2), radix: 16),
   );
   return IV(Uint8List.fromList(ivBytes));
+}
+
+Future<M3U8?> fetchM3u8(String m3u8Url) async {
+  final client = HttpClient()
+    ..findProxy = (url) {
+      return "PROXY localhost:10808;";
+    };
+  try {
+    final httpclient = IOClient(client);
+    final response = await httpclient.get(
+      Uri.parse(m3u8Url),
+      headers: userAgentHeader,
+    );
+    if (response.statusCode == 200) {
+      final body = response.body;
+      return await M3U8.fromString(body, m3u8Url);
+    } else {
+      print("Failed to fetch m3u8... status code ${response.statusCode}");
+      throw Exception('Failed to fetch m3u8!');
+    }
+  } catch (e) {
+    print(e);
+    throw e;
+  }
 }
 
 /// Fetches the decryption key from the url specified in m3u8

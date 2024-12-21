@@ -58,7 +58,7 @@ class DownloadItemModel {
       status: item.status,
       supportsPause: item.supportsPause,
       uid: item.uid,
-      m3u8FilePath: item.m3u8FilePath,
+      m3u8FilePath: item.extraInfo["m3u8Content"],
     );
   }
 

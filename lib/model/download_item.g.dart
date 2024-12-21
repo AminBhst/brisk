@@ -28,7 +28,7 @@ class DownloadItemAdapter extends TypeAdapter<DownloadItem> {
       fileType: fields[9] as String,
       supportsPause: fields[10] as bool,
       status: fields[11] as String,
-      m3u8FilePath: fields[12] as String?,
+      extraInfo: (fields[12] as Map).cast<String, dynamic>(),
     );
   }
 
@@ -59,7 +59,7 @@ class DownloadItemAdapter extends TypeAdapter<DownloadItem> {
       ..writeByte(11)
       ..write(obj.status)
       ..writeByte(12)
-      ..write(obj.m3u8FilePath);
+      ..write(obj.extraInfo);
   }
 
   @override

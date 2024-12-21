@@ -7,6 +7,7 @@ import 'package:brisk/download_engine/channel/download_connection_channel.dart';
 import 'package:brisk/download_engine/channel/engine_channel.dart';
 import 'package:brisk/download_engine/channel/m3u8_download_connection_channel.dart';
 import 'package:brisk/download_engine/connection/download_connection_invoker.dart';
+import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/download_settings.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/message/connection_handshake_message.dart';
@@ -29,32 +30,40 @@ class M3U8DownloadEngine {
   static final Map<int, EngineChannel<M3u8DownloadConnectionChannel>>
       _engineChannels = {};
 
-  static final Map<int, M3U8> m3u8Map = {};
+  static final Map<int, M3U8> _m3u8Map = {};
 
   static final Map<int, Map<int, DownloadProgressMessage>>
       _connectionProgresses = {};
 
   static final Map<int, DownloadProgressMessage> _downloadProgresses = {};
+
+  static Timer? _connectionReuseTimer = null;
+  static Timer? _connectionResetTimer = null;
+
   static late DownloadSettings downloadSettings;
 
+  /// TODO remove the proxy settings
   static void start(IsolateArgsPair<int> args) async {
     final providerChannel = IsolateChannel.connectSend(args.sendPort);
     final engineChannel = EngineChannel<M3u8DownloadConnectionChannel>(
       channel: providerChannel,
     );
     _engineChannels[args.obj] = engineChannel;
-    // _startEngineTimers();
+    _startEngineTimers();
     engineChannel.listenToStream<M3u8DownloadIsolateMessage>((data) async {
       downloadSettings = data.settings;
       final downloadItem = data.downloadItem;
       final id = downloadItem.id;
       final engineChannel = _engineChannels[id]!;
-      M3U8? m3u8 = m3u8Map[id];
+      M3U8? m3u8 = _m3u8Map[id];
+
+      /// TODO show error for unsupported encryption
+      /// TODO set the proper segment statuses prior to start of the download
       if (m3u8 == null) {
         print("Creating the m3u8 file...");
-        m3u8 = await M3U8.fromFile(File(downloadItem.m3u8FilePath!));
+        m3u8 = await M3U8.fromString(File(downloadItem.m3u8FilePath!).readAsStringSync(), "");
         print("Created the m3u8 file...");
-        m3u8Map[id] = m3u8!;
+        _m3u8Map[id] = m3u8!;
       }
       // if (isAssembledFileInvalid(downloadItem)) {
       //   final progress = reassembleFile(downloadItem);
@@ -64,6 +73,63 @@ class M3U8DownloadEngine {
       await sendToDownloadIsolates(data, providerChannel, m3u8);
       for (final channel in _engineChannels[id]!.connectionChannels.values) {
         channel.listenToStream(_handleConnectionMessages);
+      }
+    });
+  }
+
+  static void _runConnectionReset() {}
+
+  static void _runConnectionReuse() {
+    print("Running reuse.... paused ?}");
+    _engineChannels.forEach((downloadId, engineChannel) {
+      print("Running reuse.... paused ? ${engineChannel.paused}");
+      if (engineChannel.paused) return;
+      final m3u8 = _m3u8Map[downloadId];
+      if (m3u8 == null) return;
+      final segmentToAssign = m3u8.segments
+          .where((segment) => segment.segmentStatus == SegmentStatus.INITIAL)
+          .first;
+      if (engineChannel.connectionReuseQueue.isEmpty) return;
+      final conn = engineChannel.connectionReuseQueue.removeFirst();
+      segmentToAssign.segmentStatus = SegmentStatus.IN_USE;
+      segmentToAssign.connectionNumber = conn.connectionNumber;
+      if (_shouldSetSegmentEncryptionDetails(segmentToAssign, m3u8)) {
+        segmentToAssign.encryptionDetails = m3u8.encryptionDetails;
+      }
+      final message = M3u8DownloadIsolateMessage(
+        downloadItem: engineChannel.downloadItem!,
+        command: DownloadCommand.start_Initial,
+        settings: downloadSettings,
+        connectionNumber: conn.connectionNumber,
+        segment: segmentToAssign,
+      );
+      conn.sendMessage(message);
+    });
+  }
+
+  static void _startEngineTimers() {
+    _startConnectionReuseTimer();
+    _startConnectionResetTimer();
+  }
+
+  static void _startConnectionResetTimer() {
+    if (_connectionResetTimer != null) return;
+    _connectionResetTimer = Timer.periodic(Duration(seconds: 5), (_) {
+      try {
+        _runConnectionReset();
+      } catch (e) {
+        print(e);
+      }
+    });
+  }
+
+  static void _startConnectionReuseTimer() {
+    if (_connectionReuseTimer != null) return;
+    _connectionReuseTimer = Timer.periodic(Duration(milliseconds: 500), (_) {
+      try {
+        _runConnectionReuse();
+      } catch (e) {
+        print(e);
       }
     });
   }
@@ -118,9 +184,23 @@ class M3U8DownloadEngine {
     engineChannel.sendMessage(downloadProgress);
   }
 
-  static void _setSegmentComplete(DownloadProgressMessage progress) {}
+  static void _setSegmentComplete(DownloadProgressMessage progress) {
+    _m3u8Map[progress.downloadItem.id]!
+        .segments
+        .where((s) => s == progress.m3u8segment)
+        .first
+        .segmentStatus = SegmentStatus.COMPLETE;
+  }
 
-  static void _addToReuseQueue(DownloadProgressMessage progress) {}
+  static void _addToReuseQueue(DownloadProgressMessage progress) {
+    final downloadId = progress.downloadItem.id;
+    final engineChannel = _engineChannels[downloadId]!;
+    final connection =
+        engineChannel.connectionChannels[progress.connectionNumber];
+    if (!engineChannel.connectionReuseQueue.contains(connection!)) {
+      engineChannel.connectionReuseQueue.add(connection);
+    }
+  }
 
   static void _setStatus(int id, DownloadProgressMessage downloadProgress) {
     if (_connectionProgresses[id] == null) return;
@@ -241,7 +321,7 @@ class M3U8DownloadEngine {
   }
 
   static _spawnDownloadIsolates(M3u8DownloadIsolateMessage data) async {
-    final m3u8 = m3u8Map[data.downloadItem.id]!;
+    final m3u8 = _m3u8Map[data.downloadItem.id]!;
     final segments =
         m3u8.segments.sublist(0, downloadSettings.totalConnections);
     for (int i = 0; i < segments.length; i++) {
@@ -250,7 +330,7 @@ class M3U8DownloadEngine {
       m3u8.segments.where((s) => s == segment).first
         ..connectionNumber = 1
         ..segmentStatus = SegmentStatus.IN_USE;
-      _spawnSingleDownloadIsolate(data, i, segment);
+      await _spawnSingleDownloadIsolate(data.clone(), i, segment);
     }
   }
 
@@ -263,7 +343,12 @@ class M3U8DownloadEngine {
     final channel = IsolateChannel.connectReceive(rPort);
     final id = data.downloadItem.id;
     final logger = _engineChannels[id]?.logger;
+    final m3u8 = _m3u8Map[id]!;
+    if (_shouldSetSegmentEncryptionDetails(segment, m3u8)) {
+      segment.encryptionDetails = m3u8.encryptionDetails;
+    }
     data.connectionNumber = connNum;
+    data.segment = segment;
     logger?.info(
       "Spawning download connection isolate with connection number ${data.connectionNumber}...",
     );
@@ -275,7 +360,6 @@ class M3U8DownloadEngine {
     logger?.info(
       "Spawned connection $connNum with segment ${data.segment}",
     );
-    data.segment = segment;
     channel.sink.add(data);
     _connectionIsolates[id] ??= {};
     _connectionIsolates[id]![connNum] = isolate;
@@ -286,6 +370,15 @@ class M3U8DownloadEngine {
     );
     _engineChannels[id]!.connectionChannels[connNum] = connectionChannel;
     connectionChannel.listenToStream(_handleConnectionMessages);
+  }
+
+  static bool _shouldSetSegmentEncryptionDetails(
+    M3U8Segment segment,
+    M3U8 m3u8,
+  ) {
+    return (segment.encryptionDetails == null ||
+            segment.encryptionDetails!.keyBytes == null) &&
+        m3u8.encryptionDetails.keyBytes != null;
   }
 
   static void _handleConnectionMessages(message) async {

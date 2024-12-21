@@ -1,35 +1,99 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:brisk/constants/http_constants.dart';
 import 'package:brisk/download_engine/segment/segment_status.dart';
 import 'package:brisk/download_engine/util/m3u8_util.dart';
+import 'package:http/io_client.dart';
 
 class M3U8 {
+  final String url;
+  final List<StreamInf> streamInfos;
   final List<M3U8Segment> segments;
   final int mediaSequence;
   final M3U8EncryptionDetails encryptionDetails;
+  final int totalDuration;
 
   M3U8({
+    required this.url,
     required this.segments,
     required this.mediaSequence,
     required this.encryptionDetails,
+    required this.streamInfos,
+    required this.totalDuration,
   });
 
-  static Future<M3U8?> fromFile(File file) async {
-    final lines = file.readAsLinesSync();
+  bool get isMasterPlaylist => segments.isEmpty && streamInfos.isNotEmpty;
+
+  static Future<M3U8?> fromUrl(String url) async {
+    final client = HttpClient()
+      ..findProxy = (url) {
+        return "PROXY localhost:10808;";
+      };
+    try {
+      final httpclient = IOClient(client);
+      final response = await httpclient.get(
+        Uri.parse(url),
+        headers: userAgentHeader,
+      );
+      if (response.statusCode == 200) {
+        final body = response.body;
+        return await M3U8.fromString(body, url);
+      } else {
+        print("Failed to fetch m3u8... status code ${response.statusCode}");
+        throw Exception('Failed to fetch m3u8!');
+      }
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  static Future<M3U8?> fromString(
+    String content,
+    String url, {
+    bool fetchKeys = true,
+  }) async {
+    final lines = content.split("\n");
     int mediaSequence = 0;
     M3U8EncryptionDetails encryptionDetails = M3U8EncryptionDetails();
     bool reachedSegments = false;
     int currSegmentNum = -1;
+    int currStreamInfNum = -1;
     Map<int, M3U8Segment> segments = {};
-    for (final line in lines) {
-      if (line.startsWith("#EXT-X-MEDIA-SEQUENCE:")) {
+    Map<int, StreamInf> streamInfos = {};
+    for (int i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      if (line.startsWith("#EXT-X-STREAM-INF:")) {
+        currStreamInfNum++;
+        final urlLine = lines[i + 1];
+        streamInfos[currStreamInfNum] = (streamInfos[currStreamInfNum] ??
+            StreamInf())
+          ..url = urlLine.trim();
+        final resolutionPattern = RegExp(r'RESOLUTION=(\d+x\d+)');
+        final matchRes = resolutionPattern.firstMatch(line);
+        if (matchRes != null) {
+          final resolution = matchRes.group(1);
+          streamInfos[currStreamInfNum] = (streamInfos[currStreamInfNum] ??
+              StreamInf())
+            ..resolution = resolution;
+        }
+        final frameRatePattern = RegExp(r'FRAME-RATE=([\d.]+)');
+        final matchFrameRate = frameRatePattern.firstMatch(line);
+        if (matchFrameRate != null) {
+          final frameRate = matchFrameRate.group(1);
+          streamInfos[currStreamInfNum] = (streamInfos[currStreamInfNum] ??
+              StreamInf())
+            ..frameRate = frameRate;
+        }
+      } else if (line.startsWith("#EXT-X-MEDIA-SEQUENCE:")) {
         mediaSequence = int.tryParse(line.substring(22)) ?? 0;
       } else if (line.startsWith("#EXT-X-KEY")) {
         final attrs = parseAttributes(line);
         final currEncryptionDetails = M3U8EncryptionDetails(
           encryptionKeyUrl: attrs["URI"],
           encryptionMethod:
-          M3U8EncryptionMethodParser.fromString(attrs["METHOD"]!),
+              M3U8EncryptionMethodParser.fromString(attrs["METHOD"]!),
           iv: attrs["IV"],
         );
         if (reachedSegments) {
@@ -50,12 +114,33 @@ class M3U8 {
           ..url = line;
       }
     }
-
+    final totalDuration = segments.isEmpty
+        ? 0
+        : segments.values
+            .map((m) => double.tryParse(m.extInf) ?? 0)
+            .reduce((sum, duration) => sum + duration)
+            .toInt();
     final m3u8 = M3U8(
       segments: segments.values.toList(),
       mediaSequence: mediaSequence,
       encryptionDetails: encryptionDetails,
+      streamInfos: streamInfos.values.toList(),
+      totalDuration: totalDuration,
+      url: url,
     );
+    if (m3u8.isMasterPlaylist) {
+      for (var streamInf in m3u8.streamInfos) {
+        var streamUrl = streamInf.url;
+        if (streamUrl == null) continue;
+        if (!streamUrl.contains("http")) {
+          streamUrl = "${url.substring(0, url.lastIndexOf("/"))}/$streamUrl";
+          streamInf.m3u8 = await M3U8.fromUrl(streamUrl);
+        }
+      }
+    }
+    if (!fetchKeys) {
+      return m3u8;
+    }
     if (m3u8.encryptionDetails.encryptionMethod ==
         M3U8EncryptionMethod.AES_128) {
       m3u8.encryptionDetails.keyBytes = await fetchDecryptionKey(
@@ -90,20 +175,41 @@ class M3U8 {
   }
 }
 
+class StreamInf {
+  String? resolution;
+  String? frameRate;
+  String? url;
+  M3U8? m3u8;
+
+  String get fileName {
+    if (url == null) return "";
+    if (url!.contains("/")) {
+      return url!.substring(url!.lastIndexOf('/') + 1);
+    }
+    return url!;
+  }
+
+  StreamInf({
+    this.resolution,
+    this.frameRate,
+    this.url,
+    this.m3u8,
+  });
+}
+
 class M3U8Segment {
   String url;
   int sequenceNumber;
   String extInf;
   int? connectionNumber;
-  SegmentStatus segmentStatus;
+  SegmentStatus segmentStatus = SegmentStatus.INITIAL;
 
   /// Encryption details for m3u8 files with key rotation
   M3U8EncryptionDetails? encryptionDetails;
 
-  M3U8EncryptionMethod get encryptionMethod =>
-      encryptionDetails != null
-          ? encryptionDetails!.encryptionMethod
-          : M3U8EncryptionMethod.NONE;
+  M3U8EncryptionMethod get encryptionMethod => encryptionDetails != null
+      ? encryptionDetails!.encryptionMethod
+      : M3U8EncryptionMethod.NONE;
 
   M3U8Segment({
     this.url = "",
@@ -148,7 +254,7 @@ class M3U8EncryptionDetails {
   final M3U8EncryptionMethod encryptionMethod;
   final String? encryptionKeyUrl;
   final String? iv;
-  List<int>? keyBytes;
+  Uint8List? keyBytes;
 
   M3U8EncryptionDetails({
     this.encryptionMethod = M3U8EncryptionMethod.NONE,
