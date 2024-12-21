@@ -47,7 +47,7 @@ class HiveUtil {
     if (downloadQueueBox.get(0) == null) {
       downloadQueueBox.put(0, DownloadQueue(name: "Main"));
     }
-    if (settingBox.values.length != SettingsCache.defaultSettings.length) {
+    if (settingBox.values.length -1 != SettingsCache.defaultSettings.length) {
       await SettingsCache.setDefaultSettings();
     }
 
