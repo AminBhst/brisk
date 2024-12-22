@@ -1,6 +1,7 @@
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/model/general_data.dart';
+import 'package:brisk/model/migration.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -21,6 +22,8 @@ class HiveUtil {
 
   late final Box<GeneralData> generalDataBox;
 
+  late final Box<Migration> migrationBox;
+
   Future<void> initHive() async {
     await Hive.initFlutter("Brisk_v2");
     Hive.registerAdapter(DownloadItemAdapter());
@@ -35,6 +38,7 @@ class HiveUtil {
     downloadQueueBox = await Hive.openBox<DownloadQueue>("download_queues");
     settingBox = await Hive.openBox<Setting>("settings");
     generalDataBox = await Hive.openBox<GeneralData>("general_data");
+    migrationBox = await Hive.openBox<Migration>("migrations");
   }
 
   static Setting? getSetting(SettingOptions option) {
@@ -47,10 +51,6 @@ class HiveUtil {
     if (downloadQueueBox.get(0) == null) {
       downloadQueueBox.put(0, DownloadQueue(name: "Main"));
     }
-    if (settingBox.values.length -1 != SettingsCache.defaultSettings.length) {
-      await SettingsCache.setDefaultSettings();
-    }
-
     final appVersion = generalDataBox.values
         .where((val) => val.fieldName == "appVersion")
         .firstOrNull;
