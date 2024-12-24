@@ -1,8 +1,10 @@
 import 'dart:collection';
 
 import 'package:brisk/download_engine/channel/download_connection_channel.dart';
+import 'package:brisk/download_engine/connection/m3u8_download_connection.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/engine/http_download_engine.dart';
+import 'package:brisk/download_engine/engine/m3u8_download_engine.dart';
 import 'package:brisk/download_engine/log/logger.dart';
 import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';
@@ -15,7 +17,8 @@ import 'package:brisk/download_engine/util/isolate_channel_wrapper.dart';
 /// This class is meant to be used as both a means of communication between the engine
 /// and the [DownloadRequestProvider] (which technically is the UI), and as a container
 /// for all things related to each download request.
-class EngineChannel<T extends DownloadConnectionChannel> extends IsolateChannelWrapper {
+class EngineChannel<T extends DownloadConnectionChannel>
+    extends IsolateChannelWrapper {
   Logger? logger;
 
   EngineChannel({required super.channel});
@@ -72,13 +75,16 @@ class EngineChannel<T extends DownloadConnectionChannel> extends IsolateChannelW
     )..enablePeriodicLogFlush();
   }
 
+  int get buttonAvailabilityWaitMillis =>
+      connectionChannels.values.first is M3U8DownloadConnection
+          ? M3U8DownloadEngine.BUTTON_AVAILABILITY_WAIT_SEC * 1000
+          : HttpDownloadEngine.BUTTON_AVAILABILITY_WAIT_SEC * 1000;
+
   bool get isPauseButtonWaitComplete =>
-      lastStartTimeMillis +
-          (HttpDownloadEngine.BUTTON_AVAILABILITY_WAIT_SEC * 1000) <
+      lastStartTimeMillis + buttonAvailabilityWaitMillis <
       DateTime.now().millisecondsSinceEpoch;
 
   bool get isStartButtonWaitComplete =>
-      lastPauseTimeMillis +
-          (HttpDownloadEngine.BUTTON_AVAILABILITY_WAIT_SEC * 1000) <
+      lastPauseTimeMillis + buttonAvailabilityWaitMillis <
       DateTime.now().millisecondsSinceEpoch;
 }

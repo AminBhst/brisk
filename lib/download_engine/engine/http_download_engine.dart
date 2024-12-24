@@ -592,7 +592,6 @@ class HttpDownloadEngine {
       downloadProgress: totalProgress,
       totalDownloadProgress: totalProgress,
       transferRate: convertByteTransferRateToReadableStr(totalByteTransferRate),
-      downloadType: DownloadType.HTTP,
     );
     _setEstimation(downloadProgress, totalProgress);
     if (progress.status == DownloadStatus.downloading) {
@@ -977,7 +976,6 @@ class HttpDownloadEngine {
     final progress = _downloadProgresses[downloadItem.id] ??
         DownloadProgressMessage(
           downloadItem: downloadItem,
-          downloadType: DownloadType.HTTP,
         );
     progress
       ..downloadItem.status = DownloadStatus.assembling
@@ -1263,7 +1261,6 @@ class HttpDownloadEngine {
       downloadItem: downloadItem,
       status: status,
       downloadProgress: 1,
-      downloadType: DownloadType.HTTP,
     );
     return progress;
   }

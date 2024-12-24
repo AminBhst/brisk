@@ -160,8 +160,6 @@ class _MultiDownloadAdditionDialogState
       widget.provider.insertRows([
         DownloadProgressMessage(
           downloadItem: DownloadItemModel.fromDownloadItem(item),
-          /// TODO handle type properly
-          downloadType: DownloadType.HTTP,
         )
       ]);
     }

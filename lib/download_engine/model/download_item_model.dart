@@ -26,7 +26,10 @@ class DownloadItemModel {
 
   String status;
 
-  String? m3u8FilePath;
+  String? m3u8Content;
+
+  /// Only used for m3u8
+  int? duration;
 
   DownloadItemModel({
     required this.id,
@@ -41,7 +44,8 @@ class DownloadItemModel {
     this.fileType = "other",
     this.supportsPause = false,
     this.status = "In Queue",
-    this.m3u8FilePath,
+    this.m3u8Content,
+    this.duration,
   });
 
   factory DownloadItemModel.fromDownloadItem(DownloadItem item) {
@@ -58,12 +62,13 @@ class DownloadItemModel {
       status: item.status,
       supportsPause: item.supportsPause,
       uid: item.uid,
-      m3u8FilePath: item.extraInfo["m3u8Content"],
+      m3u8Content: item.extraInfo["m3u8Content"],
+      duration: item.extraInfo["duration"],
     );
   }
 
   DownloadType get downloadType =>
-      m3u8FilePath != null && m3u8FilePath!.isNotEmpty
+      m3u8Content != null && m3u8Content!.isNotEmpty
           ? DownloadType.M3U8
           : DownloadType.HTTP;
 }

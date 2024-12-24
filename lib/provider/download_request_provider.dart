@@ -43,15 +43,9 @@ class DownloadRequestProvider with ChangeNotifier {
   void addRequest(DownloadItem item) {
     final progress = DownloadProgressMessage(
       downloadItem: DownloadItemModel.fromDownloadItem(item),
-      downloadType: DownloadType.HTTP,
     );
     downloads.addAll({item.key!: progress});
-    insertRows([
-      DownloadProgressMessage(
-        downloadType: DownloadType.HTTP,
-        downloadItem: DownloadItemModel.fromDownloadItem(item),
-      ),
-    ]);
+    insertRows([progress]);
     PlutoGridUtil.plutoStateManager?.notifyListeners();
     notifyListeners();
   }
@@ -111,15 +105,20 @@ class DownloadRequestProvider with ChangeNotifier {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
     final isolate = await Isolate.spawn(
-      downloadType == DownloadType.HTTP
-          ? HttpDownloadEngine.start
-          : M3U8DownloadEngine.start,
+      getEngineStartMethod(downloadType),
       IsolateArgsPair(rPort.sendPort, id),
       errorsAreFatal: false,
     );
     engineIsolates[id] = isolate;
     engineChannels[id] = channel;
     return channel;
+  }
+
+  getEngineStartMethod(DownloadType downloadType) {
+    if (downloadType == DownloadType.M3U8) {
+      return M3U8DownloadEngine.start;
+    }
+    return HttpDownloadEngine.start;
   }
 
   void _handleDownloadEngineMessage(message) {
@@ -146,7 +145,6 @@ class DownloadRequestProvider with ChangeNotifier {
     downloads[id] = progress;
     _handleNotification(progress);
     final downloadItem = progress.downloadItem;
-    notifyAllListeners(progress);
     final dl = HiveUtil.instance.downloadItemsBox.get(downloadItem.id);
     if (dl == null) return;
     if (progress.assembleProgress == 1) {
@@ -157,6 +155,7 @@ class DownloadRequestProvider with ChangeNotifier {
     if (progress.status == DownloadStatus.failed) {
       _killIsolateConnection(id);
     }
+    notifyAllListeners(progress);
   }
 
   void _handleNotification(DownloadProgressMessage progress) {
@@ -181,13 +180,11 @@ class DownloadRequestProvider with ChangeNotifier {
     downloads.addAll({
       id: DownloadProgressMessage(
         downloadItem: DownloadItemModel.fromDownloadItem(downloadItem),
-        downloadType: DownloadType.HTTP,
       )
     });
     // TODO handle download type properly
     return DownloadProgressMessage(
       downloadItem: DownloadItemModel.fromDownloadItem(downloadItem),
-      downloadType: DownloadType.HTTP,
     );
   }
 
@@ -206,6 +203,9 @@ class DownloadRequestProvider with ChangeNotifier {
       item.status = status;
       if (status == DownloadStatus.assembleComplete) {
         item.finishDate = DateTime.now();
+      }
+      if (progress.assembledFileSize != null) {
+        item.contentLength = progress.assembledFileSize!;
       }
       HiveUtil.instance.downloadItemsBox.put(item.key, item);
       _previousUpdateTime = _nowMillis;
@@ -235,7 +235,9 @@ class DownloadRequestProvider with ChangeNotifier {
         cells: {
           "file_name": PlutoCell(value: e.downloadItem.fileName),
           "size": PlutoCell(
-            value: convertByteToReadableStr(e.downloadItem.contentLength),
+            value: e.downloadItem.contentLength == -1
+                ? "Unknown"
+                : convertByteToReadableStr(e.downloadItem.contentLength),
           ),
           "progress": PlutoCell(
             value:
@@ -277,7 +279,6 @@ class DownloadRequestProvider with ChangeNotifier {
         .map((e) => DownloadProgressMessage(
               downloadItem: DownloadItemModel.fromDownloadItem(e),
               downloadProgress: e.progress,
-              downloadType: DownloadType.HTTP,
             ))
         .toList();
     final stateManager = PlutoGridUtil.plutoStateManager;

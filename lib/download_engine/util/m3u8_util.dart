@@ -69,7 +69,7 @@ IV deriveExplicitIV(String ivString) {
   return IV(Uint8List.fromList(ivBytes));
 }
 
-Future<M3U8?> fetchM3u8(String m3u8Url) async {
+Future<String> fetchBodyString(String url) async {
   final client = HttpClient()
     ..findProxy = (url) {
       return "PROXY localhost:10808;";
@@ -77,15 +77,15 @@ Future<M3U8?> fetchM3u8(String m3u8Url) async {
   try {
     final httpclient = IOClient(client);
     final response = await httpclient.get(
-      Uri.parse(m3u8Url),
+      Uri.parse(url),
       headers: userAgentHeader,
     );
     if (response.statusCode == 200) {
       final body = response.body;
-      return await M3U8.fromString(body, m3u8Url);
+      return body;
     } else {
-      print("Failed to fetch m3u8... status code ${response.statusCode}");
-      throw Exception('Failed to fetch m3u8!');
+      print("Failed to fetch... status code ${response.statusCode}");
+      throw Exception('Failed to fetch!');
     }
   } catch (e) {
     print(e);

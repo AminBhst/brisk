@@ -16,7 +16,7 @@ class M3u8DownloadConnectionChannel extends DownloadConnectionChannel {
   void onEventReceived(event) {
     super.onEventReceived(event);
     if (!(event is DownloadProgressMessage) ||
-        event.downloadType != DownloadType.M3U8) {
+        event.downloadItem.downloadType != DownloadType.M3U8) {
       return;
     }
     this.segment = event.m3u8segment;

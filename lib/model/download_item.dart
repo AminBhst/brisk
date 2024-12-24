@@ -1,3 +1,4 @@
+import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/http_util.dart';
@@ -41,24 +42,27 @@ class DownloadItem extends HiveObject {
   @HiveField(11)
   String status;
 
-  @HiveField(12)
+  @HiveField(12, defaultValue: {})
   Map<String, dynamic> extraInfo;
 
+  @HiveField(13, defaultValue: "HTTP")
+  String downloadType;
+
   DownloadItem({
-    this.uid = "",
+    required this.uid,
     required this.fileName,
     this.filePath = '',
     required this.downloadUrl,
     required this.startDate,
     this.finishDate,
-    required this.progress,
+    this.progress = 0,
     this.contentLength = 0,
     this.fileType = "other",
     this.supportsPause = false,
     this.status = "In Queue",
     this.extraInfo = const {},
+    this.downloadType = "HTTP",
   });
-
 
   void setM3u8Content(String m3u8Content) {
     extraInfo["m3u8Content"] = m3u8Content;

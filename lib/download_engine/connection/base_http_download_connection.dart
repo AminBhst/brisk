@@ -266,7 +266,7 @@ abstract class BaseHttpDownloadConnection {
     totalConnectionReceivedBytes =
         totalConnectionReceivedBytes - tempReceivedBytes;
     totalRequestReceivedBytes = totalRequestReceivedBytes - tempReceivedBytes;
-    _clearBuffer();
+    clearBuffer();
     dynamicFlushThreshold = double.infinity;
     reset = true;
     start(progressCallback!, connectionReset: true);
@@ -275,7 +275,7 @@ abstract class BaseHttpDownloadConnection {
   void cancel({bool failure = false}) {
     client.close();
     cancelLogFlushTimer();
-    _clearBuffer();
+    clearBuffer();
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
     updateStatus(status);
     connectionStatus = status;
@@ -379,7 +379,7 @@ abstract class BaseHttpDownloadConnection {
       if (e is http.ClientException && paused) return;
       logger?.info("Error! $e");
       client.close();
-      _clearBuffer();
+      clearBuffer();
     }
   }
 
@@ -448,7 +448,7 @@ abstract class BaseHttpDownloadConnection {
   void flushBuffer() {
     if (buffer.isEmpty) return;
     isWritingTempFile = true;
-    final bytes = _writeToUin8List(buffer);
+    final bytes = writeToUin8List(buffer);
     final filePath = join(
       tempDirectory.path,
       "${connectionNumber}#${tempFileStartByte}-${tempFileEndByte}",
@@ -470,7 +470,7 @@ abstract class BaseHttpDownloadConnection {
       "FlushBuffer for segment $startByte-$endByte ::${basename(filePath)}",
     );
     _onTempFileWriteComplete(file);
-    _clearBuffer();
+    clearBuffer();
     sendLogBuffer();
   }
 
@@ -645,6 +645,7 @@ abstract class BaseHttpDownloadConnection {
       this.progressCallback = progressCallback;
     }
     flushBuffer();
+    print("Setting pause for connection ${connectionNumber}");
     updateStatus(DownloadStatus.paused);
     connectionStatus = DownloadStatus.paused;
     client.close();
@@ -741,7 +742,7 @@ abstract class BaseHttpDownloadConnection {
     } catch (e) {}
   }
 
-  void _clearBuffer() {
+  void clearBuffer() {
     buffer.clear();
     tempReceivedBytes = 0;
   }
@@ -769,10 +770,11 @@ abstract class BaseHttpDownloadConnection {
   /// Therefore, we handle the mentioned exception here in a way that [onDownloadComplete] will be called
   /// only when a download is actually completed.
   void _onError(dynamic error, [dynamic s]) {
+    print(error);
     try {
       client.close();
     } catch (e) {}
-    _clearBuffer();
+    clearBuffer();
     notifyProgress();
     if (!(error is http.ClientException &&
         (paused || terminatedOnCompletion))) {
@@ -782,7 +784,7 @@ abstract class BaseHttpDownloadConnection {
     }
   }
 
-  Uint8List _writeToUin8List(List<List<int>> chunks) {
+  Uint8List writeToUin8List(List<List<int>> chunks) {
     int start = 0;
     var len = 0;
     chunks.forEach((c) => len += c.length);

@@ -13,6 +13,14 @@ class M3U8 {
   final int mediaSequence;
   final M3U8EncryptionDetails encryptionDetails;
   final int totalDuration;
+  final String stringContent;
+
+  String get fileName {
+    if (url.contains("/")) {
+      return url.substring(url.lastIndexOf('/') + 1);
+    }
+    return url;
+  }
 
   M3U8({
     required this.url,
@@ -21,6 +29,7 @@ class M3U8 {
     required this.encryptionDetails,
     required this.streamInfos,
     required this.totalDuration,
+    required this.stringContent,
   });
 
   bool get isMasterPlaylist => segments.isEmpty && streamInfos.isNotEmpty;
@@ -126,6 +135,7 @@ class M3U8 {
       encryptionDetails: encryptionDetails,
       streamInfos: streamInfos.values.toList(),
       totalDuration: totalDuration,
+      stringContent: content,
       url: url,
     );
     if (m3u8.isMasterPlaylist) {
@@ -227,7 +237,6 @@ class M3U8Segment {
   @override
   bool operator ==(Object other) {
     return other is M3U8Segment &&
-        other.sequenceNumber == this.sequenceNumber &&
         other.sequenceNumber == this.sequenceNumber &&
         other.url == this.url;
   }

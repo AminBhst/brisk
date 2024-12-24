@@ -2,13 +2,16 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_status.dart';
+import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 import '../constants/file_duplication_behaviour.dart';
 import '../db/hive_util.dart';
@@ -89,23 +92,44 @@ class DownloadAdditionUiUtil {
     });
   }
 
+  static void handleM3u8Addition(M3U8 m3u8, BuildContext context) {
+    final fileName =
+        m3u8.fileName.substring(0, m3u8.fileName.lastIndexOf(".")) + ".ts";
+    final downloadItem = DownloadItem(
+      uid: const Uuid().v4(),
+      fileName: fileName,
+      downloadUrl: m3u8.url,
+      startDate: DateTime.now(),
+      progress: 0,
+      contentLength: -1,
+      filePath: FileUtil.getFilePath(fileName),
+      downloadType: DownloadType.M3U8.name,
+      fileType: DLFileType.video.name,
+      supportsPause: true,
+      extraInfo: {
+        "duration": m3u8.totalDuration,
+        "m3u8Content": m3u8.stringContent,
+      },
+    );
+    showDialog(
+      context: context,
+      builder: (context) => DownloadInfoDialog(downloadItem),
+      barrierDismissible: false,
+    );
+  }
+
   static void addDownload(
     DownloadItem item,
     FileInfo fileInfo,
     BuildContext context,
     bool additionalPop,
   ) {
-    // item.supportsPause = fileInfo.supportsPause;
-    // item.contentLength = fileInfo.contentLength;
-    // item.fileName = fileInfo.fileName;
-    // item.fileType = FileUtil.detectFileType(fileInfo.fileName).name;
     item
       ..supportsPause = true
       ..downloadUrl = ""
       ..fileName = "mu.m3u8"
       ..fileType = DLFileType.m3u8.toString()
       ..filePath = "C:\\Users\\RyeWell\\Desktop\\dir\\output.ts";
-      // ..m3u8FilePath = "C:\\Users\\RyeWell\\Desktop\\mu.m3u8";
 
     final dlDuplication = checkDownloadDuplication(item.fileName);
     if (dlDuplication) {

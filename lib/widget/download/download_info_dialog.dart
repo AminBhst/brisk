@@ -2,6 +2,7 @@ import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
+import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/file_util.dart';
@@ -90,19 +91,20 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                               SizedBox(
                                 child: SvgPicture.asset(
                                   FileUtil.resolveFileTypeIconPath(
-                                      widget.downloadItem.fileType),
+                                    widget.downloadItem.fileType,
+                                  ),
                                   width: 70,
                                   height: 70,
                                   colorFilter: ColorFilter.mode(
                                     FileUtil.resolveFileTypeIconColor(
-                                        widget.downloadItem.fileType),
+                                      widget.downloadItem.fileType,
+                                    ),
                                     BlendMode.srcIn,
                                   ),
                                 ),
                               ),
                               Text(
-                                convertByteToReadableStr(
-                                    widget.downloadItem.contentLength),
+                                fileSubtitle,
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: Colors.white,
@@ -279,15 +281,24 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
     );
   }
 
+  String get fileSubtitle {
+    return widget.downloadItem.downloadType == DownloadType.M3U8.name
+        ? durationSecondsToReadableStr(
+            widget.downloadItem.extraInfo["duration"],
+          )
+        : convertByteToReadableStr(
+            widget.downloadItem.contentLength,
+          );
+  }
+
   /// TODO fix download id bug
   void addToList() async {
     final request = widget.downloadItem;
     await HiveUtil.instance.addDownloadItem(request);
+    final downloadItemModel = DownloadItemModel.fromDownloadItem(request);
     provider.insertRows([
       DownloadProgressMessage(
-        downloadItem: DownloadItemModel.fromDownloadItem(request),
-        /// TODO handle type properly
-        downloadType: DownloadType.HTTP,
+        downloadItem: downloadItemModel,
       )
     ]);
     if (!mounted) return;

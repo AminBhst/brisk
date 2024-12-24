@@ -33,6 +33,10 @@ class PlutoGridUtil {
     cells["transfer_rate"]?.value = progress.transferRate;
     cells["status"]?.value = downloadItem.status;
     cells["finish_date"]?.value = downloadItem.finishDate ?? "";
+    if (progress.assembledFileSize != null) {
+      cells["size"]?.value =
+          convertByteToReadableStr(progress.assembledFileSize!);
+    }
     _stateManager?.notifyListeners();
     _runPeriodicCachedRowClear();
   }

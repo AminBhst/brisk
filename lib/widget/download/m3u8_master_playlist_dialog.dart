@@ -1,6 +1,7 @@
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
@@ -11,11 +12,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class M3u8MasterPlaylistDialog extends StatelessWidget {
-  // final M3U8 m3u8;
+  final M3U8 m3u8;
 
   const M3u8MasterPlaylistDialog({
     super.key,
-    // required this.m3u8,
+    required this.m3u8,
   });
 
   @override
@@ -46,9 +47,8 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        // masterPlaylistItem(),
-                        // masterPlaylistItem(),
-                        // masterPlaylistItem(),
+                        ...m3u8.streamInfos
+                            .map((e) => masterPlaylistItem(e, context))
                       ],
                     ),
                   ),
@@ -74,7 +74,7 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
     return result;
   }
 
-  Widget masterPlaylistItem(StreamInf streamInf) {
+  Widget masterPlaylistItem(StreamInf streamInf, BuildContext context) {
     final duration = streamInf.m3u8!.totalDuration;
     return Padding(
       padding: EdgeInsets.only(top: 10),
@@ -100,7 +100,8 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
                           SvgPicture.asset(
                             height: 40,
                             FileUtil.resolveFileTypeIconPath(
-                                DLFileType.video.name),
+                              DLFileType.video.name,
+                            ),
                             colorFilter: ColorFilter.mode(
                               FileUtil.resolveFileTypeIconColor(
                                 DLFileType.video.name,
@@ -137,25 +138,12 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
                       )
                     ],
                   ),
-                  // SizedBox(
-                  //   width: 250,
-                  //   child: Text(
-                  //     "Title: index-f3-v1-a1.m3u8",
-                  //     overflow: TextOverflow.ellipsis,
-                  //     style: TextStyle(color: Colors.white),
-                  //   ),
-                  // // ),
-                  // Text(
-                  //   "Resolution: 1920x1080",
-                  //   style: TextStyle(color: Colors.white),
-                  // ),
-                  // Text("Framerate: 25", style: TextStyle(color: Colors.white)),
                 ],
               ),
               Spacer(),
               RoundedOutlinedButton(
                 text: "Download",
-                onPressed: () {},
+                onPressed: () => _onDownloadPressed(streamInf, context),
                 borderColor: Colors.green,
                 textColor: Colors.green,
                 borderRadius: 15,
@@ -165,5 +153,10 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onDownloadPressed(StreamInf streamInf, BuildContext context) {
+    Navigator.of(context).pop();
+    DownloadAdditionUiUtil.handleM3u8Addition(streamInf.m3u8!, context);
   }
 }

@@ -7,7 +7,6 @@ import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/connection/http_download_connection.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';
-import 'package:brisk/download_engine/connection/mock_http_download_connection.dart';
 import 'package:brisk/download_engine/message/http_download_isolate_message.dart';
 import 'package:brisk/download_engine/message/m3u8_download_isolate_message.dart';
 import 'package:brisk/download_engine/segment/segment.dart';
@@ -16,7 +15,6 @@ import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 
 import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
-import 'package:brisk/download_engine/client/mock_http_client_proxy.dart';
 import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 
 class DownloadConnectionInvoker {
@@ -33,7 +31,7 @@ class DownloadConnectionInvoker {
   /// TODO : Check if it's a new connection (doesn't exist in the map) ignore it as a reference for commands
   static void _runCommandTrackerTimer() {
     if (_commandTrackerTimer != null) return;
-    _commandTrackerTimer = Timer.periodic(Duration(milliseconds: 200), (_) {
+    _commandTrackerTimer = Timer.periodic(Duration(milliseconds: 300), (_) {
       _connections.forEach((downloadId, connections) {
         final shouldSignalStop =
             stopCommandTrackerMap[downloadId]?.first ?? false;
@@ -42,7 +40,7 @@ class DownloadConnectionInvoker {
           return;
         }
         _connections[downloadId]?.forEach((_, conn) {
-          if (!conn.paused) {
+          if (conn.connectionStatus != DownloadStatus.paused) {
             conn.pause(channel?.sink.add);
             conn.logger?.info("Invoker:: Force paused connection");
           }
@@ -106,8 +104,6 @@ class DownloadConnectionInvoker {
       _runCommandTrackerTimer();
     } else if (data.command == DownloadCommand.start) {
       stopCommandTrackerMap[id] = Pair(false, channel);
-      _commandTrackerTimer?.cancel();
-      _commandTrackerTimer = null;
     }
   }
 
@@ -158,10 +154,6 @@ class DownloadConnectionInvoker {
         _connections[id]?.clear();
         break;
       case DownloadCommand.resetConnection:
-        if (!connection.connectionRetryAllowed) {
-          break;
-        }
-        connection.previousBufferEndByte = 0;
         connection.resetConnection();
         break;
       default:

@@ -16,7 +16,7 @@ class HttpDownloadConnectionChannel extends DownloadConnectionChannel {
   void onEventReceived(event) {
     super.onEventReceived(event);
     if (!(event is DownloadProgressMessage) ||
-        event.downloadType != DownloadType.HTTP) {
+        event.downloadItem.downloadType != DownloadType.HTTP) {
       return;
     }
     this.segment = event.segment;

@@ -92,8 +92,11 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                       const Text('Size : ',
                           style: TextStyle(color: Colors.white)),
                       Text(
-                          convertByteToReadableStr(
-                              downloadProgress.downloadItem.contentLength),
+                          downloadProgress.downloadItem.contentLength == -1
+                              ? "Unknown"
+                              : convertByteToReadableStr(
+                                  downloadProgress.downloadItem.contentLength,
+                                ),
                           style: const TextStyle(color: Colors.white)),
                     ],
                   ),
