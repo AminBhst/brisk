@@ -21,6 +21,8 @@ class HiveUtil {
 
   late final Box<GeneralData> generalDataBox;
 
+  late final Box<Migration> migrationBox;
+
   Future<void> initHive() async {
     await Hive.initFlutter("Brisk_v2");
     Hive.registerAdapter(DownloadItemAdapter());
@@ -35,6 +37,7 @@ class HiveUtil {
     downloadQueueBox = await Hive.openBox<DownloadQueue>("download_queues");
     settingBox = await Hive.openBox<Setting>("settings");
     generalDataBox = await Hive.openBox<GeneralData>("general_data");
+    migrationBox = await Hive.openBox<Migration>("migrations");
   }
 
   static Setting? getSetting(SettingOptions option) {
@@ -47,11 +50,6 @@ class HiveUtil {
     if (downloadQueueBox.get(0) == null) {
       downloadQueueBox.put(0, DownloadQueue(name: "Main"));
     }
-    /// length - 1 to account for the lastUpdateCheck not being in the defaults
-    if (settingBox.values.length - 1 != SettingsCache.defaultSettings.length) {
-      await SettingsCache.setDefaultSettings();
-    }
-
     final appVersion = generalDataBox.values
         .where((val) => val.fieldName == "appVersion")
         .firstOrNull;

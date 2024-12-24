@@ -62,7 +62,7 @@ jobs:
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0
         with:
-          flutter-version: "3.22.0"
+          flutter-version: "3.27.1"
           channel: 'stable'
           cache: true
           cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
@@ -136,7 +136,7 @@ jobs:
 
 
   Build-Linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read 
     needs: version
@@ -148,7 +148,7 @@ jobs:
       - name: Install flutter
         uses: subosito/flutter-action@v2.14.0
         with:
-          flutter-version: "3.22.0"
+          flutter-version: "3.27.1"
           channel: 'stable'
           cache: true
           cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
@@ -258,7 +258,7 @@ jobs:
 
 
   Release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 #    needs: [Build-Linux, Build-windows, Build-macos, version]
     needs: [Build-Linux, Build-windows, version]
     permissions:
