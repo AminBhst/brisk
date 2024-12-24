@@ -66,7 +66,6 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context).activeTheme;
     final size = MediaQuery.of(context).size;
-    print(size.width);
     return ClosableWindow(
       backgroundColor: theme.alertDialogTheme.backgroundColor,
       height: 360,

@@ -1,4 +1,7 @@
+import 'package:brisk/constants/download_type.dart';
+import 'package:brisk/download_engine/connection/m3u8_download_connection.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/download_engine/segment/segment.dart';
 
 import '../connection/base_http_download_connection.dart';
@@ -24,7 +27,9 @@ class DownloadProgressMessage {
   String detailsStatus;
   String message;
   Segment? segment;
+  M3U8Segment? m3u8segment;
   bool completionSignal;
+  int? assembledFileSize;
 
   DownloadProgressMessage({
     required this.downloadItem,
@@ -47,31 +52,35 @@ class DownloadProgressMessage {
     this.totalSegments = 0,
     this.message = "",
     this.completionSignal = false,
+    this.assembledFileSize,
   });
 
   factory DownloadProgressMessage.loadFromHttpDownloadRequest(
-    BaseHttpDownloadConnection request,
+    BaseHttpDownloadConnection connection,
   ) {
     final downloadProgress = DownloadProgressMessage(
-      downloadProgress: request.downloadProgress,
-      transferRate: request.transferRate,
-      status: request.overallStatus,
-      estimatedRemaining: request.estimatedRemaining,
-      paused: request.paused,
-      totalConnectionWriteProgress: request.totalConnectionWriteProgress,
-      totalRequestWriteProgress: request.totalRequestWriteProgress,
+      downloadProgress: connection.downloadProgress,
+      transferRate: connection.transferRate,
+      status: connection.overallStatus,
+      estimatedRemaining: connection.estimatedRemaining,
+      paused: connection.paused,
+      totalConnectionWriteProgress: connection.totalConnectionWriteProgress,
+      totalRequestWriteProgress: connection.totalRequestWriteProgress,
       buttonAvailability: ButtonAvailability(
-        request.pauseButtonEnabled,
-        request.isStartButtonEnabled,
+        connection.pauseButtonEnabled,
+        connection.isStartButtonEnabled,
       ),
-      downloadItem: request.downloadItem,
-      bytesTransferRate: request.bytesTransferRate,
-      totalDownloadProgress: request.totalDownloadProgress,
-      totalReceivedBytes: request.totalConnectionReceivedBytes,
-      detailsStatus: request.connectionStatus,
-      connectionNumber: request.connectionNumber,
-      segment: request.segment,
+      downloadItem: connection.downloadItem,
+      bytesTransferRate: connection.bytesTransferRate,
+      totalDownloadProgress: connection.totalDownloadProgress,
+      totalReceivedBytes: connection.totalConnectionReceivedBytes,
+      detailsStatus: connection.connectionStatus,
+      connectionNumber: connection.connectionNumber,
+      segment: connection.segment,
     );
+    if (connection is M3U8DownloadConnection) {
+      downloadProgress.m3u8segment = connection.m3u8segment;
+    }
     return downloadProgress;
   }
 }

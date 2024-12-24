@@ -32,3 +32,23 @@ String convertByteTransferRateToReadableStr(double bytesTransferRate) {
     return '${bytesTransferRate.toStringAsFixed(2)} B/s';
   }
 }
+
+String durationSecondsToReadableStr(int seconds, {bool compactView = false}) {
+  int hours = seconds ~/ 3600;
+  int minutes = (seconds % 3600) ~/ 60;
+  int remainingSeconds = seconds % 60;
+  List<String> parts = [];
+  if (hours > 0) parts.add('$hours hour${hours == 1 ? '' : 's'}');
+  if (minutes > 0) parts.add('$minutes minute${minutes == 1 ? '' : 's'}');
+  if (remainingSeconds > 0 || parts.isEmpty) {
+    parts.add('$remainingSeconds second${remainingSeconds == 1 ? '' : 's'}');
+  }
+  if (compactView) {
+    if (hours > 1) return '$hours hour${hours == 1 ? '' : 's'}';
+    if (minutes > 1)
+      return '$minutes minute${minutes == 1 ? '' : 's'}';
+    else
+      return '$remainingSeconds second${remainingSeconds == 1 ? '' : 's'}';
+  }
+  return parts.join(', ');
+}

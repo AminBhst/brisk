@@ -133,7 +133,7 @@ Future<FileInfo?> sendFileInfoRequest(
             return;
           }
           completer.completeError(
-              Exception("Could not retrieve result from the given URL"));
+              Exception("Failed to retrieve result from the given URL"));
           return;
         }
         downloadItem.contentLength = int.parse(headers["content-length"]!);

@@ -1,6 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/widget/other/brisk_change_log_dialog.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:brisk/browser_extension//browser_extension_server.dart';
 import 'package:brisk/constants/app_closure_behaviour.dart';
@@ -28,8 +32,10 @@ import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:http/http.dart' as http;
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 import 'util/file_util.dart';
 import 'util/settings_cache.dart';
@@ -81,6 +87,109 @@ void main() async {
     ),
   );
 }
+
+// Helper to derive IV from sequence number.
+Uint8List deriveIV(int sequenceNumber) {
+  final iv = Uint8List(16); // 16-byte IV initialized to zero.
+  iv.buffer.asByteData().setUint64(8, sequenceNumber); // Big-endian sequence.
+  return iv;
+}
+
+Future<String> fetchKey(String keyUrl) async {
+  final response = await http.get(Uri.parse(keyUrl));
+  if (response.statusCode == 200) {
+    return response.body.trim(); // Trim unnecessary whitespace or newlines.
+  } else {
+    throw Exception('Failed to fetch decryption key.');
+  }
+}
+
+// Decrypt a segment.
+Future<void> decryptSegment(String segmentUrl, String key, int sequenceNumber,
+    String outputPath) async {
+  print("Downloading $segmentUrl ....");
+  final response = await http.get(Uri.parse(segmentUrl));
+  print(response.headers);
+  final headers = response.headers;
+
+  if (response.statusCode == 200) {
+    final keyBytes = utf8.encode(key); // Ensure key is 16 bytes.
+    final aesKey = encrypt.Key(keyBytes);
+    final ivBytes = deriveIV(sequenceNumber);
+    final iv = IV(ivBytes);
+    final encrypter =
+        encrypt.Encrypter(AES(aesKey, mode: AESMode.cbc)); // CBC Mode.
+    final decrypted =
+        encrypter.decryptBytes(Encrypted(response.bodyBytes), iv: iv);
+    File(outputPath).writeAsBytesSync(decrypted);
+  } else {
+    throw Exception('Failed to download or decrypt segment.');
+  }
+}
+
+Future<void> processM3U8(M3U8 m3u8, String outputDir) async {
+  final key = await fetchKey(m3u8.encryptionDetails.encryptionKeyUrl!);
+  for (final segment in m3u8.segments) {
+    final outputFile = '$outputDir/segment_${segment.sequenceNumber}.ts';
+    await decryptSegment(segment.url, key, segment.sequenceNumber, outputFile);
+  }
+  // final lines = await File(m3u8File).readAsLines();
+  //
+  // // Combine segments into one file.
+  // final outputFile = File('$outputDir/output.ts');
+  // final sink = outputFile.openWrite();
+  // for (var i = 0; i < sequenceNumber; i++) {
+  //   final segmentFile = File('$outputDir/segment_$i.ts');
+  //   sink.add(await segmentFile.readAsBytes());
+  // }
+  // await sink.close();
+}
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await windowManager.ensureInitialized();
+//   tz.initializeTimeZones();
+//   await HiveUtil.instance.initHive();
+//   await setupLaunchAtStartup();
+//   await FileUtil.setDefaultTempDir();
+//   await FileUtil.setDefaultSaveDir();
+//   await HiveUtil.instance.putInitialBoxValues();
+//   await SettingsCache.setCachedSettings();
+//   await updateLaunchAtStartupSetting();
+//   ApplicationThemeHolder.setActiveTheme();
+//
+//   runApp(
+//     MultiProvider(
+//       providers: [
+//         ChangeNotifierProvider<SettingsProvider>(
+//           create: (_) => SettingsProvider(),
+//         ),
+//         ChangeNotifierProvider<QueueProvider>(
+//           create: (_) => QueueProvider(),
+//         ),
+//         ChangeNotifierProvider<ThemeProvider>(
+//           create: (_) => ThemeProvider(),
+//         ),
+//         ChangeNotifierProvider<PlutoGridCheckRowProvider>(
+//           create: (_) => PlutoGridCheckRowProvider(),
+//         ),
+//         ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
+//             DownloadRequestProvider>(
+//           create: (_) => DownloadRequestProvider(PlutoGridCheckRowProvider()),
+//           update: (context, plutoProvider, downloadProvider) {
+//             if (downloadProvider == null) {
+//               return DownloadRequestProvider(plutoProvider);
+//             } else {
+//               downloadProvider.plutoProvider = plutoProvider;
+//               return downloadProvider;
+//             }
+//           },
+//         ),
+//       ],
+//       child: const MyApp(),
+//     ),
+//   );
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

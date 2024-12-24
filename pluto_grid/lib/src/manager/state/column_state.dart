@@ -677,6 +677,7 @@ mixin ColumnState implements IPlutoGridState {
   }
 
   int readableSizeToBytes(String size) {
+    if (size.toLowerCase() == "unknown") return 0;
     final regex = RegExp(
       r'^(\d+(?:\.\d+)?)\s*([KMGTP]?B)$',
       caseSensitive: false,
@@ -712,14 +713,14 @@ mixin ColumnState implements IPlutoGridState {
     if (sortOnlyEvent) return;
 
     var compare = (b, a) => column.type.compare(
-      a.cells[column.field]!.valueForSorting,
-      b.cells[column.field]!.valueForSorting,
-    );
+          a.cells[column.field]!.valueForSorting,
+          b.cells[column.field]!.valueForSorting,
+        );
     if (column.field == "size") {
       compare = (b, a) => PlutoColumnType.number().compare(
-        readableSizeToBytes(a.cells[column.field]!.valueForSorting),
-        readableSizeToBytes(b.cells[column.field]!.valueForSorting),
-      );
+            readableSizeToBytes(a.cells[column.field]!.valueForSorting),
+            readableSizeToBytes(b.cells[column.field]!.valueForSorting),
+          );
     }
 
     if (enabledRowGroups) {

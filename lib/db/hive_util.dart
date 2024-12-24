@@ -1,7 +1,6 @@
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/model/general_data.dart';
-import 'package:brisk/model/migration.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:hive_flutter/adapters.dart';

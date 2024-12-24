@@ -1,1 +1,9 @@
-enum DLFileType { music, compressed, video, program, documents, other }
+enum DLFileType {
+  music,
+  compressed,
+  video,
+  program,
+  documents,
+  other,
+  m3u8,
+}

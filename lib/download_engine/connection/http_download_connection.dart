@@ -1,5 +1,8 @@
+import 'package:brisk/constants/types.dart';
 import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
 import 'package:http/http.dart' as http;
+
+import '../download_status.dart';
 
 class HttpDownloadConnection extends BaseHttpDownloadConnection {
   HttpDownloadConnection({
@@ -13,4 +16,5 @@ class HttpDownloadConnection extends BaseHttpDownloadConnection {
   http.Client buildClient() {
     return http.Client();
   }
+
 }
