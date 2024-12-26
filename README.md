@@ -21,7 +21,7 @@ If you encountered a "Windows Protected your PC" error, click `more info -> run 
 
 For Linux, make sure to read the [Linux Prerequisites](#key-linux-prerequisites).
 
-MacOS builds are unfortunately not available. If you're interested in this project and would like to contribute by providing MacOS builds for each release, please open an issue to let me know.
+Due to not owning a Mac hardware, MacOS support is unfortunately not available.
 
 ## :rocket: Key Features
 
