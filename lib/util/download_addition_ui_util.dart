@@ -125,12 +125,10 @@ class DownloadAdditionUiUtil {
     bool additionalPop,
   ) {
     item
-      ..supportsPause = true
-      ..downloadUrl = ""
-      ..fileName = "mu.m3u8"
-      ..fileType = DLFileType.m3u8.toString()
-      ..filePath = "C:\\Users\\RyeWell\\Desktop\\dir\\output.ts";
-
+      ..supportsPause = fileInfo.supportsPause
+      ..contentLength = fileInfo.contentLength
+      ..fileName = fileInfo.fileName
+      ..fileType = FileUtil.detectFileType(fileInfo.fileName).name;
     final dlDuplication = checkDownloadDuplication(item.fileName);
     if (dlDuplication) {
       final behaviour = SettingsCache.fileDuplicationBehaviour;
