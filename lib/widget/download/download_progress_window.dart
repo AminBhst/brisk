@@ -283,7 +283,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                             selector: (_, provider) => provider
                                 .downloads[widget.downloadId]!
                                 .connectionProgresses[index]
-                                .detailsStatus,
+                                .connectioStatus,
                             builder: (context, transferRate, child) {
                               return Row(
                                 mainAxisAlignment: MainAxisAlignment.start,

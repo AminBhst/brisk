@@ -76,9 +76,7 @@ class EngineChannel<T extends DownloadConnectionChannel>
   }
 
   int get buttonAvailabilityWaitMillis =>
-      connectionChannels.values.first is M3U8DownloadConnection
-          ? M3U8DownloadEngine.BUTTON_AVAILABILITY_WAIT_SEC * 1000
-          : HttpDownloadEngine.BUTTON_AVAILABILITY_WAIT_SEC * 1000;
+      HttpDownloadEngine.BUTTON_AVAILABILITY_WAIT_SEC * 1000;
 
   bool get isPauseButtonWaitComplete =>
       lastStartTimeMillis + buttonAvailabilityWaitMillis <

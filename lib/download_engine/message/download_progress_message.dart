@@ -24,7 +24,7 @@ class DownloadProgressMessage {
   ButtonAvailability buttonAvailability;
   int connectionNumber;
   int segmentLength;
-  String detailsStatus;
+  String connectioStatus;
   String message;
   Segment? segment;
   M3U8Segment? m3u8segment;
@@ -48,7 +48,7 @@ class DownloadProgressMessage {
     this.totalReceivedBytes = 0,
     this.totalDownloadProgress = 0,
     this.segmentLength = 0,
-    this.detailsStatus = "",
+    this.connectioStatus = "",
     this.totalSegments = 0,
     this.message = "",
     this.completionSignal = false,
@@ -74,7 +74,7 @@ class DownloadProgressMessage {
       bytesTransferRate: connection.bytesTransferRate,
       totalDownloadProgress: connection.totalDownloadProgress,
       totalReceivedBytes: connection.totalConnectionReceivedBytes,
-      detailsStatus: connection.connectionStatus,
+      connectioStatus: connection.connectionStatus,
       connectionNumber: connection.connectionNumber,
       segment: connection.segment,
     );

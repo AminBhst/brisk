@@ -47,15 +47,9 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
       "connectionReset: $connectionReset "
       "url: ${m3u8segment.url}",
     );
-    if (isDownloadCompleted) {
-      logger?.info(
-        "Download segment ${m3u8segment.sequenceNumber} is already completed!",
-      );
-      connectionStatus = DownloadStatus.connectionComplete;
-      notifyProgress(completionSignal: true);
-      return;
+    for (final file in tempDirectory.listSync()) {
+      file.deleteSync(recursive: true);
     }
-    tempDirectory.listSync().forEach((file) => file.deleteSync);
     init(connectionReset, progressCallback, reuseConnection);
     if (connectionReset) {
       resetStatus();
@@ -77,27 +71,31 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
   @override
   void resetConnection() {
     logger?.info("Resetting connection....");
-    closeClient_withCatch();
-    clearBuffer();
-    dynamicFlushThreshold = double.infinity;
     reset = true;
-    this.clientInitialized = false;
+    clearBuffer();
+    closeClient_withCatch();
+    dynamicFlushThreshold = double.infinity;
+    clientInitialized = false;
     start(progressCallback!, connectionReset: true);
   }
 
   @override
-  void init(connectionReset, progressCallback, reuseConnection) {
+  void init(connectionReset, progressCallback, _) {
+    closeClient_withCatch();
     connectionStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
     overallStatus = connectionStatus;
     this.progressCallback = progressCallback;
-    if (!clientInitialized) {
+    // if (!clientInitialized) {
       client = buildClient();
       clientInitialized = true;
-    }
+    // }
     paused = false;
     reset = false;
     terminatedOnCompletion = false;
+    flushBufferCounter = 0;
+    tempReceivedBytes = 0;
+    clearBuffer();
   }
 
   @override
@@ -113,15 +111,15 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
 
   @override
   void doProcessChunk(List<int> chunk) {
-    if (chunk.isEmpty || paused) return;
+    if (chunk.isEmpty) return;
+    buffer.add(chunk);
+    tempReceivedBytes += chunk.length;
     updateStatus(DownloadStatus.downloading);
     lastResponseTimeMillis = _nowMillis;
     pauseButtonEnabled = downloadItem.supportsPause;
     connectionStatus = transferRate;
     calculateTransferRate(chunk);
     calculateDynamicFlushThreshold();
-    buffer.add(chunk);
-    updateDownloadProgress();
     if (tempReceivedBytes > dynamicFlushThreshold) {
       flushBuffer();
     }
@@ -130,15 +128,12 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
 
   @override
   void flushBuffer() {
-    if (buffer.isEmpty) return;
     isWritingTempFile = true;
     final bytes = writeToUin8List(buffer);
     final filePath = join(tempDirectory.path, flushBufferCounter.toString());
-    previousBufferEndByte += bytes.lengthInBytes;
     File(filePath).writeAsBytesSync(mode: FileMode.writeOnly, bytes);
     logger?.info(
-      newLine: false,
-      "FlushBuffer for segment $startByte-$endByte ::${basename(filePath)}",
+      "FlushBuffer for segment ${m3u8segment.sequenceNumber}::${basename(filePath)}",
     );
     clearBuffer();
     sendLogBuffer();
@@ -181,11 +176,11 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
     }
     final newPath = join(tempDirectory.path, "final-segment.ts");
     segmentFile.renameSync(newPath);
-    tempDirectory
-        .listSync()
-        .map((e) => e as File)
-        .where((f) => f.name != "final-segment.ts")
-        .forEach((f) => f.deleteSync());
+    // tempDirectory
+    //     .listSync()
+    //     .map((e) => e as File)
+    //     .where((f) => f.name != "final-segment.ts")
+    //     .forEach((f) => f.deleteSync());
   }
 
   @override

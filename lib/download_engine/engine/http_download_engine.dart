@@ -1157,7 +1157,7 @@ class HttpDownloadEngine {
       return;
     }
     final unfinishedConnections = progresses
-        .where((p) => p.detailsStatus != DownloadStatus.connectionComplete)
+        .where((p) => p.connectioStatus != DownloadStatus.connectionComplete)
         .toList();
 
     final pauseButtonEnabled = unfinishedConnections.every(
@@ -1189,7 +1189,7 @@ class HttpDownloadEngine {
     final tempComplete = progresses.every(
       (progress) =>
           progress.totalConnectionWriteProgress >= 1 &&
-          progress.detailsStatus == DownloadStatus.connectionComplete,
+          progress.connectioStatus == DownloadStatus.connectionComplete,
     );
     if (!tempComplete) {
       return false;

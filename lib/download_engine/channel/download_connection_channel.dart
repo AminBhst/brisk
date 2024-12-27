@@ -1,5 +1,4 @@
 import 'package:brisk/download_engine/util/isolate_channel_wrapper.dart';
-import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 
@@ -28,14 +27,14 @@ class DownloadConnectionChannel extends IsolateChannelWrapper {
     if (!(event is DownloadProgressMessage)) {
       return;
     }
-    this.progress = event.downloadProgress;
-    this.segmentLength = event.segmentLength;
-    this.downloadItem = event.downloadItem;
-    this.message = event.message;
-    this.totalReceivedBytes = event.totalReceivedBytes;
-    this.status = event.status;
-    this.detailsStatus = event.detailsStatus;
-    this.bytesTransferRate = event.bytesTransferRate;
-    this.lastResponseTime = DateTime.now().millisecondsSinceEpoch;
+    lastResponseTime = DateTime.now().millisecondsSinceEpoch;
+    progress = event.downloadProgress;
+    segmentLength = event.segmentLength;
+    downloadItem = event.downloadItem;
+    message = event.message;
+    totalReceivedBytes = event.totalReceivedBytes;
+    status = event.status;
+    detailsStatus = event.connectioStatus;
+    bytesTransferRate = event.bytesTransferRate;
   }
 }

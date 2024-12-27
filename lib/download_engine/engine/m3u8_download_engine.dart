@@ -155,7 +155,7 @@ class M3U8DownloadEngine {
       return;
     }
     _buttonAvailabilityTimer = Timer.periodic(
-      Duration(seconds: 2),
+      Duration(seconds: 1),
       (_) => _runButtonAvailabilityNotifier(),
     );
   }
@@ -180,14 +180,21 @@ class M3U8DownloadEngine {
       );
       if (engineChannel.downloadItem == null ||
           !engineChannel.paused ||
-          progress == 1 ||
-          !allConnectionsPaused) {
+          progress == 1) {
         return;
       }
+      final connectionsPauseWaitComplete =
+          engineChannel.connectionChannels.values.every(
+        (conn) =>
+            conn.lastResponseTime + 3000 <
+            DateTime.now().millisecondsSinceEpoch,
+      );
       final message = ButtonAvailabilityMessage(
         downloadItem: engineChannel.downloadItem!,
         pauseButtonEnabled: false,
-        startButtonEnabled: engineChannel.isStartButtonWaitComplete,
+        startButtonEnabled: connectionsPauseWaitComplete &&
+            engineChannel.isStartButtonWaitComplete &&
+            allConnectionsPaused,
       );
       engineChannel.sendMessage(message);
     });
@@ -238,6 +245,9 @@ class M3U8DownloadEngine {
     }
     _setConnectionProgresses(downloadProgress);
     _downloadProgresses[downloadId] = downloadProgress;
+    if (engineChannel.paused) {
+      downloadProgress.buttonAvailability = ButtonAvailability(false, false);
+    }
     engineChannel.sendMessage(downloadProgress);
   }
 
@@ -290,10 +300,14 @@ class M3U8DownloadEngine {
       fileToWrite = File(newFilePath);
       fileToWrite.createSync(recursive: true);
     }
-    logger?.info("Creating file...");
-    for (var file in tempFies) {
-      final bytes = file.readAsBytesSync();
-      fileToWrite.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
+    try {
+      logger?.info("Creating file...");
+      for (var file in tempFies) {
+        final bytes = file.readAsBytesSync();
+        fileToWrite.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
+      }
+    } catch (e) {
+      print(e);
     }
     _connectionIsolates[downloadItem.id]?.values.forEach((isolate) {
       isolate.kill();
@@ -392,7 +406,7 @@ class M3U8DownloadEngine {
       return;
     }
     final unfinishedConnections = progresses
-        .where((p) => p.detailsStatus != DownloadStatus.connectionComplete)
+        .where((p) => p.connectioStatus != DownloadStatus.connectionComplete)
         .toList();
 
     final pauseButtonEnabled = unfinishedConnections.every(
