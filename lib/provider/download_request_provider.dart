@@ -10,12 +10,11 @@ import 'package:brisk/download_engine/download_settings.dart';
 import 'package:brisk/download_engine/engine/http_download_engine.dart';
 import 'package:brisk/download_engine/engine/m3u8_download_engine.dart';
 import 'package:brisk/download_engine/message/button_availability_message.dart';
-import 'package:brisk/download_engine/message/http_download_isolate_message.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';
-import 'package:brisk/model/isolate/isolate_args_pair.dart';
+import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/notification_util.dart';
@@ -106,7 +105,7 @@ class DownloadRequestProvider with ChangeNotifier {
     final channel = IsolateChannel.connectReceive(rPort);
     final isolate = await Isolate.spawn(
       getEngineStartMethod(downloadType),
-      IsolateArgsPair(rPort.sendPort, id),
+      IsolateSingleArg(rPort.sendPort, id),
       errorsAreFatal: false,
     );
     engineIsolates[id] = isolate;

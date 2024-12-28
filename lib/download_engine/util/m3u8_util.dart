@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk/constants/http_constants.dart';
 import 'package:brisk/download_engine/model/m3u8.dart';
+import 'package:brisk/setting/proxy/proxy_setting.dart';
+import 'package:brisk/util/http_client_builder.dart';
 import 'package:http/io_client.dart';
 import 'package:path/path.dart';
 
@@ -69,14 +71,13 @@ IV deriveExplicitIV(String ivString) {
   return IV(Uint8List.fromList(ivBytes));
 }
 
-Future<String> fetchBodyString(String url) async {
-  final client = HttpClient()
-    ..findProxy = (url) {
-      return "PROXY localhost:10808;";
-    };
+Future<String> fetchBodyString(
+  String url, {
+  ProxySetting? proxySetting = null,
+}) async {
+  final client = HttpClientBuilder.buildClient(proxySetting);
   try {
-    final httpclient = IOClient(client);
-    final response = await httpclient.get(
+    final response = await client.get(
       Uri.parse(url),
       headers: userAgentHeader,
     );
@@ -94,14 +95,13 @@ Future<String> fetchBodyString(String url) async {
 }
 
 /// Fetches the decryption key from the url specified in m3u8
-Future<Uint8List> fetchDecryptionKey(String keyUrl) async {
-  final client = HttpClient()
-    ..findProxy = (url) {
-      return "PROXY localhost:10808;";
-    };
+Future<Uint8List> fetchDecryptionKey(
+  String keyUrl, {
+  ProxySetting? proxySetting = null,
+}) async {
+  final client = HttpClientBuilder.buildClient(proxySetting);
   try {
-    final httpclient = IOClient(client);
-    final response = await httpclient.get(
+    final response = await client.get(
       Uri.parse(keyUrl),
       headers: userAgentHeader,
     );

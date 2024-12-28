@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/model/download_item.dart';
+import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,7 +13,6 @@ import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../constants/file_type.dart';
-import '../model/isolate/isolate_args_pair.dart';
 import 'settings_cache.dart';
 
 class FileUtil {
@@ -172,7 +172,7 @@ class FileUtil {
   }
 
   /// Simply calls [calculateReceivedBytesSync] but is intended to be used by an isolate
-  static void calculateReceivedBytesIsolated(IsolateArgsPair<Directory> args) {
+  static void calculateReceivedBytesIsolated(IsolateSingleArg<Directory> args) {
     args.sendPort.send(calculateReceivedBytesSync(args.obj));
   }
 

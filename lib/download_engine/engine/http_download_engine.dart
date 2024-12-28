@@ -4,7 +4,6 @@ import 'dart:isolate';
 
 import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/download_engine/channel/http_download_connection_channel.dart';
-import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
 import 'package:brisk/download_engine/message/button_availability_message.dart';
 import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 import 'package:brisk/download_engine/message/connection_segment_message.dart';
@@ -24,7 +23,7 @@ import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';
 import 'package:brisk/download_engine/util/temp_file_util.dart';
-import 'package:brisk/model/isolate/isolate_args_pair.dart';
+import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:path/path.dart';
@@ -215,7 +214,7 @@ class HttpDownloadEngine {
     });
   }
 
-  static void start(IsolateArgsPair<int> args) async {
+  static void start(IsolateSingleArg<int> args) async {
     final providerChannel = IsolateChannel.connectSend(args.sendPort);
     final engineChannel = EngineChannel<HttpDownloadConnectionChannel>(
       channel: providerChannel,

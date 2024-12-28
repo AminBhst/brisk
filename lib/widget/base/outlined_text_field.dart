@@ -11,6 +11,7 @@ class OutLinedTextField extends StatelessWidget {
   final Function(String value)? onChanged;
   final TextInputType keyboardType;
   final List<TextInputFormatter> inputFormatters;
+  final bool obscureText;
 
   const OutLinedTextField({
     super.key,
@@ -21,6 +22,7 @@ class OutLinedTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.inputFormatters = const [],
     this.onChanged,
+    this.obscureText = false,
   });
 
   @override
@@ -32,12 +34,15 @@ class OutLinedTextField extends StatelessWidget {
         .widgetColor
         .textFieldColor;
     return TextField(
+        obscureText: obscureText,
         readOnly: readOnly,
         keyboardType: keyboardType,
         inputFormatters: inputFormatters,
         cursorColor: Colors.white,
         controller: controller,
         onChanged: onChanged,
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr,
         style: TextStyle(color: theme.textColor, fontSize: 13),
         decoration: InputDecoration(
           focusColor: Colors.white38,

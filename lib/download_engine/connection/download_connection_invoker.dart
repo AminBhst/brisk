@@ -14,11 +14,10 @@ import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 
-import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
 import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 
 class DownloadConnectionInvoker {
-  static final Map<int, Map<int, BaseHttpDownloadConnection>> _connections = {};
+  static final Map<int, Map<int, HttpDownloadConnection>> _connections = {};
 
   static final Map<int, Map<int, TrackedDownloadCommand>> _trackedCommands = {};
 
@@ -57,7 +56,7 @@ class DownloadConnectionInvoker {
       print("Received command for conn ${data.connectionNumber}");
       _connections[id] ??= {};
       final connectionNumber = data.connectionNumber;
-      BaseHttpDownloadConnection? conn = _connections[id]![connectionNumber!];
+      HttpDownloadConnection? conn = _connections[id]![connectionNumber!];
       _setStopCommandTracker(data, channel);
       setTrackedCommand(data, channel);
       if (conn == null) {
@@ -71,7 +70,7 @@ class DownloadConnectionInvoker {
     });
   }
 
-  static BaseHttpDownloadConnection? _buildDownloadConnection(
+  static HttpDownloadConnection? _buildDownloadConnection(
     DownloadIsolateMessage data,
   ) {
     if (data is HttpDownloadIsolateMessage) {

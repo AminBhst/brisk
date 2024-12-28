@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_item.dart';
+import 'package:brisk/setting/proxy/proxy_setting.dart';
+import 'package:brisk/util/http_client_builder.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -67,12 +69,16 @@ List<int> calculateByteStartAndByteEnd(
 }
 
 Future<List<FileInfo>?> requestFileInfoBatch(
-  List<DownloadItem> downloadItems,
-) async {
+  List<DownloadItem> downloadItems, {
+  ProxySetting? proxySetting = null,
+}) async {
   List<FileInfo> fileInfos = [];
   for (final item in downloadItems) {
-    final fileInfo = await requestFileInfo(item, ignoreException: true)
-        .onError((error, stackTrace) => null);
+    final fileInfo = await requestFileInfo(
+      item,
+      proxySetting,
+      ignoreException: true,
+    ).onError((error, stackTrace) => null);
     if (fileInfo == null) continue;
     fileInfo.url = item.downloadUrl;
     fileInfos.add(fileInfo);
@@ -81,7 +87,8 @@ Future<List<FileInfo>?> requestFileInfoBatch(
 }
 
 Future<FileInfo?> requestFileInfo(
-  DownloadItem downloadItem, {
+  DownloadItem downloadItem,
+  ProxySetting? proxySetting, {
   ignoreException = false,
 }) async {
   return await sendFileInfoRequest(
@@ -91,6 +98,7 @@ Future<FileInfo?> requestFileInfo(
     final fileInfo = await sendFileInfoRequest(
       downloadItem,
       ignoreException: ignoreException,
+      proxySetting: proxySetting,
       useGet: true,
     );
     return fileInfo;
@@ -103,6 +111,7 @@ Future<FileInfo?> requestFileInfo(
 /// TODO handle status codes other than 200
 Future<FileInfo?> sendFileInfoRequest(
   DownloadItem downloadItem, {
+  ProxySetting? proxySetting = null,
   bool ignoreException = false,
   bool useGet = false,
 }) async {
@@ -111,7 +120,7 @@ Future<FileInfo?> sendFileInfoRequest(
     Uri.parse(downloadItem.downloadUrl),
   );
   request.headers.addAll(userAgentHeader);
-  final client = http.Client();
+  final client = HttpClientBuilder.buildClient(proxySetting);
   var response = client.send(request);
   Completer<FileInfo?> completer = Completer();
 

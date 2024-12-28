@@ -1,14 +1,10 @@
 import 'dart:io';
 
-import 'package:brisk/constants/http_constants.dart';
 import 'package:brisk/constants/types.dart';
-import 'package:brisk/download_engine/connection/base_http_download_connection.dart';
 import 'package:brisk/download_engine/download_status.dart';
-import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/download_engine/segment/segment.dart';
 import 'package:brisk/download_engine/util/m3u8_util.dart';
-import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:dartx/dartx_io.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:http/io_client.dart';
@@ -16,7 +12,9 @@ import 'package:http/src/client.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 
-class M3U8DownloadConnection extends BaseHttpDownloadConnection {
+import 'http_download_connection.dart';
+
+class M3U8DownloadConnection extends HttpDownloadConnection {
   M3U8Segment m3u8segment;
   bool clientInitialized = false;
   int flushBufferCounter = 1;
@@ -87,8 +85,8 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
     overallStatus = connectionStatus;
     this.progressCallback = progressCallback;
     // if (!clientInitialized) {
-      client = buildClient();
-      clientInitialized = true;
+    client = buildClient();
+    clientInitialized = true;
     // }
     paused = false;
     reset = false;
@@ -191,15 +189,6 @@ class M3U8DownloadConnection extends BaseHttpDownloadConnection {
           m3u8segment.sequenceNumber.toString(),
         ),
       );
-
-  @override
-  Client buildClient() {
-    final client = HttpClient()
-      ..findProxy = (url) {
-        return "PROXY localhost:10808;";
-      };
-    return IOClient(client);
-  }
 
   @override
   void pause(DownloadProgressCallback? progressCallback) {

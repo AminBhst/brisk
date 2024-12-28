@@ -15,12 +15,13 @@ import 'package:brisk/download_engine/message/m3u8_download_isolate_message.dart
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/download_engine/segment/segment_status.dart';
+import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:dartx/dartx.dart';
 import 'package:path/path.dart';
 import 'package:stream_channel/isolate_channel.dart';
-import 'package:brisk/model/isolate/isolate_args_pair.dart';
 
 /// The Download Engine responsible for downloading video streams based on the m3u8
 /// file format.
@@ -43,7 +44,7 @@ class M3U8DownloadEngine {
   static late DownloadSettings downloadSettings;
 
   /// TODO remove the proxy settings
-  static void start(IsolateArgsPair<int> args) async {
+  static void start(IsolateSingleArg<int> args) async {
     final providerChannel = IsolateChannel.connectSend(args.sendPort);
     final engineChannel = EngineChannel<M3u8DownloadConnectionChannel>(
       channel: providerChannel,
@@ -63,6 +64,7 @@ class M3U8DownloadEngine {
         m3u8 = await M3U8.fromString(
           downloadItem.m3u8Content!,
           downloadItem.downloadUrl,
+          proxySetting: downloadSettings.proxySetting,
         );
         _m3u8Map[id] = m3u8!;
         engineChannel.logger?.info("Successfully created the m3u8 file.");

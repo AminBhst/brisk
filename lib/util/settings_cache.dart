@@ -6,6 +6,7 @@ import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/setting.dart';
+import 'package:brisk/setting/proxy/proxy_setting.dart';
 import 'package:brisk/setting/rule/default_rules.dart';
 import 'package:brisk/setting/rule/file_rule.dart';
 import 'package:brisk/setting/rule/file_save_path_rule.dart';
@@ -44,6 +45,11 @@ class SettingsCache {
   static late int connectionsNumber;
   static late int connectionRetryCount;
   static late int connectionRetryTimeout;
+  static late bool proxyEnabled = false;
+  static late String proxyAddress = "";
+  static late String proxyPort = "";
+  static late String proxyUsername = "";
+  static late String proxyPassword = "";
 
   /// Extension
   static late int extensionPort;
@@ -126,6 +132,26 @@ class SettingsCache {
       SettingType.connection.name,
       "10",
     ],
+    SettingOptions.proxyEnabled.name: [
+      SettingType.connection.name,
+      "false",
+    ],
+    SettingOptions.proxyAddress.name: [
+      SettingType.connection.name,
+      "",
+    ],
+    SettingOptions.proxyPort.name: [
+      SettingType.connection.name,
+      "",
+    ],
+    SettingOptions.proxyUsername.name: [
+      SettingType.connection.name,
+      "",
+    ],
+    SettingOptions.proxyPassword.name: [
+      SettingType.connection.name,
+      "",
+    ],
     SettingOptions.enableWindowToFront.name: [
       SettingType.extension.name,
       "true",
@@ -205,6 +231,21 @@ class SettingsCache {
         case SettingOptions.connectionRetryTimeout:
           connectionRetryTimeout = int.parse(value);
           break;
+        case SettingOptions.proxyEnabled:
+          proxyEnabled = bool.parse(value);
+          break;
+        case SettingOptions.proxyAddress:
+          proxyAddress = value;
+          break;
+        case SettingOptions.proxyPort:
+          proxyPort = value;
+          break;
+        case SettingOptions.proxyUsername:
+          proxyUsername = value;
+          break;
+        case SettingOptions.proxyPassword:
+          proxyPassword = value;
+          break;
         case SettingOptions.enableWindowToFront:
           enableWindowToFront = parseBool(value);
           break;
@@ -282,6 +323,21 @@ class SettingsCache {
         case SettingOptions.connectionRetryCount:
           setting.value = SettingsCache.connectionRetryCount.toString();
           break;
+        case SettingOptions.proxyEnabled:
+          setting.value = SettingsCache.proxyEnabled.toString();
+          break;
+        case SettingOptions.proxyAddress:
+          setting.value = SettingsCache.proxyAddress.toString();
+          break;
+        case SettingOptions.proxyPort:
+          setting.value = SettingsCache.proxyPort.toString();
+          break;
+        case SettingOptions.proxyUsername:
+          setting.value = SettingsCache.proxyUsername.toString();
+          break;
+        case SettingOptions.proxyPassword:
+          setting.value = SettingsCache.proxyPassword.toString();
+          break;
         case SettingOptions.connectionRetryTimeout:
           setting.value = SettingsCache.connectionRetryTimeout.toString();
           break;
@@ -323,4 +379,12 @@ class SettingsCache {
       await HiveUtil.instance.settingBox.put(i, setting);
     }
   }
+
+  static ProxySetting get proxySetting => ProxySetting(
+        proxyEnabled: proxyEnabled,
+        proxyAddress: proxyAddress,
+        proxyPort: proxyPort,
+        password: proxyPassword,
+        username: proxyUsername,
+      );
 }

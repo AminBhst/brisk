@@ -6,23 +6,23 @@ import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/model/m3u8.dart';
+import 'package:brisk/model/isolate/isolate_args.dart';
+import 'package:brisk/setting/proxy/proxy_setting.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-
-import '../constants/file_duplication_behaviour.dart';
-import '../db/hive_util.dart';
-import '../model/download_item.dart';
-import '../model/file_metadata.dart';
-import '../model/isolate/isolate_args_pair.dart';
-import '../provider/download_request_provider.dart';
-import '../widget/base/confirmation_dialog.dart';
-import '../widget/base/error_dialog.dart';
-import '../widget/download/ask_duplication_action.dart';
-import '../widget/download/download_info_dialog.dart';
+import 'package:brisk/constants/file_duplication_behaviour.dart';
+import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/model/download_item.dart';
+import 'package:brisk/model/file_metadata.dart';
+import 'package:brisk/provider/download_request_provider.dart';
+import 'package:brisk/widget/base/confirmation_dialog.dart';
+import 'package:brisk/widget/base/error_dialog.dart';
+import 'package:brisk/widget/download/ask_duplication_action.dart';
+import 'package:brisk/widget/download/download_info_dialog.dart';
 import 'file_util.dart';
 import 'http_util.dart';
 
@@ -200,9 +200,9 @@ class DownloadAdditionUiUtil {
       DownloadItem item) async {
     final ReceivePort receivePort = ReceivePort();
     fileInfoExtractorIsolate =
-        await Isolate.spawn<IsolateArgsPair<DownloadItem>>(
+        await Isolate.spawn<IsolateArgsPair<DownloadItem, ProxySetting>>(
       requestFileInfoIsolate,
-      IsolateArgsPair(receivePort.sendPort, item),
+      IsolateArgsPair(receivePort.sendPort, item, SettingsCache.proxySetting),
       paused: true,
     );
     fileInfoExtractorIsolate?.addErrorListener(receivePort.sendPort);
@@ -315,6 +315,6 @@ class DownloadAdditionUiUtil {
 }
 
 Future<void> requestFileInfoIsolate(IsolateArgsPair args) async {
-  final result = await requestFileInfo(args.obj);
+  final result = await requestFileInfo(args.firstObject, args.secondObject);
   args.sendPort.send(result);
 }

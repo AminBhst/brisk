@@ -29,6 +29,7 @@ class HiveUtil {
     Hive.registerAdapter(DownloadQueueAdapter());
     Hive.registerAdapter(SettingAdapter());
     Hive.registerAdapter(GeneralDataAdapter());
+    Hive.registerAdapter(MigrationAdapter());
     await HiveUtil.instance.openBoxes();
   }
 

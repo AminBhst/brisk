@@ -28,7 +28,7 @@ import 'package:window_manager/window_manager.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.1.4";
+  static const String extensionVersion = "2.0.0";
 
   static void setup(BuildContext context) async {
     if (_isServerRunning) return;
@@ -117,8 +117,15 @@ class BrowserExtensionServer {
     final url = jsonBody["url"] as String;
     M3U8 m3u8;
     try {
-      String m3u8Content = await fetchBodyString(url);
-      m3u8 = (await M3U8.fromString(m3u8Content, url))!;
+      String m3u8Content = await fetchBodyString(
+        url,
+        proxySetting: SettingsCache.proxySetting,
+      );
+      m3u8 = (await M3U8.fromString(
+        m3u8Content,
+        url,
+        proxySetting: SettingsCache.proxySetting,
+      ))!;
     } catch (e) {
       showDialog(
         context: context,
@@ -168,7 +175,10 @@ class BrowserExtensionServer {
         downloadHrefs.map((e) => DownloadItem.fromUrl(e)).toList();
     _cancelClicked = false;
     _showLoadingDialog(context);
-    requestFileInfoBatch(downloadItems.toList()).then((fileInfos) {
+    requestFileInfoBatch(
+      downloadItems.toList(),
+      proxySetting: SettingsCache.proxySetting,
+    ).then((fileInfos) {
       if (_cancelClicked) {
         return;
       }

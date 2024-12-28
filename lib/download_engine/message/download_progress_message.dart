@@ -1,10 +1,8 @@
-import 'package:brisk/constants/download_type.dart';
+import 'package:brisk/download_engine/connection/http_download_connection.dart';
 import 'package:brisk/download_engine/connection/m3u8_download_connection.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/download_engine/segment/segment.dart';
-
-import '../connection/base_http_download_connection.dart';
 
 class DownloadProgressMessage {
   List<DownloadProgressMessage> connectionProgresses = [];
@@ -56,7 +54,7 @@ class DownloadProgressMessage {
   });
 
   factory DownloadProgressMessage.loadFromHttpDownloadRequest(
-    BaseHttpDownloadConnection connection,
+    HttpDownloadConnection connection,
   ) {
     final downloadProgress = DownloadProgressMessage(
       downloadProgress: connection.downloadProgress,

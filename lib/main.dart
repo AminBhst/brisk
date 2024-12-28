@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:brisk/db/migration_manager.dart';
 import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/widget/other/brisk_change_log_dialog.dart';
@@ -52,6 +53,7 @@ void main() async {
   await FileUtil.setDefaultSaveDir();
   await HiveUtil.instance.putInitialBoxValues();
   await SettingsCache.setCachedSettings();
+  await MigrationManager.runMigrations();
   await updateLaunchAtStartupSetting();
   ApplicationThemeHolder.setActiveTheme();
 

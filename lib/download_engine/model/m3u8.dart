@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:brisk/constants/http_constants.dart';
 import 'package:brisk/download_engine/segment/segment_status.dart';
 import 'package:brisk/download_engine/util/m3u8_util.dart';
+import 'package:brisk/setting/proxy/proxy_setting.dart';
+import 'package:brisk/util/http_client_builder.dart';
 import 'package:http/io_client.dart';
 
 class M3U8 {
@@ -34,14 +36,13 @@ class M3U8 {
 
   bool get isMasterPlaylist => segments.isEmpty && streamInfos.isNotEmpty;
 
-  static Future<M3U8?> fromUrl(String url) async {
-    final client = HttpClient()
-      ..findProxy = (url) {
-        return "PROXY localhost:10808;";
-      };
+  static Future<M3U8?> fromUrl(
+    String url, {
+    ProxySetting? proxySetting = null,
+  }) async {
+    final client = HttpClientBuilder.buildClient(proxySetting);
     try {
-      final httpclient = IOClient(client);
-      final response = await httpclient.get(
+      final response = await client.get(
         Uri.parse(url),
         headers: userAgentHeader,
       );
@@ -61,6 +62,7 @@ class M3U8 {
   static Future<M3U8?> fromString(
     String content,
     String url, {
+    ProxySetting? proxySetting = null,
     bool fetchKeys = true,
   }) async {
     final lines = content.split("\n");
@@ -155,6 +157,7 @@ class M3U8 {
         M3U8EncryptionMethod.AES_128) {
       m3u8.encryptionDetails.keyBytes = await fetchDecryptionKey(
         m3u8.encryptionDetails.encryptionKeyUrl!,
+        proxySetting: proxySetting,
       );
     }
     for (var segment in m3u8.segments) {
@@ -165,6 +168,7 @@ class M3U8 {
       }
       segment.encryptionDetails!.keyBytes = await fetchDecryptionKey(
         segment.encryptionDetails!.encryptionKeyUrl!,
+        proxySetting: proxySetting,
       );
     }
 
