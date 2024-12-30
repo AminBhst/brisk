@@ -93,7 +93,6 @@ class UpdateDownloader {
   }
 
   static Future<void> onComplete(DownloadProgressProvider provider) async {
-    /// TODO handle different OS
     try {
       String executablePath = Platform.resolvedExecutable;
       final package = _writeToUin8List(buffer);
