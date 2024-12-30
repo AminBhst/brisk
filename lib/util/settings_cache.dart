@@ -127,7 +127,7 @@ class SettingsCache {
     ],
     SettingOptions.m3u8ConnectionsNumber.name: [
       SettingType.connection.name,
-      "16",
+      "8",
     ],
     SettingOptions.connectionRetryCount.name: [
       SettingType.connection.name,
