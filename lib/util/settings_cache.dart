@@ -43,6 +43,7 @@ class SettingsCache {
 
   // Connection
   static late int connectionsNumber;
+  static late int m3u8ConnectionNumber;
   static late int connectionRetryCount;
   static late int connectionRetryTimeout;
   static late bool proxyEnabled = false;
@@ -123,6 +124,10 @@ class SettingsCache {
     SettingOptions.connectionsNumber.name: [
       SettingType.connection.name,
       "8",
+    ],
+    SettingOptions.m3u8ConnectionsNumber.name: [
+      SettingType.connection.name,
+      "16",
     ],
     SettingOptions.connectionRetryCount.name: [
       SettingType.connection.name,
@@ -225,6 +230,9 @@ class SettingsCache {
         case SettingOptions.connectionsNumber:
           connectionsNumber = int.parse(value);
           break;
+        case SettingOptions.m3u8ConnectionsNumber:
+          m3u8ConnectionNumber = int.parse(value);
+          break;
         case SettingOptions.connectionRetryCount:
           connectionRetryCount = int.parse(value);
           break;
@@ -319,6 +327,9 @@ class SettingsCache {
           break;
         case SettingOptions.connectionsNumber:
           setting.value = SettingsCache.connectionsNumber.toString();
+          break;
+        case SettingOptions.m3u8ConnectionsNumber:
+          setting.value = SettingsCache.m3u8ConnectionNumber.toString();
           break;
         case SettingOptions.connectionRetryCount:
           setting.value = SettingsCache.connectionRetryCount.toString();

@@ -7,6 +7,7 @@ import 'package:brisk/util/settings_cache.dart';
 class MigrationManager {
   static List<Migration> migrations = [
     Migration(0, "Add proxy Settings"),
+    Migration(1, "Add m3u8 connection number"),
   ];
 
   static runMigrations() async {
@@ -24,6 +25,9 @@ class MigrationManager {
     switch (migration.version) {
       case 0:
         await runMigrationV0();
+        break;
+      case 1:
+        await runMigrationV1();
         break;
       default:
         break;
@@ -71,5 +75,16 @@ class MigrationManager {
     for (final setting in newSettings) {
       await HiveUtil.instance.settingBox.add(setting);
     }
+  }
+
+  static runMigrationV1() async {
+    final connNumSetting = Setting(
+      name: SettingOptions.m3u8ConnectionsNumber.name,
+      value: SettingsCache
+          .defaultSettings[SettingOptions.m3u8ConnectionsNumber.name]![1],
+      settingType: SettingsCache
+          .defaultSettings[SettingOptions.m3u8ConnectionsNumber.name]![0],
+    );
+    await HiveUtil.instance.settingBox.add(connNumSetting);
   }
 }

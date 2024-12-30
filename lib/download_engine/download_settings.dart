@@ -6,10 +6,12 @@ import 'package:brisk/util/settings_cache.dart';
 class DownloadSettings extends ConnectionSettings {
   final Directory baseSaveDir;
   int totalConnections;
+  int totalM3u8Connections;
 
   DownloadSettings({
     required this.baseSaveDir,
     required this.totalConnections,
+    required this.totalM3u8Connections,
     required super.loggerEnabled,
     required super.baseTempDir,
     required super.connectionRetryTimeout,
@@ -22,6 +24,7 @@ class DownloadSettings extends ConnectionSettings {
       baseTempDir: SettingsCache.temporaryDir,
       baseSaveDir: SettingsCache.saveDir,
       totalConnections: SettingsCache.connectionsNumber,
+      totalM3u8Connections: SettingsCache.m3u8ConnectionNumber,
       connectionRetryTimeout: SettingsCache.connectionRetryTimeout * 1000,
       maxConnectionRetryCount: SettingsCache.connectionRetryCount,
       loggerEnabled: SettingsCache.loggerEnabled,

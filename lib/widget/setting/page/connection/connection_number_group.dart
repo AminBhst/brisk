@@ -14,21 +14,36 @@ class ConnectionNumberGroup extends StatefulWidget {
 class _ConnectionNumberGroupState extends State<ConnectionNumberGroup> {
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return SettingsGroup(
-      height: 150,
+      title: "Download Connections",
+      height: 170,
       children: [
         DropDownSetting(
-          onChanged: _onChanged,
-          text: "Number of download connections",
-          items: [1, 2, 4, 8].map((e) => e.toString()).toList(),
+          onChanged: (value) {
+            if (value == null || value.isEmpty) return;
+            setState(
+              () => SettingsCache.connectionsNumber = int.parse(value),
+            );
+          },
+          text: "Number of regular download connections",
+          textWidth: size.width * 0.3,
+          items: [1, 2, 4, 8, 16].map((e) => e.toString()).toList(),
           value: SettingsCache.connectionsNumber.toString(),
+        ),
+        DropDownSetting(
+          onChanged: (value) {
+            if (value == null || value.isEmpty) return;
+            setState(
+              () => SettingsCache.m3u8ConnectionNumber = int.parse(value),
+            );
+          },
+          text: "Number of video stream download connections",
+          textWidth: size.width * 0.32,
+          items: [1, 2, 4, 8, 16].map((e) => e.toString()).toList(),
+          value: SettingsCache.m3u8ConnectionNumber.toString(),
         ),
       ],
     );
-  }
-
-  void _onChanged(String? value) {
-    if (value == null || value.isEmpty) return;
-    setState(() => SettingsCache.connectionsNumber = int.parse(value));
   }
 }

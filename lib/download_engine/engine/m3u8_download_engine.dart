@@ -488,9 +488,9 @@ class M3U8DownloadEngine {
     final incompleteSegments = m3u8.segments
         .where((s) => s.segmentStatus != SegmentStatus.COMPLETE)
         .toList();
-    // m3u8.segments.sublist(0, downloadSettings.totalConnections);
-    final segments = incompleteSegments.length > 16
-        ? incompleteSegments.sublist(0, 16)
+    final segments = incompleteSegments.length >
+            downloadSettings.totalM3u8Connections
+        ? incompleteSegments.sublist(0, downloadSettings.totalM3u8Connections)
         : incompleteSegments.sublist(0);
     for (int i = 0; i < segments.length; i++) {
       final segment = segments[i];

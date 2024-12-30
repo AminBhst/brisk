@@ -52,8 +52,8 @@ void main() async {
   await FileUtil.setDefaultTempDir();
   await FileUtil.setDefaultSaveDir();
   await HiveUtil.instance.putInitialBoxValues();
-  await SettingsCache.setCachedSettings();
   await MigrationManager.runMigrations();
+  await SettingsCache.setCachedSettings();
   await updateLaunchAtStartupSetting();
   ApplicationThemeHolder.setActiveTheme();
 

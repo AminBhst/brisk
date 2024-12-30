@@ -18,6 +18,7 @@ enum SettingOptions {
   appClosureBehaviour,
   loggerEnabled,
   connectionsNumber,
+  m3u8ConnectionsNumber,
   connectionRetryCount,
   connectionRetryTimeout,
   proxyEnabled,
