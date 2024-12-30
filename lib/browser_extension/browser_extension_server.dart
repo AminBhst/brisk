@@ -2,21 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:brisk/constants/download_type.dart';
-import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/download_engine/util/m3u8_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
-import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
-import 'package:brisk/widget/download/download_info_dialog.dart';
 import 'package:brisk/widget/download/m3u8_master_playlist_dialog.dart';
 import 'package:brisk/widget/download/multi_download_addition_dialog.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
@@ -114,7 +110,7 @@ class BrowserExtensionServer {
   }
 
   static void _handleM3u8DownloadRequest(jsonBody, context, request) async {
-    final url = jsonBody["url"] as String;
+    final url = jsonBody["m3u8Url"] as String;
     M3U8 m3u8;
     try {
       String m3u8Content = await fetchBodyString(
