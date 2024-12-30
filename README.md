@@ -17,11 +17,16 @@
 Installation files for Windows and Linux are available at [Github Releases](https://github.com/AminBhst/brisk/releases/).
 Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin).
 
-If you encountered a "Windows Protected your PC" error, click `more info -> run anyway`
 
-For Linux, make sure to read the [Linux Prerequisites](#key-linux-prerequisites).
+> [!IMPORTANT]
+> For Linux, make sure to check the [Linux Prerequisites](#key-linux-prerequisites)
+> 
+> On Windows, if you encountered a "Windows Protected your PC" warning, click `more info -> run anyway`
+>
+> For the browser extension to work properly, disable other download manager extensions.
 
-Due to not owning a Mac hardware, MacOS support is unfortunately not available.
+> [!NOTE]
+> Due to not owning a Mac hardware, MacOS support is unfortunately not available.
 
 ## :rocket: Key Features
 
@@ -43,8 +48,7 @@ Brisk offers a dedicated browser extension with the following features:
 - Capturing download requests from the browser and directly adding them to Brisk
 - Extracting all download links from a selected text area and adding them to Brisk all at once
 
-Please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension) for installation. Make sure to disable all extensions related to other download managers to prevent unexpected issues.
-
+Please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension) for installation. 
 
 ## :film_projector: Demo With Browser Integration
 
