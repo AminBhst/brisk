@@ -2,7 +2,7 @@
 
 
 ## :rocket: Feature: Downloading Video Streams From The Browser
-- **Preqrequisite:** Brisk Browser Extension v.2.0.0
+- **Preqrequisite:** Brisk Browser Extension v.1.2.0
 
 Brisk now support downloading m3u8 video streams from the browser. After a website has finished loading the video stream, click on the browser extension's icon to view all available m3u8 streams. From there, you can click "Download" and Brisk will capture the selected video stream.
 
