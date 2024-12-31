@@ -32,6 +32,7 @@ Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/bri
 
 - [Powerful Download Engine](#gear-brisks-download-engine)
 - [Browser Integration](#globe_with_meridians-browser-integration)
+- Downloading video streams from the browser
 - Download Queues
 - Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
 
