@@ -52,6 +52,7 @@ The key features of the engine include:
 Brisk offers a dedicated browser extension with the following features:
 - Capturing download requests from the browser and directly adding them to Brisk
 - Extracting all download links from a selected text area and adding them to Brisk all at once
+- Capturing m3u8 video streams from the browser
 
 Please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension) for installation. 
 
