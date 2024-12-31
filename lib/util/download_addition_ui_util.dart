@@ -93,6 +93,17 @@ class DownloadAdditionUiUtil {
   }
 
   static void handleM3u8Addition(M3U8 m3u8, BuildContext context) {
+    if (m3u8.encryptionDetails.encryptionMethod ==
+        M3U8EncryptionMethod.SAMPLE_AES) {
+      showDialog(
+        context: context,
+        builder: (context) => ErrorDialog(
+          textHeight: 20,
+          text: "SAMPLE-AES encryption is not supported!",
+        ),
+      );
+      return;
+    }
     final fileName =
         m3u8.fileName.substring(0, m3u8.fileName.lastIndexOf(".")) + ".ts";
     final downloadItem = DownloadItem(

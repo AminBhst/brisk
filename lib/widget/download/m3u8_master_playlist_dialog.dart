@@ -6,6 +6,7 @@ import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/default_tooltip.dart';
+import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -156,6 +157,17 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
   }
 
   void _onDownloadPressed(StreamInf streamInf, BuildContext context) {
+    if (streamInf.m3u8!.encryptionDetails.encryptionMethod ==
+        M3U8EncryptionMethod.SAMPLE_AES) {
+      showDialog(
+        context: context,
+        builder: (context) => ErrorDialog(
+          textHeight: 20,
+          text: "SAMPLE-AES encryption is not supported!",
+        ),
+      );
+      return;
+    }
     Navigator.of(context).pop();
     DownloadAdditionUiUtil.handleM3u8Addition(streamInf.m3u8!, context);
   }

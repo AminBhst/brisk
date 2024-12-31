@@ -2,10 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk/constants/http_constants.dart';
-import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/setting/proxy/proxy_setting.dart';
 import 'package:brisk/util/http_client_builder.dart';
-import 'package:http/io_client.dart';
 import 'package:path/path.dart';
 
 import 'package:encrypt/encrypt.dart';
