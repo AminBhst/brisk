@@ -24,7 +24,7 @@ import 'package:window_manager/window_manager.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.1.4";
+  static const String extensionVersion = "2.0.0";
 
   static void setup(BuildContext context) async {
     if (_isServerRunning) return;
@@ -110,6 +110,16 @@ class BrowserExtensionServer {
   }
 
   static void _handleM3u8DownloadRequest(jsonBody, context, request) async {
+    bool canceled = false;
+    showDialog(
+      context: context,
+      builder: (context) => FileInfoLoader(
+        onCancelPressed: () {
+          canceled = true;
+          Navigator.of(context).pop();
+        },
+      ),
+    );
     final url = jsonBody["m3u8Url"] as String;
     M3U8 m3u8;
     try {
@@ -132,6 +142,10 @@ class BrowserExtensionServer {
       );
       return;
     }
+    if (canceled) {
+      return;
+    }
+    Navigator.of(context).pop();
     handleWindowToFront();
     if (m3u8.isMasterPlaylist) {
       _handleMasterPlaylist(m3u8, context);
