@@ -58,7 +58,6 @@ class M3U8DownloadEngine {
       M3U8? m3u8 = _m3u8Map[id];
 
       /// TODO show error for unsupported encryption
-      /// TODO set the proper segment statuses prior to start of the download
       if (m3u8 == null) {
         engineChannel.logger?.info("Creating the m3u8 file...");
         m3u8 = await M3U8.fromString(
@@ -95,11 +94,15 @@ class M3U8DownloadEngine {
               conn.detailsStatus != DownloadStatus.canceled &&
               conn.detailsStatus != DownloadStatus.connectionComplete)
           .toList()
-          .where((conn) =>
-              (conn.resetCount < downloadSettings.maxConnectionRetryCount ||
-                  downloadSettings.maxConnectionRetryCount == -1) &&
-              conn.lastResponseTime + downloadSettings.connectionRetryTimeout <
-                  DateTime.now().millisecondsSinceEpoch)
+          .where(
+            (conn) =>
+                (conn.resetCount < downloadSettings.maxConnectionRetryCount ||
+                    downloadSettings.maxConnectionRetryCount == -1) &&
+                conn.lastResponseTime +
+                        downloadSettings.connectionRetryTimeout +
+                        2000 <
+                    DateTime.now().millisecondsSinceEpoch,
+          )
           .toList();
 
       for (final connection in connectionsToReset) {
@@ -238,6 +241,7 @@ class M3U8DownloadEngine {
     if (totalProgress == 1 && isAssembleEligible(downloadItem)) {
       engineChannel.sendMessage(downloadProgress);
       final fileSize = assembleFile(progress.downloadItem);
+      if (fileSize == -1) return;
 
       /// TODO add proper progress indication. currently it only notifies when the assemble is complete
       _setCompletionStatuses(downloadProgress, fileSize);
@@ -262,10 +266,36 @@ class M3U8DownloadEngine {
     return completeCount / _m3u8Map[id]!.segments.length;
   }
 
+  static bool checkTempFilesIntegrity(int downloadId) {
+    final engineChannel = _engineChannels[downloadId]!;
+    final downloadItem = engineChannel.downloadItem!;
+    final m3u8 = _m3u8Map[downloadId]!;
+    for (final segment in m3u8.segments) {
+      final segmentFilePath = join(
+        downloadSettings.baseTempDir.path,
+        downloadItem.uid,
+        segment.sequenceNumber.toString(),
+        "final-segment.ts",
+      );
+      if (!File(segmentFilePath).existsSync()) {
+        final progress = _downloadProgresses[downloadId]!;
+        progress.status = DownloadStatus.assembleFailed;
+        progress.downloadItem.status = DownloadStatus.assembleFailed;
+        engineChannel.sendMessage(progress);
+        return false;
+      }
+    }
+    return true;
+  }
+
   static int assembleFile(
     DownloadItemModel downloadItem, {
     bool notifyProgress = false,
   }) {
+    if (!checkTempFilesIntegrity(downloadItem.id)) {
+      File(downloadItem.filePath).writeAsBytesSync([0]);
+      return -1;
+    }
     final engineChannel = _engineChannels[downloadItem.id]!;
     final progress = _downloadProgresses[downloadItem.id] ??
         DownloadProgressMessage(
@@ -571,14 +601,18 @@ class M3U8DownloadEngine {
 
   static bool isAssembledFileInvalid(DownloadItemModel downloadItem) {
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
-    return Directory(tempPath).existsSync() &&
+    return _downloadProgresses[downloadItem.id] == null &&
+        Directory(tempPath).existsSync() &&
         File(downloadItem.filePath).existsSync();
   }
 
   static DownloadProgressMessage reassembleFile(
     DownloadItemModel downloadItem,
   ) {
-    File(downloadItem.filePath).deleteSync();
+    final assembledFile = File(downloadItem.filePath);
+    if (assembledFile.existsSync()) {
+      assembledFile.deleteSync();
+    }
     final fileSize = assembleFile(downloadItem);
     downloadItem.status = DownloadStatus.assembleComplete;
     final progress = DownloadProgressMessage(

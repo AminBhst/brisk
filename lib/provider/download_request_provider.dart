@@ -234,7 +234,7 @@ class DownloadRequestProvider with ChangeNotifier {
         cells: {
           "file_name": PlutoCell(value: e.downloadItem.fileName),
           "size": PlutoCell(
-            value: e.downloadItem.contentLength == -1
+            value: e.downloadItem.contentLength < 0
                 ? "Unknown"
                 : convertByteToReadableStr(e.downloadItem.contentLength),
           ),
