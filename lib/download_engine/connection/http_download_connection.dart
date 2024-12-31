@@ -225,9 +225,11 @@ class HttpDownloadConnection {
     return request;
   }
 
-  void sendDownloadRequest(http.Request request) {
+  void sendDownloadRequest(http.Request request, {Duration? timeout}) {
     try {
-      final response = client.send(request);
+      final response = timeout != null
+          ? client.send(request).timeout(timeout)
+          : client.send(request);
       response.asStream().cast<http.StreamedResponse>().listen((response) {
         response.stream.listen(
           _processChunk,
@@ -506,7 +508,6 @@ class HttpDownloadConnection {
         continue;
       }
 
-      /// TODO may need <=
       if (this.endByte < tempEndByte) {
         logger?.info("File to cut: ${basename(file.path)}");
         newBufferStartByte = tempStartByte;

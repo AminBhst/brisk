@@ -20,7 +20,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
   int flushBufferCounter = 1;
 
   /// TODO try with lower value as well
-  static const int _maximumFileSizeForInMemoryDecryption = 50000000;
+  static const int _maximumFileSizeForInMemoryDecryption = 0;
 
   M3U8DownloadConnection({
     required super.downloadItem,
@@ -54,7 +54,10 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
     }
     notifyProgress();
     final request = buildDownloadRequest(false);
-    sendDownloadRequest(request);
+    sendDownloadRequest(
+      request,
+      timeout: Duration(milliseconds: settings.connectionRetryTimeout),
+    );
   }
 
   @override
@@ -169,8 +172,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
         segmentFile,
         m3u8segment.encryptionDetails!.keyBytes!,
         decryptionIV!,
-        chunked:
-            segmentFile.lengthSync() > _maximumFileSizeForInMemoryDecryption,
+        chunked: false,
       );
     }
     final newPath = join(tempDirectory.path, "final-segment.ts");
