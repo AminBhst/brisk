@@ -59,7 +59,8 @@ Please refer to the [brisk-browser-extension repository](https://github.com/Amin
 ## :film_projector: Demo With Browser Integration
 
 
-https://github.com/user-attachments/assets/2e978dae-084a-4181-9576-15b5b61e84ae
+https://github.com/user-attachments/assets/fc63dcf4-0e69-4610-9c92-f26f12f9ad01
+
 
 
 ## :key: Linux Prerequisites
