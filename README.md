@@ -18,7 +18,7 @@ Installation files for Windows and Linux are available at [Github Releases](http
 
 Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin).
 
-For installing the browser extension, please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension).
+To install the browser extension, please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension).
 
 
 > [!IMPORTANT]
