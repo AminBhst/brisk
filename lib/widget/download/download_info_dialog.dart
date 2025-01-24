@@ -317,8 +317,6 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
         widget.downloadItem.filePath = location;
         txtController.text = location;
       });
-      HiveUtil.instance.downloadItemsBox
-          .put(widget.downloadItem.key, widget.downloadItem);
     }
   }
 
