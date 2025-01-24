@@ -55,9 +55,8 @@ class BrowserExtensionServer {
         try {
           final jsonBody = jsonDecode(String.fromCharCodes(body));
           final targetVersion = jsonBody["extensionVersion"];
-          print(targetVersion);
-          if (targetVersion == null ||
-              isNewVersionAvailable(extensionVersion, targetVersion)) {
+          if (targetVersion == null) return;
+          if (isNewVersionAvailable(extensionVersion, targetVersion)) {
             showNewBrowserExtensionVersion(context);
             await flushAndCloseResponse(request, false);
             responseClosed = true;
