@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/db/hive_util.dart';
-import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:brisk/util/file_extensions.dart';
@@ -23,11 +23,16 @@ class FileUtil {
   /// Due to the fact that on Linux, temporary directory (/tmp) is cleaned on
   /// reboot, another default temp directory has to be created.
   static Future<Directory> setDefaultTempDir() async {
+    final savePath = await HiveUtil.getSetting(SettingOptions.temporaryPath);
     Completer<Directory> completer = Completer();
     Directory tempDir =
         Platform.isLinux ? await linuxDefaultTempDir : await defaultTempDir;
-    tempDir.createSync(recursive: true);
     defaultTempFileDir = tempDir;
+    if (savePath != tempDir.path) {
+      completer.complete(tempDir);
+      return completer.future;
+    }
+    tempDir.createSync(recursive: true);
     completer.complete(tempDir);
     return completer.future;
   }
@@ -42,15 +47,17 @@ class FileUtil {
     return Directory(join(downloadsDir!.path, 'Brisk', 'Temp'));
   }
 
-  static Future<Directory> setDefaultSaveDir() {
+  static Future<Directory> setDefaultSaveDir() async {
     Completer<Directory> completer = Completer();
-    getDownloadsDirectory().then((dir) {
-      defaultSaveDir = Directory(join(dir!.path, 'Brisk'));
-
-      /// TODO FIX NULL CHECK
-      defaultSaveDir.createSync(recursive: true);
+    final downloadDir = await getDownloadsDirectory();
+    final savePath = await HiveUtil.getSetting(SettingOptions.savePath);
+    defaultSaveDir = Directory(join(downloadDir!.path, 'Brisk'));
+    if (savePath != downloadDir.path) {
       completer.complete(defaultSaveDir);
-    });
+      return completer.future;
+    }
+    defaultSaveDir.createSync(recursive: true);
+    completer.complete(defaultSaveDir);
     return completer.future;
   }
 
