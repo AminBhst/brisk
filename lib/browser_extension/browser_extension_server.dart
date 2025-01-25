@@ -24,7 +24,7 @@ import 'package:window_manager/window_manager.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.2.0";
+  static const String extensionVersion = "1.2.1";
 
   static void setup(BuildContext context) async {
     if (_isServerRunning) return;
