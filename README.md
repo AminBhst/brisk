@@ -89,8 +89,6 @@ You can support my work via:
 - ERC20: 0xcc506Cf21374B880B8eFA5294D8047C660DaD80D
 - TRC20: TDbP6HDUTtSzP1zRagEt27o5QYjB2oTFwE
 
-If you were kind enough to donate, make sure to let me know so that I can add you to the list of projects' supporters. Reasonable feature requests from supporters will also be considered top priority.
-
 ## :heart: Credits and Contributors
 Contributions are welcome and appreciated.
 
