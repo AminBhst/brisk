@@ -226,11 +226,8 @@ class HttpDownloadEngine {
       _setConnectionSpawnIgnoreList(data);
       final downloadItem = data.downloadItem;
       final id = downloadItem.id;
-      final engineChannel = _engineChannels[id]!;
       if (isAssembledFileInvalid(downloadItem)) {
-        final progress = reassembleFile(downloadItem);
-        engineChannel.sendMessage(progress);
-        return;
+        File(downloadItem.filePath).deleteSync();
       }
       _setFutureCommandExecution(data);
       await sendToDownloadIsolates(data, providerChannel);
@@ -613,7 +610,10 @@ class HttpDownloadEngine {
     }
     if (isTempWriteComplete && isAssembleEligible(downloadItem)) {
       engineChannel.sendMessage(downloadProgress);
-      final success = assembleFile(progress.downloadItem);
+      final success = assembleFile(
+        progress.downloadItem,
+        progressChannel: engineChannel.channel,
+      );
 
       /// TODO add proper progress indication. currently it only notifies when the assemble is complete
       _setCompletionStatuses(success, downloadProgress);
@@ -768,7 +768,11 @@ class HttpDownloadEngine {
       );
       final missingByteRanges = _findMissingByteRanges(data.downloadItem);
       if (missingByteRanges.isEmpty && isAssembleEligible(data.downloadItem)) {
-        assembleFile(data.downloadItem, notifyProgress: true);
+        assembleFile(
+          data.downloadItem,
+          progressChannel: engineChannel.channel,
+          notifyProgress: true,
+        );
         return;
       }
       missingByteRanges.forEach((element) {
@@ -898,7 +902,7 @@ class HttpDownloadEngine {
     IsolateChannel? progressUpdateChannel,
   }) {
     final logger = _engineChannels[downloadItem.id]!.logger;
-    var progress = _downloadProgresses[downloadItem.id] ??=
+    var progress = _downloadProgresses[downloadItem.id] ??
         DownloadProgressMessage(downloadItem: downloadItem);
     progress
       ..downloadItem = downloadItem
@@ -984,6 +988,7 @@ class HttpDownloadEngine {
   static bool assembleFile(
     DownloadItemModel downloadItem, {
     bool notifyProgress = false,
+    required IsolateChannel progressChannel,
   }) {
     final engineChannel = _engineChannels[downloadItem.id]!;
     final progress = _downloadProgresses[downloadItem.id] ??
@@ -994,13 +999,13 @@ class HttpDownloadEngine {
       ..downloadItem.status = DownloadStatus.assembling
       ..totalDownloadProgress = 1
       ..downloadProgress = 1
-      ..status = DownloadStatus.downloading;
+      ..status = DownloadStatus.assembling;
     engineChannel.sendMessage(progress);
     engineChannel.assembleRequested = true;
     final logger = engineChannel.logger;
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
-    final tempFies = getTempFilesSorted(tempDir);
+    final tempFiles = getTempFilesSorted(tempDir);
     File fileToWrite = File(downloadItem.filePath);
     if (fileToWrite.existsSync()) {
       var newFilePath = FileUtil.getFilePath(
@@ -1022,7 +1027,10 @@ class HttpDownloadEngine {
       fileToWrite.createSync(recursive: true);
     }
     logger?.info("Creating file...");
-    for (var file in tempFies) {
+    for (int i = 0; i < tempFiles.length; i++) {
+      progress.assembleProgress = i / tempFiles.length;
+      progressChannel.sink.add(progress);
+      var file = tempFiles[i];
       final bytes = file.readAsBytesSync();
       fileToWrite.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
     }
@@ -1266,9 +1274,13 @@ class HttpDownloadEngine {
   /// TODO should notify the progress while building the file instead of when the file has already been built
   static DownloadProgressMessage reassembleFile(
     DownloadItemModel downloadItem,
+    IsolateChannel progressChannel,
   ) {
     File(downloadItem.filePath).deleteSync();
-    final success = assembleFile(downloadItem);
+    final success = assembleFile(
+      downloadItem,
+      progressChannel: progressChannel,
+    );
     final status = success
         ? DownloadStatus.assembleComplete
         : DownloadStatus.assembleFailed;

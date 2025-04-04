@@ -178,19 +178,22 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
               selector: (_, provider) {
                 final request = provider.downloads[widget.downloadId]!;
                 return (
-                request.status,
-                request.status == DownloadStatus.validatingFiles
-                    ? request.integrityValidationProgress
-                    : request.downloadProgress,
+                  request.status,
+                  request.status == DownloadStatus.validatingFiles
+                      ? request.integrityValidationProgress
+                      : request.status == DownloadStatus.assembling
+                          ? request.assembleProgress
+                          : request.downloadProgress,
                 );
               },
               builder: (_, tuple, __) {
                 final (status, progress) = tuple;
-
                 return LinearProgressIndicator(
                   color: status == DownloadStatus.validatingFiles
                       ? Colors.blueAccent
-                      : Colors.lightGreen,
+                      : status == DownloadStatus.assembling
+                          ? Colors.green
+                          : Colors.lightGreen,
                   backgroundColor: Colors.white,
                   value: progress,
                 );
