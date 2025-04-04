@@ -34,7 +34,7 @@ class DownloadConnectionChannel extends IsolateChannelWrapper {
     message = event.message;
     totalReceivedBytes = event.totalReceivedBytes;
     status = event.status;
-    detailsStatus = event.connectioStatus;
+    detailsStatus = event.connectionStatus;
     bytesTransferRate = event.bytesTransferRate;
   }
 }

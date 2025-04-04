@@ -16,13 +16,14 @@ class DownloadProgressMessage {
   String status;
   String estimatedRemaining;
   bool paused;
+  double integrityValidationProgress;
   double totalConnectionWriteProgress;
   double totalRequestWriteProgress;
   double assembleProgress;
   ButtonAvailability buttonAvailability;
   int connectionNumber;
   int segmentLength;
-  String connectioStatus;
+  String connectionStatus;
   String message;
   Segment? segment;
   M3U8Segment? m3u8segment;
@@ -39,6 +40,7 @@ class DownloadProgressMessage {
     this.estimatedRemaining = "",
     this.paused = false,
     this.totalConnectionWriteProgress = 0,
+    this.integrityValidationProgress = 0,
     this.totalRequestWriteProgress = 0,
     this.assembleProgress = 0,
     this.buttonAvailability = const ButtonAvailability(false, false),
@@ -46,7 +48,7 @@ class DownloadProgressMessage {
     this.totalReceivedBytes = 0,
     this.totalDownloadProgress = 0,
     this.segmentLength = 0,
-    this.connectioStatus = "",
+    this.connectionStatus = "",
     this.totalSegments = 0,
     this.message = "",
     this.completionSignal = false,
@@ -72,7 +74,7 @@ class DownloadProgressMessage {
       bytesTransferRate: connection.bytesTransferRate,
       totalDownloadProgress: connection.totalDownloadProgress,
       totalReceivedBytes: connection.totalConnectionReceivedBytes,
-      connectioStatus: connection.connectionStatus,
+      connectionStatus: connection.connectionStatus,
       connectionNumber: connection.connectionNumber,
       segment: connection.segment,
     );

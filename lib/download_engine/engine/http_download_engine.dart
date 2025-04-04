@@ -764,10 +764,9 @@ class HttpDownloadEngine {
       validateTempFilesIntegrity(
         data.downloadItem,
         checkForMissingTempFile: false,
+        progressUpdateChannel: handlerChannel,
       );
-      final missingByteRanges = _findMissingByteRanges(
-        data.downloadItem,
-      );
+      final missingByteRanges = _findMissingByteRanges(data.downloadItem);
       if (missingByteRanges.isEmpty && isAssembleEligible(data.downloadItem)) {
         assembleFile(data.downloadItem, notifyProgress: true);
         return;
@@ -896,23 +895,28 @@ class HttpDownloadEngine {
     DownloadItemModel downloadItem, {
     bool deleteCorruptedTempFiles = true,
     bool checkForMissingTempFile = true,
+    IsolateChannel? progressUpdateChannel,
   }) {
     final logger = _engineChannels[downloadItem.id]!.logger;
-    final progress = _downloadProgresses[downloadItem.id];
+    var progress = _downloadProgresses[downloadItem.id] ??=
+        DownloadProgressMessage(downloadItem: downloadItem);
     progress
-      ?..status = DownloadStatus.validatingFiles
+      ..downloadItem = downloadItem
+      ..status = DownloadStatus.validatingFiles
       ..downloadItem.status = DownloadStatus.validatingFiles;
     _engineChannels[downloadItem.id]!.sendMessage(progress);
     logger?.info("Validating temp files integrity...");
     List<File> tempFilesToDelete = [];
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
-    final tempFies = getTempFilesSorted(tempDir);
-    if (tempFies.isEmpty) {
+    final tempFiles = getTempFilesSorted(tempDir);
+    if (tempFiles.isEmpty) {
       return;
     }
-    for (int i = 0; i < tempFies.length; i++) {
-      final file = tempFies[i];
+    for (int i = 0; i < tempFiles.length; i++) {
+      progress.integrityValidationProgress = i / tempFiles.length;
+      progressUpdateChannel?.sink.add(progress);
+      final file = tempFiles[i];
       final end = getEndByteFromTempFile(file);
       final start = getStartByteFromTempFile(file);
       if (end - start + 1 != file.lengthSync()) {
@@ -926,22 +930,22 @@ class HttpDownloadEngine {
         );
         tempFilesToDelete.add(file);
       }
-      if (i == tempFies.length - 1) {
+      if (i == tempFiles.length - 1) {
         continue;
       }
-      final nextFile = tempFies[i + 1];
+      final nextFile = tempFiles[i + 1];
       final startNext = getStartByteFromTempFile(nextFile);
       // Cases where there is a single missing byte
       if (startNext - end == 2) {
         tempFilesToDelete.add(file);
-        tempFilesToDelete.add(tempFies[i - 1]);
+        tempFilesToDelete.add(tempFiles[i - 1]);
       }
       if (checkForMissingTempFile && startNext - 1 != end) {
         logger?.info(
           "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)}",
         );
       }
-      final badTempFiles = tempFies.where((f) => f != file).where((f) {
+      final badTempFiles = tempFiles.where((f) => f != file).where((f) {
         final fileSegment = Segment(
           getStartByteFromTempFile(f),
           getEndByteFromTempFile(f),
@@ -1156,7 +1160,7 @@ class HttpDownloadEngine {
       return;
     }
     final unfinishedConnections = progresses
-        .where((p) => p.connectioStatus != DownloadStatus.connectionComplete)
+        .where((p) => p.connectionStatus != DownloadStatus.connectionComplete)
         .toList();
 
     final pauseButtonEnabled = unfinishedConnections.every(
@@ -1188,12 +1192,15 @@ class HttpDownloadEngine {
     final tempComplete = progresses.every(
       (progress) =>
           progress.totalConnectionWriteProgress >= 1 &&
-          progress.connectioStatus == DownloadStatus.connectionComplete,
+          progress.connectionStatus == DownloadStatus.connectionComplete,
     );
     if (!tempComplete) {
       return false;
     }
-    validateTempFilesIntegrity(downloadItem);
+    validateTempFilesIntegrity(
+      downloadItem,
+      progressUpdateChannel: _engineChannels[downloadItem.id]!.channel,
+    );
     final missingBytes = _findMissingByteRanges(downloadItem);
     logger?.info("Missing byte range check : ${missingBytes}");
     final nodes =

@@ -1,4 +1,5 @@
 import 'package:brisk/download_engine/download_command.dart';
+import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/readability_util.dart';
@@ -173,13 +174,23 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
           SizedBox(
             width: size.width * 0.7 - 10,
             height: 20,
-            child: Selector<DownloadRequestProvider, double>(
-              selector: (_, provider) =>
-                  provider.downloads[widget.downloadId]!.downloadProgress,
-              builder: (context, progress, child) {
+            child: Selector<DownloadRequestProvider, (String, double)>(
+              selector: (_, provider) {
+                final request = provider.downloads[widget.downloadId]!;
+                return (
+                request.status,
+                request.status == DownloadStatus.validatingFiles
+                    ? request.integrityValidationProgress
+                    : request.downloadProgress,
+                );
+              },
+              builder: (_, tuple, __) {
+                final (status, progress) = tuple;
+
                 return LinearProgressIndicator(
-                  // color: const Color.fromRGBO(99, 130, 239, 1),
-                  color: Colors.lightGreen,
+                  color: status == DownloadStatus.validatingFiles
+                      ? Colors.blueAccent
+                      : Colors.lightGreen,
                   backgroundColor: Colors.white,
                   value: progress,
                 );
@@ -283,7 +294,7 @@ class _DownloadProgressWindowState extends State<DownloadProgressWindow> {
                             selector: (_, provider) => provider
                                 .downloads[widget.downloadId]!
                                 .connectionProgresses[index]
-                                .connectioStatus,
+                                .connectionStatus,
                             builder: (context, transferRate, child) {
                               return Row(
                                 mainAxisAlignment: MainAxisAlignment.start,

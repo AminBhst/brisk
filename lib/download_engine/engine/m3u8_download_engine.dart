@@ -438,7 +438,7 @@ class M3U8DownloadEngine {
       return;
     }
     final unfinishedConnections = progresses
-        .where((p) => p.connectioStatus != DownloadStatus.connectionComplete)
+        .where((p) => p.connectionStatus != DownloadStatus.connectionComplete)
         .toList();
 
     final pauseButtonEnabled = unfinishedConnections.every(
