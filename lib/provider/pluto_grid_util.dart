@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
+import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
+import 'package:brisk/widget/download/queue_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -27,6 +29,21 @@ class PlutoGridUtil {
     if (progress.status == DownloadStatus.canceled) {
       downloadItem.status = DownloadStatus.canceled;
     }
+    updateCells(cells, progress, downloadItem);
+    for (PlutoRow row in QueueTimer.queueRows) {
+      if (id == row.cells['id']!.value) {
+        updateCells(row.cells, progress, downloadItem);
+      }
+    }
+    _stateManager?.notifyListeners();
+    _runPeriodicCachedRowClear();
+  }
+
+  static void updateCells(
+    Map<String, PlutoCell> cells,
+    DownloadProgressMessage progress,
+    DownloadItemModel downloadItem,
+  ) {
     cells["time_left"]?.value = progress.estimatedRemaining;
     cells["progress"]?.value =
         convertPercentageNumberToReadableStr(progress.downloadProgress * 100);
@@ -37,8 +54,6 @@ class PlutoGridUtil {
       cells["size"]?.value =
           convertByteToReadableStr(progress.assembledFileSize!);
     }
-    _stateManager?.notifyListeners();
-    _runPeriodicCachedRowClear();
   }
 
   static void _runPeriodicCachedRowClear() {
