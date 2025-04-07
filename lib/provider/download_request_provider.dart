@@ -17,7 +17,7 @@ import 'package:brisk/download_engine/message/download_isolate_message.dart';
 import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
-import 'package:brisk/util/notification_util.dart';
+import 'package:brisk/util/notification_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -160,15 +160,15 @@ class DownloadRequestProvider with ChangeNotifier {
   void _handleNotification(DownloadProgressMessage progress) {
     if (progress.assembleProgress == 1 &&
         SettingsCache.notificationOnDownloadCompletion) {
-      NotificationUtil.showNotification(
-        NotificationUtil.downloadCompletionHeader,
+      NotificationManager.showNotification(
+        NotificationManager.downloadCompletionHeader,
         progress.downloadItem.fileName,
       );
     }
     if (progress.status == DownloadStatus.failed &&
         SettingsCache.notificationOnDownloadFailure) {
-      NotificationUtil.showNotification(
-        NotificationUtil.downloadFailureHeader,
+      NotificationManager.showNotification(
+        NotificationManager.downloadFailureHeader,
         progress.downloadItem.fileName,
       );
     }

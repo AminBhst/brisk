@@ -5,6 +5,7 @@
 import FlutterMacOS
 import Foundation
 
+import file_picker
 import flutter_local_notifications
 import hotkey_manager_macos
 import package_info_plus
@@ -16,6 +17,7 @@ import window_manager
 import window_to_front
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  FilePickerPlugin.register(with: registry.registrar(forPlugin: "FilePickerPlugin"))
   FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "FlutterLocalNotificationsPlugin"))
   HotkeyManagerMacosPlugin.register(with: registry.registrar(forPlugin: "HotkeyManagerMacosPlugin"))
   FPPPackageInfoPlusPlugin.register(with: registry.registrar(forPlugin: "FPPPackageInfoPlusPlugin"))

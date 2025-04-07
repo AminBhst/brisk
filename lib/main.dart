@@ -18,9 +18,8 @@ import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/hot_key_util.dart';
-import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
-import 'package:brisk/util/notification_util.dart';
+import 'package:brisk/util/notification_manager.dart';
 import 'package:brisk/widget/base/app_exit_dialog.dart';
 import 'package:brisk/widget/download/download_grid.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
@@ -268,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void initState() {
-    NotificationUtil.initPlugin();
+    NotificationManager.init();
     windowManager.addListener(this);
     windowManager.setPreventClose(true);
     trayManager.addListener(this);
