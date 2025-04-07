@@ -14,7 +14,7 @@ dependencies:
   # Follows the intl version included in Flutter.
   # https://github.com/flutter/flutter/blob/84a1e904f44f9b0e9c4510138010edcc653163f8/packages/flutter_localizations/pubspec.yaml#L11
   intl: ^0.19.0
-  rxdart: ^0.27.7
+  rxdart: ^0.28.0
   collection: ^1.18.0
 
 dev_dependencies:
