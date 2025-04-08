@@ -92,6 +92,8 @@ Contributions are welcome and appreciated.
 - [Zorin FOSS](https://github.com/ZorinFoss)
 - [Norman Wang](https://github.com/Norman-w)
 
-<div align="center">  
-  <div><a href="https://discord.gg/hGBDWNDHG3"><img src="https://discord.com/api/guilds/1298990692000989225/widget.png?style=banner4" alt="cord.nvim"/></a></div>
-</div>
+
+## :busts_in_silhouette: Community
+
+  <div><a href="https://discord.gg/hGBDWNDHG3"><img src="https://discord.com/api/guilds/1298990692000989225/widget.png?style=banner2" alt="cord.nvim"/></a></div>
+
