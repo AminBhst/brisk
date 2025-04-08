@@ -91,3 +91,7 @@ Contributions are welcome and appreciated.
 - [AliML111](https://github.com/AliML111)
 - [Zorin FOSS](https://github.com/ZorinFoss)
 - [Norman Wang](https://github.com/Norman-w)
+
+<div align="center">  
+  <div><a href="https://discord.gg/hGBDWNDHG3"><img src="https://discord.com/api/guilds/1298990692000989225/widget.png?style=banner4" alt="cord.nvim"/></a></div>
+</div>
