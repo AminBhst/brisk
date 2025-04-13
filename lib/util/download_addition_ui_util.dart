@@ -139,7 +139,7 @@ class DownloadAdditionUiUtil {
       builder: (context) => DownloadInfoDialog(
         downloadItem,
         isM3u8: true,
-        showSupportsPause: true,
+        newDownload: true,
       ),
       barrierDismissible: false,
     );
@@ -317,7 +317,7 @@ class DownloadAdditionUiUtil {
           );
     showDialog(
       context: context,
-      builder: (_) => DownloadInfoDialog(item, showSupportsPause: true),
+      builder: (_) => DownloadInfoDialog(item, newDownload: true),
       barrierDismissible: false,
     );
   }

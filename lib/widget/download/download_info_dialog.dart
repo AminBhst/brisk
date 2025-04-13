@@ -24,7 +24,7 @@ class DownloadInfoDialog extends StatefulWidget {
   final DownloadItem downloadItem;
   final bool showActionButtons;
   final bool showFileActionButtons;
-  final bool showSupportsPause;
+  final bool newDownload;
   final bool isM3u8;
 
   const DownloadInfoDialog(
@@ -32,7 +32,7 @@ class DownloadInfoDialog extends StatefulWidget {
     super.key,
     this.showActionButtons = true,
     this.showFileActionButtons = false,
-    this.showSupportsPause = false,
+    this.newDownload = false,
     this.isM3u8 = false,
   });
 
@@ -87,7 +87,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
             Padding(
               padding: const EdgeInsets.all(20),
               child: Text(
-                "Add New Download",
+                widget.newDownload ? "Add New Download" : "Download Info",
                 style: TextStyle(
                   color: alertDialogTheme.textColor,
                   fontWeight: FontWeight.bold,
@@ -235,7 +235,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                     ),
                     const SizedBox(height: 15),
                     Visibility(
-                      visible: widget.showSupportsPause,
+                      visible: widget.newDownload,
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Row(
@@ -370,7 +370,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
 
   double resolveDialogHeight(Size size) {
     double height = 260;
-    return widget.showSupportsPause ? height + 30 : height;
+    return widget.newDownload ? height + 30 : height;
   }
 
   String get fileSubtitle {

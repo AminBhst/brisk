@@ -397,7 +397,7 @@ class _DownloadGridState extends State<DownloadGrid> {
       builder: (context) => DownloadInfoDialog(
         downloadItem,
         showActionButtons: false,
-        showSupportsPause: false,
+        newDownload: false,
         showFileActionButtons:
             downloadItem.status == DownloadStatus.assembleComplete,
       ),
