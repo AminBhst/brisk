@@ -13,8 +13,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class PlutoGridUtil {
-  static bool isCtrlDownPressed = false;
-  static bool isShiftPressed = false;
+  static bool isCtrlKeyDown = false;
+  static bool isShiftKeyDown = false;
+
   static PlutoGridStateManager? _stateManager;
   static PlutoGridStateManager? _multiDownloadAdditionStateManager;
 
@@ -150,20 +151,30 @@ class PlutoGridUtil {
       if (event.event.logicalKey == LogicalKeyboardKey.controlLeft ||
           event.event.logicalKey == LogicalKeyboardKey.controlRight) {
         if (event.isKeyDownEvent) {
-          isCtrlDownPressed = true;
+          isCtrlKeyDown = true;
         }
         if (event.isKeyUpEvent) {
-          isCtrlDownPressed = false;
+          isCtrlKeyDown = false;
         }
       }
       if (event.event.logicalKey == LogicalKeyboardKey.shiftLeft ||
           event.event.logicalKey == LogicalKeyboardKey.shiftRight) {
         if (event.isKeyDownEvent) {
-          isShiftPressed = true;
+          isShiftKeyDown = true;
         }
         if (event.isKeyUpEvent) {
-          isShiftPressed = false;
+          isShiftKeyDown = false;
         }
+      }
+      if (event.event.physicalKey == PhysicalKeyboardKey.keyA &&
+          isCtrlKeyDown) {
+        plutoStateManager!.refRows.forEach((row) {
+          plutoStateManager!.setRowChecked(
+            row,
+            true,
+            checkedViaSelect: true,
+          );
+        });
       }
     });
   }

@@ -205,7 +205,7 @@ class _DownloadGridState extends State<DownloadGrid> {
 
   void onSelected(event) {
     final stateManger = PlutoGridUtil.plutoStateManager!;
-    if (!PlutoGridUtil.isCtrlDownPressed && !PlutoGridUtil.isShiftPressed) {
+    if (!PlutoGridUtil.isCtrlKeyDown && !PlutoGridUtil.isShiftKeyDown) {
       stateManger.checkedRows.forEach((row) {
         if (row.checkedViaSelect != null && row.checkedViaSelect!) {
           stateManger.setRowChecked(row, false, checkedViaSelect: false);
@@ -219,13 +219,13 @@ class _DownloadGridState extends State<DownloadGrid> {
         checkedViaSelect: true,
       );
     } else {
-      if (PlutoGridUtil.isCtrlDownPressed) {
+      if (PlutoGridUtil.isCtrlKeyDown) {
         stateManger.setRowChecked(
           event.row!,
           true,
           checkedViaSelect: true,
         );
-      } else if (PlutoGridUtil.isShiftPressed) {
+      } else if (PlutoGridUtil.isShiftKeyDown) {
         final selectedRow = stateManger.checkedRows.first;
         final selectedRowIdx = stateManger.refRows.indexOf(selectedRow);
         final targetRowIdx = stateManger.refRows.indexOf(event.row!);
