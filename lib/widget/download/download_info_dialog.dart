@@ -2,7 +2,6 @@ import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
-import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/file_util.dart';
@@ -11,14 +10,14 @@ import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/default_tooltip.dart';
 import 'package:brisk/widget/base/outlined_text_field.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
+import 'package:brisk/widget/base/scrollable_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-
-import '../../download_engine/download_command.dart';
-import '../../model/download_item.dart';
+import 'package:brisk/download_engine/download_command.dart';
+import 'package:brisk/model/download_item.dart';
 import 'download_progress_window.dart';
 
 class DownloadInfoDialog extends StatefulWidget {
@@ -26,6 +25,7 @@ class DownloadInfoDialog extends StatefulWidget {
   final bool showActionButtons;
   final bool showFileActionButtons;
   final bool showSupportsPause;
+  final bool isM3u8;
 
   const DownloadInfoDialog(
     this.downloadItem, {
@@ -33,6 +33,7 @@ class DownloadInfoDialog extends StatefulWidget {
     this.showActionButtons = true,
     this.showFileActionButtons = false,
     this.showSupportsPause = false,
+    this.isM3u8 = false,
   });
 
   @override
@@ -70,16 +71,15 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
     final alertDialogTheme = theme.alertDialogTheme;
     return ScaleTransition(
       scale: scaleAnimation,
-      child: AlertDialog(
-        insetPadding: const EdgeInsets.all(10),
+      child: ScrollableDialog(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        scrollButtonVisible: size.height < 375,
+        width: 500,
+        height: resolveDialogHeight(size),
+        scrollViewWidth: 500,
+        scrollviewHeight: 210,
         backgroundColor: alertDialogTheme.backgroundColor,
-        surfaceTintColor: alertDialogTheme.backgroundColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        actionsPadding: EdgeInsets.all(0),
-        contentPadding: EdgeInsets.all(0),
-        titlePadding: EdgeInsets.all(0),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -102,172 +102,156 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
             )
           ],
         ),
-        content: SizedBox(
-          width: 500,
-          height: resolveDialogHeight(size),
+        content: Padding(
+          padding: const EdgeInsets.all(25),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                width: 500,
-                height: 350,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            child: SvgPicture.asset(
-                              FileUtil.resolveFileTypeIconPath(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          child: SvgPicture.asset(
+                            FileUtil.resolveFileTypeIconPath(
+                              widget.downloadItem.fileType,
+                            ),
+                            width: 35,
+                            height: 35,
+                            colorFilter: ColorFilter.mode(
+                              FileUtil.resolveFileTypeIconColor(
                                 widget.downloadItem.fileType,
                               ),
-                              width: 35,
-                              height: 35,
-                              colorFilter: ColorFilter.mode(
-                                FileUtil.resolveFileTypeIconColor(
-                                  widget.downloadItem.fileType,
-                                ),
-                                BlendMode.srcIn,
-                              ),
+                              BlendMode.srcIn,
                             ),
                           ),
-                          SizedBox(width: 5),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 400,
-                                child: widget.downloadItem.fileName.characters
-                                            .length <
-                                        50
-                                    ? Text(
+                        ),
+                        SizedBox(width: 5),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 400,
+                              child: widget.downloadItem.fileName.characters
+                                          .length <
+                                      50
+                                  ? Text(
+                                      widget.downloadItem.fileName,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : DefaultTooltip(
+                                      message: widget.downloadItem.fileName,
+                                      child: Text(
                                         widget.downloadItem.fileName,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           fontSize: 15,
                                           color: Colors.white,
                                         ),
-                                      )
-                                    : DefaultTooltip(
-                                        message: widget.downloadItem.fileName,
-                                        child: Text(
-                                          widget.downloadItem.fileName,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            color: Colors.white,
-                                          ),
-                                        ),
                                       ),
+                                    ),
+                            ),
+                            Text(
+                              "${widget.isM3u8 ? "Duration" : "Size"}: $fileSubtitle",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.white60,
                               ),
-                              Text(
-                                "Size: $fileSubtitle",
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.white60,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 10),
                     TextFieldWidget(
                       title: "URL",
+                      size: size,
                       controller: TextEditingController(
                         text: widget.downloadItem.downloadUrl,
                       ),
                       readonly: true,
                     ),
                     const SizedBox(height: 15),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25, right: 25),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Save As",
-                            style:
-                                TextStyle(color: Colors.white60, fontSize: 14),
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: SizedBox(
-                                  width: widget.showActionButtons ? 335 : 500,
-                                  height: 40,
-                                  child: OutLinedTextField(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                      horizontal: 12,
-                                    ),
-                                    controller: txtController,
-                                    readOnly: !widget.showActionButtons,
-                                  ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Save As",
+                          style: TextStyle(color: Colors.white60, fontSize: 14),
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: resolveSaveAsWidth(size),
+                              height: 40,
+                              child: OutLinedTextField(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                  horizontal: 12,
                                 ),
+                                controller: txtController,
+                                readOnly: !widget.showActionButtons,
                               ),
-                              Visibility(
-                                visible: widget.showActionButtons,
-                                child: Row(
-                                  children: [
-                                    const SizedBox(width: 5),
-                                    RoundedOutlinedButton(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      text: "Browse",
-                                      height: 40,
-                                      width: 110,
-                                      icon: SvgPicture.asset(
-                                        'assets/icons/folder-open.svg',
-                                        colorFilter: ColorFilter.mode(
-                                            Colors.white54, BlendMode.srcIn),
-                                      ),
-                                      textColor: Colors.white,
-                                      borderColor: Colors.transparent,
-                                      backgroundColor:
-                                          alertDialogTheme.itemColor,
-                                      onPressed: pickNewSaveLocation,
+                            ),
+                            Visibility(
+                              visible: widget.showActionButtons,
+                              child: Row(
+                                children: [
+                                  const SizedBox(width: 5),
+                                  RoundedOutlinedButton(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    text: "Browse",
+                                    height: 40,
+                                    width: 110,
+                                    icon: SvgPicture.asset(
+                                      'assets/icons/folder-open.svg',
+                                      colorFilter: ColorFilter.mode(
+                                          Colors.white54, BlendMode.srcIn),
                                     ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
+                                    textColor: Colors.white,
+                                    borderColor: Colors.transparent,
+                                    backgroundColor: alertDialogTheme.itemColor,
+                                    onPressed: pickNewSaveLocation,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        )
+                      ],
                     ),
                     const SizedBox(height: 15),
                     Visibility(
                       visible: widget.showSupportsPause,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 25, bottom: 25),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            children: [
-                              Icon(
-                                size: 18,
-                                widget.downloadItem.supportsPause
-                                    ? Icons.check_box
-                                    : Icons.check_box_outline_blank_rounded,
-                                color: Colors.white60,
-                              ),
-                              const SizedBox(width: 5),
-                              Text("Download can be pause/resumed",
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 14)),
-                            ],
-                          ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: [
+                            Icon(
+                              size: 18,
+                              widget.downloadItem.supportsPause
+                                  ? Icons.check_box
+                                  : Icons.check_box_outline_blank_rounded,
+                              color: Colors.white60,
+                            ),
+                            const SizedBox(width: 5),
+                            Text("Download can be pause/resumed",
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 14)),
+                          ],
                         ),
                       ),
                     ),
@@ -277,88 +261,97 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
             ],
           ),
         ),
-        actions: <Widget>[
+        buttons: <Widget>[
           if (widget.showActionButtons)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  RoundedOutlinedButton(
-                    text: "Cancel",
-                    onPressed: () => Navigator.of(context).pop(),
-                    borderColor: Colors.red,
-                    textColor: Colors.red,
-                  ),
-                  const SizedBox(width: 40),
-                  RoundedOutlinedButton(
-                    text: "Download",
-                    width: 151,
-                    onPressed: () => _onDownloadPressed(context),
-                    backgroundColor: theme
-                        .downloadInfoDialogTheme.downloadColor.backgroundColor,
-                    borderColor:
-                    theme.downloadInfoDialogTheme.downloadColor.borderColor,
-                    hoverBackgroundColor: theme.downloadInfoDialogTheme
-                        .downloadColor.hoverBackgroundColor,
-                    hoverTextColor: theme
-                        .downloadInfoDialogTheme.downloadColor.hoverTextColor,
-                    textColor:
-                    theme.downloadInfoDialogTheme.downloadColor.textColor,
-                  ),
-                  const SizedBox(width: 40),
-                  RoundedOutlinedButton(
-                    text: "Add to list",
-                    onPressed: addToList,
-                    borderColor: Color.fromRGBO(53, 89, 143, 1),
-                    textColor: Color.fromRGBO(53, 89, 143, 1),
-                  ),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                RoundedOutlinedButton(
+                  text: "Cancel",
+                  width: 80,
+                  onPressed: () => Navigator.of(context).pop(),
+                  backgroundColor:
+                      theme.downloadInfoDialogTheme.cancelColor.backgroundColor,
+                  borderColor:
+                      theme.downloadInfoDialogTheme.cancelColor.borderColor,
+                  hoverBackgroundColor: theme
+                      .downloadInfoDialogTheme.cancelColor.hoverBackgroundColor,
+                  hoverTextColor:
+                      theme.downloadInfoDialogTheme.cancelColor.hoverTextColor,
+                  textColor:
+                      theme.downloadInfoDialogTheme.cancelColor.textColor,
+                ),
+                const SizedBox(width: 10),
+                RoundedOutlinedButton(
+                  text: "Add to List",
+                  width: 110,
+                  onPressed: addToList,
+                  backgroundColor: theme
+                      .downloadInfoDialogTheme.addToListColor.backgroundColor,
+                  borderColor:
+                      theme.downloadInfoDialogTheme.addToListColor.borderColor,
+                  hoverBackgroundColor: theme.downloadInfoDialogTheme
+                      .addToListColor.hoverBackgroundColor,
+                  hoverTextColor: theme
+                      .downloadInfoDialogTheme.addToListColor.hoverTextColor,
+                  textColor:
+                      theme.downloadInfoDialogTheme.addToListColor.textColor,
+                ),
+                const SizedBox(width: 10),
+                RoundedOutlinedButton(
+                  text: "Download",
+                  width: 100,
+                  onPressed: () => _onDownloadPressed(context),
+                  backgroundColor: theme
+                      .downloadInfoDialogTheme.downloadColor.backgroundColor,
+                  borderColor:
+                      theme.downloadInfoDialogTheme.downloadColor.borderColor,
+                  hoverBackgroundColor: theme.downloadInfoDialogTheme
+                      .downloadColor.hoverBackgroundColor,
+                  hoverTextColor: theme
+                      .downloadInfoDialogTheme.downloadColor.hoverTextColor,
+                  textColor:
+                      theme.downloadInfoDialogTheme.downloadColor.textColor,
+                ),
+              ],
             )
           else if (widget.showFileActionButtons)
-            Container(
-              color: Colors.black12,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    RoundedOutlinedButton(
-                      text: "Open File Location",
-                      width: 151,
-                      onPressed: () {
-                        openFileLocation(widget.downloadItem);
-                        Navigator.of(context).pop();
-                      },
-                      backgroundColor: theme
-                          .downloadInfoDialogTheme.openFileLocationColor.backgroundColor,
-                      borderColor:
-                          theme.downloadInfoDialogTheme.openFileLocationColor.borderColor,
-                      hoverBackgroundColor: theme.downloadInfoDialogTheme
-                          .openFileLocationColor.hoverBackgroundColor,
-                      hoverTextColor: theme
-                          .downloadInfoDialogTheme.openFileLocationColor.hoverTextColor,
-                      textColor:
-                          theme.downloadInfoDialogTheme.openFileLocationColor.textColor,
-                    ),
-                    const SizedBox(width: 10),
-                    RoundedOutlinedButton(
-                      width: 110,
-                      text: "Open File",
-                      onPressed: () {
-                        launchUrlString("file:${widget.downloadItem.filePath}");
-                        Navigator.of(context).pop();
-                      },
-                      borderColor: Color.fromRGBO(53, 89, 143, 1),
-                      textColor: Colors.white,
-                      backgroundColor: Color.fromRGBO(53, 89, 143, 1),
-                    )
-                  ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                RoundedOutlinedButton(
+                  text: "Open File Location",
+                  width: 151,
+                  onPressed: () {
+                    openFileLocation(widget.downloadItem);
+                    Navigator.of(context).pop();
+                  },
+                  backgroundColor: theme.downloadInfoDialogTheme
+                      .openFileLocationColor.backgroundColor,
+                  borderColor: theme.downloadInfoDialogTheme
+                      .openFileLocationColor.borderColor,
+                  hoverBackgroundColor: theme.downloadInfoDialogTheme
+                      .openFileLocationColor.hoverBackgroundColor,
+                  hoverTextColor: theme.downloadInfoDialogTheme
+                      .openFileLocationColor.hoverTextColor,
+                  textColor: theme
+                      .downloadInfoDialogTheme.openFileLocationColor.textColor,
                 ),
-              ),
+                const SizedBox(width: 10),
+                RoundedOutlinedButton(
+                  width: 110,
+                  text: "Open File",
+                  onPressed: () {
+                    launchUrlString("file:${widget.downloadItem.filePath}");
+                    Navigator.of(context).pop();
+                  },
+                  borderColor: Color.fromRGBO(53, 89, 143, 1),
+                  textColor: Colors.white,
+                  backgroundColor: Color.fromRGBO(53, 89, 143, 1),
+                )
+              ],
             )
           else
             Container()
@@ -367,39 +360,52 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
     );
   }
 
-  Padding TextFieldWidget(
+  double resolveSaveAsWidth(Size size) {
+    double width = widget.showActionButtons ? 335 : 450;
+    if (size.width < 500) {
+      width = size.width * 0.8 - 115;
+    }
+    return width;
+  }
+
+  double resolveTextFieldWidth(Size size) {
+    if (size.width < 500) {
+      return size.width * 0.8;
+    }
+    return 450;
+  }
+
+  Widget TextFieldWidget(
       {required String title,
       required TextEditingController controller,
-      required bool readonly}) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 25, right: 25),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: TextStyle(color: Colors.white60, fontSize: 14),
-          ),
-          const SizedBox(height: 5),
-          SizedBox(
-              width: 500,
-              height: 40,
-              child: OutLinedTextField(
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 12,
-                ),
-                controller: controller,
-                readOnly: readonly,
-              ))
-        ],
-      ),
+      required bool readonly,
+      required Size size}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          title,
+          style: TextStyle(color: Colors.white60, fontSize: 14),
+        ),
+        const SizedBox(height: 5),
+        SizedBox(
+            width: resolveTextFieldWidth(size),
+            height: 40,
+            child: OutLinedTextField(
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 12,
+              ),
+              controller: controller,
+              readOnly: readonly,
+            ))
+      ],
     );
   }
 
   double resolveDialogHeight(Size size) {
-    double height = 290;
+    double height = 260;
     return widget.showSupportsPause ? height + 30 : height;
   }
 
