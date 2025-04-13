@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:brisk/constants/http_constants.dart';
@@ -6,7 +5,6 @@ import 'package:brisk/download_engine/segment/segment_status.dart';
 import 'package:brisk/download_engine/util/m3u8_util.dart';
 import 'package:brisk/setting/proxy/proxy_setting.dart';
 import 'package:brisk/util/http_client_builder.dart';
-import 'package:http/io_client.dart';
 
 class M3U8 {
   final String url;
@@ -16,6 +14,7 @@ class M3U8 {
   final M3U8EncryptionDetails encryptionDetails;
   final int totalDuration;
   final String stringContent;
+  String? refererHeader;
 
   String get fileName {
     if (url.contains("/")) {
@@ -32,6 +31,7 @@ class M3U8 {
     required this.streamInfos,
     required this.totalDuration,
     required this.stringContent,
+    this.refererHeader,
   });
 
   bool get isMasterPlaylist => segments.isEmpty && streamInfos.isNotEmpty;
@@ -39,16 +39,22 @@ class M3U8 {
   static Future<M3U8?> fromUrl(
     String url, {
     ProxySetting? proxySetting = null,
+    String? refererHeader,
   }) async {
     final client = HttpClientBuilder.buildClient(proxySetting);
     try {
+      final headers = userAgentHeader;
+      if (refererHeader != null) {
+        headers.addAll({"referer": refererHeader});
+      }
       final response = await client.get(
         Uri.parse(url),
-        headers: userAgentHeader,
+        headers: headers,
       );
       if (response.statusCode == 200) {
         final body = response.body;
-        return await M3U8.fromString(body, url);
+        return await M3U8.fromString(body, url)
+          ?..refererHeader = refererHeader;
       } else {
         print("Failed to fetch m3u8... status code ${response.statusCode}");
         throw Exception('Failed to fetch m3u8!');
@@ -64,6 +70,7 @@ class M3U8 {
     String url, {
     ProxySetting? proxySetting = null,
     bool fetchKeys = true,
+    String? refererHeader,
   }) async {
     final lines = content.split("\n");
     int mediaSequence = 0;
@@ -146,7 +153,11 @@ class M3U8 {
         if (streamUrl == null) continue;
         if (!streamUrl.contains("http")) {
           streamUrl = "${url.substring(0, url.lastIndexOf("/"))}/$streamUrl";
-          streamInf.m3u8 = await M3U8.fromUrl(streamUrl);
+          streamInf.m3u8 = await M3U8.fromUrl(
+            streamUrl,
+            proxySetting: proxySetting,
+            refererHeader: refererHeader,
+          );
         }
       }
     }

@@ -30,6 +30,7 @@ abstract class DownloadIsolateMessage {
         command: command,
         downloadItem: downloadItem,
         settings: settings,
+        refererHeader: downloadItem.refererHeader,
       );
     } else {
       return HttpDownloadIsolateMessage(

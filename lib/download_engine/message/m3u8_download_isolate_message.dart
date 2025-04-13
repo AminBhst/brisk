@@ -3,12 +3,14 @@ import 'package:brisk/download_engine/model/m3u8.dart';
 
 class M3u8DownloadIsolateMessage extends DownloadIsolateMessage {
   M3U8Segment? segment;
+  String? refererHeader;
 
   M3u8DownloadIsolateMessage({
     required super.command,
     required super.downloadItem,
     required super.settings,
     super.connectionNumber,
+    this.refererHeader,
     this.segment,
   });
 
@@ -20,6 +22,7 @@ class M3u8DownloadIsolateMessage extends DownloadIsolateMessage {
       connectionNumber: this.connectionNumber,
       settings: this.settings,
       segment: this.segment,
+      refererHeader: this.refererHeader,
     );
   }
 }

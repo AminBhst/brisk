@@ -120,23 +120,38 @@ class BrowserExtensionServer {
       ),
     );
     final url = jsonBody["m3u8Url"] as String;
+    final refererHeader = jsonBody["refererHeader"] as String?;
     M3U8 m3u8;
     try {
       String m3u8Content = await fetchBodyString(
         url,
         proxySetting: SettingsCache.proxySetting,
+        headers: refererHeader != null
+            ? {
+                HttpHeaders.refererHeader: refererHeader,
+              }
+            : {},
       );
       m3u8 = (await M3U8.fromString(
         m3u8Content,
         url,
         proxySetting: SettingsCache.proxySetting,
+        refererHeader: refererHeader,
       ))!;
     } catch (e) {
+      print(e);
+      Navigator.of(context).pop();
       showDialog(
         context: context,
         builder: (_) => const ErrorDialog(
           textHeight: 0,
-          title: "Failed to retrieve file information!",
+          height: 200,
+          width: 380,
+          title: "Failed to retrieve file info",
+          description:
+              "Something went wrong when trying to retrieve file information from this URL.",
+          descriptionHint:
+              "In some cases, retrying a few times may solve the issue. Otherwise, make sure the resource you're to reach is valid.",
         ),
       );
       return;

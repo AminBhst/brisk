@@ -18,7 +18,6 @@ import 'package:brisk/download_engine/segment/segment_status.dart';
 import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
-import 'package:brisk/util/settings_cache.dart';
 import 'package:dartx/dartx.dart';
 import 'package:path/path.dart';
 import 'package:stream_channel/isolate_channel.dart';
@@ -64,7 +63,8 @@ class M3U8DownloadEngine {
           downloadItem.m3u8Content!,
           downloadItem.downloadUrl,
           proxySetting: downloadSettings.proxySetting,
-        );
+        )
+          ?..refererHeader = downloadItem.refererHeader;
         _m3u8Map[id] = m3u8!;
         engineChannel.logger?.info("Successfully created the m3u8 file.");
       }

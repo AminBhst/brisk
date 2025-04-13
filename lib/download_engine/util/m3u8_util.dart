@@ -72,16 +72,19 @@ IV deriveExplicitIV(String ivString) {
 Future<String> fetchBodyString(
   String url, {
   ProxySetting? proxySetting = null,
+  Map<String, String> headers = const {},
 }) async {
   final client = HttpClientBuilder.buildClient(proxySetting);
   try {
+    var requestHeaders = headers;
+    requestHeaders[HttpHeaders.userAgentHeader] =
+        "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;";
     final response = await client.get(
       Uri.parse(url),
-      headers: userAgentHeader,
+      headers: requestHeaders,
     );
     if (response.statusCode == 200) {
-      final body = response.body;
-      return body;
+      return response.body;
     } else {
       print("Failed to fetch... status code ${response.statusCode}");
       throw Exception('Failed to fetch!');

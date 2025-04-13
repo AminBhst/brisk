@@ -18,6 +18,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
   M3U8Segment m3u8segment;
   bool clientInitialized = false;
   int flushBufferCounter = 1;
+  String? refererHeader;
 
   /// TODO try with lower value as well
   static const int _maximumFileSizeForInMemoryDecryption = 0;
@@ -28,6 +29,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
     required super.connectionNumber,
     required super.settings,
     required this.m3u8segment,
+    this.refererHeader,
   });
 
   @override
@@ -36,7 +38,6 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
     bool connectionReset = false,
     bool reuseConnection = false,
   }) {
-    print("#$connectionNumber Got start............");
     tempDirectory.createSync(recursive: true);
     startLogFlushTimer();
     logger?.info(
@@ -101,13 +102,17 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
 
   @override
   http.Request buildDownloadRequest(bool _) {
+    var headers = {
+      "User-Agent":
+          "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;",
+      "Connection": "keep-alive",
+      "Keep-Alive": "timeout=4",
+    };
+    if (refererHeader != null) {
+      headers["referer"] = refererHeader!;
+    }
     return http.Request('GET', Uri.parse(m3u8segment.url))
-      ..headers.addAll({
-        "User-Agent":
-            "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;",
-        "Connection": "keep-alive",
-        "Keep-Alive": "timeout=4",
-      });
+      ..headers.addAll(headers);
   }
 
   @override

@@ -28,6 +28,8 @@ class DownloadItemModel {
 
   String? m3u8Content;
 
+  String? refererHeader;
+
   /// Only used for m3u8
   int? duration;
 
@@ -46,6 +48,7 @@ class DownloadItemModel {
     this.status = "In Queue",
     this.m3u8Content,
     this.duration,
+    this.refererHeader,
   });
 
   factory DownloadItemModel.fromDownloadItem(DownloadItem item) {
@@ -64,6 +67,7 @@ class DownloadItemModel {
       uid: item.uid,
       m3u8Content: item.extraInfo["m3u8Content"],
       duration: item.extraInfo["duration"],
+      refererHeader: item.extraInfo["refererHeader"]
     );
   }
 
