@@ -17,10 +17,11 @@ class SwitchSetting extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
+    final size = MediaQuery.of(context).size;
     return Row(
       children: [
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.6 * 0.5,
+          width: resolveWidth(size),
           child: Text(
             text,
             style: TextStyle(
@@ -40,4 +41,19 @@ class SwitchSetting extends StatelessWidget {
       ],
     );
   }
+
+  double resolveWidth(Size size) {
+    double width = 400;
+    if (size.width < 849) {
+      width = size.width * 0.4;
+    }
+    if (size.width < 698) {
+      width = size.width * 0.3;
+    }
+    if (size.width < 558) {
+      width = size.width * 0.25;
+    }
+    return width;
+  }
+
 }

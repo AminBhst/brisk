@@ -20,6 +20,7 @@ class BrowserExtensionRulesGroup extends StatelessWidget {
       children: [
         ExternalLinkSetting(
           title: "Extension Skip Capture Rules",
+          width: resolveLinkWidth(size),
           titleWidth: resolveTitleWidth(size),
           linkText: "Open Rule Editor",
           onLinkPressed: () => showDialog(
@@ -98,10 +99,27 @@ class BrowserExtensionRulesGroup extends StatelessWidget {
     );
   }
 
+  double resolveLinkWidth(Size size) {
+    double width = 300;
+    if (size.width < 754) {
+      width = 230;
+    }
+    if (size.width < 666) {
+      width = 200;
+    }
+    if (size.width < 630) {
+      width = 180;
+    }
+    return width;
+  }
+
   double resolveTitleWidth(Size size) {
-    var width = size.width * 0.3 * 0.5;
-    if (width > 190) {
-      return 190;
+    double width = 220;
+    if (size.width < 754) {
+      width = 170;
+    }
+    if (size.width < 666) {
+      width = 120;
     }
     return width;
   }

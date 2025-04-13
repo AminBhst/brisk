@@ -8,6 +8,7 @@ class ApplicationTheme {
   final DownloadGridTheme downloadGridTheme;
   final QueuePageTheme queuePageTheme;
   final SettingTheme settingTheme;
+  final DownloadInfoTheme downloadInfoDialogTheme;
   AlertDialogTheme alertDialogTheme;
   DownloadProgressWindowTheme downloadProgressWindowTheme;
 
@@ -20,6 +21,23 @@ class ApplicationTheme {
     required this.settingTheme,
     required this.alertDialogTheme,
     required this.downloadProgressWindowTheme,
+    required this.downloadInfoDialogTheme,
+  });
+}
+
+class DownloadInfoTheme {
+  final ButtonColor openFileColor;
+  final ButtonColor openFileLocationColor;
+  final ButtonColor downloadColor;
+  final ButtonColor addToListColor;
+  final ButtonColor cancelColor;
+
+  DownloadInfoTheme({
+    required this.openFileColor,
+    required this.openFileLocationColor,
+    required this.downloadColor,
+    required this.addToListColor,
+    required this.cancelColor,
   });
 }
 
@@ -76,6 +94,7 @@ class TopMenuTheme {
   final ButtonColor extensionColor;
   final ButtonColor createQueueColor;
   final ButtonColor startQueueColor;
+  final ButtonColor scheduleQueueColor;
   final ButtonColor stopQueueColor;
   final ButtonColor checkForUpdateColor;
 
@@ -92,6 +111,7 @@ class TopMenuTheme {
     required this.startQueueColor,
     required this.stopQueueColor,
     required this.checkForUpdateColor,
+    required this.scheduleQueueColor,
   });
 }
 
@@ -117,6 +137,9 @@ class AlertDialogTheme {
   final Color iconColor;
   final ButtonColor addButtonColor;
   final ButtonColor cancelButtonColor;
+  final ButtonColor deleteConfirmColor;
+  final ButtonColor deleteCancelColor;
+  final Color itemColor;
   final TextFieldColor urlFieldColor;
   final CheckBoxColor checkBoxColor;
   final Color innerContainerBorderColor;
@@ -134,6 +157,9 @@ class AlertDialogTheme {
     required this.innerContainerBorderColor,
     required this.placeHolderIconColor,
     required this.placeHolderTextColor,
+    required this.deleteConfirmColor,
+    required this.deleteCancelColor,
+    required this.itemColor,
   });
 }
 
@@ -280,7 +306,7 @@ class ButtonColor {
   final Color textColor;
   final Color borderColor;
   final Color borderHoverColor;
-  final Color BackgroundColor;
+  final Color backgroundColor;
   final Color hoverIconColor;
   final Color hoverTextColor;
   final Color hoverBackgroundColor;
@@ -290,7 +316,7 @@ class ButtonColor {
     required this.hoverIconColor,
     required this.hoverBackgroundColor,
     this.hoverTextColor = Colors.white60,
-    this.BackgroundColor = Colors.transparent,
+    this.backgroundColor = Colors.transparent,
     this.textColor = Colors.white60,
     this.borderColor = Colors.transparent,
     this.borderHoverColor = Colors.transparent,

@@ -9,12 +9,14 @@ class ClosableWindow extends StatelessWidget {
   final EdgeInsets padding;
   final bool disableCloseButton;
   final Color backgroundColor;
+  final double borderRadius;
 
   const ClosableWindow({
     super.key,
     required this.content,
     this.width = 400,
     this.height = 400,
+    this.borderRadius = 25,
     this.onWindowClosed,
     this.actions = const [],
     this.padding = const EdgeInsets.all(20),
@@ -24,25 +26,25 @@ class ClosableWindow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
+    return Dialog(
       insetPadding: const EdgeInsets.all(20),
       backgroundColor: Colors.transparent,
       elevation: 0,
-      content: AnimatedSize(
+      child: AnimatedSize(
         duration: const Duration(milliseconds: 100),
         child: Container(
           width: width,
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25),
+            borderRadius: BorderRadius.circular(borderRadius),
             border: Border.fromBorderSide(BorderSide(color: Colors.white24)),
             color: backgroundColor,
           ),
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(0),
                 child: Stack(
                   children: [
                     Visibility(
@@ -66,13 +68,12 @@ class ClosableWindow extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 0),
               content
             ],
           ),
         ),
       ),
-      actions: actions,
     );
   }
 }

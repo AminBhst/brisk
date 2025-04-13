@@ -27,7 +27,7 @@ class _ConnectionNumberGroupState extends State<ConnectionNumberGroup> {
             );
           },
           text: "Number of regular download connections",
-          textWidth: size.width * 0.3,
+          textWidth: size.width < 1683 ? size.width * 0.3 : 505,
           items: [1, 2, 4, 8, 16].map((e) => e.toString()).toList(),
           value: SettingsCache.connectionsNumber.toString(),
         ),
@@ -39,7 +39,7 @@ class _ConnectionNumberGroupState extends State<ConnectionNumberGroup> {
             );
           },
           text: "Number of video stream download connections",
-          textWidth: size.width * 0.32,
+          textWidth: size.width < 1683 ? size.width * 0.3 : 505,
           items: [1, 2, 4, 8, 16].map((e) => e.toString()).toList(),
           value: SettingsCache.m3u8ConnectionNumber.toString(),
         ),

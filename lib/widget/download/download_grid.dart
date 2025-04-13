@@ -8,6 +8,7 @@ import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
+import 'package:brisk/widget/download/download_info_dialog_2.dart';
 import 'package:brisk/widget/download/download_progress_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -395,9 +396,10 @@ class _DownloadGridState extends State<DownloadGrid> {
     }
     showDialog(
       context: context,
-      builder: (context) => DownloadInfoDialog(
+      builder: (context) => DownloadInfoDialogNew(
         downloadItem,
         showActionButtons: false,
+        showSupportsPause: false,
         showFileActionButtons:
             downloadItem.status == DownloadStatus.assembleComplete,
       ),

@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 class ErrorDialog extends StatelessWidget {
   final String text;
+  final String? description;
+  final String? descriptionHint;
   final double width;
   final double height;
   final String? title;
@@ -17,6 +19,8 @@ class ErrorDialog extends StatelessWidget {
     this.height = 60,
     this.title = null,
     this.textHeight = 90,
+    this.description,
+    this.descriptionHint,
     this.textSpaceBetween = 0,
   });
 
@@ -28,37 +32,73 @@ class ErrorDialog extends StatelessWidget {
       insetPadding: const EdgeInsets.all(10),
       backgroundColor: theme.backgroundColor,
       surfaceTintColor: theme.backgroundColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
       content: SizedBox(
         width: width,
         height: height,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: 25,
-                  child: const Icon(Icons.warning_rounded, color: Colors.red),
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: const BoxDecoration(
+                    color: Color.fromRGBO(253, 12, 12, 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Align(
+                      alignment: const Alignment(0, -0.16),
+                      child: const Icon(
+                        Icons.warning_rounded,
+                        color: Colors.red,
+                        size: 35,
+                      ),
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 20),
                 if (title != null)
                   Text(
                     title!,
                     style: TextStyle(
                       color: Colors.red,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
               ],
             ),
-            SizedBox(height: textSpaceBetween),
             SizedBox(
-              height: textHeight,
-              child: Text(text, style: const TextStyle(color: Colors.red)),
-            ),
+              height: height - 50,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 10),
+                    if (description != null)
+                      Text(
+                        description!,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    const SizedBox(height: 10),
+                    if (descriptionHint != null)
+                      Text(
+                        descriptionHint!,
+                        style: TextStyle(color: Colors.white60),
+                      )
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),

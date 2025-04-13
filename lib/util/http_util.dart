@@ -115,17 +115,16 @@ Future<FileInfo?> sendFileInfoRequest(
   bool ignoreException = false,
   bool useGet = false,
 }) async {
+  Completer<FileInfo?> completer = Completer();
   final request = http.Request(
     useGet ? "GET" : "HEAD",
     Uri.parse(downloadItem.downloadUrl),
   );
   request.headers.addAll(userAgentHeader);
   final client = HttpClientBuilder.buildClient(proxySetting);
-  var response = client.send(request);
-  Completer<FileInfo?> completer = Completer();
-
   try {
-    response
+    client
+        .send(request)
         .asStream()
         .timeout(Duration(seconds: 10))
         .listen((streamedResponse) {
@@ -163,9 +162,6 @@ Future<FileInfo?> sendFileInfoRequest(
       completer.completeError(
         Exception("Could not retrieve result from the given URL"),
       );
-      if (!ignoreException) {
-        completer.completeError(e);
-      }
     });
   } catch (e) {
     completer.completeError(e);

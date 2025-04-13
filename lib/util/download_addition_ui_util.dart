@@ -9,6 +9,7 @@ import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:brisk/setting/proxy/proxy_setting.dart';
 import 'package:brisk/util/settings_cache.dart';
+import 'package:brisk/widget/download/download_info_dialog_2.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -41,7 +42,7 @@ class DownloadAdditionUiUtil {
       retrieveFileInfo(rPort).then((fileInfo) {
         completer.complete(fileInfo);
       }).onError(
-        (e, s) {
+            (e, s) {
           _cancelRequest(null);
           completer.completeError("Failed to get file information");
         },
@@ -56,10 +57,16 @@ class DownloadAdditionUiUtil {
       showDialog(
         context: context,
         builder: (_) => const ErrorDialog(
-          width: 30,
-          height: 40,
+          width: 400,
+          height: 205,
           textHeight: 15,
           title: 'Invalid URL',
+          description:
+          "The URL you've entered appears to be invalid.\nPlease check the format and try again.",
+          descriptionHint: "Make sure the URL:\n"
+              "\t • Starts with https:// or http://\n"
+              "\t • Contains a valid domain name\n"
+              "\t • Contains no invalid characters ",
         ),
       );
       return;
@@ -76,15 +83,20 @@ class DownloadAdditionUiUtil {
           addDownload(item, fileInfo, context, additionalPop);
         }
       }).onError(
-        (e, s) {
+            (e, s) {
           /// TODO Add log files
-          print(e);
           _cancelRequest(context);
           showDialog(
             context: context,
             builder: (_) => const ErrorDialog(
               textHeight: 0,
-              title: "Failed to retrieve file information!",
+              height: 200,
+              width: 380,
+              title: "Failed to retrieve file info",
+              description:
+              "Something went wrong when trying to retrieve file information from this URL.",
+              descriptionHint:
+              "In some cases, retrying a few times may solve the issue. Otherwise, make sure the resource you're to reach is valid.",
             ),
           );
         },
@@ -131,11 +143,11 @@ class DownloadAdditionUiUtil {
   }
 
   static void addDownload(
-    DownloadItem item,
-    FileInfo fileInfo,
-    BuildContext context,
-    bool additionalPop,
-  ) {
+      DownloadItem item,
+      FileInfo fileInfo,
+      BuildContext context,
+      bool additionalPop,
+      ) {
     item
       ..supportsPause = fileInfo.supportsPause
       ..contentLength = fileInfo.contentLength
@@ -200,8 +212,8 @@ class DownloadAdditionUiUtil {
   static void updateUrl(
       BuildContext context, String url, DownloadItem dl, int downloadId) {
     final downloadProgress =
-        Provider.of<DownloadRequestProvider>(context, listen: false)
-            .downloads[downloadId];
+    Provider.of<DownloadRequestProvider>(context, listen: false)
+        .downloads[downloadId];
     downloadProgress?.downloadItem.downloadUrl = url;
     dl.downloadUrl = url;
     HiveUtil.instance.downloadItemsBox.put(dl.key, dl);
@@ -212,7 +224,7 @@ class DownloadAdditionUiUtil {
       DownloadItem item) async {
     final ReceivePort receivePort = ReceivePort();
     fileInfoExtractorIsolate =
-        await Isolate.spawn<IsolateArgsPair<DownloadItem, ProxySetting>>(
+    await Isolate.spawn<IsolateArgsPair<DownloadItem, ProxySetting>>(
       requestFileInfoIsolate,
       IsolateArgsPair(receivePort.sendPort, item, SettingsCache.proxySetting),
       paused: true,
@@ -254,9 +266,9 @@ class DownloadAdditionUiUtil {
     }
     final downloadItem_boxValue = HiveUtil.instance.downloadItemsBox.values
         .where((item) =>
-            item.fileName == fileInfo.fileName &&
-            item.contentLength == fileInfo.contentLength &&
-            item.status != DownloadStatus.assembleComplete)
+    item.fileName == fileInfo.fileName &&
+        item.contentLength == fileInfo.contentLength &&
+        item.status != DownloadStatus.assembleComplete)
         .first;
     downloadItem_boxValue.downloadUrl = fileInfo.url;
     await downloadItem_boxValue.save();
@@ -291,18 +303,18 @@ class DownloadAdditionUiUtil {
       Navigator.of(context).pop();
     }
     final rule = SettingsCache.fileSavePathRules.firstOrNullWhere(
-      (rule) => rule.isSatisfiedByDownloadItem(item),
+          (rule) => rule.isSatisfiedByDownloadItem(item),
     );
     item.filePath = rule == null
         ? FileUtil.getFilePath(item.fileName)
         : FileUtil.getFilePath(
-            item.fileName,
-            baseSaveDir: Directory(rule.savePath),
-            useTypeBasedSubDirs: false,
-          );
+      item.fileName,
+      baseSaveDir: Directory(rule.savePath),
+      useTypeBasedSubDirs: false,
+    );
     showDialog(
       context: context,
-      builder: (_) => DownloadInfoDialog(item),
+      builder: (_) => DownloadInfoDialogNew(item, showSupportsPause: true),
       barrierDismissible: false,
     );
   }

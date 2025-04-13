@@ -14,24 +14,24 @@ class WebExtensionSettingsPage extends StatelessWidget {
         .activeTheme
         .settingTheme
         .pageTheme;
-    return Center(
-      child: SingleChildScrollView(
-        child: SizedBox(
-          height: 500,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const PortSettingsGroup(),
-              Text(
-                '*Changes require a restart',
+    return SingleChildScrollView(
+      child: SizedBox(
+        height: 500,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const PortSettingsGroup(),
+            Center(
+              child: Text(
+                '* Changes require a restart',
                 style: TextStyle(color: theme.titleTextColor),
               ),
-              const SizedBox(height: 10),
-              BrowserExtensionRulesGroup(),
-              WebExtensionSettingsDownloadGroup(),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10),
+            BrowserExtensionRulesGroup(),
+            WebExtensionSettingsDownloadGroup(),
+          ],
         ),
       ),
     );

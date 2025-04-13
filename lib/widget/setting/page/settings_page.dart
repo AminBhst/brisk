@@ -10,20 +10,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+  final double height;
+  final double width;
+
+  const SettingsPage({super.key, this.height = 370, this.width = 550});
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SettingsProvider>(context);
-    final size = MediaQuery.of(context).size;
-    final theme =
-        Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
+    final theme = Provider.of<ThemeProvider>(context).activeTheme;
     return Container(
-      height: resolveHeight(size.height),
-      width: size.width * 0.6 * 0.75,
+      height: height,
+      width: width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: theme.pageBackgroundColor,
+        color: theme.alertDialogTheme.backgroundColor,
       ),
       child: PageView(
         controller: provider.settingsPageController,
@@ -38,20 +39,5 @@ class SettingsPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  double resolveHeight(double sizeHeight) {
-    double height = sizeHeight * 0.8 * 0.65;
-    if (height < 500) {
-      height = height * 0.9;
-    }
-    if (height < 400) {
-      // height = height * 0.7;
-    }
-    if (height < 200) {
-      height = height * 0.6;
-    }
-
-    return height;
   }
 }

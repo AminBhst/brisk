@@ -15,13 +15,14 @@ class FileRulesGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return SettingsGroup(
       height: 150,
       title: "Rules",
       children: [
         ExternalLinkSetting(
           title: "File Save Path Rules",
-          titleWidth: 140,
+          titleWidth: resolveWidth(size),
           linkText: "Open Rule Editor",
           onLinkPressed: () => showDialog(
             builder: (context) => RuleEditorWindow<FileSavePathRule>(
@@ -127,5 +128,16 @@ class FileRulesGroup extends StatelessWidget {
         )
       ],
     );
+  }
+
+  double resolveWidth(Size size) {
+    double width = 140;
+    if (size.width < 688) {
+      width = 120;
+    }
+    if (size.width < 608) {
+      width = 90;
+    }
+    return width;
   }
 }

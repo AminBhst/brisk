@@ -46,8 +46,6 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
         ),
         const SizedBox(height: 5),
         DropDownSetting(
-          dropDownWidth: size.width * 0.2,
-          textWidth: size.width * 0.15,
           dropDownItemTextWidth: size.width * 0.17,
           value: _appClosureActionToDropDownTxt(
             SettingsCache.appClosureBehaviour,
@@ -62,8 +60,6 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
         ),
         const SizedBox(height: 5),
         DropDownSetting(
-          dropDownWidth: size.width * 0.2,
-          textWidth: size.width * 0.15,
           dropDownItemTextWidth: size.width * 0.17,
           value: _fileDuplicationActionToDropDownTxt(
             SettingsCache.fileDuplicationBehaviour,

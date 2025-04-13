@@ -27,8 +27,7 @@ class SettingsGroup extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return SizedBox(
       height: height,
-      width: size.width * 0.6 * 0.68,
-      // width: width,
+      width: resolveWidth(size),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,4 +63,17 @@ class SettingsGroup extends StatelessWidget {
       ),
     );
   }
+
+  double resolveWidth(Size size) {
+    double width = 900;
+    if (size.width < 809) {
+      // width = 500;
+      width = size.width * 0.85;
+    }
+    // if (size.width < 849) {
+    //   width = size.width * 0.7;
+    // }
+    return width;
+  }
+
 }

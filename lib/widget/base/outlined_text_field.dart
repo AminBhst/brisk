@@ -12,6 +12,10 @@ class OutLinedTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final List<TextInputFormatter> inputFormatters;
   final bool obscureText;
+  final FocusNode? focusNode;
+  final bool enabled;
+  final String? hintText;
+  final EdgeInsetsGeometry? contentPadding;
 
   const OutLinedTextField({
     super.key,
@@ -23,6 +27,10 @@ class OutLinedTextField extends StatelessWidget {
     this.inputFormatters = const [],
     this.onChanged,
     this.obscureText = false,
+    this.focusNode,
+    this.enabled = true,
+    this.hintText,
+    this.contentPadding,
   });
 
   @override
@@ -34,6 +42,8 @@ class OutLinedTextField extends StatelessWidget {
         .widgetColor
         .textFieldColor;
     return TextField(
+        enabled: enabled,
+        focusNode: focusNode,
         obscureText: obscureText,
         readOnly: readOnly,
         keyboardType: keyboardType,
@@ -45,15 +55,17 @@ class OutLinedTextField extends StatelessWidget {
         textDirection: TextDirection.ltr,
         style: TextStyle(color: theme.textColor, fontSize: 13),
         decoration: InputDecoration(
+          contentPadding: contentPadding,
           focusColor: Colors.white38,
           fillColor: theme.fillColor,
           hoverColor: theme.hoverColor,
+          hintText: hintText,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: theme.borderColor, width: 1.0),
+              borderSide: BorderSide(color: theme.borderColor, width: 0.5),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: theme.focusBorderColor, width: 2.0),

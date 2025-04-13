@@ -29,42 +29,34 @@ class _SettingsSideMenuItemState extends State<SettingsSideMenuItem> {
         .activeTheme
         .settingTheme
         .sideMenuTheme;
-
     final size = MediaQuery.of(context).size;
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
         hoverColor: sideMenuTheme.inactiveTabHoverBackgroundColor,
         onTap: () => provider.setSelectedSettingsTab(widget.tabId),
         child: Container(
           height: 40,
-          width: minimizedSideMenu(size) ? 45 : 120,
+          width: 150,
           decoration: BoxDecoration(
             color: isTabSelected
                 ? sideMenuTheme.activeTabBackgroundColor
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
           ),
-          child: Row(
-            mainAxisAlignment: minimizedSideMenu(size)
-                ? MainAxisAlignment.center
-                : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(width: minimizedSideMenu(size) ? 0 : 10),
-              Icon(
-                widget.icon,
-                color: isTabSelected
-                    ? sideMenuTheme.activeTabIconColor
-                    : sideMenuTheme.inactiveTabIconColor,
-              ),
-              SizedBox(width: minimizedSideMenu(size) ? 0 : 5),
-              minimizedSideMenu(size)
-                  ? Container()
-                  : Text(widget.title,
-                      style: const TextStyle(color: Colors.white)),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: Row(
+              children: [
+                Icon(
+                  widget.icon,
+                  color: isTabSelected
+                      ? sideMenuTheme.activeTabIconColor
+                      : sideMenuTheme.inactiveTabIconColor,
+                ),
+                SizedBox(width: 10),
+                Text(widget.title)
+              ],
+            ),
           ),
         ),
       ),

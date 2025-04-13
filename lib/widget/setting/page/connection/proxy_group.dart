@@ -34,7 +34,7 @@ class _ProxyGroupState extends State<ProxyGroup> {
       title: "Proxy",
       children: [
         SwitchSetting(
-          text: "Proxy Enabled",
+          text: "Enabled",
           switchValue: SettingsCache.proxyEnabled,
           onChanged: (value) => setState(
             () => SettingsCache.proxyEnabled = value,
@@ -45,9 +45,9 @@ class _ProxyGroupState extends State<ProxyGroup> {
           onChanged: (value) => setState(
             () => SettingsCache.proxyAddress = value,
           ),
-          textWidth: size.width * 0.6 * 0.2,
-          width: size.width * 0.6 * 0.3,
-          text: "Proxy Address",
+          textWidth: resolveTextWidth(size),
+          width: resolveTextFieldWidth(size),
+          text: "Address",
           txtController: addressController,
         ),
         const SizedBox(height: 10),
@@ -56,12 +56,12 @@ class _ProxyGroupState extends State<ProxyGroup> {
           onChanged: (value) => setState(
             () => SettingsCache.proxyPort = value,
           ),
-          textWidth: size.width * 0.6 * 0.2,
-          width: size.width * 0.6 * 0.3,
+          textWidth: resolveTextWidth(size),
+          width: resolveTextFieldWidth(size),
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^[0-9]*$')),
           ],
-          text: "Proxy Port",
+          text: "Port",
           txtController: portController,
         ),
         const SizedBox(height: 10),
@@ -69,9 +69,9 @@ class _ProxyGroupState extends State<ProxyGroup> {
           onChanged: (value) => setState(
             () => SettingsCache.proxyUsername = value,
           ),
-          textWidth: size.width * 0.6 * 0.2,
-          width: size.width * 0.6 * 0.3,
-          text: "Proxy Username",
+          textWidth: resolveTextWidth(size),
+          width: resolveTextFieldWidth(size),
+          text: "Username",
           txtController: usernameController,
         ),
         const SizedBox(height: 10),
@@ -80,12 +80,37 @@ class _ProxyGroupState extends State<ProxyGroup> {
           onChanged: (value) => setState(
             () => SettingsCache.proxyPassword = value,
           ),
-          textWidth: size.width * 0.6 * 0.2,
-          width: size.width * 0.6 * 0.3,
-          text: "Proxy Password",
+          textWidth: resolveTextWidth(size),
+          width: resolveTextFieldWidth(size),
+          text: "Password",
           txtController: passwordController,
         )
       ],
     );
+  }
+
+  double resolveTextFieldWidth(Size size) {
+    double width = 300;
+    if (size.width < 827) {
+      width = size.width * 0.4;
+    }
+    if (size.width < 775) {
+      width = size.width * 0.35;
+    }
+    if (size.width < 690) {
+      width = size.width * 0.25;
+    }
+    return width;
+  }
+
+  double resolveTextWidth(Size size) {
+    double width = 150;
+    if (size.width < 950) {
+      width = 100;
+    }
+    if (size.width < 950) {
+      width = 80;
+    }
+    return width;
   }
 }

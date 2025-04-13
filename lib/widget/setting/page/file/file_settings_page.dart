@@ -10,17 +10,15 @@ class FileSettingsPage extends StatelessWidget {
   /// Duplication behavior
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            PathSettingsGroup(),
-            FileRulesGroup(),
-            FileCategoryGroup(),
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          PathSettingsGroup(),
+          FileRulesGroup(),
+          FileCategoryGroup(),
+        ],
       ),
     );
   }

@@ -17,7 +17,8 @@ class FileCategoryGroup extends StatelessWidget {
       children: [
         TextFieldSetting(
           text: "Video",
-          width: size.width * 0.6 * 0.4,
+          width: resolveTextFieldWidth(size),
+          textWidth: resolveTextWidth(size),
           txtController: TextEditingController(text: parseListToCsv(SettingsCache.videoFormats)),
           onChanged: (val) => setCachedFormats(
             val,
@@ -27,7 +28,8 @@ class FileCategoryGroup extends StatelessWidget {
         marginSizedBox,
         TextFieldSetting(
           text: "Music",
-          width: size.width * 0.6 * 0.4,
+          width: resolveTextFieldWidth(size),
+          textWidth: resolveTextWidth(size),
           txtController: TextEditingController(text: parseListToCsv(SettingsCache.musicFormats)),
           onChanged: (val) => setCachedFormats(
             val,
@@ -37,7 +39,8 @@ class FileCategoryGroup extends StatelessWidget {
         marginSizedBox,
         TextFieldSetting(
           text: "Archive",
-          width: size.width * 0.6 * 0.4,
+          width: resolveTextFieldWidth(size),
+          textWidth: resolveTextWidth(size),
           txtController: TextEditingController(text: parseListToCsv(SettingsCache.compressedFormats)),
           onChanged: (val) => setCachedFormats(
             val,
@@ -47,7 +50,8 @@ class FileCategoryGroup extends StatelessWidget {
         marginSizedBox,
         TextFieldSetting(
           text: "Program",
-          width: size.width * 0.6 * 0.4,
+          width: resolveTextFieldWidth(size),
+          textWidth: resolveTextWidth(size),
           txtController: TextEditingController(text: parseListToCsv(SettingsCache.programFormats)),
           onChanged: (val) => setCachedFormats(
             val,
@@ -57,7 +61,8 @@ class FileCategoryGroup extends StatelessWidget {
         marginSizedBox,
         TextFieldSetting(
           text: "Document",
-          width: size.width * 0.6 * 0.4,
+          width: resolveTextFieldWidth(size),
+          textWidth: resolveTextWidth(size),
           txtController: TextEditingController(text: parseListToCsv(SettingsCache.documentFormats)),
           onChanged: (val) => setCachedFormats(
             val,
@@ -66,6 +71,32 @@ class FileCategoryGroup extends StatelessWidget {
         ),
       ],
     );
+  }
+
+
+  double resolveTextFieldWidth(Size size) {
+    double width = 400;
+    if (size.width < 950) {
+      width = size.width * 0.4;
+    }
+    if (size.width < 860) {
+      width = size.width * 0.38;
+    }
+    if (size.width < 762) {
+      width = size.width * 0.3;
+    }
+    if (size.width < 640) {
+      width = size.width * 0.25;
+    }
+    return width;
+  }
+
+  double resolveTextWidth(Size size) {
+    double width = 150;
+    if (size.width < 950) {
+      width = 90;
+    }
+    return width;
   }
 
   void setCachedFormats(

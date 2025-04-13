@@ -207,9 +207,9 @@ class FileUtil {
     } else if (fileType == DLFileType.compressed.name) {
       return Colors.blue;
     } else if (fileType == DLFileType.documents.name) {
-      return Colors.orangeAccent;
+      return  const Color(0xFF4CAF50);
     } else if (fileType == DLFileType.program.name) {
-      return const Color.fromRGBO(163, 74, 40, 1);
+      return Colors.indigoAccent;
     } else {
       return Colors.grey;
     }

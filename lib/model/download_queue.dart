@@ -10,5 +10,22 @@ class DownloadQueue extends HiveObject {
   @HiveField(1)
   List<int>? downloadItemsIds;
 
-  DownloadQueue({required this.name, this.downloadItemsIds});
+  @HiveField(2)
+  DateTime? scheduledStart;
+
+  @HiveField(3)
+  DateTime? scheduledEnd;
+
+  @HiveField(4, defaultValue: false)
+  bool shutdownAfterCompletion;
+
+  @HiveField(5, defaultValue: 1)
+  int simultaneousDownloads;
+
+  DownloadQueue({
+    required this.name,
+    this.downloadItemsIds,
+    this.shutdownAfterCompletion = false,
+    this.simultaneousDownloads = 1,
+  });
 }

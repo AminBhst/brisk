@@ -3,6 +3,7 @@ import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
+import 'package:brisk/widget/base/outlined_text_field.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,58 +23,52 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
   Widget build(BuildContext context) {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
-    return ClosableWindow(
-      width: 350,
-      height: 250,
-      disableCloseButton: true,
+    return AlertDialog(
       backgroundColor: theme.backgroundColor,
-      padding: EdgeInsets.only(top: 60),
-      content: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Queue name : "),
-              const SizedBox(width: 10),
-              SizedBox(
-                  width: 150,
-                  child: TextField(
-                    maxLines: 1,
-                    cursorColor: Colors.indigo,
-                    controller: txtController,
-                    decoration: const InputDecoration(
-                        focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white))),
-                    style: const TextStyle(color: Colors.white),
-                  ))
-            ],
-          ),
-          const SizedBox(height: 50),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              RoundedOutlinedButton(
-                width: 95,
-                onPressed: () => Navigator.of(context).pop(),
-                borderColor: Colors.red,
-                textColor: Colors.red,
-                text: "Cancel",
-              ),
-              const SizedBox(width: 10),
-              RoundedOutlinedButton(
-                width: 95,
-                onPressed: () => onCreatePressed(context),
-                borderColor: Colors.green,
-                textColor: Colors.green,
-                text: "Save",
-              ),
-            ],
-          )
-        ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
       ),
-      actions: [],
+      title: Text(
+        "Create New Queue",
+        style: TextStyle(color: theme.textColor, fontWeight: FontWeight.bold, fontSize: 20),
+      ),
+      content: SizedBox(
+        width: 400,
+        height: 90,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text("Queue Name"),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: 400,
+              child: OutLinedTextField(controller: txtController),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        RoundedOutlinedButton(
+          text: "Cancel",
+          width: 80,
+          borderColor: theme.cancelButtonColor.borderColor,
+          textColor: theme.cancelButtonColor.textColor,
+          backgroundColor: theme.cancelButtonColor.backgroundColor,
+          hoverTextColor: theme.cancelButtonColor.hoverTextColor,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        RoundedOutlinedButton(
+          text: "Create Queue",
+          width: 120,
+          borderColor: theme.addButtonColor.borderColor,
+          backgroundColor: theme.addButtonColor.backgroundColor,
+          textColor: theme.addButtonColor.textColor,
+          hoverTextColor: theme.addButtonColor.hoverTextColor,
+          hoverBackgroundColor: theme.addButtonColor.hoverBackgroundColor,
+          onPressed: () => onCreatePressed(context),
+        ),
+      ],
     );
   }
 

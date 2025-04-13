@@ -26,11 +26,11 @@ class DropDownSetting extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
-    textWidth ?? MediaQuery.of(context).size.width * 0.6 * 0.5;
+    final size = MediaQuery.of(context).size;
     return Row(
       children: [
         SizedBox(
-          width: textWidth,
+          width: textWidth ?? resolveTextWidth(size),
           child: Text(
             text,
             style: TextStyle(color: theme.titleTextColor),
@@ -62,5 +62,20 @@ class DropDownSetting extends StatelessWidget {
         )
       ],
     );
+  }
+
+  double resolveTextWidth(Size size) {
+    double width = 200;
+    if (size.width < 867) {
+      width = size.width * 0.3;
+    }
+    if (size.width < 800) {
+      width = size.width * 0.25;
+    }
+    if (size.width < 644) {
+      width = size.width * 0.2;
+    }
+    // textWidth ?? MediaQuery.of(context).size.width * 0.6 * 0.5;
+    return width;
   }
 }

@@ -8,6 +8,7 @@ class ExternalLinkSetting extends StatelessWidget {
   final VoidCallback onLinkPressed;
   final String? tooltipMessage;
   double titleWidth;
+  double? width;
 
   ExternalLinkSetting({
     super.key,
@@ -16,6 +17,7 @@ class ExternalLinkSetting extends StatelessWidget {
     required this.onLinkPressed,
     this.tooltipMessage,
     this.titleWidth = 100,
+    this.width,
   });
 
   @override
@@ -25,7 +27,7 @@ class ExternalLinkSetting extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.5 * 0.5,
+          width: width ?? MediaQuery.of(context).size.width * 0.5 * 0.5,
           child: Row(children: [
             SizedBox(
               width: titleWidth,

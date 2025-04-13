@@ -7,9 +7,12 @@ class RoundedOutlinedButton extends StatefulWidget {
   final String text;
   final Color backgroundColor;
   final double? width;
+  final double? height;
   Color? hoverBackgroundColor;
   Color? hoverTextColor;
   final double borderRadius;
+  final Widget? icon;
+  final MainAxisAlignment mainAxisAlignment;
 
   RoundedOutlinedButton({
     Key? key,
@@ -19,9 +22,12 @@ class RoundedOutlinedButton extends StatefulWidget {
     required this.text,
     this.backgroundColor = Colors.black38,
     this.width,
+    this.height = 35,
     this.hoverBackgroundColor,
     this.hoverTextColor,
-    this.borderRadius = 5.0,
+    this.borderRadius = 8.0,
+    this.icon = null,
+    this.mainAxisAlignment = MainAxisAlignment.center,
   }) : super(key: key);
 
   @override
@@ -35,6 +41,7 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.width,
+      height: widget.height,
       child: OutlinedButton(
         onPressed: widget.onPressed,
         onHover: (val) => setState(() => hover = val),
@@ -58,14 +65,21 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
             ),
           ),
         ),
-        child: Text(
-          widget.text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: widget.hoverTextColor == null
-                ? (hover ? Colors.white : widget.textColor)
-                : (hover ? widget.hoverTextColor : widget.textColor),
-          ),
+        child: Row(
+        mainAxisAlignment: widget.mainAxisAlignment,
+          children: [
+            if (widget.icon != null) widget.icon!,
+            if (widget.icon != null) SizedBox(width: 5),
+            Text(
+              widget.text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: widget.hoverTextColor == null
+                    ? (hover ? Colors.white : widget.textColor)
+                    : (hover ? widget.hoverTextColor : widget.textColor),
+              ),
+            ),
+          ],
         ),
       ),
     );

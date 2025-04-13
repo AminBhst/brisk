@@ -19,17 +19,29 @@ class DownloadQueueAdapter extends TypeAdapter<DownloadQueue> {
     return DownloadQueue(
       name: fields[0] as String,
       downloadItemsIds: (fields[1] as List?)?.cast<int>(),
-    );
+      shutdownAfterCompletion: fields[4] == null ? false : fields[4] as bool,
+      simultaneousDownloads: fields[5] == null ? 1 : fields[5] as int,
+    )
+      ..scheduledStart = fields[2] as DateTime?
+      ..scheduledEnd = fields[3] as DateTime?;
   }
 
   @override
   void write(BinaryWriter writer, DownloadQueue obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.downloadItemsIds);
+      ..write(obj.downloadItemsIds)
+      ..writeByte(2)
+      ..write(obj.scheduledStart)
+      ..writeByte(3)
+      ..write(obj.scheduledEnd)
+      ..writeByte(4)
+      ..write(obj.shutdownAfterCompletion)
+      ..writeByte(5)
+      ..write(obj.simultaneousDownloads);
   }
 
   @override

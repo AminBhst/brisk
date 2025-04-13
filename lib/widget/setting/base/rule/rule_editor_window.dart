@@ -56,7 +56,7 @@ class _RuleEditorWindowState<T extends FileRule>
     final size = MediaQuery.of(context).size;
     return ClosableWindow(
       width: 500,
-      height: size.height > 750 ? 650 : size.height * 0.8,
+      height: size.height > 750 ? 600 : size.height * 0.75,
       backgroundColor: theme.alertDialogTheme.backgroundColor,
       content: SizedBox(
         child: Column(
@@ -105,6 +105,8 @@ class _RuleEditorWindowState<T extends FileRule>
                   onPressed: () => Navigator.of(context).pop(),
                   borderColor:
                       theme.alertDialogTheme.cancelButtonColor.borderColor,
+                  backgroundColor:
+                      theme.alertDialogTheme.cancelButtonColor.backgroundColor,
                   hoverTextColor:
                       theme.alertDialogTheme.cancelButtonColor.hoverTextColor,
                   hoverBackgroundColor: theme
@@ -121,6 +123,8 @@ class _RuleEditorWindowState<T extends FileRule>
                   },
                   borderColor:
                       theme.alertDialogTheme.addButtonColor.borderColor,
+                  backgroundColor:
+                      theme.alertDialogTheme.addButtonColor.backgroundColor,
                   hoverTextColor:
                       theme.alertDialogTheme.addButtonColor.hoverTextColor,
                   hoverBackgroundColor: theme

@@ -37,8 +37,8 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
       children: [
         TextFieldSetting(
           text: "Temp Files Path",
-          textWidth: size.width * 0.6 * 0.2,
-          width: size.width * 0.6 * 0.3,
+          textWidth: resolveTextWidth(size),
+          width: resolveTextFieldWidth(size),
           txtController: tempPathController,
           onChanged: (value) {
             provider.tempPath = value;
@@ -59,8 +59,8 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
         const SizedBox(height: 5),
         TextFieldSetting(
           text: "Save Path",
-          width: size.width * 0.6 * 0.3,
-          textWidth: size.width * 0.6 * 0.2,
+          textWidth: resolveTextWidth(size),
+          width: resolveTextFieldWidth(size),
           txtController: savePathController,
           onChanged: (value) {
             provider.savePath = value;
@@ -80,6 +80,34 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
         ),
       ],
     );
+  }
+
+  double resolveTextFieldWidth(Size size) {
+    double width = 300;
+    if (size.width < 913) {
+      width = size.width * 0.3;
+    }
+    if (size.width < 860) {
+      width = size.width * 0.28;
+    }
+    if (size.width < 827) {
+      width = size.width * 0.25;
+    }
+    if (size.width < 782) {
+      width = size.width * 0.21;
+    }
+    if (size.width < 645) {
+      width = size.width * 0.16;
+    }
+    return width;
+  }
+
+  double resolveTextWidth(Size size) {
+    double width = 150;
+    if (size.width < 730) {
+      width = 100;
+    }
+    return width;
   }
 
   Future<String?> pickNewLocation(String initialDir) async {

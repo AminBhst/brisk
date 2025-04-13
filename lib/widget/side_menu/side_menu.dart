@@ -1,11 +1,10 @@
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
-import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/responsive_util.dart';
-import 'package:brisk/widget/setting/settings_window.dart';
+import 'package:brisk/widget/setting/setting_dialog.dart';
 import 'package:brisk/widget/side_menu/side_menu_expansion_tile.dart';
 import 'package:brisk/widget/side_menu/side_menu_item.dart';
 import 'package:brisk/widget/side_menu/side_menu_list_tile_item.dart';
@@ -66,56 +65,57 @@ class _SideMenuState extends State<SideMenu> {
               onTap: () => onDownloadsPressed(queueProvider),
               children: [
                 SideMenuListTileItem(
-                  text: 'Music',
+                  text: 'Archive',
                   icon: SvgPicture.asset(
-                    'assets/icons/music.svg',
+                    'assets/icons/archive.svg',
                     colorFilter:
-                        ColorFilter.mode(Colors.cyanAccent, BlendMode.srcIn),
+                    ColorFilter.mode(Colors.lightBlue, BlendMode.srcIn),
                   ),
-                  onTap: () => setGridFileTypeFilter(DLFileType.music),
-                  active: selectedExpansionTileItemTab == 0,
+                  size: 32,
+                  onTap: () => setGridFileTypeFilter(DLFileType.compressed),
+                  active: selectedExpansionTileItemTab == 4,
                 ),
                 SideMenuListTileItem(
                   text: 'Videos',
+                  size: 34,
                   icon: SvgPicture.asset(
-                    'assets/icons/video.svg',
+                    'assets/icons/video_2.svg',
                     colorFilter:
-                        ColorFilter.mode(Colors.pinkAccent, BlendMode.srcIn),
+                    ColorFilter.mode(Colors.pinkAccent, BlendMode.srcIn),
                   ),
                   onTap: () => setGridFileTypeFilter(DLFileType.video),
                   active: selectedExpansionTileItemTab == 1,
-                ),
-                SideMenuListTileItem(
-                  text: 'Documents',
-                  icon: SvgPicture.asset(
-                    'assets/icons/document.svg',
-                    colorFilter:
-                        ColorFilter.mode(Colors.orangeAccent, BlendMode.srcIn),
-                  ),
-                  onTap: () => setGridFileTypeFilter(DLFileType.documents),
-                  active: selectedExpansionTileItemTab == 2,
                 ),
                 SideMenuListTileItem(
                   text: 'Programs',
                   icon: SvgPicture.asset(
                     'assets/icons/program.svg',
                     colorFilter: ColorFilter.mode(
-                        const Color.fromRGBO(245, 139, 84, 1), BlendMode.srcIn),
+                        Colors.indigoAccent, BlendMode.srcIn),
                   ),
                   size: 30,
                   onTap: () => setGridFileTypeFilter(DLFileType.program),
                   active: selectedExpansionTileItemTab == 3,
                 ),
                 SideMenuListTileItem(
-                  text: 'Archive',
+                  text: 'Documents',
                   icon: SvgPicture.asset(
-                    'assets/icons/archive.svg',
+                    'assets/icons/document.svg',
                     colorFilter:
-                        ColorFilter.mode(Colors.lightBlue, BlendMode.srcIn),
+                        ColorFilter.mode(const Color(0xFF4CAF50), BlendMode.srcIn),
                   ),
-                  size: 32,
-                  onTap: () => setGridFileTypeFilter(DLFileType.compressed),
-                  active: selectedExpansionTileItemTab == 4,
+                  onTap: () => setGridFileTypeFilter(DLFileType.documents),
+                  active: selectedExpansionTileItemTab == 2,
+                ),
+                SideMenuListTileItem(
+                  text: 'Music',
+                  icon: SvgPicture.asset(
+                    'assets/icons/music.svg',
+                    colorFilter:
+                    ColorFilter.mode(Colors.cyanAccent, BlendMode.srcIn),
+                  ),
+                  onTap: () => setGridFileTypeFilter(DLFileType.music),
+                  active: selectedExpansionTileItemTab == 0,
                 )
               ],
             ),
@@ -201,7 +201,7 @@ class _SideMenuState extends State<SideMenu> {
     Provider.of<SettingsProvider>(context, listen: false).selectedTabId = 0;
     showDialog(
       context: context,
-      builder: (context) => const SettingsWindow(),
+      builder: (context) => const SettingsDialog(),
       barrierDismissible: false,
     );
   }

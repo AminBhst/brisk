@@ -27,69 +27,127 @@ class _AppExitDialogState extends State<AppExitDialog> {
     return AlertDialog(
       backgroundColor: theme.backgroundColor,
       surfaceTintColor: theme.backgroundColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      title: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: const BoxDecoration(
+              color: Color.fromRGBO(245, 158, 11, 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Align(
+                alignment: const Alignment(0, -0.16),
+                child: const Icon(
+                  Icons.warning_rounded,
+                  color: Color.fromRGBO(245, 158, 11, 1),
+                  size: 35,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 10),
+          Text(
+            "Choose Action",
+            style: TextStyle(
+              color: theme.textColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+        ],
+      ),
       content: Container(
-        height: 80,
+        height: 270,
         width: 500,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              "Choose an action",
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+              "Choose what you'd like to do with the application",
             ),
             const SizedBox(height: 20),
-            Row(
+            Column(
               children: [
-                Checkbox(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2.0),
+                // RoundedOutlinedButton(onPressed: onPressed, borderColor: borderColor, textColor: textColor, text: text)
+                RoundedOutlinedButton(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  text: "Exit Application",
+                  icon: Icon(
+                    Icons.power_settings_new_rounded,
+                    color: Colors.white54,
                   ),
-                  side: MaterialStateBorderSide.resolveWith(
-                    (states) => BorderSide(width: 1.0, color: Colors.grey),
-                  ),
-                  activeColor: Colors.blueGrey,
-                  value: rememberChecked,
-                  onChanged: (value) => setState(
-                    () => rememberChecked = value!,
-                  ),
+                  textColor: Colors.white,
+                  borderColor: Colors.transparent,
+                  backgroundColor: theme.itemColor,
+                  hoverBackgroundColor: Color.fromRGBO(220, 38, 38, 1),
+                  height: 45,
+                  width: 500,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    widget.onExitPressed(rememberChecked);
+                  },
                 ),
-                Text("Remember this decision"),
+                SizedBox(height: 10),
+                RoundedOutlinedButton(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  text: "Minimize To System Tray",
+                  height: 45,
+                  icon: Icon(Icons.minimize_rounded, color: Colors.white54),
+                  textColor: Colors.white,
+                  borderColor: Colors.transparent,
+                  hoverBackgroundColor: Color.fromRGBO(53, 89, 143, 1),
+                  backgroundColor: theme.itemColor,
+                  width: 500,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    widget.onMinimizeToTrayPressed(rememberChecked);
+                  },
+                ),
+                SizedBox(height: 10),
+                RoundedOutlinedButton(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  text: "Cancel",
+                  height: 45,
+                  icon: Icon(Icons.close_rounded, color: Colors.white54),
+                  textColor: Colors.white,
+                  borderColor: Colors.transparent,
+                  backgroundColor: theme.itemColor,
+                  width: 500,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Checkbox(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(2.0),
+                      ),
+                      side: WidgetStateBorderSide.resolveWith(
+                        (states) => BorderSide(width: 1.0, color: Colors.grey),
+                      ),
+                      activeColor: Colors.blueGrey,
+                      value: rememberChecked,
+                      onChanged: (value) => setState(
+                        () => rememberChecked = value!,
+                      ),
+                    ),
+                    Text("Remember this decision"),
+                  ],
+                )
               ],
             )
           ],
         ),
       ),
       actionsAlignment: MainAxisAlignment.center,
-      actions: [
-        RoundedOutlinedButton(
-          text: "Cancel",
-          textColor: Colors.red,
-          borderColor: Colors.red,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        RoundedOutlinedButton(
-          text: "Exit",
-          textColor: Colors.redAccent,
-          borderColor: Colors.redAccent,
-          onPressed: () {
-            Navigator.of(context).pop();
-            widget.onExitPressed(rememberChecked);
-          },
-        ),
-        RoundedOutlinedButton(
-          text: "Minimize to tray",
-          width: 155,
-          textColor: Colors.teal,
-          borderColor: Colors.teal,
-          onPressed: () {
-            Navigator.of(context).pop();
-            widget.onMinimizeToTrayPressed(rememberChecked);
-          },
-        ),
-      ],
     );
   }
 }

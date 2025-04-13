@@ -9,18 +9,16 @@ class GeneralSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            NotificationSettingsGroup(),
-            UISettingGroup(),
-            BehaviourSettingsGroup(),
-            LoggingGroup(),
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          NotificationSettingsGroup(),
+          UISettingGroup(),
+          BehaviourSettingsGroup(),
+          LoggingGroup(),
+        ],
       ),
     );
   }

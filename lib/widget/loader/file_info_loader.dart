@@ -16,19 +16,20 @@ class FileInfoLoader extends StatelessWidget {
     return AlertDialog(
       backgroundColor: theme.backgroundColor,
       surfaceTintColor: theme.backgroundColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
       content: SizedBox(
         width: 250,
-        height: 50,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        height: 60,
+        child: Column(
           children: [
+            SpinKitRing(color: Colors.blueAccent, size: 30),
+            const SizedBox(height: 10),
             Text(
               'Retrieving file information...',
               style: TextStyle(color: theme.textColor, fontSize: 15),
             ),
-            SizedBox(width: 10),
-            SpinKitRing(color: Colors.blueAccent, size: 30)
           ],
         ),
       ),
@@ -38,6 +39,7 @@ class FileInfoLoader extends StatelessWidget {
           textColor: Colors.red,
           borderColor: Colors.red,
           onPressed: onCancelPressed,
+          width: 80,
         )
       ],
     );

@@ -3,18 +3,19 @@ import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/download/queue_timer.dart';
+import 'package:brisk/widget/queue/schedule_dialog.dart';
+import 'package:brisk/widget/queue/schedule_window.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:brisk/widget/top_menu/top_menu_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../download_engine/download_command.dart';
-import '../../db/hive_util.dart';
-import '../../provider/download_request_provider.dart';
-import '../../provider/pluto_grid_util.dart';
-import '../base/confirmation_dialog.dart';
-import '../queue/add_to_queue_window.dart';
-import '../queue/start_queue_window.dart';
+import 'package:brisk/download_engine/download_command.dart';
+import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/provider/download_request_provider.dart';
+import 'package:brisk/provider/pluto_grid_util.dart';
+import 'package:brisk/widget/base/confirmation_dialog.dart';
+import 'package:brisk/widget/queue/add_to_queue_window.dart';
+import 'package:brisk/widget/queue/start_queue_window.dart';
 
 /// TODO merge with top menu
 class DownloadQueueTopMenu extends StatelessWidget {
@@ -43,11 +44,11 @@ class DownloadQueueTopMenu extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: TopMenuButton(
-              onTap: () => onStartQueuePressed(context),
-              title: 'Start Queue',
+              onTap: () => onSchedulePressed(context),
+              title: 'Schedule',
               fontSize: 12,
               icon: Icon(
-                Icons.play_arrow_rounded,
+                Icons.schedule_rounded,
                 color: topMenuTheme.startQueueColor.iconColor,
               ),
               onHoverColor: topMenuTheme.startQueueColor.hoverBackgroundColor,
@@ -102,6 +103,14 @@ class DownloadQueueTopMenu extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void onSchedulePressed(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (context) => ScheduleDialog(),
+      barrierDismissible: false,
     );
   }
 

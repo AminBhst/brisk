@@ -88,6 +88,7 @@ class DownloadConnectionInvoker {
         connectionNumber: data.connectionNumber!,
         settings: data.settings,
         segment: Segment(0, 0),
+        refererHeader: data.refererHeader,
       );
     }
     return null;

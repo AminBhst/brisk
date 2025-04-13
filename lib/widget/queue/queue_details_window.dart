@@ -33,33 +33,51 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     final size = MediaQuery.of(context).size;
-    return ClosableWindow(
-      width: 800,
-      height: 500,
+    return AlertDialog(
+      actionsPadding: EdgeInsets.all(0),
+      contentPadding: EdgeInsets.all(0),
+      titlePadding: EdgeInsets.all(0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(25),
+            child: Text(
+              "Edit Queue Items",
+              style: TextStyle(
+                  color: theme.textColor, fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+          ),
+          Container(
+            width: resolveDialogWidth(size),
+            height: 1,
+            color: Color.fromRGBO(65, 65, 65, 1.0),
+          )
+        ],
+      ),
       backgroundColor: theme.backgroundColor,
-      disableCloseButton: true,
-      padding: EdgeInsets.only(top: 60),
       content: SizedBox(
+        width: resolveDialogWidth(size),
+        height: resolveListHeight(size),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SizedBox(
-              width: 600,
+              width: resolveDialogWidth(size),
               height: resolveRowHeight(size),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   downloadIds == null || downloadIds!.isEmpty
                       ? Container(
-                          width: 600,
+                          width: 300,
                           height: resolveListHeight(size),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.fromBorderSide(
-                              BorderSide(
-                                  color: theme.innerContainerBorderColor),
-                            ),
-                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -75,7 +93,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                "Queue is empty",
+                                "Queue Is Empty",
                                 style: TextStyle(
                                   color: theme.placeHolderIconColor,
                                   fontSize: 18,
@@ -85,108 +103,160 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                           ),
                         )
                       : Container(
-                          width: 600,
+                          width: resolveDialogWidth(size) - 20,
                           height: resolveListHeight(size),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.fromBorderSide(
-                              BorderSide(color: Colors.white12),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: ReorderableListView.builder(
-                              buildDefaultDragHandles: false,
-                              itemBuilder: (context, index) {
-                                final dl = HiveUtil.instance.downloadItemsBox
-                                    .get(HiveUtil.instance.downloadQueueBox
-                                        .get(widget.queue.key)!
-                                        .downloadItemsIds![index])!;
-                                return ListTile(
-                                  key: ValueKey(dl.key),
-                                  leading: SizedBox(
-                                    width: 25,
-                                    height: 25,
-                                    child: SvgPicture.asset(
-                                      FileUtil.resolveFileTypeIconPath(
-                                          dl.fileType),
-                                      colorFilter: ColorFilter.mode(
-                                        FileUtil.resolveFileTypeIconColor(
-                                            dl.fileType),
-                                        BlendMode.srcIn,
-                                      ),
-                                    ),
+                          child: ReorderableListView.builder(
+                            buildDefaultDragHandles: false,
+                            itemBuilder: (context, index) {
+                              final dl = HiveUtil.instance.downloadItemsBox.get(
+                                  HiveUtil.instance.downloadQueueBox
+                                      .get(widget.queue.key)!
+                                      .downloadItemsIds![index])!;
+                              return Container(
+                                key: ValueKey(dl.key),
+                                margin: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                  horizontal: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.itemColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 15,
                                   ),
-                                  title: Text(dl.fileName,
-                                      style: TextStyle(color: Colors.white)),
-                                  trailing: SizedBox(
-                                    width: 100,
+                                  leading: SizedBox(
+                                    width: 60,
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
                                       children: [
-                                        IconButton(
-                                          icon: Icon(Icons.delete,
-                                              color: Colors.red),
-                                          onPressed: () =>
-                                              onRemovePressed(index),
-                                        ),
                                         ReorderableDragStartListener(
                                           index: index,
-                                          child: const Icon(Icons.drag_handle,
-                                              color: Colors.white),
+                                          child: const Icon(
+                                            Icons.drag_indicator_rounded,
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 30,
+                                          height: 30,
+                                          child: SvgPicture.asset(
+                                            FileUtil.resolveFileTypeIconPath(
+                                              dl.fileType,
+                                            ),
+                                            colorFilter: ColorFilter.mode(
+                                              FileUtil.resolveFileTypeIconColor(
+                                                dl.fileType,
+                                              ),
+                                              BlendMode.srcIn,
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                );
-                              },
-                              itemCount: itemCount,
-                              onReorder: onReorder,
-                            ),
+                                  title: Text(
+                                    dl.fileName,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  trailing: SizedBox(
+                                    width: 40,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: IconButton(
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.white54,
+                                        ),
+                                        splashRadius: 20,
+                                        onPressed: () => onRemovePressed(index),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            itemCount: itemCount,
+                            onReorder: onReorder,
                           ),
-                        )
+                        ),
                 ],
               ),
+
             ),
-            SizedBox(height: resolveButtonMargin(size)),
-            Row(
+            // Container(
+            //   width: resolveDialogWidth(size),
+            //   height: 1,
+            //   color: Color.fromRGBO(65, 65, 65, 1.0),
+            // )
+          ],
+        ),
+      ),
+      actions: [
+        Container(
+          color: Colors.black12,
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 RoundedOutlinedButton(
                   onPressed: onCancelPressed,
                   borderColor: theme.cancelButtonColor.borderColor,
+                  backgroundColor: theme.cancelButtonColor.backgroundColor,
                   hoverTextColor: theme.cancelButtonColor.hoverTextColor,
-                  hoverBackgroundColor:
-                      theme.cancelButtonColor.hoverBackgroundColor,
+                  hoverBackgroundColor: theme.cancelButtonColor.hoverBackgroundColor,
                   textColor: theme.cancelButtonColor.textColor,
                   width: 95,
                   text: "Cancel",
                 ),
-                const SizedBox(width: 50),
+                const SizedBox(width: 10),
                 RoundedOutlinedButton(
                   onPressed: onSavePressed,
                   borderColor: theme.addButtonColor.borderColor,
+                  backgroundColor: theme.addButtonColor.backgroundColor,
                   hoverTextColor: theme.addButtonColor.hoverTextColor,
-                  hoverBackgroundColor:
-                      theme.addButtonColor.hoverBackgroundColor,
+                  hoverBackgroundColor: theme.addButtonColor.hoverBackgroundColor,
                   textColor: theme.addButtonColor.textColor,
-                  width: 95,
-                  text: "Save",
+                  width: 120,
+                  text: "Save Changes",
                 )
               ],
-            )
-          ],
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 
+  double resolveDialogWidth(Size size) {
+    if (size.width < 430) {
+      return 300;
+    }
+    if (size.width < 480) {
+      return 350;
+    }
+    if (size.width < 580) {
+      return 400;
+    }
+    return 500;
+  }
+
   double resolveListHeight(Size size) {
-    return size.height < 600 ? 200 : 900;
+    if (size.height < 300) {
+      return 80;
+    }
+    if (size.height < 370) {
+      return 130;
+    }
+    if (size.height < 420) {
+      return 200;
+    }
+    if (size.height < 480) {
+      return 270;
+    }
+    return 340;
   }
 
   double resolveButtonMargin(Size size) {
@@ -201,7 +271,19 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
   }
 
   double resolveRowHeight(Size size) {
-    return size.height < 600 ? 250 : 300;
+    if (size.height < 300) {
+      return 80;
+    }
+    if (size.height < 370) {
+      return 130;
+    }
+    if (size.height < 420) {
+      return 200;
+    }
+    if (size.height < 480) {
+      return 250;
+    }
+    return 310;
   }
 
   void onSavePressed() async {

@@ -24,70 +24,63 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
     setDownloadQueues();
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
-    return ClosableWindow(
-      width: 300,
-      height: 250,
+    return AlertDialog(
       backgroundColor: theme.backgroundColor,
-      disableCloseButton: true,
-      padding: EdgeInsets.only(top: 50),
-      content: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Select Queue : "),
-              Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: DropdownButton<String>(
-                  value: selectedValue,
-                  menuMaxHeight: 200,
-                  items: downloadQueues?.map((DownloadQueue value) {
-                    return DropdownMenuItem<String>(
-                      value: value.name,
-                      child: SizedBox(
-                        width: 100,
-                        child: Text(value.name),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) => setState(() => selectedValue = value),
-                ),
-              )
-            ],
-          ),
-          const SizedBox(height: 50),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              RoundedOutlinedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                borderColor: theme.cancelButtonColor.borderColor,
-                hoverTextColor: theme.cancelButtonColor.hoverTextColor,
-                hoverBackgroundColor:
-                    theme.cancelButtonColor.hoverBackgroundColor,
-                textColor: theme.cancelButtonColor.textColor,
-                text: "Cancel",
-                width: 95,
-              ),
-              const SizedBox(width: 10),
-              RoundedOutlinedButton(
-                onPressed: onAddPressed,
-                borderColor: theme.addButtonColor.borderColor,
-                hoverTextColor: theme.addButtonColor.hoverTextColor,
-                hoverBackgroundColor: theme.addButtonColor.hoverBackgroundColor,
-                textColor: theme.addButtonColor.textColor,
-                text: "Add",
-                width: 95,
-              ),
-            ],
-          )
-        ],
+      title: Text(
+        "Add Download To Queue",
+        style: TextStyle(color: theme.textColor, fontWeight: FontWeight.bold, fontSize: 20),
       ),
-      actions: [],
+      content: SizedBox(
+        width: 400,
+        height: 90,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Select Queue"),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: 400,
+              child: DropdownButton<String>(
+                value: selectedValue,
+                menuMaxHeight: 200,
+                menuWidth: 400,
+                items: downloadQueues?.map((DownloadQueue value) {
+                  return DropdownMenuItem<String>(
+                    value: value.name,
+                    child: SizedBox(
+                      width: 376,
+                      child: Text(value.name),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) => setState(() => selectedValue = value),
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        RoundedOutlinedButton(
+          text: "Cancel",
+          width: 80,
+          borderColor: theme.cancelButtonColor.borderColor,
+          textColor: theme.cancelButtonColor.textColor,
+          backgroundColor: theme.cancelButtonColor.backgroundColor,
+          hoverTextColor: theme.cancelButtonColor.hoverTextColor,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        RoundedOutlinedButton(
+          text: "Add To Queue",
+          width: 130,
+          borderColor: theme.addButtonColor.borderColor,
+          backgroundColor: theme.addButtonColor.backgroundColor,
+          textColor: theme.addButtonColor.textColor,
+          hoverTextColor: theme.addButtonColor.hoverTextColor,
+          hoverBackgroundColor: theme.addButtonColor.hoverBackgroundColor,
+          onPressed: onAddPressed,
+        ),
+      ],
     );
   }
 

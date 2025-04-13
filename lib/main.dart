@@ -134,63 +134,7 @@ Future<void> processM3U8(M3U8 m3u8, String outputDir) async {
     final outputFile = '$outputDir/segment_${segment.sequenceNumber}.ts';
     await decryptSegment(segment.url, key, segment.sequenceNumber, outputFile);
   }
-  // final lines = await File(m3u8File).readAsLines();
-  //
-  // // Combine segments into one file.
-  // final outputFile = File('$outputDir/output.ts');
-  // final sink = outputFile.openWrite();
-  // for (var i = 0; i < sequenceNumber; i++) {
-  //   final segmentFile = File('$outputDir/segment_$i.ts');
-  //   sink.add(await segmentFile.readAsBytes());
-  // }
-  // await sink.close();
 }
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await windowManager.ensureInitialized();
-//   tz.initializeTimeZones();
-//   await HiveUtil.instance.initHive();
-//   await setupLaunchAtStartup();
-//   await FileUtil.setDefaultTempDir();
-//   await FileUtil.setDefaultSaveDir();
-//   await HiveUtil.instance.putInitialBoxValues();
-//   await SettingsCache.setCachedSettings();
-//   await updateLaunchAtStartupSetting();
-//   ApplicationThemeHolder.setActiveTheme();
-//
-//   runApp(
-//     MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider<SettingsProvider>(
-//           create: (_) => SettingsProvider(),
-//         ),
-//         ChangeNotifierProvider<QueueProvider>(
-//           create: (_) => QueueProvider(),
-//         ),
-//         ChangeNotifierProvider<ThemeProvider>(
-//           create: (_) => ThemeProvider(),
-//         ),
-//         ChangeNotifierProvider<PlutoGridCheckRowProvider>(
-//           create: (_) => PlutoGridCheckRowProvider(),
-//         ),
-//         ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
-//             DownloadRequestProvider>(
-//           create: (_) => DownloadRequestProvider(PlutoGridCheckRowProvider()),
-//           update: (context, plutoProvider, downloadProvider) {
-//             if (downloadProvider == null) {
-//               return DownloadRequestProvider(plutoProvider);
-//             } else {
-//               downloadProvider.plutoProvider = plutoProvider;
-//               return downloadProvider;
-//             }
-//           },
-//         ),
-//       ],
-//       child: const MyApp(),
-//     ),
-//   );
-// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -201,6 +145,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Brisk',
       theme: ThemeData(
+        useMaterial3: false,
+        dialogTheme: DialogThemeData(backgroundColor: Colors.transparent),
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
           brightness: Brightness.dark,

@@ -60,6 +60,7 @@ class QueueListItem extends StatelessWidget {
   void onDeleteTap(BuildContext context) {
     final provider = Provider.of<QueueProvider>(context, listen: false);
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) => ConfirmationDialog(
           onConfirmPressed: () async => await provider.deleteQueue(queue),

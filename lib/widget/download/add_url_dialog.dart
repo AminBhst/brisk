@@ -25,7 +25,6 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return LoaderOverlay(
-      useDefaultLoading: false,
       overlayWidgetBuilder: (progress) => FileInfoLoader(
         onCancelPressed: () => DownloadAdditionUiUtil.cancelRequest(context),
       ),
@@ -33,6 +32,9 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
         surfaceTintColor: theme.backgroundColor,
         backgroundColor: theme.backgroundColor,
         insetPadding: const EdgeInsets.all(10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         title: Text(
           widget.updateDialog ? "Update Download URL" : "Add a Download URL",
           style: TextStyle(color: theme.textColor),
@@ -64,25 +66,28 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
                   String url = await FlutterClipboard.paste();
                   setState(() => txtController.text = url);
                 },
-              )
+              ),
             ],
           ),
         ),
         actions: <Widget>[
           RoundedOutlinedButton(
             text: "Cancel",
-            width: 95,
+            width: 80,
             borderColor: theme.cancelButtonColor.borderColor,
             textColor: theme.cancelButtonColor.textColor,
+            backgroundColor: theme.cancelButtonColor.backgroundColor,
             hoverTextColor: theme.cancelButtonColor.hoverTextColor,
             onPressed: () => _onCancelPressed(context),
           ),
           RoundedOutlinedButton(
-            text: widget.updateDialog ? "Update" : "Add",
-            width: 100,
+            text: widget.updateDialog ? "Update URL" : "Add URL",
+            width: 120,
             borderColor: theme.addButtonColor.borderColor,
+            backgroundColor: theme.addButtonColor.backgroundColor,
             textColor: theme.addButtonColor.textColor,
             hoverTextColor: theme.addButtonColor.hoverTextColor,
+            hoverBackgroundColor: theme.addButtonColor.hoverBackgroundColor,
             onPressed: () => _onAddPressed(context),
           ),
         ],

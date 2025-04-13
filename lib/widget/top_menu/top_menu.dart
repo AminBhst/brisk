@@ -276,7 +276,7 @@ class _TopMenuState extends State<TopMenu> {
           stateManager.notifyListeners();
         },
         title: "Are you sure you want to delete the selected downloads?",
-        checkBoxTitle: 'Delete downloaded file',
+        checkBoxTitle: 'Delete downloaded files',
       ),
     );
   }

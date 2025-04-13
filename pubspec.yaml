@@ -103,6 +103,7 @@ flutter:
     - assets/icons/music.svg
     - assets/icons/video.svg
     - assets/icons/program.svg
+    - assets/icons/exe.svg
     - assets/icons/archive.svg
     - assets/icons/document.svg
     - assets/icons/queue.svg
@@ -117,6 +118,7 @@ flutter:
     - assets/icons/logo.ico
     - assets/icons/discord.svg
     - assets/icons/telegram.svg
+    - assets/icons/folder-open.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
