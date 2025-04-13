@@ -1,3 +1,4 @@
+import 'package:brisk/theme/application_theme.dart';
 import 'package:flutter/material.dart';
 
 class RoundedOutlinedButton extends StatefulWidget {
@@ -29,6 +30,33 @@ class RoundedOutlinedButton extends StatefulWidget {
     this.icon = null,
     this.mainAxisAlignment = MainAxisAlignment.center,
   }) : super(key: key);
+
+  factory RoundedOutlinedButton.fromButtonColor(
+    ButtonColor buttonColor, {
+    Key? key,
+    required VoidCallback onPressed,
+    required String text,
+    double? width,
+    double? height = 35,
+    double borderRadius = 8.0,
+    Widget? icon = null,
+    mainAxisAlignment = MainAxisAlignment.center,
+  }) {
+    return RoundedOutlinedButton(
+      text: text,
+      width: width,
+      height: height,
+      borderColor: buttonColor.borderColor,
+      hoverTextColor: buttonColor.hoverTextColor,
+      backgroundColor: buttonColor.backgroundColor,
+      hoverBackgroundColor: buttonColor.hoverBackgroundColor,
+      textColor: buttonColor.textColor,
+      onPressed: onPressed,
+      icon: icon,
+      mainAxisAlignment: mainAxisAlignment,
+      borderRadius: borderRadius,
+    );
+  }
 
   @override
   State<RoundedOutlinedButton> createState() => _RoundedOutlinedButtonState();
@@ -66,7 +94,7 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
           ),
         ),
         child: Row(
-        mainAxisAlignment: widget.mainAxisAlignment,
+          mainAxisAlignment: widget.mainAxisAlignment,
           children: [
             if (widget.icon != null) widget.icon!,
             if (widget.icon != null) SizedBox(width: 5),

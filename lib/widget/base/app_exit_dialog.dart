@@ -74,7 +74,6 @@ class _AppExitDialogState extends State<AppExitDialog> {
             const SizedBox(height: 20),
             Column(
               children: [
-                // RoundedOutlinedButton(onPressed: onPressed, borderColor: borderColor, textColor: textColor, text: text)
                 RoundedOutlinedButton(
                   mainAxisAlignment: MainAxisAlignment.start,
                   text: "Exit Application",

@@ -30,7 +30,8 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
       ),
       title: Text(
         "Create New Queue",
-        style: TextStyle(color: theme.textColor, fontWeight: FontWeight.bold, fontSize: 20),
+        style: TextStyle(
+            color: theme.textColor, fontWeight: FontWeight.bold, fontSize: 20),
       ),
       content: SizedBox(
         width: 400,
@@ -49,23 +50,16 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
         ),
       ),
       actions: [
-        RoundedOutlinedButton(
+        RoundedOutlinedButton.fromButtonColor(
+          theme.cancelButtonColor,
           text: "Cancel",
           width: 80,
-          borderColor: theme.cancelButtonColor.borderColor,
-          textColor: theme.cancelButtonColor.textColor,
-          backgroundColor: theme.cancelButtonColor.backgroundColor,
-          hoverTextColor: theme.cancelButtonColor.hoverTextColor,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        RoundedOutlinedButton(
+        RoundedOutlinedButton.fromButtonColor(
+          theme.addButtonColor,
           text: "Create Queue",
           width: 120,
-          borderColor: theme.addButtonColor.borderColor,
-          backgroundColor: theme.addButtonColor.backgroundColor,
-          textColor: theme.addButtonColor.textColor,
-          hoverTextColor: theme.addButtonColor.hoverTextColor,
-          hoverBackgroundColor: theme.addButtonColor.hoverBackgroundColor,
           onPressed: () => onCreatePressed(context),
         ),
       ],

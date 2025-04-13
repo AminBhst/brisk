@@ -71,23 +71,16 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
           ),
         ),
         actions: <Widget>[
-          RoundedOutlinedButton(
+          RoundedOutlinedButton.fromButtonColor(
+            theme.cancelButtonColor,
             text: "Cancel",
             width: 80,
-            borderColor: theme.cancelButtonColor.borderColor,
-            textColor: theme.cancelButtonColor.textColor,
-            backgroundColor: theme.cancelButtonColor.backgroundColor,
-            hoverTextColor: theme.cancelButtonColor.hoverTextColor,
             onPressed: () => _onCancelPressed(context),
           ),
-          RoundedOutlinedButton(
+          RoundedOutlinedButton.fromButtonColor(
+            theme.addButtonColor,
             text: widget.updateDialog ? "Update URL" : "Add URL",
             width: 120,
-            borderColor: theme.addButtonColor.borderColor,
-            backgroundColor: theme.addButtonColor.backgroundColor,
-            textColor: theme.addButtonColor.textColor,
-            hoverTextColor: theme.addButtonColor.hoverTextColor,
-            hoverBackgroundColor: theme.addButtonColor.hoverBackgroundColor,
             onPressed: () => _onAddPressed(context),
           ),
         ],

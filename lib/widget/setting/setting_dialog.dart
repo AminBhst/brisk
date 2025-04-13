@@ -139,50 +139,25 @@ class _SettingsDialogState extends State<SettingsDialog> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(width: size.width < 880 ? 10 : 20),
-                          RoundedOutlinedButton(
+                          RoundedOutlinedButton.fromButtonColor(
+                            settingTheme.resetDefaultsButtonColor,
                             text: "Reset to Defaults",
                             width: 140,
                             onPressed: _onResetDefaultPressed,
-                            borderColor: settingTheme
-                                .resetDefaultsButtonColor.borderColor,
-                            textColor:
-                                settingTheme.resetDefaultsButtonColor.textColor,
-                            hoverBackgroundColor: settingTheme
-                                .resetDefaultsButtonColor.hoverBackgroundColor,
-                            backgroundColor: settingTheme
-                                .resetDefaultsButtonColor.backgroundColor,
-                            hoverTextColor: settingTheme
-                                .resetDefaultsButtonColor.hoverTextColor,
                           ),
                           Spacer(),
-                          RoundedOutlinedButton(
+                          RoundedOutlinedButton.fromButtonColor(
+                            settingTheme.cancelButtonColor,
                             text: "Cancel",
                             width: 80,
                             onPressed: _onCancelPressed,
-                            backgroundColor:
-                                settingTheme.cancelButtonColor.backgroundColor,
-                            borderColor:
-                                settingTheme.cancelButtonColor.borderColor,
-                            textColor: settingTheme.cancelButtonColor.textColor,
-                            hoverBackgroundColor: settingTheme
-                                .cancelButtonColor.hoverBackgroundColor,
-                            hoverTextColor:
-                                settingTheme.cancelButtonColor.hoverTextColor,
                           ),
                           SizedBox(width: size.width < 880 ? 10 : 20),
-                          RoundedOutlinedButton(
+                          RoundedOutlinedButton.fromButtonColor(
+                            settingTheme.saveButtonColor,
                             text: "Save Changes",
                             width: 130,
                             onPressed: _onApplyPressed,
-                            borderColor:
-                                settingTheme.saveButtonColor.borderColor,
-                            backgroundColor:
-                                settingTheme.saveButtonColor.backgroundColor,
-                            textColor: settingTheme.saveButtonColor.textColor,
-                            hoverBackgroundColor: settingTheme
-                                .saveButtonColor.hoverBackgroundColor,
-                            hoverTextColor:
-                                settingTheme.saveButtonColor.hoverTextColor,
                           ),
                         ],
                       ),

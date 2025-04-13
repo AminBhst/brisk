@@ -213,28 +213,17 @@ class _ScheduleWindowState extends State<ScheduleWindow> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  RoundedOutlinedButton(
+                  RoundedOutlinedButton.fromButtonColor(
+                    theme.alertDialogTheme.cancelButtonColor,
                     text: "Cancel",
-                    backgroundColor: theme.alertDialogTheme.cancelButtonColor.backgroundColor,
                     width: 80,
-                    borderColor: theme.alertDialogTheme.cancelButtonColor.borderColor,
-                    textColor: theme.alertDialogTheme.cancelButtonColor.textColor,
-                    hoverTextColor:
-                        theme.alertDialogTheme.cancelButtonColor.hoverTextColor,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                   const SizedBox(width: 10),
-                  RoundedOutlinedButton(
+                  RoundedOutlinedButton.fromButtonColor(
+                    theme.alertDialogTheme.addButtonColor,
                     text: startDateEnabled ? "Schedule" : "Start Now",
                     width: 120,
-                    backgroundColor: theme.alertDialogTheme.addButtonColor.backgroundColor,
-                    hoverBackgroundColor:
-                        theme.alertDialogTheme.addButtonColor.hoverBackgroundColor,
-                    borderColor:
-                        theme.alertDialogTheme.addButtonColor.borderColor,
-                    textColor: Colors.white,
-                    hoverTextColor:
-                        theme.alertDialogTheme.addButtonColor.hoverTextColor,
                     onPressed: () => Navigator.of(context).pop(),
                   )
                 ],

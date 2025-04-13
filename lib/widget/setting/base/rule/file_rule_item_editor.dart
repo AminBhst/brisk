@@ -149,32 +149,16 @@ class _FileRuleItemEditorState extends State<FileRuleItemEditor> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                RoundedOutlinedButton(
+                RoundedOutlinedButton.fromButtonColor(
+                  theme.alertDialogTheme.cancelButtonColor,
                   onPressed: () => Navigator.of(context).pop(),
-                  borderColor:
-                      theme.alertDialogTheme.cancelButtonColor.borderColor,
-                  hoverTextColor:
-                      theme.alertDialogTheme.cancelButtonColor.hoverTextColor,
-                  hoverBackgroundColor: theme
-                      .alertDialogTheme.cancelButtonColor.hoverBackgroundColor,
-                  backgroundColor:
-                      theme.alertDialogTheme.cancelButtonColor.backgroundColor,
-                  textColor: theme.alertDialogTheme.cancelButtonColor.textColor,
                   width: 95,
                   text: "Cancel",
                 ),
                 const SizedBox(width: 30),
-                RoundedOutlinedButton(
+                RoundedOutlinedButton.fromButtonColor(
+                  theme.alertDialogTheme.addButtonColor,
                   onPressed: onSave,
-                  borderColor:
-                      theme.alertDialogTheme.addButtonColor.borderColor,
-                  hoverTextColor:
-                      theme.alertDialogTheme.addButtonColor.hoverTextColor,
-                  backgroundColor:
-                      theme.alertDialogTheme.addButtonColor.backgroundColor,
-                  hoverBackgroundColor: theme
-                      .alertDialogTheme.addButtonColor.hoverBackgroundColor,
-                  textColor: theme.alertDialogTheme.addButtonColor.textColor,
                   width: 95,
                   text: "Save",
                 )

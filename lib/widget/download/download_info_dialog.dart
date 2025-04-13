@@ -267,52 +267,25 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                RoundedOutlinedButton(
+                RoundedOutlinedButton.fromButtonColor(
+                  theme.downloadInfoDialogTheme.cancelColor,
                   text: "Cancel",
                   width: 80,
                   onPressed: () => Navigator.of(context).pop(),
-                  backgroundColor:
-                      theme.downloadInfoDialogTheme.cancelColor.backgroundColor,
-                  borderColor:
-                      theme.downloadInfoDialogTheme.cancelColor.borderColor,
-                  hoverBackgroundColor: theme
-                      .downloadInfoDialogTheme.cancelColor.hoverBackgroundColor,
-                  hoverTextColor:
-                      theme.downloadInfoDialogTheme.cancelColor.hoverTextColor,
-                  textColor:
-                      theme.downloadInfoDialogTheme.cancelColor.textColor,
                 ),
                 const SizedBox(width: 10),
-                RoundedOutlinedButton(
+                RoundedOutlinedButton.fromButtonColor(
+                  theme.downloadInfoDialogTheme.addToListColor,
                   text: "Add to List",
                   width: 110,
                   onPressed: addToList,
-                  backgroundColor: theme
-                      .downloadInfoDialogTheme.addToListColor.backgroundColor,
-                  borderColor:
-                      theme.downloadInfoDialogTheme.addToListColor.borderColor,
-                  hoverBackgroundColor: theme.downloadInfoDialogTheme
-                      .addToListColor.hoverBackgroundColor,
-                  hoverTextColor: theme
-                      .downloadInfoDialogTheme.addToListColor.hoverTextColor,
-                  textColor:
-                      theme.downloadInfoDialogTheme.addToListColor.textColor,
                 ),
                 const SizedBox(width: 10),
-                RoundedOutlinedButton(
+                RoundedOutlinedButton.fromButtonColor(
+                  theme.downloadInfoDialogTheme.downloadColor,
                   text: "Download",
                   width: 100,
                   onPressed: () => _onDownloadPressed(context),
-                  backgroundColor: theme
-                      .downloadInfoDialogTheme.downloadColor.backgroundColor,
-                  borderColor:
-                      theme.downloadInfoDialogTheme.downloadColor.borderColor,
-                  hoverBackgroundColor: theme.downloadInfoDialogTheme
-                      .downloadColor.hoverBackgroundColor,
-                  hoverTextColor: theme
-                      .downloadInfoDialogTheme.downloadColor.hoverTextColor,
-                  textColor:
-                      theme.downloadInfoDialogTheme.downloadColor.textColor,
                 ),
               ],
             )
@@ -321,23 +294,14 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                RoundedOutlinedButton(
+                RoundedOutlinedButton.fromButtonColor(
+                  theme.downloadInfoDialogTheme.openFileLocationColor,
                   text: "Open File Location",
                   width: 151,
                   onPressed: () {
                     openFileLocation(widget.downloadItem);
                     Navigator.of(context).pop();
                   },
-                  backgroundColor: theme.downloadInfoDialogTheme
-                      .openFileLocationColor.backgroundColor,
-                  borderColor: theme.downloadInfoDialogTheme
-                      .openFileLocationColor.borderColor,
-                  hoverBackgroundColor: theme.downloadInfoDialogTheme
-                      .openFileLocationColor.hoverBackgroundColor,
-                  hoverTextColor: theme.downloadInfoDialogTheme
-                      .openFileLocationColor.hoverTextColor,
-                  textColor: theme
-                      .downloadInfoDialogTheme.openFileLocationColor.textColor,
                 ),
                 const SizedBox(width: 10),
                 RoundedOutlinedButton(

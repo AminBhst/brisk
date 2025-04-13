@@ -49,7 +49,9 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
             child: Text(
               "Edit Queue Items",
               style: TextStyle(
-                  color: theme.textColor, fontWeight: FontWeight.bold, fontSize: 20),
+                  color: theme.textColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20),
             ),
           ),
           Container(
@@ -182,7 +184,6 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                         ),
                 ],
               ),
-
             ),
             // Container(
             //   width: resolveDialogWidth(size),
@@ -201,24 +202,16 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                RoundedOutlinedButton(
+                RoundedOutlinedButton.fromButtonColor(
+                  theme.cancelButtonColor,
                   onPressed: onCancelPressed,
-                  borderColor: theme.cancelButtonColor.borderColor,
-                  backgroundColor: theme.cancelButtonColor.backgroundColor,
-                  hoverTextColor: theme.cancelButtonColor.hoverTextColor,
-                  hoverBackgroundColor: theme.cancelButtonColor.hoverBackgroundColor,
-                  textColor: theme.cancelButtonColor.textColor,
                   width: 95,
                   text: "Cancel",
                 ),
                 const SizedBox(width: 10),
-                RoundedOutlinedButton(
+                RoundedOutlinedButton.fromButtonColor(
+                  theme.addButtonColor,
                   onPressed: onSavePressed,
-                  borderColor: theme.addButtonColor.borderColor,
-                  backgroundColor: theme.addButtonColor.backgroundColor,
-                  hoverTextColor: theme.addButtonColor.hoverTextColor,
-                  hoverBackgroundColor: theme.addButtonColor.hoverBackgroundColor,
-                  textColor: theme.addButtonColor.textColor,
                   width: 120,
                   text: "Save Changes",
                 )
