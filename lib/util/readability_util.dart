@@ -33,22 +33,21 @@ String convertByteTransferRateToReadableStr(double bytesTransferRate) {
   }
 }
 
-String durationSecondsToReadableStr(int seconds, {bool compactView = false}) {
+String durationSecondsToReadableStr(int seconds) {
   int hours = seconds ~/ 3600;
   int minutes = (seconds % 3600) ~/ 60;
   int remainingSeconds = seconds % 60;
-  List<String> parts = [];
-  if (hours > 0) parts.add('$hours hour${hours == 1 ? '' : 's'}');
-  if (minutes > 0) parts.add('$minutes minute${minutes == 1 ? '' : 's'}');
-  if (remainingSeconds > 0 || parts.isEmpty) {
-    parts.add('$remainingSeconds second${remainingSeconds == 1 ? '' : 's'}');
+  String twoDigits(int n) => n.toString().padLeft(2, '0');
+  if (hours > 0) {
+    return '${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(remainingSeconds)}';
+  } else {
+    return '${twoDigits(minutes)}:${twoDigits(remainingSeconds)}';
   }
-  if (compactView) {
-    if (hours > 1) return '$hours hour${hours == 1 ? '' : 's'}';
-    if (minutes > 1)
-      return '$minutes minute${minutes == 1 ? '' : 's'}';
-    else
-      return '$remainingSeconds second${remainingSeconds == 1 ? '' : 's'}';
-  }
-  return parts.join(', ');
+}
+
+String? fpsToReadableStr(String? str) {
+  if (str == null) return null;
+  final double? fps = double.tryParse(str);
+  if (fps == null) return "Invalid";
+  return "${fps.toStringAsFixed(fps.truncateToDouble() == fps ? 0 : 2)}fps";
 }
