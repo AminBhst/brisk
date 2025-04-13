@@ -120,6 +120,7 @@ class DownloadAdditionUiUtil {
       extraInfo: {
         "duration": m3u8.totalDuration,
         "m3u8Content": m3u8.stringContent,
+        "refererHeader": m3u8.refererHeader,
       },
     );
     showDialog(
