@@ -8,10 +8,13 @@ import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/download/queue_timer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class PlutoGridUtil {
+  static bool isCtrlDownPressed = false;
+  static bool isShiftPressed = false;
   static PlutoGridStateManager? _stateManager;
   static PlutoGridStateManager? _multiDownloadAdditionStateManager;
 
@@ -140,6 +143,29 @@ class PlutoGridUtil {
     };
     _stateManager?.setFilter(filter);
     _stateManager?.notifyListeners();
+  }
+
+  static void registerKeyListeners() {
+    plutoStateManager!.keyManager!.subject.stream.listen((event) {
+      if (event.event.logicalKey == LogicalKeyboardKey.controlLeft ||
+          event.event.logicalKey == LogicalKeyboardKey.controlRight) {
+        if (event.isKeyDownEvent) {
+          isCtrlDownPressed = true;
+        }
+        if (event.isKeyUpEvent) {
+          isCtrlDownPressed = false;
+        }
+      }
+      if (event.event.logicalKey == LogicalKeyboardKey.shiftLeft ||
+          event.event.logicalKey == LogicalKeyboardKey.shiftRight) {
+        if (event.isKeyDownEvent) {
+          isShiftPressed = true;
+        }
+        if (event.isKeyUpEvent) {
+          isShiftPressed = false;
+        }
+      }
+    });
   }
 
   static void removeFilters() {

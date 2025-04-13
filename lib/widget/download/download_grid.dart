@@ -10,6 +10,7 @@ import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/download/download_progress_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
@@ -203,12 +204,14 @@ class _DownloadGridState extends State<DownloadGrid> {
   }
 
   void onSelected(event) {
-    final stateManger = PlutoGridUtil.plutoStateManager;
-    stateManger!.checkedRows.forEach((row) {
-      if (row.checkedViaSelect != null && row.checkedViaSelect!) {
-        stateManger.setRowChecked(row, false, checkedViaSelect: false);
-      }
-    });
+    final stateManger = PlutoGridUtil.plutoStateManager!;
+    if (!PlutoGridUtil.isCtrlDownPressed && !PlutoGridUtil.isShiftPressed) {
+      stateManger.checkedRows.forEach((row) {
+        if (row.checkedViaSelect != null && row.checkedViaSelect!) {
+          stateManger.setRowChecked(row, false, checkedViaSelect: false);
+        }
+      });
+    }
     if (stateManger.checkedRows.contains(event.row!)) {
       stateManger.setRowChecked(
         event.row!,
@@ -216,11 +219,33 @@ class _DownloadGridState extends State<DownloadGrid> {
         checkedViaSelect: true,
       );
     } else {
-      stateManger.setRowChecked(
-        event.row!,
-        true,
-        checkedViaSelect: true,
-      );
+      if (PlutoGridUtil.isCtrlDownPressed) {
+        stateManger.setRowChecked(
+          event.row!,
+          true,
+          checkedViaSelect: true,
+        );
+      } else if (PlutoGridUtil.isShiftPressed) {
+        final selectedRow = stateManger.checkedRows.first;
+        final selectedRowIdx = stateManger.refRows.indexOf(selectedRow);
+        final targetRowIdx = stateManger.refRows.indexOf(event.row!);
+        final rowsToCheck = selectedRowIdx > targetRowIdx
+            ? stateManger.refRows.sublist(targetRowIdx, selectedRowIdx)
+            : stateManger.refRows.sublist(selectedRowIdx, targetRowIdx + 1);
+        for (final row in rowsToCheck) {
+          stateManger.setRowChecked(
+            row,
+            true,
+            checkedViaSelect: true,
+          );
+        }
+      } else {
+        stateManger.setRowChecked(
+          event.row!,
+          true,
+          checkedViaSelect: true,
+        );
+      }
     }
     stateManger.notifyListeners();
     plutoProvider?.notifyListeners();
@@ -333,6 +358,7 @@ class _DownloadGridState extends State<DownloadGrid> {
     PlutoGridUtil.setStateManager(event.stateManager);
     PlutoGridUtil.plutoStateManager
         ?.setSelectingMode(PlutoGridSelectingMode.row);
+    PlutoGridUtil.registerKeyListeners();
     if (queueProvider!.selectedQueueId == null) {
       provider!.fetchRows(HiveUtil.instance.downloadItemsBox.values.toList());
     } else {
