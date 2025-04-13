@@ -392,15 +392,7 @@ class CheckboxSelectionWidgetState
 
   @override
   Widget build(BuildContext context) {
-    return PlutoScaledCheckbox(
-      value: _checked,
-      handleOnChanged: _handleOnChanged,
-      tristate: _tristate,
-      scale: 0.86,
-      unselectedColor: stateManager.configuration.style.iconColor,
-      activeColor: stateManager.configuration.style.activatedBorderColor,
-      checkColor: stateManager.configuration.style.activatedColor,
-    );
+    return Container();
   }
 }
 

@@ -63,30 +63,33 @@ class _DownloadGridState extends State<DownloadGrid> {
         renderer: (rendererContext) {
           final fileName = rendererContext.row.cells["file_name"]!.value;
           final fileType = FileUtil.detectFileType(fileName);
-          return Row(
-            children: [
-              SizedBox(
-                width: resolveIconSize(fileType),
-                height: resolveIconSize(fileType),
-                child: SvgPicture.asset(
-                  FileUtil.resolveFileTypeIconPath(fileType.name),
-                  colorFilter: ColorFilter.mode(
-                    FileUtil.resolveFileTypeIconColor(fileType.name),
-                    BlendMode.srcIn,
+          return Padding(
+            padding: const EdgeInsets.only(left: 5.0),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: resolveIconSize(fileType),
+                  height: resolveIconSize(fileType),
+                  child: SvgPicture.asset(
+                    FileUtil.resolveFileTypeIconPath(fileType.name),
+                    colorFilter: ColorFilter.mode(
+                      FileUtil.resolveFileTypeIconColor(fileType.name),
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 5),
-              Expanded(
-                child: Text(
-                  rendererContext.row.cells[rendererContext.column.field]!.value
-                      .toString(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: Text(
+                    rendererContext.row.cells[rendererContext.column.field]!.value
+                        .toString(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
