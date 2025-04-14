@@ -19,58 +19,74 @@ class AskDuplicationAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme =
-        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
+    final theme = Provider.of<ThemeProvider>(context).activeTheme;
     return AlertDialog(
-      insetPadding: const EdgeInsets.all(2),
-      backgroundColor: theme.backgroundColor,
-      surfaceTintColor: theme.backgroundColor,
-      icon:
-          const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 40),
-      content: SizedBox(
-        width: 430,
-        height: 100,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              "Download already exists!",
-              style: TextStyle(color: Colors.white),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      backgroundColor: theme.alertDialogTheme.backgroundColor,
+      title: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: const BoxDecoration(
+              color: Color.fromRGBO(245, 158, 11, 0.1),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 50),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  RoundedOutlinedButton(
-                    text: "Skip",
-                    borderColor: Colors.redAccent,
-                    textColor: Colors.white,
-                    backgroundColor: Colors.redAccent,
-                    onPressed: onSkipPressed,
-                  ),
-                  const SizedBox(width: 15),
-                  RoundedOutlinedButton(
-                    text: "Add New",
-                    textColor: Colors.green,
-                    borderColor: Colors.green,
-                    onPressed: onCreateNewPressed,
-                  ),
-                  const SizedBox(width: 15),
-                  RoundedOutlinedButton(
-                    text: "Update URL",
-                    textColor: Colors.blueGrey,
-                    borderColor: Colors.blueGrey,
-                    onPressed: onUpdateUrlPressed,
-                  ),
-                ],
+            child: Center(
+              child: Align(
+                alignment: const Alignment(0, -0.16),
+                child: const Icon(
+                  Icons.warning_rounded,
+                  color: Color.fromRGBO(245, 158, 11, 1),
+                  size: 35,
+                ),
               ),
-            )
-          ],
+            ),
+          ),
+          SizedBox(width: 10),
+          Text(
+            "Duplicate Download",
+            style: TextStyle(
+                color: theme.alertDialogTheme.textColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 20),
+          ),
+        ],
+      ),
+      content: Container(
+        width: 400,
+        child: Text(
+          "This download already exists!\nPlease choose an action.",
+          style: const TextStyle(fontSize: 17),
         ),
       ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            RoundedOutlinedButton.fromButtonColor(
+              theme.alertDialogTheme.cancelButtonColor,
+              text: "Skip",
+              width: 80,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            const SizedBox(width: 5),
+            RoundedOutlinedButton.fromButtonColor(
+              theme.downloadInfoDialogTheme.addToListColor,
+              text: "Update URL",
+              onPressed: onUpdateUrlPressed,
+            ),
+            const SizedBox(width: 5),
+            RoundedOutlinedButton.fromButtonColor(
+              theme.alertDialogTheme.addButtonColor,
+              text: "Add New",
+              onPressed: onCreateNewPressed,
+            ),
+          ],
+        )
+      ],
     );
   }
 }

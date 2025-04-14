@@ -15,13 +15,13 @@ class BehaviourSettingsGroup extends StatefulWidget {
 }
 
 class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
-  static const dropDownAskStr = "Always ask";
-  static const dropDownSkipStr = "Skip download";
-  static const dropDownAddStr = "Add new";
+  static const dropDownAskStr = "Always Ask";
+  static const dropDownSkipStr = "Skip Download";
+  static const dropDownAddStr = "Add New";
   static const dropDownUpdateUrlSTr = "Update URL";
 
   static const dropDownExitStr = "Exit";
-  static const dropDownMinimizeToTrayStr = "Minimize to tray";
+  static const dropDownMinimizeToTrayStr = "Minimize to Tray";
 
   @override
   Widget build(BuildContext context) {
