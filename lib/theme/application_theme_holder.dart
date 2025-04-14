@@ -342,7 +342,7 @@ ApplicationTheme signatureBlue = ApplicationTheme(
     backgroundColor: const Color.fromRGBO(55, 64, 81, 1),
     briskLogoColor: Colors.white,
     activeTabIconColor: Colors.white,
-    activeTabBackgroundColor: Colors.blueGrey,
+    activeTabBackgroundColor: Colors.blueGrey.shade600,
     tabHoverColor: Colors.blueGrey,
     tabIconColor: Colors.white,
     tabBackgroundColor: Colors.transparent,
@@ -469,7 +469,7 @@ ApplicationTheme signatureBlue = ApplicationTheme(
   downloadGridTheme: DownloadGridTheme(
     backgroundColor: Color.fromRGBO(40, 46, 58, 1),
     activeRowColor: Colors.black26,
-    checkedRowColor: Colors.blueGrey,
+    checkedRowColor: Colors.blueGrey.shade700,
     borderColor: Colors.black26,
     rowColor: Color.fromRGBO(49, 56, 72, 1),
   ),
@@ -484,7 +484,6 @@ ApplicationTheme signatureBlue = ApplicationTheme(
         switchColor: SwitchColor(
           activeColor: Colors.green,
           focusColor: Colors.lightGreen,
-          hoverColor: Colors.greenAccent,
         ),
         dropDownColor: DropDownColor(
           dropDownBackgroundColor: Color.fromRGBO(33, 43, 49, 1.0),
