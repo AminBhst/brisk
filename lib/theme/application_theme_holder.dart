@@ -249,7 +249,7 @@ ApplicationTheme celestialDark = ApplicationTheme(
       backgroundColor: const Color.fromRGBO(37, 37, 37, 1.0),
       textColor: Colors.white70,
     ),
-    itemColor: const Color.fromRGBO(33, 33, 33, 1.0),
+    itemContainerBackgroundColor: const Color.fromRGBO(33, 33, 33, 1.0),
   ),
   downloadInfoDialogTheme: DownloadInfoTheme(
     downloadColor: ButtonColor(
@@ -401,7 +401,7 @@ ApplicationTheme signatureBlue = ApplicationTheme(
       backgroundColor: Color.fromRGBO(43, 56, 63, 1.0),
       textColor: Colors.white70,
     ),
-    itemColor: const Color.fromRGBO(55, 64, 81, 1),
+    itemContainerBackgroundColor: const Color.fromRGBO(44, 58, 65, 1),
   ),
   topMenuTheme: TopMenuTheme(
     backgroundColor: const Color.fromRGBO(46, 54, 67, 1),

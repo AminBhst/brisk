@@ -106,7 +106,7 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: theme.alertDialogTheme.itemColor,
+          color: theme.alertDialogTheme.itemContainerBackgroundColor,
         ),
         height: 70,
         width: 500,

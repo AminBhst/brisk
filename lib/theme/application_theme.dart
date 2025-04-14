@@ -139,7 +139,7 @@ class AlertDialogTheme {
   final ButtonColor cancelButtonColor;
   final ButtonColor deleteConfirmColor;
   final ButtonColor deleteCancelColor;
-  final Color itemColor;
+  final Color itemContainerBackgroundColor;
   final TextFieldColor urlFieldColor;
   final CheckBoxColor checkBoxColor;
   final Color innerContainerBorderColor;
@@ -159,7 +159,7 @@ class AlertDialogTheme {
     required this.placeHolderTextColor,
     required this.deleteConfirmColor,
     required this.deleteCancelColor,
-    required this.itemColor,
+    required this.itemContainerBackgroundColor,
   });
 }
 

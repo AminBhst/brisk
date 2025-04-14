@@ -121,7 +121,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                                   horizontal: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: theme.itemColor,
+                                  color: theme.itemContainerBackgroundColor,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: ListTile(

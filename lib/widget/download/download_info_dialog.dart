@@ -223,7 +223,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                                     ),
                                     textColor: Colors.white,
                                     borderColor: Colors.transparent,
-                                    backgroundColor: alertDialogTheme.itemColor,
+                                    backgroundColor: alertDialogTheme.itemContainerBackgroundColor,
                                     onPressed: pickNewSaveLocation,
                                   ),
                                 ],

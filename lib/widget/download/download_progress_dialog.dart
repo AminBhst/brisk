@@ -137,7 +137,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
         width: 500,
         height: 200,
         decoration: BoxDecoration(
-          color: theme.alertDialogTheme.itemColor,
+          color: theme.alertDialogTheme.itemContainerBackgroundColor,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Selector<DownloadRequestProvider, List<DownloadProgressMessage>>(
@@ -379,7 +379,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
       height: 80,
       width: 150,
       decoration: BoxDecoration(
-        color: theme.alertDialogTheme.itemColor,
+        color: theme.alertDialogTheme.itemContainerBackgroundColor,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(

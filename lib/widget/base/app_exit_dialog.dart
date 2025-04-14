@@ -83,7 +83,7 @@ class _AppExitDialogState extends State<AppExitDialog> {
                   ),
                   textColor: Colors.white,
                   borderColor: Colors.transparent,
-                  backgroundColor: theme.itemColor,
+                  backgroundColor: theme.itemContainerBackgroundColor,
                   hoverBackgroundColor: Color.fromRGBO(220, 38, 38, 1),
                   height: 45,
                   width: 500,
@@ -101,7 +101,7 @@ class _AppExitDialogState extends State<AppExitDialog> {
                   textColor: Colors.white,
                   borderColor: Colors.transparent,
                   hoverBackgroundColor: Color.fromRGBO(53, 89, 143, 1),
-                  backgroundColor: theme.itemColor,
+                  backgroundColor: theme.itemContainerBackgroundColor,
                   width: 500,
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -116,7 +116,7 @@ class _AppExitDialogState extends State<AppExitDialog> {
                   icon: Icon(Icons.close_rounded, color: Colors.white54),
                   textColor: Colors.white,
                   borderColor: Colors.transparent,
-                  backgroundColor: theme.itemColor,
+                  backgroundColor: theme.itemContainerBackgroundColor,
                   width: 500,
                   onPressed: () {
                     Navigator.of(context).pop();
