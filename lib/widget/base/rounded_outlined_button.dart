@@ -5,7 +5,7 @@ class RoundedOutlinedButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final Color borderColor;
   final Color textColor;
-  final String text;
+  final String? text;
   final Color backgroundColor;
   final double? width;
   final double? height;
@@ -95,16 +95,17 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
           mainAxisAlignment: widget.mainAxisAlignment,
           children: [
             if (widget.icon != null) widget.icon!,
-            if (widget.icon != null) SizedBox(width: 5),
-            Text(
-              widget.text,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: widget.hoverTextColor == null
-                    ? (hover ? Colors.white : widget.textColor)
-                    : (hover ? widget.hoverTextColor : widget.textColor),
+            if (widget.icon != null && widget.text != null) SizedBox(width: 5),
+            if (widget.text != null)
+              Text(
+                widget.text!,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: widget.hoverTextColor == null
+                      ? (hover ? Colors.white : widget.textColor)
+                      : (hover ? widget.hoverTextColor : widget.textColor),
+                ),
               ),
-            ),
           ],
         ),
       ),

@@ -212,10 +212,10 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                                 children: [
                                   const SizedBox(width: 5),
                                   RoundedOutlinedButton(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    text: "Browse",
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    text: null,
                                     height: 40,
-                                    width: 110,
+                                    width: 56,
                                     icon: SvgPicture.asset(
                                       'assets/icons/folder-open.svg',
                                       colorFilter: ColorFilter.mode(
@@ -325,9 +325,9 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
   }
 
   double resolveSaveAsWidth(Size size) {
-    double width = widget.showActionButtons ? 335 : 450;
+    double width = widget.showActionButtons ? 389 : 450;
     if (size.width < 500) {
-      width = size.width * 0.8 - 115;
+      width = size.width * 0.8 - 61;
     }
     return width;
   }
