@@ -409,6 +409,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
       selector: (_, provider) =>
           provider.downloads[widget.downloadId]!.downloadProgress,
       builder: (context, progress, child) {
+        if (totalSize <= 0) return Container();
         final totalSizeStr = convertByteToReadableStr(totalSize);
         final completedSizeStr =
             convertByteToReadableStr((totalSize * progress).toInt());
