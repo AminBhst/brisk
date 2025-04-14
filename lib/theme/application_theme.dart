@@ -10,7 +10,7 @@ class ApplicationTheme {
   final SettingTheme settingTheme;
   final DownloadInfoTheme downloadInfoDialogTheme;
   AlertDialogTheme alertDialogTheme;
-  DownloadProgressWindowTheme downloadProgressWindowTheme;
+  DownloadProgressDialogTheme downloadProgressDialogTheme;
 
   ApplicationTheme({
     required this.themeId,
@@ -20,7 +20,7 @@ class ApplicationTheme {
     required this.queuePageTheme,
     required this.settingTheme,
     required this.alertDialogTheme,
-    required this.downloadProgressWindowTheme,
+    required this.downloadProgressDialogTheme,
     required this.downloadInfoDialogTheme,
   });
 }
@@ -173,7 +173,7 @@ class CheckBoxColor {
   });
 }
 
-class DownloadProgressWindowTheme {
+class DownloadProgressDialogTheme {
   final Color windowBackgroundColor;
   final Color detailsContainerBorderColor;
   final Color detailsContainerBackgroundColor;
@@ -181,8 +181,14 @@ class DownloadProgressWindowTheme {
   final Color infoContainerBorderColor;
   final Color infoContainerBackgroundColor;
   final Color infoContainerTextColor;
+  final Color assemblingStatusProgressColor;
+  final Color validatingFilesStatusProgressColor;
+  final ProgressIndicatorColor totalProgressColor;
+  final ProgressIndicatorColor connectionProgressColor;
+  final ButtonColor pauseColor;
+  final ButtonColor resumeColor;
 
-  DownloadProgressWindowTheme({
+  DownloadProgressDialogTheme({
     required this.windowBackgroundColor,
     required this.detailsContainerBorderColor,
     required this.detailsContainerBackgroundColor,
@@ -190,6 +196,28 @@ class DownloadProgressWindowTheme {
     required this.infoContainerBorderColor,
     required this.infoContainerBackgroundColor,
     required this.infoContainerTextColor,
+    required this.pauseColor,
+    required this.resumeColor,
+    this.totalProgressColor = const ProgressIndicatorColor(
+      color: Colors.green,
+      backgroundColor: Color.fromRGBO(47, 44, 44, 0.9),
+    ),
+    this.connectionProgressColor = const ProgressIndicatorColor(
+      color: Colors.indigoAccent,
+      backgroundColor: Color.fromRGBO(47, 44, 44, 0.95),
+    ),
+    this.assemblingStatusProgressColor = Colors.green,
+    this.validatingFilesStatusProgressColor = Colors.blueAccent,
+  });
+}
+
+class ProgressIndicatorColor {
+  final Color backgroundColor;
+  final Color color;
+
+  const ProgressIndicatorColor({
+    required this.backgroundColor,
+    required this.color,
   });
 }
 

@@ -15,7 +15,7 @@ class ApplicationThemeHolder {
 
 ApplicationTheme celestialDark = ApplicationTheme(
   themeId: "Celestial Dark",
-  downloadProgressWindowTheme: DownloadProgressWindowTheme(
+  downloadProgressDialogTheme: DownloadProgressDialogTheme(
     windowBackgroundColor: const Color.fromRGBO(25, 25, 25, 1),
     detailsContainerBorderColor: Colors.white10,
     detailsContainerBackgroundColor: const Color.fromRGBO(25, 25, 25, 0.7),
@@ -23,6 +23,26 @@ ApplicationTheme celestialDark = ApplicationTheme(
     infoContainerBorderColor: Colors.white24,
     infoContainerBackgroundColor: const Color.fromRGBO(25, 25, 25, 0.7),
     infoContainerTextColor: Colors.white,
+    resumeColor: ButtonColor(
+      iconColor: Colors.transparent,
+      backgroundColor: Color.fromRGBO(24, 150, 91, 1.0),
+      hoverIconColor: Colors.transparent,
+      hoverBackgroundColor: Color.fromRGBO(3, 114, 59, 1.0),
+      hoverTextColor: Colors.white,
+      textColor: Colors.white,
+      borderColor: Color.fromRGBO(24, 150, 91, 1.0),
+      borderHoverColor: Colors.green,
+    ),
+    pauseColor: ButtonColor(
+      iconColor: Colors.transparent,
+      hoverIconColor: Colors.transparent,
+      textColor: Colors.white70,
+      hoverBackgroundColor: Color.fromRGBO(244, 67, 54, 0.5),
+      hoverTextColor: Colors.white,
+      backgroundColor: Color.fromRGBO(244, 67, 54, 0.7),
+      borderColor: Color.fromRGBO(63, 19, 19, 0.5),
+      // borderHoverColor: Colors.red,
+    ),
   ),
   topMenuTheme: TopMenuTheme(
     backgroundColor: const Color.fromRGBO(20, 20, 20, 0.85),
@@ -125,8 +145,8 @@ ApplicationTheme celestialDark = ApplicationTheme(
         ),
         textFieldColor: TextFieldColor(
           focusBorderColor: const Color.fromRGBO(53, 89, 143, 1),
-          borderColor: Colors.white70,
-          fillColor: Colors.black12,
+          borderColor: Color.fromRGBO(56, 53, 53, 0.9019607843137255),
+          fillColor: Color.fromRGBO(47, 44, 44, 0.4),
           textColor: Colors.white,
           cursorColor: Colors.white,
         ),
@@ -281,14 +301,42 @@ ApplicationTheme celestialDark = ApplicationTheme(
 
 ApplicationTheme signatureBlue = ApplicationTheme(
   themeId: "Signature Blue",
-  downloadProgressWindowTheme: DownloadProgressWindowTheme(
-    windowBackgroundColor: Color.fromRGBO(33, 43, 49, 1.0),
-    detailsContainerBorderColor: Colors.white24,
-    detailsContainerBackgroundColor: Color.fromRGBO(33, 43, 49, 8.0),
+  downloadProgressDialogTheme: DownloadProgressDialogTheme(
+    windowBackgroundColor: const Color.fromRGBO(25, 25, 25, 1),
+    detailsContainerBorderColor: Colors.white10,
+    detailsContainerBackgroundColor: const Color.fromRGBO(25, 25, 25, 0.7),
     detailsContainerTextColor: Colors.white,
     infoContainerBorderColor: Colors.white24,
-    infoContainerBackgroundColor: Color.fromRGBO(33, 43, 49, 9.0),
+    infoContainerBackgroundColor: const Color.fromRGBO(25, 25, 25, 0.7),
     infoContainerTextColor: Colors.white,
+    connectionProgressColor: ProgressIndicatorColor(
+      color: Colors.indigoAccent,
+      backgroundColor: Color.fromRGBO(71, 100, 117, 0.5),
+    ),
+    totalProgressColor: const ProgressIndicatorColor(
+      color: Colors.green,
+      backgroundColor: Color.fromRGBO(44, 58, 65, 1),
+    ),
+    resumeColor: ButtonColor(
+      iconColor: Colors.transparent,
+      backgroundColor: Color.fromRGBO(24, 150, 91, 1.0),
+      hoverIconColor: Colors.transparent,
+      hoverBackgroundColor: Color.fromRGBO(3, 114, 59, 1.0),
+      hoverTextColor: Colors.white,
+      textColor: Colors.white,
+      borderColor: Color.fromRGBO(24, 150, 91, 1.0),
+      borderHoverColor: Colors.green,
+    ),
+    pauseColor: ButtonColor(
+      iconColor: Colors.transparent,
+      hoverIconColor: Colors.transparent,
+      textColor: Colors.white70,
+      hoverBackgroundColor: Color.fromRGBO(244, 67, 54, 0.5),
+      hoverTextColor: Colors.white,
+      backgroundColor: Color.fromRGBO(244, 67, 54, 0.7),
+      borderColor: Color.fromRGBO(63, 19, 19, 0.5),
+      // borderHoverColor: Colors.red,
+    ),
   ),
   sideMenuTheme: SideMenuTheme(
     backgroundColor: const Color.fromRGBO(55, 64, 81, 1),
@@ -444,8 +492,8 @@ ApplicationTheme signatureBlue = ApplicationTheme(
         ),
         textFieldColor: TextFieldColor(
           focusBorderColor: Colors.blueGrey,
-          borderColor: Colors.white,
-          fillColor: Colors.black12,
+          borderColor: Color.fromRGBO(73, 84, 103, 1.0),
+          fillColor: Color.fromRGBO(55, 65, 81, 1),
           textColor: Colors.white,
           cursorColor: Colors.white,
         ),

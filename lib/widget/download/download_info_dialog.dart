@@ -11,6 +11,7 @@ import 'package:brisk/widget/base/default_tooltip.dart';
 import 'package:brisk/widget/base/outlined_text_field.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/scrollable_dialog.dart';
+import 'package:brisk/widget/download/download_progress_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -18,7 +19,6 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/model/download_item.dart';
-import 'download_progress_window.dart';
 
 class DownloadInfoDialog extends StatefulWidget {
   final DownloadItem downloadItem;
@@ -422,7 +422,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
     if (SettingsCache.openDownloadProgressWindow) {
       showDialog(
         context: context,
-        builder: (_) => DownloadProgressWindow(widget.downloadItem.key),
+        builder: (_) => DownloadProgressDialog(widget.downloadItem.key),
         barrierDismissible: false,
       );
     }

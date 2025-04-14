@@ -61,14 +61,15 @@ class OutLinedTextField extends StatelessWidget {
           hoverColor: theme.hoverColor,
           hintText: hintText,
           border: OutlineInputBorder(
+            borderSide: BorderSide(color: theme.borderColor, width: 0.5),
             borderRadius: BorderRadius.circular(10),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: theme.borderColor, width: 0.5),
+            borderSide: BorderSide(color: theme.borderColor, width: 0.5),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: theme.focusBorderColor, width: 2.0),
+            borderSide: BorderSide(color: theme.focusBorderColor, width: 1.0),
             borderRadius: BorderRadius.circular(10.0),
           ),
           filled: true,

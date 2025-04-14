@@ -1099,31 +1099,40 @@ class HttpDownloadEngine {
     if (progresses == null ||
         _tempTime + 1000 > nowMillis ||
         bytesTransferRate == 0) return;
+
     int totalBytes = 0;
     final contentLength = progresses.values.first.downloadItem.contentLength;
     for (var element in progresses.values) {
       totalBytes += element.totalReceivedBytes;
     }
+
     final remainingSec = (contentLength - totalBytes) / bytesTransferRate;
     String estimatedRemaining;
+
     final days = ((remainingSec % 31536000) / 86400).floor();
     final hours = (((remainingSec % 31536000) % 86400) / 3600).floor();
     final minutes = ((((remainingSec % 31536000) % 86400) % 3600) / 60).floor();
     final seconds = ((((remainingSec % 31536000) % 86400) % 3600) % 60).floor();
+
+    String formatUnit(int value, String unit) {
+      return '$value $unit${value == 1 ? '' : 's'}';
+    }
+
     if (days >= 1) {
-      estimatedRemaining =
-          '$days Days, $hours Hours, $minutes Minutes, $seconds Seconds';
+      estimatedRemaining = formatUnit(hours, 'Hour');
     } else if (hours >= 1) {
-      estimatedRemaining = '$hours Hours, $minutes Minutes, $seconds Seconds';
+      estimatedRemaining =
+          '${formatUnit(hours, 'Hour')}, ${formatUnit(minutes, 'Minute')}';
     } else if (minutes >= 1) {
-      estimatedRemaining = '$minutes Minutes, $seconds Seconds';
+      estimatedRemaining =
+          '${formatUnit(minutes, 'Minute')}, ${formatUnit(seconds, 'Second')}';
     } else if (remainingSec == 0) {
       estimatedRemaining = "";
     } else {
-      estimatedRemaining = '${remainingSec.toStringAsFixed(0)} Seconds';
+      estimatedRemaining = formatUnit(remainingSec.toInt(), 'Second');
     }
     _tempTime = _nowMillis;
-    completionEstimations.addAll({id: estimatedRemaining});
+    completionEstimations[id] = estimatedRemaining;
   }
 
   static void _setStatus(int id, DownloadProgressMessage downloadProgress) {

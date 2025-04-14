@@ -2,7 +2,7 @@ import 'package:brisk/theme/application_theme.dart';
 import 'package:flutter/material.dart';
 
 class RoundedOutlinedButton extends StatefulWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color borderColor;
   final Color textColor;
   final String text;
@@ -34,7 +34,7 @@ class RoundedOutlinedButton extends StatefulWidget {
   factory RoundedOutlinedButton.fromButtonColor(
     ButtonColor buttonColor, {
     Key? key,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
     required String text,
     double? width,
     double? height = 35,
@@ -83,9 +83,7 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
           ),
           shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-              widget.borderRadius,
-            )),
+                borderRadius: BorderRadius.circular(widget.borderRadius)),
           ),
           side: WidgetStateProperty.all(
             BorderSide(

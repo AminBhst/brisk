@@ -1,13 +1,12 @@
 import 'package:brisk/download_engine/download_status.dart';
+import 'package:brisk/widget/download/download_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-
-import '../../db/hive_util.dart';
-import '../../provider/download_request_provider.dart';
+import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/provider/download_request_provider.dart';
 import 'add_url_dialog.dart';
 import 'download_info_dialog.dart';
-import 'download_progress_window.dart';
 import 'dart:io';
 
 class DownloadRowPopUpMenuButton extends StatelessWidget {
@@ -102,7 +101,7 @@ class DownloadRowPopUpMenuButton extends StatelessWidget {
       case 2:
         showDialog(
           context: context,
-          builder: (_) => DownloadProgressWindow(id),
+          builder: (_) => DownloadProgressDialog(id),
           barrierDismissible: false,
         );
         break;

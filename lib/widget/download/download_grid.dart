@@ -9,14 +9,13 @@ import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/download/download_info_dialog.dart';
-import 'package:brisk/widget/download/download_progress_window.dart';
+import 'package:brisk/widget/download/download_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-
-import '../../db/hive_util.dart';
+import 'package:brisk/db/hive_util.dart';
 
 class DownloadGrid extends StatefulWidget {
   @override
@@ -283,8 +282,8 @@ class _DownloadGridState extends State<DownloadGrid> {
       ),
       items: [
         PopupMenuItem(
-          value: "Open Progress Window",
-          child: Text("Open Progress Window"),
+          value: "Open Progress Dialog",
+          child: Text("Open Progress Dialog"),
           enabled: downloadExists,
         ),
         PopupMenuItem(
@@ -320,10 +319,10 @@ class _DownloadGridState extends State<DownloadGrid> {
       return;
     }
     switch (value) {
-      case "Open Progress Window":
+      case "Open Progress Dialog":
         showDialog(
           context: context,
-          builder: (_) => DownloadProgressWindow(downloadItem.key),
+          builder: (_) => DownloadProgressDialog(downloadItem.key),
           barrierDismissible: false,
         );
         break;
@@ -387,7 +386,7 @@ class _DownloadGridState extends State<DownloadGrid> {
         downloadProgress.status != DownloadStatus.assembleComplete) {
       showDialog(
         context: context,
-        builder: (_) => DownloadProgressWindow(id),
+        builder: (_) => DownloadProgressDialog(id),
         barrierDismissible: false,
       );
       return;
