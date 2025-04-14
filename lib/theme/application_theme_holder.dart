@@ -15,6 +15,7 @@ class ApplicationThemeHolder {
 
 ApplicationTheme celestialDark = ApplicationTheme(
   themeId: "Celestial Dark",
+  rightClickMenuBackgroundColor: Color.fromRGBO(35, 35, 35, 1.0),
   downloadProgressDialogTheme: DownloadProgressDialogTheme(
     windowBackgroundColor: const Color.fromRGBO(25, 25, 25, 1),
     detailsContainerBorderColor: Colors.white10,
@@ -301,6 +302,7 @@ ApplicationTheme celestialDark = ApplicationTheme(
 
 ApplicationTheme signatureBlue = ApplicationTheme(
   themeId: "Signature Blue",
+  rightClickMenuBackgroundColor: Color.fromRGBO(33, 43, 49, 1.0),
   downloadProgressDialogTheme: DownloadProgressDialogTheme(
     windowBackgroundColor: const Color.fromRGBO(25, 25, 25, 1),
     detailsContainerBorderColor: Colors.white10,
@@ -587,7 +589,7 @@ ApplicationTheme signatureBlue = ApplicationTheme(
       hoverTextColor: Color.fromRGBO(53, 89, 143, 1),
       textColor: Colors.white,
       borderColor: Colors.transparent,
-      backgroundColor: Color.fromRGBO(45, 45, 45, 0.5),
+      backgroundColor: Color.fromRGBO(76, 105, 164, 0.15),
     ),
   ),
 );

@@ -79,7 +79,8 @@ class _DownloadGridState extends State<DownloadGrid> {
                 const SizedBox(width: 5),
                 Expanded(
                   child: Text(
-                    rendererContext.row.cells[rendererContext.column.field]!.value
+                    rendererContext
+                        .row.cells[rendererContext.column.field]!.value
                         .toString(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -258,6 +259,7 @@ class _DownloadGridState extends State<DownloadGrid> {
   ) {
     final provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);
+    final theme = Provider.of<ThemeProvider>(context, listen: false);
     final id = event.row.cells["id"]!.value;
     final status = event.row.cells["status"]!.value;
     final downloadProgress = provider.downloads[id];
@@ -268,7 +270,10 @@ class _DownloadGridState extends State<DownloadGrid> {
             downloadProgress.status != DownloadStatus.downloading)
         : (!downloadComplete || status == DownloadStatus.paused);
     showMenu(
-      color: const Color.fromRGBO(20, 20, 20, 1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5),
+      ),
+      color: theme.activeTheme.rightClickMenuBackgroundColor,
       popUpAnimationStyle: AnimationStyle(
         curve: Easing.emphasizedAccelerate,
         duration: Durations.short2,

@@ -9,6 +9,7 @@ class ApplicationTheme {
   final QueuePageTheme queuePageTheme;
   final SettingTheme settingTheme;
   final DownloadInfoTheme downloadInfoDialogTheme;
+  final Color rightClickMenuBackgroundColor;
   AlertDialogTheme alertDialogTheme;
   DownloadProgressDialogTheme downloadProgressDialogTheme;
 
@@ -22,6 +23,7 @@ class ApplicationTheme {
     required this.alertDialogTheme,
     required this.downloadProgressDialogTheme,
     required this.downloadInfoDialogTheme,
+    this.rightClickMenuBackgroundColor = const Color.fromRGBO(20, 20, 20, 1),
   });
 }
 
