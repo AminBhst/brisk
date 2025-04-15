@@ -13,7 +13,10 @@ import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/closable_window.dart';
+import 'package:brisk/widget/base/error_dialog.dart';
+import 'package:brisk/widget/base/outlined_text_field.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
+import 'package:brisk/widget/base/scrollable_dialog.dart';
 import 'package:brisk/widget/download/multi_download_addition_grid.dart';
 import 'package:dartx/dartx.dart';
 import 'package:file_picker/file_picker.dart';
@@ -28,7 +31,8 @@ import '../../util/file_util.dart';
 class MultiDownloadAdditionDialog extends StatefulWidget {
   List<FileInfo> fileInfos = [];
   late DownloadRequestProvider provider;
-  String? customSavePath;
+  TextEditingController txtController = TextEditingController();
+  bool checkboxEnabled = false;
 
   MultiDownloadAdditionDialog(this.fileInfos);
 
@@ -45,15 +49,25 @@ class _MultiDownloadAdditionDialogState
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     final size = MediaQuery.of(context).size;
-    return ClosableWindow(
-      disableCloseButton: true,
-      height: 600,
-      width: 700,
+    return ScrollableDialog(
+      title: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Text(
+          "Add Download",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+      ),
+      width: 600,
+      height: 500,
+      scrollButtonVisible: true,
+      scrollviewHeight: 500,
+      scrollViewWidth: 600,
       backgroundColor: theme.backgroundColor,
       content: Container(
-        height: resolveMainContainerHeight(size),
+        height: 500,
         width: 600,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: 600,
@@ -61,7 +75,6 @@ class _MultiDownloadAdditionDialogState
                 // borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Color.fromRGBO(220, 220, 220, 0.2)),
               ),
-              height: resolveScrollViewHeight(size),
               child: SingleChildScrollView(
                 child: Container(
                   height: resolveMainContainerHeight(size),
@@ -73,38 +86,89 @@ class _MultiDownloadAdditionDialogState
                 ),
               ),
             ),
-            Spacer(),
-            Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  RoundedOutlinedButton(
-                    width: 100,
-                    onPressed: () => Navigator.of(context).pop(),
-                    borderColor: Colors.red,
-                    text: "Cancel",
-                    textColor: Colors.red,
+                  Row(
+                    children: [
+                      Checkbox(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(2.0),
+                        ),
+                        side: WidgetStateBorderSide.resolveWith(
+                          (states) =>
+                              BorderSide(width: 1.0, color: Colors.grey),
+                        ),
+                        activeColor: Colors.blueGrey,
+                        value: widget.checkboxEnabled,
+                        onChanged: (value) =>
+                            setState(() => widget.checkboxEnabled = value!),
+                      ),
+                      Text(
+                        "Custom Save Path",
+                        style: TextStyle(color: Colors.white60),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 10),
-                  RoundedOutlinedButton(
-                    width: 170,
-                    onPressed: onSelectSavePathPressed,
-                    borderColor: Colors.blueGrey,
-                    text: "Select Save Path",
-                    textColor: Colors.blueGrey,
-                  ),
-                  const SizedBox(width: 10),
-                  RoundedOutlinedButton(
-                    width: 100,
-                    onPressed: onAddPressed,
-                    borderColor: Colors.green,
-                    text: "Add",
-                    textColor: Colors.green,
-                  ),
-                ])
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 40,
+                          child: OutLinedTextField(
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 12,
+                            ),
+                            enabled: widget.checkboxEnabled,
+                            controller: widget.txtController,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      RoundedOutlinedButton(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        text: null,
+                        height: 40,
+                        width: 56,
+                        icon: SvgPicture.asset(
+                          'assets/icons/folder-open.svg',
+                          colorFilter:
+                              ColorFilter.mode(Colors.white54, BlendMode.srcIn),
+                        ),
+                        textColor: Colors.white,
+                        borderColor: Colors.transparent,
+                        backgroundColor: theme.itemContainerBackgroundColor,
+                        onPressed: widget.checkboxEnabled
+                            ? onSelectSavePathPressed
+                            : null,
+                      )
+                    ],
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),
+      buttons: [
+        RoundedOutlinedButton.fromButtonColor(
+          theme.cancelButtonColor,
+          width: 100,
+          onPressed: () => Navigator.of(context).pop(),
+          text: "Cancel",
+        ),
+        const SizedBox(width: 10),
+        RoundedOutlinedButton.fromButtonColor(
+          theme.addButtonColor,
+          width: 100,
+          onPressed: onAddPressed,
+          text: "Add",
+        ),
+      ],
     );
   }
 
@@ -133,22 +197,39 @@ class _MultiDownloadAdditionDialogState
   }
 
   void onSelectSavePathPressed() async {
-    widget.customSavePath = await FilePicker.platform.getDirectoryPath(
+    final customSavePath = await FilePicker.platform.getDirectoryPath(
       initialDirectory: SettingsCache.saveDir.path,
     );
+    if (customSavePath != null) {
+      setState(() => widget.txtController.text = customSavePath);
+    }
   }
 
   void onAddPressed() async {
+    if (savePathExists && !Directory(widget.txtController.text).existsSync()) {
+      showDialog(
+        context: context,
+        builder: (context) => ErrorDialog(
+          width: 320,
+          height: 150,
+          textHeight: 40,
+          title: "Invalid Path",
+          description: "The selected custom path is invalid!",
+          descriptionHint:
+              "Please check again and make sure the target folder exists.",
+        ),
+      );
+      return;
+    }
     final downloadItems =
         getOrderedFileInfos().map((e) => DownloadItem.fromFileInfo(e)).toList();
-
     await updateDuplicateUrls(downloadItems);
     for (final item in downloadItems.toSet()) {
       final rule = SettingsCache.fileSavePathRules.firstOrNullWhere(
         (rule) => rule.isSatisfiedByDownloadItem(item),
       );
-      if (widget.customSavePath != null) {
-        item.filePath = path.join(widget.customSavePath!, item.fileName);
+      if (savePathExists) {
+        item.filePath = path.join(widget.txtController.text, item.fileName);
       } else if (rule != null) {
         item.filePath = FileUtil.getFilePath(
           item.fileName,
@@ -184,61 +265,19 @@ class _MultiDownloadAdditionDialogState
     downloadItems.removeWhere(checkDownloadDuplication);
   }
 
+  bool get savePathExists =>
+      widget.checkboxEnabled && widget.txtController.text.isNotNullOrBlank;
+
   bool checkDownloadDuplication(DownloadItem item) {
     return DownloadAdditionUiUtil.checkDownloadDuplication(item.fileName);
   }
 
   double resolveScrollViewHeight(Size size) {
-    if (size.height < 390) {
-      return 70;
-    }
-    if (size.height < 450) {
-      return 160;
-    }
-    if (size.height < 500) {
-      return 220;
-    }
-    if (size.height < 550) {
-      return 250;
-    }
-    if (size.height < 600) {
-      return 290;
-    }
-    if (size.height < 648) {
-      return 340;
-    }
-    return 420;
+    return 400;
   }
 
   double resolveMainContainerHeight(Size size) {
-    if (size.height < 348) {
-      return 110;
-    }
-    if (size.height < 390) {
-      return 140;
-    }
-    if (size.height < 440) {
-      return 220;
-    }
-    if (size.height < 470) {
-      return 270;
-    }
-    if (size.height < 520) {
-      return 300;
-    }
-    if (size.height < 570) {
-      return 350;
-    }
-    if (size.height < 598) {
-      return 400;
-    }
-    if (size.height < 648) {
-      return 430;
-    }
-    if (size.height < 668) {
-      return 480;
-    }
-    return 500;
+    return 400;
   }
 
   double resolveListContainerWidth(Size size) {
@@ -246,66 +285,5 @@ class _MultiDownloadAdditionDialogState
       return 450;
     }
     return size.width * 0.5;
-  }
-
-  Widget getListTileItem(FileInfo fileInfo, Size size) {
-    final fileType = FileUtil.detectFileType(fileInfo.fileName);
-    return Container(
-      width: 600,
-      height: 70,
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              child: SvgPicture.asset(
-                FileUtil.resolveFileTypeIconPath(fileType.name),
-                width: 35,
-                height: 35,
-                colorFilter: ColorFilter.mode(
-                  FileUtil.resolveFileTypeIconColor(fileType.name),
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            SizedBox(
-              width: resolveListContainerWidth(size),
-              height: 45,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                        width: resolveListContainerWidth(size),
-                        child: Text(
-                          fileInfo.fileName,
-                          style: TextStyle(
-                              color: Colors.white,
-                              overflow: TextOverflow.ellipsis),
-                        )),
-                  ),
-                  Text(convertByteToReadableStr(fileInfo.contentLength),
-                      style: TextStyle(color: Colors.white, fontSize: 14)),
-                ],
-              ),
-            ),
-            const Spacer(),
-            IconButton(
-              icon: Icon(Icons.delete),
-              color: Colors.red,
-              onPressed: () {
-                setState(() => widget.fileInfos.remove(fileInfo));
-              },
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

@@ -6,6 +6,7 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
+import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
@@ -44,6 +45,7 @@ class _TopMenuState extends State<TopMenu> {
     final topMenuTheme =
         Provider.of<ThemeProvider>(context).activeTheme.topMenuTheme;
     Provider.of<PlutoGridCheckRowProvider>(context);
+    final queueProvider = Provider.of<QueueProvider>(context);
     final size = MediaQuery.of(context).size;
     return Container(
       width: resolveWindowWidth(size),
@@ -105,19 +107,9 @@ class _TopMenuState extends State<TopMenu> {
                 ? topMenuTheme.stopColor.textColor
                 : Color.fromRGBO(79, 79, 79, 1),
           ),
-          // TopMenuButton(
-          //   onTap: onStopAllPressed,
-          //   title: 'Stop All',
-          //   icon: Icon(
-          //     Icons.stop_circle_outlined,
-          //     color: topMenuTheme.stopAllColor.iconColor,
-          //   ),
-          //   onHoverColor: topMenuTheme.stopAllColor.hoverBackgroundColor,
-          //   textColor: topMenuTheme.stopAllColor.textColor,
-          // ),
           TopMenuButton(
             onTap: PlutoGridUtil.selectedRowExists
-                ? () => onRemovePressed(context)
+                ? () => PlutoGridUtil.onRemovePressed(context)
                 : null,
             title: 'Remove',
             icon: Icon(
@@ -261,39 +253,5 @@ class _TopMenuState extends State<TopMenu> {
       barrierDismissible: false,
       builder: (context) => AddToQueueWindow(),
     );
-  }
-
-  void onRemovePressed(BuildContext context) {
-    final stateManager = PlutoGridUtil.plutoStateManager;
-    if (stateManager!.checkedRows.isEmpty) return;
-    showDialog(
-      context: context,
-      builder: (context) => CheckboxConfirmationDialog(
-        onConfirmPressed: (deleteFile) {
-          PlutoGridUtil.doOperationOnCheckedRows((id, row) {
-            deleteOnCheckedRows(row, id, deleteFile);
-          });
-          stateManager.notifyListeners();
-        },
-        title: "Are you sure you want to delete the selected downloads?",
-        checkBoxTitle: 'Delete downloaded files',
-      ),
-    );
-  }
-
-  void deleteOnCheckedRows(PlutoRow row, int id, bool deleteFile) {
-    PlutoGridUtil.plutoStateManager!.removeRows([row]);
-    FileUtil.deleteDownloadTempDirectory(id);
-    provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
-    if (deleteFile) {
-      final downloadItem = HiveUtil.instance.downloadItemsBox.get(id);
-      final file = File(downloadItem!.filePath);
-      if (file.existsSync()) {
-        file.delete();
-      }
-    }
-    HiveUtil.instance.downloadItemsBox.delete(id);
-    HiveUtil.instance.removeDownloadFromQueues(id);
-    provider.downloads.removeWhere((key, _) => key == id);
   }
 }

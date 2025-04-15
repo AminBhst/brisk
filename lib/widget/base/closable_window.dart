@@ -1,4 +1,6 @@
+import 'package:brisk/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ClosableWindow extends StatelessWidget {
   final Widget content;
@@ -10,6 +12,9 @@ class ClosableWindow extends StatelessWidget {
   final bool disableCloseButton;
   final Color backgroundColor;
   final double borderRadius;
+  final Widget? title;
+  final CrossAxisAlignment crossAxisAlignment;
+  final MainAxisAlignment mainAxisAlignment;
 
   const ClosableWindow({
     super.key,
@@ -22,15 +27,22 @@ class ClosableWindow extends StatelessWidget {
     this.padding = const EdgeInsets.all(20),
     this.disableCloseButton = false,
     this.backgroundColor = const Color.fromRGBO(25, 25, 25, 1),
+    this.title,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
+    this.mainAxisAlignment = MainAxisAlignment.center,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
+    return AlertDialog(
+      backgroundColor: theme.backgroundColor,
+      surfaceTintColor: theme.backgroundColor,
       insetPadding: const EdgeInsets.all(20),
-      backgroundColor: Colors.transparent,
       elevation: 0,
-      child: AnimatedSize(
+      title: title,
+      content: AnimatedSize(
         duration: const Duration(milliseconds: 100),
         child: Container(
           width: width,
@@ -42,6 +54,8 @@ class ClosableWindow extends StatelessWidget {
             color: backgroundColor,
           ),
           child: Column(
+            mainAxisAlignment: mainAxisAlignment,
+            crossAxisAlignment: crossAxisAlignment,
             children: [
               Padding(
                 padding: const EdgeInsets.all(0),

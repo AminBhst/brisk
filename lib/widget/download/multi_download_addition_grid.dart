@@ -102,7 +102,11 @@ class _DownloadGridState extends State<MultiDownloadAdditionGrid> {
           ),
           columns: columns,
           rows: rows,
-          onSelected: onSelected,
+          onSelected: (event) => PlutoGridUtil.handleRowSelection(
+            event,
+            PlutoGridUtil.multiDownloadAdditionStateManager!,
+            plutoProvider,
+          ),
           onRowChecked: (row) => plutoProvider?.notifyListeners(),
           onLoaded: onLoaded,
         ),
@@ -110,40 +114,13 @@ class _DownloadGridState extends State<MultiDownloadAdditionGrid> {
     );
   }
 
-  void onSelected(event) {
-    final stateManger = PlutoGridUtil.plutoStateManager;
-    stateManger!.checkedRows.forEach((row) {
-      if (row.checkedViaSelect != null && row.checkedViaSelect!) {
-        stateManger.setRowChecked(row, false, checkedViaSelect: false);
-      }
-    });
-    if (stateManger.checkedRows.contains(event.row!)) {
-      stateManger.setRowChecked(
-        event.row!,
-        false,
-        checkedViaSelect: true,
-      );
-    } else {
-      stateManger.setRowChecked(
-        event.row!,
-        true,
-        checkedViaSelect: true,
-      );
-    }
-    stateManger.notifyListeners();
-    plutoProvider?.notifyListeners();
-  }
-
   void onLoaded(event) async {
     PlutoGridUtil.setMultiAdditionStateManager(event.stateManager);
+    PlutoGridUtil.registerKeyListeners(
+      PlutoGridUtil.multiDownloadAdditionStateManager!,
+      onDeletePressed: () => widget.onDeleteKeyPressed(),
+    );
     PlutoGridUtil.multiDownloadAdditionStateManager
         ?.setSelectingMode(PlutoGridSelectingMode.row);
-    PlutoGridUtil.multiDownloadAdditionStateManager!.keyManager!.subject.stream
-        .listen((event) {
-      if (event.isKeyDownEvent &&
-          event.event.logicalKey == LogicalKeyboardKey.delete) {
-        widget.onDeleteKeyPressed();
-      }
-    });
   }
 }

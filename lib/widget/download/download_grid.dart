@@ -7,11 +7,13 @@ import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/responsive_util.dart';
+import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/download/download_info_dialog.dart';
 import 'package:brisk/widget/download/download_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart' as LogicalKeyboardKey;
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -195,62 +197,18 @@ class _DownloadGridState extends State<DownloadGrid> {
           ),
           columns: columns,
           rows: [],
-          onSelected: onSelected,
+          onSelected: (event) => PlutoGridUtil.handleRowSelection(
+            event,
+            PlutoGridUtil.plutoStateManager!,
+            plutoProvider,
+          ),
           onRowChecked: (row) => plutoProvider?.notifyListeners(),
           onRowDoubleTap: onRowDoubleTap,
-          onLoaded: onLoaded,
+          onLoaded: (event) => onLoaded(event, provider!, queueProvider!),
           onRowSecondaryTap: (event) => showSecondaryTapMenu(context, event),
         ),
       ),
     );
-  }
-
-  void onSelected(event) {
-    final stateManger = PlutoGridUtil.plutoStateManager!;
-    if (!PlutoGridUtil.isCtrlKeyDown && !PlutoGridUtil.isShiftKeyDown) {
-      stateManger.checkedRows.forEach((row) {
-        if (row.checkedViaSelect != null && row.checkedViaSelect!) {
-          stateManger.setRowChecked(row, false, checkedViaSelect: false);
-        }
-      });
-    }
-    if (stateManger.checkedRows.contains(event.row!)) {
-      stateManger.setRowChecked(
-        event.row!,
-        false,
-        checkedViaSelect: true,
-      );
-    } else {
-      if (PlutoGridUtil.isCtrlKeyDown) {
-        stateManger.setRowChecked(
-          event.row!,
-          true,
-          checkedViaSelect: true,
-        );
-      } else if (PlutoGridUtil.isShiftKeyDown) {
-        final selectedRow = stateManger.checkedRows.first;
-        final selectedRowIdx = stateManger.refRows.indexOf(selectedRow);
-        final targetRowIdx = stateManger.refRows.indexOf(event.row!);
-        final rowsToCheck = selectedRowIdx > targetRowIdx
-            ? stateManger.refRows.sublist(targetRowIdx, selectedRowIdx)
-            : stateManger.refRows.sublist(selectedRowIdx, targetRowIdx + 1);
-        for (final row in rowsToCheck) {
-          stateManger.setRowChecked(
-            row,
-            true,
-            checkedViaSelect: true,
-          );
-        }
-      } else {
-        stateManger.setRowChecked(
-          event.row!,
-          true,
-          checkedViaSelect: true,
-        );
-      }
-    }
-    stateManger.notifyListeners();
-    plutoProvider?.notifyListeners();
   }
 
   void showSecondaryTapMenu(
@@ -360,23 +318,30 @@ class _DownloadGridState extends State<DownloadGrid> {
     }
   }
 
-  void onLoaded(event) async {
+  void onLoaded(
+    event,
+    DownloadRequestProvider provider,
+    QueueProvider queueProvider,
+  ) async {
     PlutoGridUtil.setStateManager(event.stateManager);
     PlutoGridUtil.plutoStateManager
         ?.setSelectingMode(PlutoGridSelectingMode.row);
-    PlutoGridUtil.registerKeyListeners();
-    if (queueProvider!.selectedQueueId == null) {
-      provider!.fetchRows(HiveUtil.instance.downloadItemsBox.values.toList());
+    PlutoGridUtil.registerKeyListeners(
+      PlutoGridUtil.plutoStateManager!,
+      onDeletePressed: () => PlutoGridUtil.onRemovePressed(context),
+    );
+    if (queueProvider.selectedQueueId == null) {
+      provider.fetchRows(HiveUtil.instance.downloadItemsBox.values.toList());
     } else {
-      final queueId = queueProvider!.selectedQueueId!;
+      final queueId = queueProvider.selectedQueueId!;
       final queue = await HiveUtil.instance.downloadQueueBox.get(queueId);
       if (queue?.downloadItemsIds == null) return;
       final downloads = queue!.downloadItemsIds!
           .map((e) => HiveUtil.instance.downloadItemsBox.get(e)!)
           .toList();
-      provider!.fetchRows(downloads);
+      provider.fetchRows(downloads);
     }
-    PlutoGridUtil.plutoStateManager?.setFilter(PlutoGridUtil.filter);
+    PlutoGridUtil.plutoStateManager!.setFilter(PlutoGridUtil.filter);
   }
 
   void onRowDoubleTap(event) {

@@ -1,16 +1,26 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:brisk/constants/file_type.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
+import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
+import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
+import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
+import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/download/queue_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:provider/provider.dart';
+
+import '../download_engine/download_command.dart';
+import 'download_request_provider.dart';
 
 class PlutoGridUtil {
   static bool isCtrlKeyDown = false;
@@ -23,6 +33,57 @@ class PlutoGridUtil {
   static final List<PlutoRow> cachedRows = [];
 
   static bool Function(PlutoRow)? filter = null;
+
+  static void handleRowSelection(
+    event,
+    PlutoGridStateManager stateManager,
+    PlutoGridCheckRowProvider? plutoProvider,
+  ) {
+    if (!PlutoGridUtil.isCtrlKeyDown && !PlutoGridUtil.isShiftKeyDown) {
+      stateManager.checkedRows.forEach((row) {
+        if (row.checkedViaSelect != null && row.checkedViaSelect!) {
+          stateManager.setRowChecked(row, false, checkedViaSelect: false);
+        }
+      });
+    }
+    if (stateManager.checkedRows.contains(event.row!)) {
+      stateManager.setRowChecked(
+        event.row!,
+        false,
+        checkedViaSelect: true,
+      );
+    } else {
+      if (PlutoGridUtil.isCtrlKeyDown) {
+        stateManager.setRowChecked(
+          event.row!,
+          true,
+          checkedViaSelect: true,
+        );
+      } else if (PlutoGridUtil.isShiftKeyDown) {
+        final selectedRow = stateManager.checkedRows.first;
+        final selectedRowIdx = stateManager.refRows.indexOf(selectedRow);
+        final targetRowIdx = stateManager.refRows.indexOf(event.row!);
+        final rowsToCheck = selectedRowIdx > targetRowIdx
+            ? stateManager.refRows.sublist(targetRowIdx, selectedRowIdx)
+            : stateManager.refRows.sublist(selectedRowIdx, targetRowIdx + 1);
+        for (final row in rowsToCheck) {
+          stateManager.setRowChecked(
+            row,
+            true,
+            checkedViaSelect: true,
+          );
+        }
+      } else {
+        stateManager.setRowChecked(
+          event.row!,
+          true,
+          checkedViaSelect: true,
+        );
+      }
+    }
+    stateManager.notifyListeners();
+    plutoProvider?.notifyListeners();
+  }
 
   static void updateRowCells(DownloadProgressMessage progress) {
     final id = progress.downloadItem.id;
@@ -146,8 +207,11 @@ class PlutoGridUtil {
     _stateManager?.notifyListeners();
   }
 
-  static void registerKeyListeners() {
-    plutoStateManager!.keyManager!.subject.stream.listen((event) {
+  static void registerKeyListeners(
+    PlutoGridStateManager stateManager, {
+    VoidCallback? onDeletePressed,
+  }) {
+    stateManager.keyManager!.subject.stream.listen((event) {
       if (event.event.logicalKey == LogicalKeyboardKey.controlLeft ||
           event.event.logicalKey == LogicalKeyboardKey.controlRight) {
         if (event.isKeyDownEvent) {
@@ -166,10 +230,14 @@ class PlutoGridUtil {
           isShiftKeyDown = false;
         }
       }
+      if (event.isKeyDownEvent &&
+          event.event.logicalKey == LogicalKeyboardKey.delete) {
+        onDeletePressed?.call();
+      }
       if (event.event.physicalKey == PhysicalKeyboardKey.keyA &&
           isCtrlKeyDown) {
-        plutoStateManager!.refRows.forEach((row) {
-          plutoStateManager!.setRowChecked(
+        stateManager.refRows.forEach((row) {
+          stateManager.setRowChecked(
             row,
             true,
             checkedViaSelect: true,
@@ -212,6 +280,69 @@ class PlutoGridUtil {
       operation(id, row);
     }
     _stateManager?.notifyListeners();
+  }
+
+  static void onRemovePressed(BuildContext context) {
+    final provider =
+        Provider.of<DownloadRequestProvider>(context, listen: false);
+    final queueProvider = Provider.of<QueueProvider>(context, listen: false);
+    final stateManager = PlutoGridUtil.plutoStateManager;
+    if (stateManager!.checkedRows.isEmpty) return;
+    if (queueProvider.selectedQueueId != null) {
+      showDialog(
+        context: context,
+        builder: (context) => ConfirmationDialog(
+          title:
+              "Are you sure you want to remove the selected downloads from the queue?",
+          onConfirmPressed: () async {
+            final queue = HiveUtil.instance.downloadQueueBox
+                .get(queueProvider.selectedQueueId)!;
+            if (queue.downloadItemsIds == null) return;
+            PlutoGridUtil.doOperationOnCheckedRows((id, row) async {
+              queue.downloadItemsIds!.removeWhere((dlId) => dlId == id);
+              PlutoGridUtil.plutoStateManager?.removeRows([row]);
+            });
+            await queue.save();
+            PlutoGridUtil.plutoStateManager?.notifyListeners();
+          },
+        ),
+      );
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (context) => CheckboxConfirmationDialog(
+        onConfirmPressed: (deleteFile) {
+          PlutoGridUtil.doOperationOnCheckedRows((id, row) {
+            deleteOnCheckedRows(row, id, deleteFile, provider);
+          });
+          stateManager.notifyListeners();
+        },
+        title: "Are you sure you want to delete the selected downloads?",
+        checkBoxTitle: 'Delete downloaded files',
+      ),
+    );
+  }
+
+  static void deleteOnCheckedRows(
+    PlutoRow row,
+    int id,
+    bool deleteFile,
+    DownloadRequestProvider provider,
+  ) {
+    PlutoGridUtil.plutoStateManager!.removeRows([row]);
+    FileUtil.deleteDownloadTempDirectory(id);
+    provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
+    if (deleteFile) {
+      final downloadItem = HiveUtil.instance.downloadItemsBox.get(id);
+      final file = File(downloadItem!.filePath);
+      if (file.existsSync()) {
+        file.delete();
+      }
+    }
+    HiveUtil.instance.downloadItemsBox.delete(id);
+    HiveUtil.instance.removeDownloadFromQueues(id);
+    provider.downloads.removeWhere((key, _) => key == id);
   }
 
   static PlutoGridStateManager? get plutoStateManager => _stateManager;
