@@ -56,6 +56,9 @@ class DownloadRequestProvider with ChangeNotifier {
 
   void executeDownloadCommand(int id, DownloadCommand command) async {
     DownloadProgressMessage? downloadProgress = downloads[id];
+    if (downloadProgress == null && command != DownloadCommand.start) {
+      return;
+    }
     downloadProgress ??= await _addDownloadProgress(id);
     final downloadItem = downloadProgress.downloadItem;
     if (checkDownloadCompletion(downloadItem)) return;
