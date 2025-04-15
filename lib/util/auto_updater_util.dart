@@ -8,6 +8,8 @@ import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/info_dialog.dart';
+import 'package:brisk/widget/download/update_available_dialog.dart'
+    show UpdateAvailableDialog;
 import 'package:brisk/widget/other/brisk_change_log_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -34,20 +36,21 @@ void handleBriskUpdateCheck(
       builder: (context) => ErrorDialog(
         text: e.toString(),
         textHeight: 20,
-        height: 60,
-        width: 430,
+        height: 200,
+        width: 400,
       ),
     );
     return;
   }
   if (isNewVersionAvailable) {
+    final changeLog = await getLatestVersionChangeLog(
+      removeChangeLogHeader: true,
+    );
     showDialog(
-      barrierDismissible: false,
       context: context,
-      builder: (context) => ConfirmationDialog(
-        title:
-            "New version of Brisk is available! Do you want Brisk to automatically download and install the latest version?",
-        onConfirmPressed: launchAutoUpdater,
+      builder: (context) => UpdateAvailableDialog(
+        changeLog: changeLog,
+        onUpdatePressed: launchAutoUpdater,
       ),
     );
   } else {
@@ -86,8 +89,8 @@ void handleBriskUpdateCheck(
       builder: (context) => ConfirmationDialog(
         title:
             "Failed to automatically update brisk to the latest version! Do you want to manually download the latest version?",
-        onConfirmPressed: () =>
-            launchUrlString("https://github.com/AminBhst/brisk/releases/latest"),
+        onConfirmPressed: () => launchUrlString(
+            "https://github.com/AminBhst/brisk/releases/latest"),
       ),
     );
   }
@@ -96,12 +99,22 @@ void handleBriskUpdateCheck(
     ..save();
 }
 
-Future<String> getLatestVersionChangeLog() async {
+Future<String> getLatestVersionChangeLog({
+  bool removeChangeLogHeader = false,
+}) async {
   final response = await Client().get(
     Uri.parse(
         "https://raw.githubusercontent.com/AminBhst/brisk/refs/heads/main/.github/release.md"),
   );
-  return utf8.decode(response.bodyBytes);
+  final changeLog = utf8.decode(response.bodyBytes);
+  if (removeChangeLogHeader) {
+    final lines = changeLog.split('\n');
+    if (lines.isNotEmpty && lines.first.contains("Change Log")) {
+      lines.removeAt(0);
+    }
+    return lines.join('\n');
+  }
+  return changeLog;
 }
 
 void launchAutoUpdater() async {
