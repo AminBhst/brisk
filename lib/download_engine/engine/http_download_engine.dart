@@ -834,7 +834,6 @@ class HttpDownloadEngine {
   }
 
   /// Analyzes the temp files and returns the missing temp byte ranges
-  /// TODO probably needs fixing
   static List<Segment> _findMissingByteRanges(
     DownloadItemModel downloadItem,
   ) {
@@ -945,7 +944,11 @@ class HttpDownloadEngine {
       // Cases where there is a single missing byte
       if (startNext - end == 2) {
         tempFilesToDelete.add(file);
-        tempFilesToDelete.add(tempFiles[i - 1]);
+        if (i - 1 < 0) {
+          tempFilesToDelete.add(tempFiles[i + 1]);
+        } else {
+          tempFilesToDelete.add(tempFiles[i - 1]);
+        }
       }
       if (checkForMissingTempFile && startNext - 1 != end) {
         logger?.info(
@@ -1198,11 +1201,10 @@ class HttpDownloadEngine {
   }
 
   static double _calculateTotalDownloadProgress(int id) {
-    double totalProgress = 0;
-    _connectionProgresses[id]!.values.forEach((progress) {
-      totalProgress += progress.totalDownloadProgress;
-    });
-    return totalProgress;
+    return _connectionProgresses[id]!
+        .values
+        .map((e) => e.totalDownloadProgress)
+        .reduce((first, second) => first + second);
   }
 
   /// TODO fix
