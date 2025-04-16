@@ -2,14 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/download_engine/channel/http_download_connection_channel.dart';
 import 'package:brisk/download_engine/message/button_availability_message.dart';
 import 'package:brisk/download_engine/message/connection_handshake_message.dart';
 import 'package:brisk/download_engine/message/connection_segment_message.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/download_status.dart';
-import 'package:brisk/download_engine/channel/download_connection_channel.dart';
 import 'package:brisk/download_engine/message/http_download_isolate_message.dart';
 import 'package:brisk/download_engine/message/log_message.dart';
 import 'package:brisk/download_engine/segment/download_segment_tree.dart';
@@ -25,6 +23,7 @@ import 'package:brisk/download_engine/message/download_isolate_message.dart';
 import 'package:brisk/download_engine/util/temp_file_util.dart';
 import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:dartx/dartx.dart';
+import 'package:dartx/dartx_io.dart';
 import 'package:stream_channel/isolate_channel.dart';
 import 'package:path/path.dart';
 
@@ -862,6 +861,10 @@ class HttpDownloadEngine {
       final tempFileName = basename(tempFile.path);
       if (prevFileName == "") {
         prevFileName = tempFileName;
+        final startByte = getStartByteFromTempFileName(tempFileName);
+        if (startByte != 0) {
+          missingBytes.add(Segment(0, startByte - 1));
+        }
         continue;
       }
 
