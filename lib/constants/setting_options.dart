@@ -27,6 +27,7 @@ enum SettingOptions {
   proxyUsername,
   proxyPassword,
   lastUpdateCheck,
+  lastBrowserExtensionUpdateNotification,
   updateRequested,
   preUpdateVersion,
   extensionSkipCaptureRules,

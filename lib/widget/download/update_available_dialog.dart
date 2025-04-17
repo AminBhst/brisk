@@ -9,12 +9,18 @@ import 'package:provider/provider.dart';
 
 class UpdateAvailableDialog extends StatefulWidget {
   final String changeLog;
+  final newVersion;
   final VoidCallback onUpdatePressed;
+  bool isBrowserExtension;
+  final VoidCallback? onLaterPressed;
 
   UpdateAvailableDialog({
     super.key,
     required this.changeLog,
+    required this.newVersion,
     required this.onUpdatePressed,
+    this.isBrowserExtension = false,
+    this.onLaterPressed,
   });
 
   @override
@@ -65,11 +71,13 @@ class _UpdateAvailableDialogState extends State<UpdateAvailableDialog> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Update Available",
+                  widget.isBrowserExtension
+                      ? "Extension Update Available"
+                      : "Update Available",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 Text(
-                  "Version 2.2.0",
+                  widget.newVersion,
                   style: TextStyle(fontSize: 14, color: Colors.white60),
                 ),
               ],
@@ -86,7 +94,7 @@ class _UpdateAvailableDialogState extends State<UpdateAvailableDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                  "A new version of the application is available.\nWould you like to update now?"),
+                  "A new version of the ${widget.isBrowserExtension ? "browser extension" : "application"} is available.\nWould you like to update now?"),
               const SizedBox(height: 10),
               Container(
                 width: 400,
@@ -137,13 +145,16 @@ class _UpdateAvailableDialogState extends State<UpdateAvailableDialog> {
             children: [
               RoundedOutlinedButton.fromButtonColor(
                 theme.downloadInfoDialogTheme.cancelColor,
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  widget.onLaterPressed?.call();
+                },
                 text: "Later",
               ),
               const SizedBox(width: 10),
               RoundedOutlinedButton.fromButtonColor(
                 theme.downloadInfoDialogTheme.downloadColor,
-                onPressed: () => widget.onUpdatePressed,
+                onPressed: () => widget.onUpdatePressed(),
                 text: "Update",
               ),
             ],

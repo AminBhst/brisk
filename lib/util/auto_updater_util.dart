@@ -8,9 +8,9 @@ import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/info_dialog.dart';
-import 'package:brisk/widget/download/update_available_dialog.dart'
-    show UpdateAvailableDialog;
+import 'package:brisk/widget/download/update_available_dialog.dart';
 import 'package:brisk/widget/other/brisk_change_log_dialog.dart';
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
@@ -25,9 +25,9 @@ void handleBriskUpdateCheck(
   bool showUpdateNotAvailableDialog = false,
   bool ignoreLastUpdateCheck = false,
 }) async {
-  bool isNewVersionAvailable = false;
+  Pair<bool, String> versionCheckResult;
   try {
-    isNewVersionAvailable = await isNewBriskVersionAvailable(
+    versionCheckResult = await isNewBriskVersionAvailable(
       ignoreLastUpdateCheck: ignoreLastUpdateCheck,
     );
   } catch (e) {
@@ -42,13 +42,14 @@ void handleBriskUpdateCheck(
     );
     return;
   }
-  if (isNewVersionAvailable) {
+  if (versionCheckResult.first) {
     final changeLog = await getLatestVersionChangeLog(
       removeChangeLogHeader: true,
     );
     showDialog(
       context: context,
       builder: (context) => UpdateAvailableDialog(
+        newVersion: versionCheckResult.second,
         changeLog: changeLog,
         onUpdatePressed: launchAutoUpdater,
       ),
@@ -101,11 +102,11 @@ void handleBriskUpdateCheck(
 
 Future<String> getLatestVersionChangeLog({
   bool removeChangeLogHeader = false,
+  bool browserExtension = false,
 }) async {
-  final response = await Client().get(
-    Uri.parse(
-        "https://raw.githubusercontent.com/AminBhst/brisk/refs/heads/main/.github/release.md"),
-  );
+  String url =
+      "https://raw.githubusercontent.com/AminBhst/brisk/refs/heads/main/.github/${browserExtension ? "extension_release.md" : "release.md"}";
+  final response = await Client().get(Uri.parse(url));
   final changeLog = utf8.decode(response.bodyBytes);
   if (removeChangeLogHeader) {
     final lines = changeLog.split('\n');

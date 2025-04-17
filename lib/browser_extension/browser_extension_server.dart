@@ -3,18 +3,21 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:brisk/constants/setting_options.dart';
+import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/download_engine/util/m3u8_util.dart';
 import 'package:brisk/model/download_item.dart';
+import 'package:brisk/model/setting.dart';
+import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/util/settings_cache.dart';
-import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/download/m3u8_master_playlist_dialog.dart';
 import 'package:brisk/widget/download/multi_download_addition_dialog.dart';
+import 'package:brisk/widget/download/update_available_dialog.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -24,7 +27,7 @@ import 'package:window_manager/window_manager.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.2.1";
+  static const String extensionVersion = "1.2.2";
 
   static void setup(BuildContext context) async {
     if (_isServerRunning) return;
@@ -58,9 +61,6 @@ class BrowserExtensionServer {
           if (targetVersion == null) return;
           if (isNewVersionAvailable(extensionVersion, targetVersion)) {
             showNewBrowserExtensionVersion(context);
-            await flushAndCloseResponse(request, false);
-            responseClosed = true;
-            continue;
           }
           final success =
               await _handleDownloadAddition(jsonBody, context, request);
@@ -77,16 +77,40 @@ class BrowserExtensionServer {
     }
   }
 
-  static void showNewBrowserExtensionVersion(BuildContext context) {
+  static void showNewBrowserExtensionVersion(BuildContext context) async {
+    var lastNotify = HiveUtil.getSetting(
+      SettingOptions.lastBrowserExtensionUpdateNotification,
+    );
+    if (lastNotify == null) {
+      lastNotify = Setting(
+        name: "lastBrowserExtensionUpdateNotification",
+        value: "0",
+        settingType: SettingType.system.name,
+      );
+      await HiveUtil.instance.settingBox.add(lastNotify);
+    }
+    if (int.parse(lastNotify.value) + 86400000 >
+        DateTime.now().millisecondsSinceEpoch) {
+      return;
+    }
+    final changeLog = await getLatestVersionChangeLog(
+      browserExtension: true,
+      removeChangeLogHeader: true,
+    );
     showDialog(
+      barrierDismissible: false,
       context: context,
-      builder: (context) => ConfirmationDialog(
-        title:
-            "A new version of Brisk browser extension is available. The extension will not function until you update to the latest version."
-            "\nDo you want to be redirected to the extension download page?",
-        onConfirmPressed: () => launchUrlString(
-          "https://github.com/AminBhst/brisk-browser-extension/releases/latest",
+      builder: (context) => UpdateAvailableDialog(
+        isBrowserExtension: true,
+        newVersion: extensionVersion,
+        changeLog: changeLog,
+        onUpdatePressed: () => launchUrlString(
+          "https://github.com/AminBhst/brisk-browser-extension",
         ),
+        onLaterPressed: () {
+          lastNotify!.value = DateTime.now().millisecondsSinceEpoch.toString();
+          lastNotify.save();
+        },
       ),
     );
   }
