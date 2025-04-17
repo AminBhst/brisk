@@ -4,13 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ConfirmationDialog extends StatelessWidget {
-  final VoidCallback onConfirmPressed;
   final String title;
+  final String description;
+  final VoidCallback onConfirmPressed;
+  final double confirmButtonWidth;
+  final String confirmButtonText;
+  final double width;
 
   const ConfirmationDialog({
     super.key,
-    required this.onConfirmPressed,
     required this.title,
+    required this.description,
+    required this.onConfirmPressed,
+    required this.confirmButtonWidth,
+    required this.confirmButtonText,
+    this.width = 400,
   });
 
   @override
@@ -44,7 +52,7 @@ class ConfirmationDialog extends StatelessWidget {
           ),
           SizedBox(width: 10),
           Text(
-            "Confirm Action",
+            title,
             style: TextStyle(
                 color: theme.textColor,
                 fontWeight: FontWeight.bold,
@@ -53,9 +61,9 @@ class ConfirmationDialog extends StatelessWidget {
         ],
       ),
       content: Container(
-        width: 400,
+        width: width,
         child: Text(
-          title,
+          description,
           style: const TextStyle(fontSize: 17),
         ),
       ),
@@ -69,9 +77,9 @@ class ConfirmationDialog extends StatelessWidget {
           },
         ),
         RoundedOutlinedButton.fromButtonColor(
-          theme.deleteConfirmColor,
-          text: "Yes, Delete",
-          width: 101,
+          theme.addButtonColor,
+          text: confirmButtonText,
+          width: confirmButtonWidth,
           onPressed: () {
             Navigator.of(context).pop();
             onConfirmPressed();
