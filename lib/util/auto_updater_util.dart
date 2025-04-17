@@ -34,9 +34,9 @@ void handleBriskUpdateCheck(
     showDialog(
       context: context,
       builder: (context) => ErrorDialog(
-        text: e.toString(),
-        textHeight: 20,
-        height: 200,
+        title: "Check for Update Failed",
+        description: e.toString(),
+        height: 100,
         width: 400,
       ),
     );
