@@ -9,6 +9,7 @@ import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:brisk/setting/proxy/proxy_setting.dart';
 import 'package:brisk/util/settings_cache.dart';
+import 'package:brisk/widget/base/info_dialog.dart';
 import 'package:brisk/widget/download/download_info_dialog.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,6 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/download_request_provider.dart';
-import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/download/ask_duplication_action.dart';
 import 'file_util.dart';
@@ -109,8 +109,10 @@ class DownloadAdditionUiUtil {
       showDialog(
         context: context,
         builder: (context) => ErrorDialog(
-          textHeight: 20,
-          text: "SAMPLE-AES encryption is not supported!",
+          height: 100,
+          width: 380,
+          title: "Unsupported Encryption",
+          description: "SAMPLE-AES encryption is not supported!",
         ),
       );
       return;
@@ -195,20 +197,13 @@ class DownloadAdditionUiUtil {
         context: context,
         builder: (context) => const ErrorDialog(
           width: 400,
-          height: 60,
-          textHeight: 30,
-          text: "The given URL does not refer to the same file!",
+          height: 100,
+          title: "URL Update Error",
+          description: "The given URL does not refer to the same file!",
         ),
       );
     } else {
-      showDialog(
-        context: context,
-        builder: (context) => ConfirmationDialog(
-          onConfirmPressed: () =>
-              updateUrl(context, fileInfo.url, dl, downloadId),
-          title: "Are you sure you want to update the URL?",
-        ),
-      );
+      updateUrl(context, fileInfo.url, dl, downloadId);
     }
   }
 
@@ -221,6 +216,14 @@ class DownloadAdditionUiUtil {
     dl.downloadUrl = url;
     HiveUtil.instance.downloadItemsBox.put(dl.key, dl);
     Navigator.of(context).pop();
+    showDialog(
+      context: context,
+      builder: (context) => InfoDialog(
+        titleText: "URL updated successfully!",
+        titleIcon: Icon(Icons.done),
+        titleIconBackgroundColor: Colors.lightGreen,
+      ),
+    );
   }
 
   static Future<ReceivePort> _spawnFileInfoRetrieverIsolate(

@@ -5,7 +5,7 @@ import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/parse_util.dart';
-import 'package:brisk/widget/base/confirmation_dialog.dart';
+import 'package:brisk/widget/base/delete_confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/info_dialog.dart';
 import 'package:brisk/widget/download/update_available_dialog.dart';
@@ -59,7 +59,12 @@ void handleBriskUpdateCheck(
       showDialog(
         context: context,
         builder: (context) => InfoDialog(
-          title: "No new update is available yet",
+          titleIcon: Icon(
+            Icons.info,
+            color: Colors.blueAccent,
+          ),
+          titleIconBackgroundColor: Colors.black12,
+          titleText: "No new update is available yet",
         ),
       );
       return;
@@ -87,7 +92,7 @@ void handleBriskUpdateCheck(
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => ConfirmationDialog(
+      builder: (context) => DeleteConfirmationDialog(
         title:
             "Failed to automatically update brisk to the latest version! Do you want to manually download the latest version?",
         onConfirmPressed: () => launchUrlString(
