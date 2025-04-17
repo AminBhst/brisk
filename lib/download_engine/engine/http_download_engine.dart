@@ -8,6 +8,7 @@ import 'package:brisk/download_engine/message/connection_handshake_message.dart'
 import 'package:brisk/download_engine/message/connection_segment_message.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/download_status.dart';
+import 'package:brisk/download_engine/message/connections_cleared_message.dart';
 import 'package:brisk/download_engine/message/http_download_isolate_message.dart';
 import 'package:brisk/download_engine/message/log_message.dart';
 import 'package:brisk/download_engine/segment/download_segment_tree.dart';
@@ -339,6 +340,9 @@ class HttpDownloadEngine {
       case DownloadProgressMessage:
         _handleProgressUpdates(message);
         break;
+      case ConnectionsClearedMessage:
+        _handleConnectionsClearedMessage(message);
+        break;
       case ConnectionSegmentMessage:
         _handleSegmentMessage(message);
         break;
@@ -351,6 +355,18 @@ class HttpDownloadEngine {
       default:
         break;
     }
+  }
+
+  static void _handleConnectionsClearedMessage(
+    ConnectionsClearedMessage message,
+  ) {
+    final id = message.downloadItem.id;
+    _connectionIsolates[id]?.forEach((_, isolate) => isolate.kill(priority: 0));
+    _connectionIsolates[id]?.clear();
+    _engineChannels[id]?.sendMessage(message);
+    _engineChannels.remove(id);
+    _connectionProgresses.remove(id);
+    _downloadProgresses.remove(id);
   }
 
   static void _handleConnectionHandshakeMessage(ConnectionHandshake message) {

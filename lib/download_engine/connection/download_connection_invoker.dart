@@ -6,6 +6,8 @@ import 'package:brisk/download_engine/connection/m3u8_download_connection.dart';
 import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/download_engine/connection/http_download_connection.dart';
 import 'package:brisk/download_engine/download_status.dart';
+import 'package:brisk/download_engine/message/connection_segment_message.dart';
+import 'package:brisk/download_engine/message/connections_cleared_message.dart';
 import 'package:brisk/download_engine/message/download_isolate_message.dart';
 import 'package:brisk/download_engine/message/http_download_isolate_message.dart';
 import 'package:brisk/download_engine/message/m3u8_download_isolate_message.dart';
@@ -209,7 +211,13 @@ class DownloadConnectionInvoker {
         connection.pause(channel.sink.add);
         break;
       case DownloadCommand.clearConnections: // TODO add sink.close()
+        _connections[id]?.forEach((_, conn) => conn.client.close());
         _connections[id]?.clear();
+        channel.sink.add(
+          ConnectionsClearedMessage(
+            downloadItem: data.downloadItem,
+          ),
+        );
         break;
       case DownloadCommand.cancel:
         connection.cancel();

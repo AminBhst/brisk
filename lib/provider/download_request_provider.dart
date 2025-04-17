@@ -10,6 +10,7 @@ import 'package:brisk/download_engine/download_settings.dart';
 import 'package:brisk/download_engine/engine/http_download_engine.dart';
 import 'package:brisk/download_engine/engine/m3u8_download_engine.dart';
 import 'package:brisk/download_engine/message/button_availability_message.dart';
+import 'package:brisk/download_engine/message/connections_cleared_message.dart';
 import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/model/download_item.dart';
@@ -130,6 +131,19 @@ class DownloadRequestProvider with ChangeNotifier {
     if (message is ButtonAvailabilityMessage) {
       _handleButtonAvailabilityMessage(message);
     }
+    if (message is ConnectionsClearedMessage) {
+      _handleConnectionsClearedMessage(message);
+    }
+  }
+
+  void _handleConnectionsClearedMessage(ConnectionsClearedMessage message) {
+    final id = message.downloadItem.id;
+    downloads[id]!.downloadItem.status = DownloadStatus.paused;
+    downloads[id]!.status = DownloadStatus.paused;
+    engineIsolates[id]?.kill(priority: 0);
+    engineChannels.remove(id);
+    downloads[id]!.buttonAvailability = ButtonAvailability(false, true);
+    notifyAllListeners(downloads[id]!);
   }
 
   void _handleButtonAvailabilityMessage(ButtonAvailabilityMessage message) {
@@ -145,12 +159,13 @@ class DownloadRequestProvider with ChangeNotifier {
   void _handleDownloadProgressMessage(DownloadProgressMessage progress) {
     final id = progress.downloadItem.id;
     downloads[id] = progress;
+    if (engineChannels[id] == null) return;
     _handleNotification(progress);
     final downloadItem = progress.downloadItem;
     final dl = HiveUtil.instance.downloadItemsBox.get(downloadItem.id);
     if (dl == null) return;
     if (progress.status == DownloadStatus.assembling) {
-     progress.totalDownloadProgress = 1;
+      progress.totalDownloadProgress = 1;
     }
     if (progress.assembleProgress == 1) {
       HiveUtil.instance.removeDownloadFromQueues(dl.key);
