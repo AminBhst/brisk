@@ -32,7 +32,6 @@ Source: "BASE_DIR\build\windows\x64\runner\Release\screen_retriever_windows_plug
 Source: "BASE_DIR\build\windows\x64\runner\Release\url_launcher_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "BASE_DIR\build\windows\x64\runner\Release\window_manager_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "BASE_DIR\build\windows\x64\runner\Release\window_to_front_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "BASE_DIR\build\windows\x64\runner\Release\windows_notification_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "BASE_DIR\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\/data"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "BASE_DIR\build\windows\x64\runner\Release\updater\brisk_auto_updater.exe"; DestDir: "{app}\updater"; Flags: ignoreversion
 Source: "BASE_DIR\build\windows\x64\runner\Release\updater\flutter_windows.dll"; DestDir: "{app}\updater"; Flags: ignoreversion
