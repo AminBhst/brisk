@@ -5,7 +5,8 @@
 [![Telegram Channel](https://img.shields.io/badge/Channel-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/ryedev)
 
 [//]: # (![Static Badge]&#40;https://img.shields.io/badge/Channel-Youtube-red?style=flat-square&logo=youtube&link=https%3A%2F%2Fwww.youtube.com%2F%40ryedev&#41;)
-![brisk-header-new](https://github.com/user-attachments/assets/c7075873-54dd-4f60-80d6-c9f0e3f1fbde)
+![brisk-header](https://github.com/user-attachments/assets/0bc0036d-1c5d-4378-8906-1ac943948fd4)
+
 
 ## :package: Installation
 
