@@ -73,7 +73,7 @@ https://github.com/user-attachments/assets/fc63dcf4-0e69-4610-9c92-f26f12f9ad01
 
 ## :hammer_and_wrench: Build From Source
 
-Download the Flutter SDK v2.22.0 and set the path variable
+Install the Flutter SDK v3.29.2
 
 ```bash
 flutter build macos|windows|linux
