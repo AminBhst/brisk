@@ -10,6 +10,7 @@ import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme_holder.dart';
+import 'package:brisk/util/database_migration.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
@@ -36,6 +37,7 @@ import 'util/settings_cache.dart';
 // TODO Fix resizing the window when a row is selected
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await migrateDatabaseLocation();
   await windowManager.ensureInitialized();
   tz.initializeTimeZones();
   await HiveUtil.instance.initHive();

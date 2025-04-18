@@ -7,6 +7,8 @@ import 'package:brisk/util/settings_cache.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:brisk/model/download_item.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class HiveUtil {
   HiveUtil._();
@@ -24,7 +26,7 @@ class HiveUtil {
   late final Box<Migration> migrationBox;
 
   Future<void> initHive() async {
-    await Hive.initFlutter("Brisk_v2");
+    Hive.init(path.join((await getApplicationSupportDirectory()).path));
     Hive.registerAdapter(DownloadItemAdapter());
     Hive.registerAdapter(DownloadQueueAdapter());
     Hive.registerAdapter(SettingAdapter());
