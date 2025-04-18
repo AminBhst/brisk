@@ -37,8 +37,8 @@ class ClosableWindow extends StatelessWidget {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return AlertDialog(
-      backgroundColor: theme.backgroundColor,
-      surfaceTintColor: theme.backgroundColor,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(20),
       elevation: 0,
       title: title,
