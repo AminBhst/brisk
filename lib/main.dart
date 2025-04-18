@@ -15,6 +15,7 @@ import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/notification_manager.dart';
 import 'package:brisk/widget/base/app_exit_dialog.dart';
+import 'package:brisk/widget/base/global_context.dart';
 import 'package:brisk/widget/download/download_grid.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:brisk/widget/queue/download_queue_list.dart';
@@ -86,6 +87,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: globalContext,
       debugShowCheckedModeBanner: false,
       title: 'Brisk',
       theme: ThemeData(

@@ -6,6 +6,7 @@ import 'package:brisk/theme/application_theme.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/scrollable_dialog.dart';
+import 'package:brisk/widget/download/queue_schedule_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:brisk/download_engine/message/download_progress_message.dart';
@@ -223,10 +224,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
             width: 115,
             mainAxisAlignment: MainAxisAlignment.start,
             theme.downloadProgressDialogTheme.pauseColor,
-            onPressed: () => provider.executeDownloadCommand(
-              widget.downloadId,
-              DownloadCommand.pause,
-            ),
+            onPressed: onPausePressed,
             icon: Padding(
               padding: const EdgeInsets.only(left: 8),
               child: SizedBox(
@@ -276,6 +274,15 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
         }
       },
     );
+  }
+
+  void onPausePressed() {
+    provider.executeDownloadCommand(widget.downloadId, DownloadCommand.pause);
+    if (QueueScheduleHandler.runningDownloads.values
+        .expand((l) => l)
+        .contains(widget.downloadId)) {
+      QueueScheduleHandler.stoppedDownloads.add(widget.downloadId);
+    }
   }
 
   bool get isDownloadInactive {

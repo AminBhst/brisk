@@ -2,9 +2,8 @@ import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/responsive_util.dart';
-import 'package:brisk/widget/download/queue_timer.dart';
+import 'package:brisk/widget/download/queue_schedule_handler.dart';
 import 'package:brisk/widget/queue/schedule_dialog.dart';
-import 'package:brisk/widget/queue/schedule_window.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:brisk/widget/top_menu/top_menu_util.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +12,8 @@ import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
-import 'package:brisk/widget/base/confirmation_dialog.dart';
+import 'package:brisk/widget/base/delete_confirmation_dialog.dart';
 import 'package:brisk/widget/queue/add_to_queue_window.dart';
-import 'package:brisk/widget/queue/start_queue_window.dart';
 
 /// TODO merge with top menu
 class DownloadQueueTopMenu extends StatelessWidget {
@@ -107,9 +105,29 @@ class DownloadQueueTopMenu extends StatelessWidget {
   }
 
   void onSchedulePressed(BuildContext context) async {
+    final provider = Provider.of<QueueProvider>(context, listen: false);
+    final queue =
+        HiveUtil.instance.downloadQueueBox.get(provider.selectedQueueId)!;
     showDialog(
       context: context,
-      builder: (context) => ScheduleDialog(),
+      builder: (context) => ScheduleDialog(
+        queue: queue,
+        onAcceptClicked: ({
+          DateTime? scheduledEnd,
+          DateTime? scheduledStart,
+          required shutdownAfterCompletion,
+          required simultaneousDownloads,
+        }) {
+          QueueScheduleHandler.schedule(
+            queue,
+            context,
+            shutdownAfterCompletion: shutdownAfterCompletion,
+            simultaneousDownloads: simultaneousDownloads,
+            scheduledStart: scheduledStart,
+            scheduledEnd: scheduledEnd,
+          );
+        },
+      ),
       barrierDismissible: false,
     );
   }
@@ -122,18 +140,21 @@ class DownloadQueueTopMenu extends StatelessWidget {
 
   void onStopPressed() {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {
-      QueueTimer.runningRequests.removeWhere((dlId) => dlId == id);
-      QueueTimer.stoppedRequests.add(id);
+      QueueScheduleHandler.runningDownloads.forEach((queue, ids) {
+        if (ids.contains(id)) ids.remove(id);
+      });
+      QueueScheduleHandler.stoppedDownloads.add(id);
       provider.executeDownloadCommand(id, DownloadCommand.pause);
     });
   }
 
   void onStopAllPressed() {
-    QueueTimer.runningRequests = [];
-    QueueTimer.timer?.cancel();
-    QueueTimer.timer = null;
+    QueueScheduleHandler.runningDownloads = {};
+    QueueScheduleHandler.downloadCheckerTimer?.cancel();
+    QueueScheduleHandler.downloadCheckerTimer = null;
     provider.downloads.forEach((id, _) {
       provider.executeDownloadCommand(id, DownloadCommand.pause);
+      QueueScheduleHandler.stoppedDownloads.add(id);
     });
   }
 
@@ -144,24 +165,12 @@ class DownloadQueueTopMenu extends StatelessWidget {
     );
   }
 
-  void onStartQueuePressed(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => StartQueueWindow(
-        onStartPressed: (int i) {
-          QueueTimer.runQueueTimer(i, provider);
-          QueueTimer.queueRows = PlutoGridUtil.plutoStateManager!.rows;
-        },
-      ),
-    );
-  }
-
   void onRemovePressed(BuildContext context) {
     final queueProvider = Provider.of<QueueProvider>(context, listen: false);
     if (PlutoGridUtil.plutoStateManager!.checkedRows.isEmpty) return;
     showDialog(
       context: context,
-      builder: (context) => ConfirmationDialog(
+      builder: (context) => DeleteConfirmationDialog(
         title:
             "Are you sure you want to remove the selected downloads from the queue?",
         onConfirmPressed: () async {
