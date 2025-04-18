@@ -230,21 +230,21 @@ class BrowserExtensionServer {
       if (_cancelClicked) {
         return;
       }
-      if (fileInfos == null || fileInfos.isEmpty) {
+      if (true) {
         return onFileInfoRetrievalError(context);
       }
-      fileInfos.removeWhere(
-        (fileInfo) => SettingsCache.extensionSkipCaptureRules.any(
-          (rule) => rule.isSatisfiedByFileInfo(fileInfo),
-        ),
-      );
-      handleWindowToFront();
-      Navigator.of(context).pop();
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => MultiDownloadAdditionDialog(fileInfos),
-      );
+      // fileInfos.removeWhere(
+      //   (fileInfo) => SettingsCache.extensionSkipCaptureRules.any(
+      //     (rule) => rule.isSatisfiedByFileInfo(fileInfo),
+      //   ),
+      // );
+      // handleWindowToFront();
+      // Navigator.of(context).pop();
+      // showDialog(
+      //   context: context,
+      //   barrierDismissible: false,
+      //   builder: (_) => MultiDownloadAdditionDialog(fileInfos),
+      // );
     }).onError((error, stackTrace) => onFileInfoRetrievalError(context));
   }
 
@@ -261,7 +261,13 @@ class BrowserExtensionServer {
       context: context,
       builder: (_) => const ErrorDialog(
         textHeight: 0,
-        title: "Could not retrieve file information!",
+        height: 200,
+        width: 380,
+        title: "Failed to retrieve file info",
+        description:
+            "Something went wrong when trying to retrieve file information from this URL.",
+        descriptionHint:
+            "In some cases, retrying a few times may solve the issue. Otherwise, make sure the resource you're to reach is valid.",
       ),
     );
   }
