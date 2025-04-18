@@ -11,8 +11,8 @@ import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
-import 'package:brisk/widget/base/confirmation_dialog.dart';
-import 'package:brisk/widget/download/queue_timer.dart';
+import 'package:brisk/widget/base/delete_confirmation_dialog.dart';
+import 'package:brisk/widget/download/queue_schedule_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -95,7 +95,8 @@ class PlutoGridUtil {
       downloadItem.status = DownloadStatus.canceled;
     }
     updateCells(cells, progress, downloadItem);
-    for (PlutoRow row in QueueTimer.queueRows) {
+    for (PlutoRow row
+        in QueueScheduleHandler.queueRows.values.expand((list) => list)) {
       if (id == row.cells['id']!.value) {
         updateCells(row.cells, progress, downloadItem);
       }
@@ -291,7 +292,7 @@ class PlutoGridUtil {
     if (queueProvider.selectedQueueId != null) {
       showDialog(
         context: context,
-        builder: (context) => ConfirmationDialog(
+        builder: (context) => DeleteConfirmationDialog(
           title:
               "Are you sure you want to remove the selected downloads from the queue?",
           onConfirmPressed: () async {

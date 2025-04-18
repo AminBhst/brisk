@@ -6,7 +6,6 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
-import 'package:brisk/widget/base/delete_confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/info_dialog.dart';
 import 'package:brisk/widget/download/update_available_dialog.dart';
@@ -97,7 +96,7 @@ void handleBriskUpdateCheck(
         title: "Update Failed",
         width: 500,
         description:
-        "Failed to automatically update brisk to the latest version!\nWould you like to manually download the latest version?",
+            "Failed to automatically update brisk to the latest version!\nWould you like to manually download the latest version?",
         confirmButtonText: "Yes, Take me there",
         confirmButtonWidth: 150,
         onConfirmPressed: () => launchUrlString(

@@ -1000,7 +1000,12 @@ class HttpDownloadEngine {
     if (deleteCorruptedTempFiles) {
       tempFilesToDelete.toSet().forEach((file) {
         logger?.info("Deleting bad temp file ${basename(file.path)}...");
-        file.deleteSync(recursive: true);
+        try {
+          file.deleteSync();
+        } catch (e) {
+          logger?.error("Failed to delete file ${basename(file.path)}! $e");
+          rethrow;
+        }
       });
     }
   }

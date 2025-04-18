@@ -1,12 +1,11 @@
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/theme_provider.dart';
-import 'package:brisk/widget/base/confirmation_dialog.dart';
+import 'package:brisk/widget/base/delete_confirmation_dialog.dart';
 import 'package:brisk/widget/queue/queue_details_window.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../provider/queue_provider.dart';
+import 'package:brisk/provider/queue_provider.dart';
 
 class QueueListItem extends StatelessWidget {
   QueueListItem({super.key, required this.queue});
@@ -62,7 +61,7 @@ class QueueListItem extends StatelessWidget {
     showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (context) => ConfirmationDialog(
+      builder: (context) => DeleteConfirmationDialog(
           onConfirmPressed: () async => await provider.deleteQueue(queue),
           title: "Are you sure you want to delete ${queue.name} queue?"),
     );

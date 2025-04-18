@@ -485,7 +485,7 @@ class FilterPopupState {
         enableFilterMenuItem: false,
         applyFormatterInEditing: true,
         formatter: (dynamic value) {
-          return (value?.title ?? '').toString();
+          return (value?.description ?? '').toString();
         },
       ),
       PlutoColumn(

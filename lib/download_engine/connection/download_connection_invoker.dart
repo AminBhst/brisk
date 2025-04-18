@@ -101,7 +101,8 @@ class DownloadConnectionInvoker {
     StreamChannel channel,
   ) {
     final id = data.downloadItem.id;
-    if (data.command == DownloadCommand.pause) {
+    if (data.command == DownloadCommand.pause ||
+        data.command == DownloadCommand.clearConnections) {
       stopCommandTrackerMap[id] = Pair(true, channel);
       _runCommandTrackerTimer();
     } else if (data.command == DownloadCommand.start) {
