@@ -32,7 +32,7 @@ To install the browser extension, please refer to the [brisk-browser-extension r
 - [Powerful Download Engine](#gear-brisks-download-engine)
 - [Browser Integration](#globe_with_meridians-browser-integration)
 - Downloading video streams from the browser
-- Download Queues
+- Download Queues and Scheduling
 - Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
 
 ## :gear: Brisk's Download Engine
