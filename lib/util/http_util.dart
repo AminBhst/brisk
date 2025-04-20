@@ -200,6 +200,10 @@ Future<Pair<bool, String>> isNewBriskVersionAvailable({
       int.parse(lastUpdateCheck.value) + 86400000 >
           DateTime.now().millisecondsSinceEpoch) return Pair(false, "");
 
+  lastUpdateCheck = HiveUtil.getSetting(SettingOptions.lastUpdateCheck)!;
+  lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
+  await lastUpdateCheck.save();
+
   final json = await checkLatestBriskRelease();
   if (json["message"].toString().contains("rate limit")) {
     throw Exception("GitHub API rate limit exceeded. Please try again later.");
@@ -210,9 +214,6 @@ Future<Pair<bool, String>> isNewBriskVersionAvailable({
   tagName = tagName.replaceAll(".", "").replaceAll("v", "");
   String latestVersion = (json['tag_name'] as String).replaceAll("v", "");
   final packageInfo = await PackageInfo.fromPlatform();
-  lastUpdateCheck = HiveUtil.getSetting(SettingOptions.lastUpdateCheck)!;
-  lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
-  await lastUpdateCheck.save();
   return Pair(
     isNewVersionAvailable(latestVersion, packageInfo.version),
     latestVersion,
