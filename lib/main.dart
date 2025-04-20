@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:brisk/db/migration_manager.dart';
+import 'package:brisk/util/app_logger.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/browser_extension/browser_extension_server.dart';
 import 'package:brisk/constants/app_closure_behaviour.dart';
@@ -30,12 +32,18 @@ import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
-
 import 'util/file_util.dart';
 import 'util/settings_cache.dart';
 
 // TODO Fix resizing the window when a row is selected
 void main() async {
+  await Logger.init();
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    Logger.log(details.exceptionAsString());
+    Logger.log(details.stack);
+    Logger.log(details.exception);
+  };
   WidgetsFlutterBinding.ensureInitialized();
   await migrateDatabaseLocation();
   await windowManager.ensureInitialized();
@@ -50,36 +58,45 @@ void main() async {
   await updateLaunchAtStartupSetting();
   ApplicationThemeHolder.setActiveTheme();
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<SettingsProvider>(
-          create: (_) => SettingsProvider(),
+  runZonedGuarded(
+    () {
+      runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<SettingsProvider>(
+              create: (_) => SettingsProvider(),
+            ),
+            ChangeNotifierProvider<QueueProvider>(
+              create: (_) => QueueProvider(),
+            ),
+            ChangeNotifierProvider<ThemeProvider>(
+              create: (_) => ThemeProvider(),
+            ),
+            ChangeNotifierProvider<PlutoGridCheckRowProvider>(
+              create: (_) => PlutoGridCheckRowProvider(),
+            ),
+            ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
+                DownloadRequestProvider>(
+              create: (_) =>
+                  DownloadRequestProvider(PlutoGridCheckRowProvider()),
+              update: (context, plutoProvider, downloadProvider) {
+                if (downloadProvider == null) {
+                  return DownloadRequestProvider(plutoProvider);
+                } else {
+                  downloadProvider.plutoProvider = plutoProvider;
+                  return downloadProvider;
+                }
+              },
+            ),
+          ],
+          child: const MyApp(),
         ),
-        ChangeNotifierProvider<QueueProvider>(
-          create: (_) => QueueProvider(),
-        ),
-        ChangeNotifierProvider<ThemeProvider>(
-          create: (_) => ThemeProvider(),
-        ),
-        ChangeNotifierProvider<PlutoGridCheckRowProvider>(
-          create: (_) => PlutoGridCheckRowProvider(),
-        ),
-        ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
-            DownloadRequestProvider>(
-          create: (_) => DownloadRequestProvider(PlutoGridCheckRowProvider()),
-          update: (context, plutoProvider, downloadProvider) {
-            if (downloadProvider == null) {
-              return DownloadRequestProvider(plutoProvider);
-            } else {
-              downloadProvider.plutoProvider = plutoProvider;
-              return downloadProvider;
-            }
-          },
-        ),
-      ],
-      child: const MyApp(),
-    ),
+      );
+    },
+    (error, stack) async {
+      Logger.log(error);
+      Logger.log(stack);
+    },
   );
 }
 
