@@ -146,6 +146,7 @@ class DownloadConnectionInvoker {
         connection.pause(channel.sink.add);
         break;
       case DownloadCommand.clearConnections: // TODO add sink.close()
+        connection.pause(channel.sink.add);
         _connections[id]?.clear();
         break;
       case DownloadCommand.cancel:

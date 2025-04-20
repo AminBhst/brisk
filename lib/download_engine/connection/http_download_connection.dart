@@ -87,6 +87,8 @@ class HttpDownloadConnection {
   /// The client used to make http requests
   late http.Client client;
 
+  StreamSubscription<List<int>>? downloadSub;
+
   /// Threshold is currently only dynamically decided (2 times the byte transfer rate per second -
   /// and less than 8 MB)
   // static const _staticFlushThreshold = 524288;
@@ -231,7 +233,7 @@ class HttpDownloadConnection {
           ? client.send(request).timeout(timeout)
           : client.send(request);
       response.asStream().cast<http.StreamedResponse>().listen((response) {
-        response.stream.listen(
+        downloadSub = response.stream.listen(
           _processChunk,
           onDone: onDownloadComplete,
           onError: onError,
@@ -277,6 +279,7 @@ class HttpDownloadConnection {
 
   void cancel({bool failure = false}) {
     client.close();
+    downloadSub?.cancel();
     cancelLogFlushTimer();
     clearBuffer();
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
@@ -651,6 +654,7 @@ class HttpDownloadConnection {
     updateStatus(DownloadStatus.paused);
     connectionStatus = DownloadStatus.paused;
     client.close();
+    downloadSub?.cancel();
     pauseButtonEnabled = false;
     notifyProgress();
   }
@@ -741,6 +745,7 @@ class HttpDownloadConnection {
   void closeClient_withCatch() {
     try {
       client.close();
+      downloadSub?.cancel();
     } catch (e) {}
   }
 
