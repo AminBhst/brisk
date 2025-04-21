@@ -10,7 +10,7 @@
 
 ## :package: Installation
 
-Installation files for Windows and Linux are available at [Github Releases](https://github.com/AminBhst/brisk/releases/).
+Installation files for Windows and Linux are available at [Github Releases](https://github.com/AminBhst/brisk/releases/latest).
 
 Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin).
 
