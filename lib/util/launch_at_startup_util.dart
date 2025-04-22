@@ -13,6 +13,7 @@ Future<void> updateLaunchAtStartupSetting() async {
           parseSettingOptions(val.name) == SettingOptions.launchOnStartUp)
       .first;
 
+  if (Platform.isMacOS) return;
   if (parseBool(launchOnStartupEnabled.value)) {
     await launchAtStartup.enable();
   } else {
@@ -21,6 +22,7 @@ Future<void> updateLaunchAtStartupSetting() async {
 }
 
 Future<void> setupLaunchAtStartup() async {
+  if (Platform.isMacOS) return;
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   launchAtStartup.setup(
     appName: packageInfo.appName,
