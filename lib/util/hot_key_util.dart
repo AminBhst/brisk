@@ -15,16 +15,21 @@ class HotKeyUtil {
 
   static void registerMacOsDefaultWindowHotkeys() async {
     if (!Platform.isMacOS || _isMacosWindowHotkeyRegistered) return;
+    //Show window thumbnail in dock, keep dock icon,
+    // click window thumbnail or dock icon to restore window,
+    // and the thumbnail disappears after restoration
     final hideHotkey = HotKey(
       key: LogicalKeyboardKey.keyH,
       modifiers: [HotKeyModifier.meta],
       scope: HotKeyScope.inapp,
     );
+    //Hide window to tray, no dock icon, no thumbnail window
     final hideToTrayHotkey = HotKey(
       key: LogicalKeyboardKey.keyW,
       modifiers: [HotKeyModifier.meta],
       scope: HotKeyScope.inapp,
     );
+    //Quit app / kill process
     final quitHotkey = HotKey(
       key: LogicalKeyboardKey.keyQ,
       modifiers: [HotKeyModifier.meta],
@@ -33,11 +38,14 @@ class HotKeyUtil {
 
     await hotKeyManager.register(
       hideHotkey,
-      keyDownHandler: (_) => windowManager.hide(),
+      keyDownHandler: (_) => windowManager.minimize(),
     );
     await hotKeyManager.register(
       hideToTrayHotkey,
-      keyDownHandler: (_) => initTray().then((_) => windowManager.hide()),
+      keyDownHandler: (_) => initTray().then((_) async {
+        await windowManager.blur();
+        windowManager.setSkipTaskbar(true);
+      }),
     );
     await hotKeyManager.register(
       quitHotkey,
@@ -45,12 +53,20 @@ class HotKeyUtil {
     );
     _isMacosWindowHotkeyRegistered = true;
   }
-
   static void registerDefaultDownloadAdditionHotKey(BuildContext context) {
+    /*
+      Command + N for MacOS
+      Control + Alt + A for Windows/Linux
+    */
+    var modifiers = Platform.isMacOS
+        ? [HotKeyModifier.meta]
+        : [HotKeyModifier.control, HotKeyModifier.alt];
+    var key =
+        Platform.isMacOS ? LogicalKeyboardKey.keyN : LogicalKeyboardKey.keyA;
     if (_isDownloadHotkeyRegistered) return;
     final _hotkey = HotKey(
-      key: LogicalKeyboardKey.keyA,
-      modifiers: [HotKeyModifier.control, HotKeyModifier.alt],
+      key: key,
+      modifiers: modifiers,
       scope: HotKeyScope.inapp,
     );
     hotKeyManager.register(

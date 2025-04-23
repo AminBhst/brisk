@@ -167,7 +167,8 @@ class _MyHomePageState extends State<MyHomePage>
             saveNewAppClosureBehaviour(AppClosureBehaviour.minimizeToTray);
           }
           initTray();
-          windowManager.hide();
+          windowManager.blur();
+          windowManager.setSkipTaskbar(true);
         },
       ),
     );
@@ -191,7 +192,9 @@ class _MyHomePageState extends State<MyHomePage>
   void didChangeDependencies() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       HotKeyUtil.registerDefaultDownloadAdditionHotKey(context);
-      HotKeyUtil.registerMacOsDefaultWindowHotkeys();
+      if (Platform.isMacOS) {
+        HotKeyUtil.registerMacOsDefaultWindowHotkeys();
+      }
       BrowserExtensionServer.setup(context);
       handleBriskUpdateCheck(context);
     });
@@ -206,15 +209,33 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   @override
+  void onTrayIconMouseDown() async {
+    var isMinimized = await windowManager.isMinimized();
+    var isVisible = await windowManager.isVisible();
+    var isSkippingTaskbar = await windowManager.isSkipTaskbar();
+
+    if (Platform.isMacOS && (isMinimized || !isVisible || isSkippingTaskbar)) {
+       if (isSkippingTaskbar) {
+         await windowManager.setSkipTaskbar(false);
+       }
+       await windowManager.show();
+       windowManager.focus();
+     }
+    super.onTrayIconMouseDown();
+  }
+
+  @override
   void onTrayIconRightMouseDown() {
     trayManager.popUpContextMenu();
     super.onTrayIconRightMouseDown();
   }
 
   @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
+  Future<void> onTrayMenuItemClick(MenuItem menuItem) async {
     if (menuItem.key == 'show_window') {
-      windowManager.show();
+      await windowManager.setSkipTaskbar(false);
+      await windowManager.show();
+      windowManager.focus();
     } else if (menuItem.key == 'exit_app') {
       windowManager.close();
     }
