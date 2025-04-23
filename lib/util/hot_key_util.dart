@@ -14,7 +14,7 @@ class HotKeyUtil {
   static bool _isMacosWindowHotkeyRegistered = false;
 
   static void registerMacOsDefaultWindowHotkeys() async {
-    if (!Platform.isMacOS || _isMacosWindowHotkeyRegistered) return;
+    if (_isMacosWindowHotkeyRegistered) return;
     //Show window thumbnail in dock, keep dock icon,
     // click window thumbnail or dock icon to restore window,
     // and the thumbnail disappears after restoration
