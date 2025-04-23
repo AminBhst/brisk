@@ -24,9 +24,6 @@ To install the browser extension, please refer to the [brisk-browser-extension r
 >
 > For the browser extension to work properly, disable other download manager extensions.
 
-> [!NOTE]
-> Due to not owning a Mac hardware, MacOS support is unfortunately not available.
-
 ## :rocket: Key Features
 
 - [Powerful Download Engine](#gear-brisks-download-engine)
