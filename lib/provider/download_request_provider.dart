@@ -233,7 +233,7 @@ class DownloadRequestProvider with ChangeNotifier {
   }
 
   bool isUpdateEligible(String status) {
-    return _previousUpdateTime + 6000 < _nowMillis ||
+    return _previousUpdateTime + 2000 < _nowMillis ||
         status == DownloadStatus.assembleComplete ||
         status == DownloadStatus.paused;
   }
