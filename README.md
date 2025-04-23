@@ -90,6 +90,7 @@ Contributions are welcome and appreciated.
 - [AliML111](https://github.com/AliML111)
 - [Zorin FOSS](https://github.com/ZorinFoss)
 - [Norman Wang](https://github.com/Norman-w)
+- [bovirus](https://github.com/bovirus)
 
 
 ## :busts_in_silhouette: Community
