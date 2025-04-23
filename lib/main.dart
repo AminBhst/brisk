@@ -17,6 +17,7 @@ import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/notification_manager.dart';
+import 'package:brisk/util/tray_util.dart';
 import 'package:brisk/widget/base/app_exit_dialog.dart';
 import 'package:brisk/widget/base/global_context.dart';
 import 'package:brisk/widget/download/download_grid.dart';
@@ -186,33 +187,11 @@ class _MyHomePageState extends State<MyHomePage>
     super.initState();
   }
 
-  void initTray() {
-    Menu menu = Menu(
-      items: [
-        MenuItem(
-          key: 'show_window',
-          label: 'Show Window',
-        ),
-        MenuItem.separator(),
-        MenuItem(
-          key: 'exit_app',
-          label: 'Exit App',
-        ),
-      ],
-    );
-    trayManager
-        .setIcon(
-          Platform.isWindows
-              ? 'assets/icons/logo.ico'
-              : 'assets/icons/logo.png',
-        )
-        .then((_) => trayManager.setContextMenu(menu));
-  }
-
   @override
   void didChangeDependencies() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       HotKeyUtil.registerDefaultDownloadAdditionHotKey(context);
+      HotKeyUtil.registerMacOsDefaultWindowHotkeys();
       BrowserExtensionServer.setup(context);
       handleBriskUpdateCheck(context);
     });
