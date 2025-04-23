@@ -43,7 +43,7 @@ class HotKeyUtil {
     await hotKeyManager.register(
       hideToTrayHotkey,
       keyDownHandler: (_) => initTray().then((_) async {
-        await windowManager.blur();
+        await windowManager.hide();
         windowManager.setSkipTaskbar(true);
       }),
     );

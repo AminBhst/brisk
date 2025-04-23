@@ -167,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage>
             saveNewAppClosureBehaviour(AppClosureBehaviour.minimizeToTray);
           }
           initTray();
-          windowManager.blur();
+          windowManager.hide();
           windowManager.setSkipTaskbar(true);
         },
       ),
