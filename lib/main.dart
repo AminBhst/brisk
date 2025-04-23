@@ -37,10 +37,7 @@ import 'util/settings_cache.dart';
 
 // TODO Fix resizing the window when a row is selected
 void main() async {
-  if(Platform.isMacOS) {
-    //An exception is thrown at the start of the app if this is not called on macOS
-    WidgetsFlutterBinding.ensureInitialized();
-  }
+  WidgetsFlutterBinding.ensureInitialized();
   await Logger.init();
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
@@ -48,7 +45,6 @@ void main() async {
     Logger.log(details.stack);
     Logger.log(details.exception);
   };
-  WidgetsFlutterBinding.ensureInitialized();
   await migrateDatabaseLocation();
   await windowManager.ensureInitialized();
   tz.initializeTimeZones();
