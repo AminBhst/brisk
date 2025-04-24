@@ -101,7 +101,7 @@ class _DownloadGridState extends State<DownloadGrid> {
       ),
       PlutoColumn(
         readOnly: true,
-        width: 95,
+        width: 100,
         title: 'Progress',
         field: 'progress',
         type: PlutoColumnType.text(),
