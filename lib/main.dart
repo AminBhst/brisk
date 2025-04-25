@@ -37,30 +37,33 @@ import 'util/file_util.dart';
 import 'util/settings_cache.dart';
 
 // TODO Fix resizing the window when a row is selected
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Logger.init();
-  FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.presentError(details);
-    Logger.log(details.exceptionAsString());
-    Logger.log(details.stack);
-    Logger.log(details.exception);
-  };
-  await migrateDatabaseLocation();
-  await windowManager.ensureInitialized();
-  tz.initializeTimeZones();
-  await HiveUtil.instance.initHive();
-  await setupLaunchAtStartup();
-  await FileUtil.setDefaultTempDir();
-  await FileUtil.setDefaultSaveDir();
-  await HiveUtil.instance.putInitialBoxValues();
-  await MigrationManager.runMigrations();
-  await SettingsCache.setCachedSettings();
-  await updateLaunchAtStartupSetting();
-  ApplicationThemeHolder.setActiveTheme();
+void main() {
+  runZonedGuarded<Future<void>>(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
 
-  runZonedGuarded(
-    () {
+      await Logger.init();
+      FlutterError.onError = (FlutterErrorDetails details) {
+        print('Flutter Error: ${details.exceptionAsString()}');
+        print(details.stack);
+        FlutterError.presentError(details);
+        Logger.log(details.exceptionAsString());
+        Logger.log(details.stack);
+        Logger.log(details.exception);
+      };
+      await migrateDatabaseLocation();
+      await windowManager.ensureInitialized();
+      tz.initializeTimeZones();
+      await HiveUtil.instance.initHive();
+      await setupLaunchAtStartup();
+      await FileUtil.setDefaultTempDir();
+      await FileUtil.setDefaultSaveDir();
+      await HiveUtil.instance.putInitialBoxValues();
+      await MigrationManager.runMigrations();
+      await SettingsCache.setCachedSettings();
+      await updateLaunchAtStartupSetting();
+      ApplicationThemeHolder.setActiveTheme();
+
       runApp(
         MultiProvider(
           providers: [
@@ -94,9 +97,9 @@ void main() async {
         ),
       );
     },
-    (error, stack) async {
-      Logger.log(error);
-      Logger.log(stack);
+    (error, stack) {
+      print('Unhandled error caught by runZonedGuarded: $error');
+      print(stack);
     },
   );
 }
