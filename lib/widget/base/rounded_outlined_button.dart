@@ -97,13 +97,17 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
             if (widget.icon != null) widget.icon!,
             if (widget.icon != null && widget.text != null) SizedBox(width: 5),
             if (widget.text != null)
-              Text(
-                widget.text!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: widget.hoverTextColor == null
-                      ? (hover ? Colors.white : widget.textColor)
-                      : (hover ? widget.hoverTextColor : widget.textColor),
+              Flexible(
+                child: Text(
+                  widget.text!,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  style: TextStyle(
+                    color: widget.hoverTextColor == null
+                        ? (hover ? Colors.white : widget.textColor)
+                        : (hover ? widget.hoverTextColor : widget.textColor),
+                  ),
                 ),
               ),
           ],
