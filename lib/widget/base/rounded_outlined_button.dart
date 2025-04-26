@@ -90,6 +90,9 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
               color: widget.borderColor,
             ),
           ),
+          padding: WidgetStateProperty.all(
+            EdgeInsets.symmetric(horizontal: 0.0, vertical: 0),
+          ),
         ),
         child: Row(
           mainAxisAlignment: widget.mainAxisAlignment,
