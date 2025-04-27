@@ -327,9 +327,10 @@ class HttpDownloadEngine {
         true;
 
     return !pendingSegmentExists &&
+        engineChannel!.pendingHandshakes.isEmpty &&
         progress.connectionProgresses.length <
             downloadSettings.totalConnections &&
-        engineChannel!.createdConnections < downloadSettings.totalConnections &&
+        engineChannel.createdConnections < downloadSettings.totalConnections &&
         !_connectionSpawnerIgnoreList.contains(downloadId) &&
         !isDownloadNearCompletion(downloadId);
   }
