@@ -230,19 +230,19 @@ class _TopMenuState extends State<TopMenu> {
 
   void onDownloadPressed() async {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {
-      provider.executeDownloadCommand(id, DownloadCommand.start);
+      provider.startDownload(id, DownloadCommand.start);
     });
   }
 
   void onStopPressed() {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {
-      provider.executeDownloadCommand(id, DownloadCommand.pause);
+      provider.startDownload(id, DownloadCommand.pause);
     });
   }
 
   void onStopAllPressed() {
     provider.downloads.forEach((id, _) {
-      provider.executeDownloadCommand(id, DownloadCommand.pause);
+      provider.startDownload(id, DownloadCommand.pause);
     });
   }
 

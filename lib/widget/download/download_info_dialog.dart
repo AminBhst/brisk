@@ -426,7 +426,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
         barrierDismissible: false,
       );
     }
-    provider.executeDownloadCommand(
+    provider.startDownload(
       widget.downloadItem.key,
       DownloadCommand.start,
     );

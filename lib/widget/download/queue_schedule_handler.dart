@@ -70,8 +70,8 @@ class QueueScheduleHandler {
         DateTime.now().isAfter(queue.scheduledEnd!) &&
         !stoppedQueues.contains(queue)) {
       for (final id in runningDownloads[queue]!) {
-        provider.executeDownloadCommand(id, DownloadCommand.pause);
-        provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
+        provider.startDownload(id, DownloadCommand.pause);
+        provider.startDownload(id, DownloadCommand.clearConnections);
         stoppedQueues.add(queue);
       }
       runningDownloads[queue] = [];
@@ -116,7 +116,7 @@ class QueueScheduleHandler {
             continue;
           }
           final id = row.cells['id']!.value;
-          provider.executeDownloadCommand(id, DownloadCommand.start);
+          provider.startDownload(id, DownloadCommand.start);
           queues[queue] = true;
           runningDownloads[queue]!.add(id);
         }

@@ -2,27 +2,16 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:brisk/constants/download_type.dart';
-import 'package:brisk/download_engine/download_command.dart';
-import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/db/hive_util.dart';
-import 'package:brisk/download_engine/download_settings.dart';
-import 'package:brisk/download_engine/engine/http_download_engine.dart';
-import 'package:brisk/download_engine/engine/m3u8_download_engine.dart';
-import 'package:brisk/download_engine/message/button_availability_message.dart';
-import 'package:brisk/download_engine/message/connections_cleared_message.dart';
-import 'package:brisk/download_engine/model/download_item_model.dart';
-import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/model/download_item.dart';
-import 'package:brisk/download_engine/message/download_isolate_message.dart';
-import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/notification_manager.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-import 'package:stream_channel/isolate_channel.dart';
+import '../util/download_settings_util.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:path/path.dart';
 
@@ -32,7 +21,6 @@ import '../util/settings_cache.dart';
 class DownloadRequestProvider with ChangeNotifier {
   Map<int, DownloadProgressMessage> downloads = {};
   Map<int, StreamChannel?> engineChannels = {};
-  Map<int, Isolate?> engineIsolates = {};
 
   PlutoGridCheckRowProvider plutoProvider;
 
@@ -55,44 +43,25 @@ class DownloadRequestProvider with ChangeNotifier {
   // TODO remove: Implement a custom update Queue
   int _previousUpdateTime = _nowMillis;
 
-  void executeDownloadCommand(int id, DownloadCommand command) async {
+  void startDownload(int id) async {
     DownloadProgressMessage? downloadProgress = downloads[id];
-    if (downloadProgress == null && command != DownloadCommand.start) {
-      return;
-    }
     downloadProgress ??= await _addDownloadProgress(id);
     final downloadItem = downloadProgress.downloadItem;
-    if (checkDownloadCompletion(downloadItem)) return;
-    StreamChannel? channel = engineChannels[id];
-    if (channel == null && command == DownloadCommand.clearConnections) {
-      return;
-    }
+    StreamChannel? channel = DownloadEngine.engineChannels[id];
     final totalConnections = downloadProgress.downloadItem.supportsPause
         ? SettingsCache.connectionsNumber
         : 1;
-
-    final data = DownloadIsolateMessage.createFromDownloadType(
-      downloadType: downloadItem.downloadType,
-      command: command,
-      downloadItem: downloadProgress.downloadItem,
-      settings: DownloadSettings.fromSettingsCache(),
-    );
-    data.settings.totalConnections = totalConnections;
+    final settings = downloadSettingsFromCache()
+      ..totalM3u8Connections = totalConnections;
     if (channel == null) {
-      channel = await _spawnDownloadEngineIsolate(
-        id,
+      DownloadEngine.start(
+        downloadItem,
+        settings,
         downloadItem.downloadType,
+        onButtonAvailability: _handleButtonAvailabilityMessage,
+        onDownloadProgress: _handleDownloadProgressMessage,
       );
-      if (command == DownloadCommand.cancel) return;
-      channel.stream.listen(_handleDownloadEngineMessage);
     }
-    channel.sink.add(data);
-  }
-
-  bool checkDownloadCompletion(DownloadItemModel downloadItem) {
-    final file = File(downloadItem.filePath);
-    return downloadItem.status == DownloadStatus.assembleComplete ||
-        (file.existsSync() && file.lengthSync() == downloadItem.contentLength);
   }
 
   int? getExistingConnectionCount(DownloadItemModel downloadItem) {
@@ -101,50 +70,50 @@ class DownloadRequestProvider with ChangeNotifier {
     return tempDir.existsSync() ? tempDir.listSync().length : null;
   }
 
-  Future<StreamChannel> _spawnDownloadEngineIsolate(
-    int id,
-    DownloadType downloadType,
-  ) async {
-    final rPort = ReceivePort();
-    final channel = IsolateChannel.connectReceive(rPort);
-    final isolate = await Isolate.spawn(
-      getEngineStartMethod(downloadType),
-      IsolateSingleArg(rPort.sendPort, id),
-      errorsAreFatal: false,
-    );
-    engineIsolates[id] = isolate;
-    engineChannels[id] = channel;
-    return channel;
-  }
+  // Future<StreamChannel> _spawnDownloadEngineIsolate(
+  //   int id,
+  //   DownloadType downloadType,
+  // ) async {
+  //   final rPort = ReceivePort();
+  //   final channel = IsolateChannel.connectReceive(rPort);
+  //   final isolate = await Isolate.spawn(
+  //     getEngineStartMethod(downloadType),
+  //     IsolateSingleArg(rPort.sendPort, id),
+  //     errorsAreFatal: false,
+  //   );
+  //   engineIsolates[id] = isolate;
+  //   engineChannels[id] = channel;
+  //   return channel;
+  // }
 
-  getEngineStartMethod(DownloadType downloadType) {
-    if (downloadType == DownloadType.M3U8) {
-      return M3U8DownloadEngine.start;
-    }
-    return HttpDownloadEngine.start;
-  }
+  // getEngineStartMethod(DownloadType downloadType) {
+  //   if (downloadType == DownloadType.M3U8) {
+  //     return M3U8DownloadEngine.start;
+  //   }
+  //   return HttpDownloadEngine.start;
+  // }
 
-  void _handleDownloadEngineMessage(message) {
-    if (message is DownloadProgressMessage) {
-      _handleDownloadProgressMessage(message);
-    }
-    if (message is ButtonAvailabilityMessage) {
-      _handleButtonAvailabilityMessage(message);
-    }
-    if (message is ConnectionsClearedMessage) {
-      _handleConnectionsClearedMessage(message);
-    }
-  }
+  // void _handleDownloadEngineMessage(message) {
+  //   if (message is DownloadProgressMessage) {
+  //     _handleDownloadProgressMessage(message);
+  //   }
+  //   if (message is ButtonAvailabilityMessage) {
+  //     _handleButtonAvailabilityMessage(message);
+  //   }
+  //   // if (message is ConnectionsClearedMessage) {
+  //   //   _handleConnectionsClearedMessage(message);
+  //   // }
+  // }
 
-  void _handleConnectionsClearedMessage(ConnectionsClearedMessage message) {
-    final id = message.downloadItem.id;
-    downloads[id]!.downloadItem.status = DownloadStatus.paused;
-    downloads[id]!.status = DownloadStatus.paused;
-    engineIsolates[id]?.kill(priority: 0);
-    engineChannels.remove(id);
-    downloads[id]!.buttonAvailability = ButtonAvailability(false, true);
-    notifyAllListeners(downloads[id]!);
-  }
+  // void _handleConnectionsClearedMessage(ConnectionsClearedMessage message) {
+  //   final id = message.downloadItem.id;
+  //   downloads[id]!.downloadItem.status = DownloadStatus.paused;
+  //   downloads[id]!.status = DownloadStatus.paused;
+  //   engineIsolates[id]?.kill(priority: 0);
+  //   engineChannels.remove(id);
+  //   downloads[id]!.buttonAvailability = ButtonAvailability(false, true);
+  //   notifyAllListeners(downloads[id]!);
+  // }
 
   void _handleButtonAvailabilityMessage(ButtonAvailabilityMessage message) {
     final download = downloads[message.downloadItem.id];
@@ -255,9 +224,9 @@ class DownloadRequestProvider with ChangeNotifier {
         cells: {
           "file_name": PlutoCell(value: e.downloadItem.fileName),
           "size": PlutoCell(
-            value: e.downloadItem.contentLength < 0
+            value: e.downloadItem.fileSize < 0
                 ? "Unknown"
-                : convertByteToReadableStr(e.downloadItem.contentLength),
+                : convertByteToReadableStr(e.downloadItem.fileSize),
           ),
           "progress": PlutoCell(
             value:

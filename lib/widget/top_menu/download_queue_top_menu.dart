@@ -134,7 +134,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
 
   void onDownloadPressed() {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {
-      provider.executeDownloadCommand(id, DownloadCommand.start);
+      provider.startDownload(id, DownloadCommand.start);
     });
   }
 
@@ -144,7 +144,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
         if (ids.contains(id)) ids.remove(id);
       });
       QueueScheduleHandler.stoppedDownloads.add(id);
-      provider.executeDownloadCommand(id, DownloadCommand.pause);
+      provider.startDownload(id, DownloadCommand.pause);
     });
   }
 
@@ -153,7 +153,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
     QueueScheduleHandler.downloadCheckerTimer?.cancel();
     QueueScheduleHandler.downloadCheckerTimer = null;
     provider.downloads.forEach((id, _) {
-      provider.executeDownloadCommand(id, DownloadCommand.pause);
+      provider.startDownload(id, DownloadCommand.pause);
       QueueScheduleHandler.stoppedDownloads.add(id);
     });
   }

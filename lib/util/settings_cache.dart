@@ -6,7 +6,6 @@ import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/setting.dart';
-import 'package:brisk/setting/proxy/proxy_setting.dart';
 import 'package:brisk/setting/rule/default_rules.dart';
 import 'package:brisk/setting/rule/file_rule.dart';
 import 'package:brisk/setting/rule/file_save_path_rule.dart';
@@ -14,6 +13,7 @@ import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/util/file_extensions.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/parse_util.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'file_util.dart';
 

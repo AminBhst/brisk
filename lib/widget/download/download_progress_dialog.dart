@@ -242,7 +242,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
             width: 115,
             mainAxisAlignment: MainAxisAlignment.start,
             theme.downloadProgressDialogTheme.resumeColor,
-            onPressed: () => provider.executeDownloadCommand(
+            onPressed: () => provider.startDownload(
               widget.downloadId,
               DownloadCommand.start,
             ),
@@ -277,7 +277,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
   }
 
   void onPausePressed() {
-    provider.executeDownloadCommand(widget.downloadId, DownloadCommand.pause);
+    provider.startDownload(widget.downloadId, DownloadCommand.pause);
     if (QueueScheduleHandler.runningDownloads.values
         .expand((l) => l)
         .contains(widget.downloadId)) {

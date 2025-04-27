@@ -333,7 +333,7 @@ class PlutoGridUtil {
   ) {
     PlutoGridUtil.plutoStateManager!.removeRows([row]);
     FileUtil.deleteDownloadTempDirectory(id);
-    provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
+    provider.startDownload(id, DownloadCommand.clearConnections);
     if (deleteFile) {
       final downloadItem = HiveUtil.instance.downloadItemsBox.get(id);
       final file = File(downloadItem!.filePath);
