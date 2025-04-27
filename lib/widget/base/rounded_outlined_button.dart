@@ -91,7 +91,10 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
             ),
           ),
           padding: WidgetStateProperty.all(
-            EdgeInsets.symmetric(horizontal: 0.0, vertical: 0),
+            EdgeInsets.symmetric(
+              horizontal: widget.icon == null ? 0 : 10,
+              vertical: 0,
+            ),
           ),
         ),
         child: Row(
