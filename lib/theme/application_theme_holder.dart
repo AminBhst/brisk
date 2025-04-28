@@ -146,8 +146,8 @@ ApplicationTheme celestialDark = ApplicationTheme(
         ),
         textFieldColor: TextFieldColor(
           focusBorderColor: const Color.fromRGBO(53, 89, 143, 1),
-          borderColor: Color.fromRGBO(56, 53, 53, 0.9019607843137255),
-          fillColor: Color.fromRGBO(47, 44, 44, 0.4),
+          borderColor: Color.fromRGBO(65, 65, 65, 1),
+          fillColor: Color.fromRGBO(56, 56, 56, 0.9),
           textColor: Colors.white,
           cursorColor: Colors.white,
         ),
