@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:brisk_download_engine/brisk_download_engine.dart';
+import 'package:brisk_download_engine/src/download_engine/download_command.dart';
 import 'package:brisk_download_engine/src/download_engine/download_type.dart';
 import 'package:brisk_download_engine/src/download_engine/engine/http_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/model/file_info.dart';
@@ -39,7 +40,7 @@ class DownloadEngine {
   }
 
   static void terminate(String uid) {
-    _executeCommand(uid, DownloadCommand.clearConnections);
+    _executeCommand(uid, DownloadCommand.terminate);
   }
 
   static void _executeCommand(String uid, DownloadCommand command) {

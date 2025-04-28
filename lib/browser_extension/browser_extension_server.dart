@@ -17,6 +17,7 @@ import 'package:brisk/widget/download/m3u8_master_playlist_dialog.dart';
 import 'package:brisk/widget/download/update_available_dialog.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:window_to_front/window_to_front.dart';
@@ -56,7 +57,11 @@ class BrowserExtensionServer {
         try {
           final jsonBody = jsonDecode(String.fromCharCodes(body));
           final targetVersion = jsonBody["extensionVersion"];
-          if (targetVersion == null) return;
+          if (targetVersion == null || targetVersion.toString().isNullOrBlank) {
+            await request.response.close();
+            responseClosed = true;
+            break;
+          }
           if (isNewVersionAvailable(extensionVersion, targetVersion)) {
             showNewBrowserExtensionVersion(context);
           }

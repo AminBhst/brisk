@@ -6,6 +6,7 @@ import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/channel/engine_channel.dart';
 import 'package:brisk_download_engine/src/download_engine/channel/m3u8_download_connection_channel.dart';
 import 'package:brisk_download_engine/src/download_engine/connection/download_connection_invoker.dart';
+import 'package:brisk_download_engine/src/download_engine/download_command.dart';
 import 'package:brisk_download_engine/src/download_engine/download_status.dart';
 import 'package:brisk_download_engine/src/download_engine/message/log_message.dart';
 import 'package:brisk_download_engine/src/download_engine/message/m3u8_download_isolate_message.dart';

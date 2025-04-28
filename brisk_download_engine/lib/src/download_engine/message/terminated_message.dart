@@ -1,7 +1,7 @@
 import 'package:brisk_download_engine/src/download_engine/model/download_item_model.dart';
 
-class ConnectionsClearedMessage {
+class TerminatedMessage {
   final DownloadItemModel downloadItem;
 
-  ConnectionsClearedMessage({required this.downloadItem});
+  TerminatedMessage({required this.downloadItem});
 }

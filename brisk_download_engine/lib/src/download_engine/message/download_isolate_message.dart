@@ -1,4 +1,5 @@
 import 'package:brisk_download_engine/brisk_download_engine.dart';
+import 'package:brisk_download_engine/src/download_engine/download_command.dart';
 import 'package:brisk_download_engine/src/download_engine/download_type.dart';
 import 'package:brisk_download_engine/src/download_engine/message/http_download_isolate_message.dart';
 import 'package:brisk_download_engine/src/download_engine/message/m3u8_download_isolate_message.dart';

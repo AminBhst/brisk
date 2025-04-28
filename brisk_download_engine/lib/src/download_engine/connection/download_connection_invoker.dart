@@ -4,11 +4,11 @@ import 'dart:isolate';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/connection/http_download_connection.dart';
 import 'package:brisk_download_engine/src/download_engine/connection/m3u8_download_connection.dart';
-import 'package:brisk_download_engine/src/download_engine/download_status.dart';
+import 'package:brisk_download_engine/src/download_engine/download_command.dart';
 import 'package:brisk_download_engine/src/download_engine/message/connection_handshake_message.dart';
-import 'package:brisk_download_engine/src/download_engine/message/connections_cleared_message.dart';
 import 'package:brisk_download_engine/src/download_engine/message/http_download_isolate_message.dart';
 import 'package:brisk_download_engine/src/download_engine/message/m3u8_download_isolate_message.dart';
+import 'package:brisk_download_engine/src/download_engine/message/terminated_message.dart';
 import 'package:brisk_download_engine/src/download_engine/segment/segment.dart';
 import 'package:dartx/dartx.dart';
 import 'package:stream_channel/isolate_channel.dart';
@@ -96,7 +96,7 @@ class DownloadConnectionInvoker {
   ) {
     final uid = data.downloadItem.uid;
     if (data.command == DownloadCommand.pause ||
-        data.command == DownloadCommand.clearConnections) {
+        data.command == DownloadCommand.terminate) {
       stopCommandTrackerMap[uid] = Pair(true, channel);
       _runCommandTrackerTimer();
     } else if (data.command == DownloadCommand.start) {
@@ -139,7 +139,7 @@ class DownloadConnectionInvoker {
       case DownloadCommand.pause:
         connection.pause(channel.sink.add);
         break;
-      case DownloadCommand.clearConnections: // TODO add sink.close()
+      case DownloadCommand.terminate: // TODO add sink.close()
         connection.pause(channel.sink.add);
         _connections[uid]?.clear();
         break;
@@ -206,11 +206,11 @@ class DownloadConnectionInvoker {
       case DownloadCommand.pause:
         connection.pause(channel.sink.add);
         break;
-      case DownloadCommand.clearConnections: // TODO add sink.close()
-        _connections[uid]?.forEach((_, conn) => conn.client.close());
+      case DownloadCommand.terminate: // TODO add sink.close()
+        _connections[uid]?.forEach((_, conn) => conn.pause(channel.sink.add));
         _connections[uid]?.clear();
         channel.sink.add(
-          ConnectionsClearedMessage(
+          TerminatedMessage(
             downloadItem: data.downloadItem,
           ),
         );

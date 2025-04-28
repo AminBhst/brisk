@@ -7,6 +7,6 @@ enum DownloadCommand {
   refreshSegmentReuseConnection,
   cancel,
   forceCancel,
-  clearConnections,
+  terminate,
   resetConnection,
 }
