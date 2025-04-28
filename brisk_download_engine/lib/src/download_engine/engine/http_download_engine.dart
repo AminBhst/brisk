@@ -322,8 +322,7 @@ class HttpDownloadEngine {
         engineChannel!.pendingHandshakes.isEmpty &&
         progress.connectionProgresses.length <
             downloadSettings!.totalConnections &&
-        engineChannel.createdConnections <
-            downloadSettings!.totalConnections &&
+        engineChannel.createdConnections < downloadSettings!.totalConnections &&
         !_connectionSpawnerIgnoreList.contains(downloadUid) &&
         !isDownloadNearCompletion(downloadUid);
   }
@@ -615,7 +614,7 @@ class HttpDownloadEngine {
       logger?.info(
         "Received completion signal from connection ${progress.connectionNumber}",
       );
-      _addToReuseQueue(progress);
+      _addToReuseQueue(downloadUid, progress.connectionNumber);
       _setSegmentComplete(progress);
     }
     if (isTempWriteComplete && isAssembleEligible(downloadItem)) {
@@ -636,10 +635,9 @@ class HttpDownloadEngine {
     engineChannel.sendMessage(downloadProgress);
   }
 
-  static void _addToReuseQueue(DownloadProgressMessage progress) {
-    final downloadUid = progress.downloadItem.uid;
+  static void _addToReuseQueue(String downloadUid, int connectionNumber) {
     final engineChannel = _engineChannels[downloadUid];
-    final conn = engineChannel!.connectionChannels[progress.connectionNumber]!;
+    final conn = engineChannel!.connectionChannels[connectionNumber]!;
     final reuseQueue = _engineChannels[downloadUid]!.connectionReuseQueue;
     if (!reuseQueue.contains(conn)) {
       reuseQueue.add(conn);
@@ -674,7 +672,7 @@ class HttpDownloadEngine {
       );
       return;
     }
-    nodes.sort((a, b) => a.segment.length.compareTo(b.segment.length));
+    nodes.sort((a, b) => b.segment.length.compareTo(a.segment.length));
     final targetNode = nodes
         .where((node) => node.segment != connectionChannel.segment)
         .toList()
@@ -694,6 +692,7 @@ class HttpDownloadEngine {
       );
     } catch (e) {
       logger?.error("Fatal! ${e.toString()}");
+      success = false;
     }
 
     /// TODO retry with a different node (has to stop at some point tho)
