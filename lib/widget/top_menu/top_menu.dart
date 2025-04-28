@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/download_engine/download_command.dart';
-import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
@@ -11,20 +8,16 @@ import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/widget/top_menu/top_menu_util.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/responsive_util.dart';
-import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:flutter/material.dart';
-import 'package:pluto_grid/src/model/pluto_row.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../download_engine/client/mock_http_client_proxy.dart';
 import '../../provider/download_request_provider.dart';
-import '../../util/file_util.dart';
 import '../queue/add_to_queue_window.dart';
 
 class TopMenu extends StatefulWidget {
@@ -230,19 +223,19 @@ class _TopMenuState extends State<TopMenu> {
 
   void onDownloadPressed() async {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {
-      provider.startDownload(id, DownloadCommand.start);
+      provider.startDownload(id);
     });
   }
 
   void onStopPressed() {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {
-      provider.startDownload(id, DownloadCommand.pause);
+      provider.pauseDownload(id);
     });
   }
 
   void onStopAllPressed() {
     provider.downloads.forEach((id, _) {
-      provider.startDownload(id, DownloadCommand.pause);
+      provider.pauseDownload(id);
     });
   }
 

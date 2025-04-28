@@ -24,10 +24,6 @@ class DownloadEngine {
     if (checkDownloadCompletion(downloadItems[uid]!)) {
       return;
     }
-    if (buttonAvailabilities[uid] != null &&
-        !buttonAvailabilities[uid]!.pauseButtonEnabled) {
-      return;
-    }
     _executeCommand(uid, DownloadCommand.pause);
   }
 
@@ -40,6 +36,10 @@ class DownloadEngine {
       return;
     }
     _executeCommand(uid, DownloadCommand.start);
+  }
+
+  static void terminate(String uid) {
+    _executeCommand(uid, DownloadCommand.clearConnections);
   }
 
   static void _executeCommand(String uid, DownloadCommand command) {

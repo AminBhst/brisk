@@ -319,9 +319,10 @@ class HttpDownloadEngine {
         true;
 
     return !pendingSegmentExists &&
+        engineChannel!.pendingHandshakes.isEmpty &&
         progress.connectionProgresses.length <
             downloadSettings!.totalConnections &&
-        engineChannel!.createdConnections <
+        engineChannel.createdConnections <
             downloadSettings!.totalConnections &&
         !_connectionSpawnerIgnoreList.contains(downloadUid) &&
         !isDownloadNearCompletion(downloadUid);
@@ -939,8 +940,7 @@ class HttpDownloadEngine {
         logger?.info("Found bad length :: ${basename(file.path)}");
         tempFilesToDelete.add(file);
       }
-      if (start > downloadItem.fileSize ||
-          end > downloadItem.fileSize) {
+      if (start > downloadItem.fileSize || end > downloadItem.fileSize) {
         logger?.info(
           "Found byte range exceeding contentLength :: ${basename(file.path)}",
         );

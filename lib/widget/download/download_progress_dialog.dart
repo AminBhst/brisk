@@ -1,5 +1,4 @@
-import 'package:brisk/download_engine/download_command.dart';
-import 'package:brisk/download_engine/download_status.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme.dart';
@@ -7,9 +6,9 @@ import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/scrollable_dialog.dart';
 import 'package:brisk/widget/download/queue_schedule_handler.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:brisk/download_engine/message/download_progress_message.dart';
 
 class DownloadProgressDialog extends StatefulWidget {
   final int downloadId;
@@ -86,7 +85,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
               children: [
                 progressPercentage(),
                 const Spacer(),
-                completedSize(downloadProgress.downloadItem.contentLength)
+                completedSize(downloadProgress.downloadItem.fileSize)
               ],
             ),
             const SizedBox(height: 5),
@@ -242,10 +241,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
             width: 115,
             mainAxisAlignment: MainAxisAlignment.start,
             theme.downloadProgressDialogTheme.resumeColor,
-            onPressed: () => provider.startDownload(
-              widget.downloadId,
-              DownloadCommand.start,
-            ),
+            onPressed: () => provider.startDownload(widget.downloadId),
             icon: SizedBox(
               width: 20,
               child: Icon(
@@ -276,8 +272,8 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
     );
   }
 
-  void onPausePressed() {
-    provider.startDownload(widget.downloadId, DownloadCommand.pause);
+  void onPausePressed() async {
+    await provider.pauseDownload(widget.downloadId);
     if (QueueScheduleHandler.runningDownloads.values
         .expand((l) => l)
         .contains(widget.downloadId)) {

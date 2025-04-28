@@ -1,15 +1,14 @@
 import 'package:brisk/constants/file_type.dart';
-import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
-import 'package:brisk/widget/base/closable_window.dart';
 import 'package:brisk/widget/base/default_tooltip.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/scrollable_dialog.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -226,7 +225,7 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
 
   void _onDownloadPressed(StreamInf streamInf, BuildContext context) {
     if (streamInf.m3u8!.encryptionDetails.encryptionMethod ==
-        M3U8EncryptionMethod.SAMPLE_AES) {
+        M3U8EncryptionMethod.sampleAes) {
       showDialog(
         context: context,
         builder: (context) => ErrorDialog(
