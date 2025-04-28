@@ -11,14 +11,12 @@ import 'package:brisk/widget/base/outlined_text_field.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/scrollable_dialog.dart';
 import 'package:brisk/widget/download/download_progress_dialog.dart';
-import 'package:brisk_download_engine/brisk_download_engine.dart'
-    show DownloadItemModel, DownloadProgressMessage;
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/model/download_item.dart';
 
 class DownloadInfoDialog extends StatefulWidget {
@@ -390,11 +388,8 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
     final request = widget.downloadItem;
     await HiveUtil.instance.addDownloadItem(request);
     final downloadItemModel = buildFromDownloadItem(request);
-    provider.insertRows([
-      DownloadProgressMessage(
-        downloadItem: downloadItemModel
-      )
-    ]);
+    provider
+        .insertRows([DownloadProgressMessage(downloadItem: downloadItemModel)]);
     if (!mounted) return;
     Navigator.of(context).pop();
   }

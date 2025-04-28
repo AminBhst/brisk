@@ -1,4 +1,3 @@
-import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/settings_provider.dart';
@@ -8,6 +7,7 @@ import 'package:brisk/widget/setting/setting_dialog.dart';
 import 'package:brisk/widget/side_menu/side_menu_expansion_tile.dart';
 import 'package:brisk/widget/side_menu/side_menu_item.dart';
 import 'package:brisk/widget/side_menu/side_menu_list_tile_item.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';

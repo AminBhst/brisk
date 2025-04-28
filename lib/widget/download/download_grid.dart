@@ -1,5 +1,4 @@
 import 'package:brisk/constants/file_type.dart';
-import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
@@ -10,6 +9,7 @@ import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/download/download_info_dialog.dart';
 import 'package:brisk/widget/download/download_progress_dialog.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';

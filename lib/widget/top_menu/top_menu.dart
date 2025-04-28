@@ -1,5 +1,4 @@
 import 'package:brisk/constants/file_type.dart';
-import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
@@ -16,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../../download_engine/client/mock_http_client_proxy.dart';
 import '../../provider/download_request_provider.dart';
 import '../queue/add_to_queue_window.dart';
 
@@ -208,17 +206,17 @@ class _TopMenuState extends State<TopMenu> {
   Color get disabledButtonTextColor => Color.fromRGBO(79, 79, 79, 1);
 
   void onMockDownloadPressed(BuildContext context) async {
-    final item = DownloadItem.fromUrl(mockDownloadUrl);
-    item.contentLength = 65945577;
-    item.fileName = "Mozilla.Firefox.zip";
-    item.fileType = DLFileType.compressed.name;
-    item.supportsPause = true;
-    final fileInfo = FileInfo(
-      item.supportsPause,
-      item.fileName,
-      item.contentLength,
-    );
-    DownloadAdditionUiUtil.addDownload(item, fileInfo, context, false);
+    // final item = DownloadItem.fromUrl(mockDownloadUrl);
+    // item.contentLength = 65945577;
+    // item.fileName = "Mozilla.Firefox.zip";
+    // item.fileType = DLFileType.compressed.name;
+    // item.supportsPause = true;
+    // final fileInfo = FileInfo(
+    //   item.supportsPause,
+    //   item.fileName,
+    //   item.contentLength,
+    // );
+    // DownloadAdditionUiUtil.addDownload(item, fileInfo, context, false);
   }
 
   void onDownloadPressed() async {
