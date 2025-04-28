@@ -191,7 +191,7 @@ jobs:
     runs-on: macos-latest
     permissions:
       contents: read
-    needs: Version
+    needs: version
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4.1.5
@@ -267,13 +267,13 @@ jobs:
         run: flutter_distributor package --platform macos --targets dmg
 
       - name: Rename dmg file
-        run: mv dist/${{ needs.version.outputs.version }}/brisk-${{ needs.version.outputs.version }}-macos.dmg ./Brisk-${{ needs.version.outputs.version }}-macos.dmg
+        run: mv dist/${{ needs.version.outputs.version }}/brisk-${{ needs.version.outputs.version }}-macos.dmg ./Brisk-v${{ needs.version.outputs.version }}-macos.dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.3
         with:
           name: brisk-dmg
-          path: Brisk-${{ needs.version.outputs.version }}-macos.dmg
+          path: Brisk-v${{ needs.version.outputs.version }}-macos.dmg
           retention-days: 1
 
 
