@@ -1,9 +1,8 @@
 import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/db/hive_util.dart';
-import 'package:brisk/download_engine/model/download_item_model.dart';
-import 'package:brisk/download_engine/message/download_progress_message.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/util/download_engine_util.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/util/settings_cache.dart';
@@ -12,12 +11,12 @@ import 'package:brisk/widget/base/outlined_text_field.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/scrollable_dialog.dart';
 import 'package:brisk/widget/download/download_progress_dialog.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/model/download_item.dart';
 
 class DownloadInfoDialog extends StatefulWidget {
@@ -223,7 +222,8 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                                     ),
                                     textColor: Colors.white,
                                     borderColor: Colors.transparent,
-                                    backgroundColor: alertDialogTheme.itemContainerBackgroundColor,
+                                    backgroundColor: alertDialogTheme
+                                        .itemContainerBackgroundColor,
                                     onPressed: pickNewSaveLocation,
                                   ),
                                 ],
@@ -387,12 +387,9 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
   void addToList() async {
     final request = widget.downloadItem;
     await HiveUtil.instance.addDownloadItem(request);
-    final downloadItemModel = DownloadItemModel.fromDownloadItem(request);
-    provider.insertRows([
-      DownloadProgressMessage(
-        downloadItem: downloadItemModel,
-      )
-    ]);
+    final downloadItemModel = buildFromDownloadItem(request);
+    provider
+        .insertRows([DownloadProgressMessage(downloadItem: downloadItemModel)]);
     if (!mounted) return;
     Navigator.of(context).pop();
   }
@@ -426,9 +423,6 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
         barrierDismissible: false,
       );
     }
-    provider.executeDownloadCommand(
-      widget.downloadItem.key,
-      DownloadCommand.start,
-    );
+    provider.startDownload(widget.downloadItem.key);
   }
 }

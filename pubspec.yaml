@@ -40,6 +40,8 @@ dependencies:
   provider: ^6.1.4
   pluto_grid:
     path: ./pluto_grid
+  brisk_download_engine:
+    path: ./brisk_download_engine
   stream_channel: ^2.1.4
   csv: ^6.0.0
   flutter_local_notifications: ^19.0.0

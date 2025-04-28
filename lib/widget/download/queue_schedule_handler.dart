@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:brisk/download_engine/download_status.dart';
+import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/date_util.dart';
 import 'package:brisk/util/shutdown_manager.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-import 'package:brisk/download_engine/download_command.dart';
 import 'package:provider/provider.dart';
 
 class QueueScheduleHandler {
@@ -65,13 +65,13 @@ class QueueScheduleHandler {
     DownloadQueue queue,
     DownloadRequestProvider provider,
     BuildContext context,
-  ) {
+  ) async {
     if (queue.scheduledEnd != null &&
         DateTime.now().isAfter(queue.scheduledEnd!) &&
         !stoppedQueues.contains(queue)) {
       for (final id in runningDownloads[queue]!) {
-        provider.executeDownloadCommand(id, DownloadCommand.pause);
-        provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
+        final item = await HiveUtil.instance.downloadItemsBox.get(id)!;
+        DownloadEngine.terminate(item.uid);
         stoppedQueues.add(queue);
       }
       runningDownloads[queue] = [];
@@ -116,7 +116,7 @@ class QueueScheduleHandler {
             continue;
           }
           final id = row.cells['id']!.value;
-          provider.executeDownloadCommand(id, DownloadCommand.start);
+          provider.startDownload(id);
           queues[queue] = true;
           runningDownloads[queue]!.add(id);
         }

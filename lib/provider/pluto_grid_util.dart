@@ -3,9 +3,6 @@ import 'dart:io';
 
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/db/hive_util.dart';
-import 'package:brisk/download_engine/download_status.dart';
-import 'package:brisk/download_engine/message/download_progress_message.dart';
-import 'package:brisk/download_engine/model/download_item_model.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/file_util.dart';
@@ -13,13 +10,13 @@ import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
 import 'package:brisk/widget/base/delete_confirmation_dialog.dart';
 import 'package:brisk/widget/download/queue_schedule_handler.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
 
-import '../download_engine/download_command.dart';
 import 'download_request_provider.dart';
 
 class PlutoGridUtil {
@@ -86,7 +83,7 @@ class PlutoGridUtil {
   }
 
   static void updateRowCells(DownloadProgressMessage progress) {
-    final id = progress.downloadItem.id;
+    final id = progress.downloadItem.id!;
     final row = findCachedRow(id) ?? findRowById(id);
     if (row == null) return;
     final cells = row.cells;
@@ -330,13 +327,13 @@ class PlutoGridUtil {
     int id,
     bool deleteFile,
     DownloadRequestProvider provider,
-  ) {
+  ) async {
+    final downloadItem = HiveUtil.instance.downloadItemsBox.get(id)!;
     PlutoGridUtil.plutoStateManager!.removeRows([row]);
     FileUtil.deleteDownloadTempDirectory(id);
-    provider.executeDownloadCommand(id, DownloadCommand.clearConnections);
+    DownloadEngine.terminate(downloadItem.uid);
     if (deleteFile) {
-      final downloadItem = HiveUtil.instance.downloadItemsBox.get(id);
-      final file = File(downloadItem!.filePath);
+      final file = File(downloadItem.filePath);
       if (file.existsSync()) {
         file.delete();
       }

@@ -1,7 +1,7 @@
 import 'package:brisk/db/hive_util.dart';
-import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 
 bool isDownloadButtonEnabled(DownloadRequestProvider provider) {
   final selectedRowIds = PlutoGridUtil.selectedRowIds;

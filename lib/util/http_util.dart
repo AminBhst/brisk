@@ -3,8 +3,7 @@ import 'dart:convert';
 
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_item.dart';
-import 'package:brisk/setting/proxy/proxy_setting.dart';
-import 'package:brisk/util/http_client_builder.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:dartx/dartx.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';

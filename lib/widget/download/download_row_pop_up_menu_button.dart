@@ -1,5 +1,5 @@
-import 'package:brisk/download_engine/download_status.dart';
 import 'package:brisk/widget/download/download_progress_dialog.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';

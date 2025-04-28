@@ -6,9 +6,9 @@ import 'package:brisk/widget/download/queue_schedule_handler.dart';
 import 'package:brisk/widget/queue/schedule_dialog.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:brisk/widget/top_menu/top_menu_util.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:brisk/download_engine/download_command.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
@@ -134,17 +134,17 @@ class DownloadQueueTopMenu extends StatelessWidget {
 
   void onDownloadPressed() {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {
-      provider.executeDownloadCommand(id, DownloadCommand.start);
+      provider.startDownload(id);
     });
   }
 
-  void onStopPressed() {
+  void onStopPressed() async {
     PlutoGridUtil.doOperationOnCheckedRows((id, _) {
       QueueScheduleHandler.runningDownloads.forEach((queue, ids) {
         if (ids.contains(id)) ids.remove(id);
       });
       QueueScheduleHandler.stoppedDownloads.add(id);
-      provider.executeDownloadCommand(id, DownloadCommand.pause);
+      provider.pauseDownload(id);
     });
   }
 
@@ -153,7 +153,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
     QueueScheduleHandler.downloadCheckerTimer?.cancel();
     QueueScheduleHandler.downloadCheckerTimer = null;
     provider.downloads.forEach((id, _) {
-      provider.executeDownloadCommand(id, DownloadCommand.pause);
+      provider.pauseDownload(id);
       QueueScheduleHandler.stoppedDownloads.add(id);
     });
   }

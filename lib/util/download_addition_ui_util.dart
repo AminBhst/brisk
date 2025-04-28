@@ -4,13 +4,11 @@ import 'dart:isolate';
 
 import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/constants/file_type.dart';
-import 'package:brisk/download_engine/download_status.dart';
-import 'package:brisk/download_engine/model/m3u8.dart';
 import 'package:brisk/model/isolate/isolate_args.dart';
-import 'package:brisk/setting/proxy/proxy_setting.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/info_dialog.dart';
 import 'package:brisk/widget/download/download_info_dialog.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -105,7 +103,7 @@ class DownloadAdditionUiUtil {
 
   static void handleM3u8Addition(M3U8 m3u8, BuildContext context) {
     if (m3u8.encryptionDetails.encryptionMethod ==
-        M3U8EncryptionMethod.SAMPLE_AES) {
+        M3U8EncryptionMethod.sampleAes) {
       showDialog(
         context: context,
         builder: (context) => ErrorDialog(

@@ -69,6 +69,11 @@ class HiveUtil {
     }
   }
 
+  Future<String> getDownloadItemUid(int id) async {
+    final item = await downloadItemsBox.get(id)!;
+    return item.uid;
+  }
+
   /// To be used for specific cases where some db values need to be updated
   /// based on specific version bumps
   Future<void> performRequiredAppVersionUpdates() async {

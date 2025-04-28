@@ -1,0 +1,21 @@
+name: brisk_download_engine
+description: Ultra-fast, highly efficient download engine written in pure dart
+version: 1.0.0
+homepage: https://github.com/AminBhst/brisk_download_engine
+
+environment:
+  sdk: ^3.4.0
+
+# Add regular dependencies here.
+dependencies:
+  stream_channel: ^2.1.2
+  path: ^1.8.0
+  path_provider: ^2.1.4
+  dartx: ^1.2.0
+  http: ^1.2.2
+  encrypt: ^5.0.3
+  uuid: ^4.5.1
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.24.0
