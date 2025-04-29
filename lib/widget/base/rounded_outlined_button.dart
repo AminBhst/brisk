@@ -36,7 +36,7 @@ class RoundedOutlinedButton extends StatefulWidget {
     Key? key,
     required VoidCallback? onPressed,
     required String text,
-    double? width,
+    required double? width,
     double? height = 35,
     double borderRadius = 8.0,
     Widget? icon = null,

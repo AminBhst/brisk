@@ -144,6 +144,7 @@ class _UpdateAvailableDialogState extends State<UpdateAvailableDialog> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               RoundedOutlinedButton.fromButtonColor(
+                width: 60,
                 theme.downloadInfoDialogTheme.cancelColor,
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -153,6 +154,7 @@ class _UpdateAvailableDialogState extends State<UpdateAvailableDialog> {
               ),
               const SizedBox(width: 10),
               RoundedOutlinedButton.fromButtonColor(
+                width: 80,
                 theme.downloadInfoDialogTheme.downloadColor,
                 onPressed: () => widget.onUpdatePressed(),
                 text: "Update",
