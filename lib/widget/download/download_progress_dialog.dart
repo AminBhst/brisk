@@ -220,7 +220,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
         }
         if (buttonEnabled.pauseButtonEnabled) {
           return RoundedOutlinedButton.fromButtonColor(
-            width: 115,
+            width: 103,
             mainAxisAlignment: MainAxisAlignment.start,
             theme.downloadProgressDialogTheme.pauseColor,
             onPressed: onPausePressed,
@@ -238,7 +238,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
           );
         } else if (buttonEnabled.startButtonEnabled) {
           return RoundedOutlinedButton.fromButtonColor(
-            width: 115,
+            width: 103,
             mainAxisAlignment: MainAxisAlignment.start,
             theme.downloadProgressDialogTheme.resumeColor,
             onPressed: () => provider.startDownload(widget.downloadId),
