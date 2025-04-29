@@ -215,8 +215,8 @@ class FileUtil {
     }
   }
 
-  static void deleteDownloadTempDirectory(int id) {
-    final path = join(defaultTempFileDir.path, id.toString());
+  static void deleteDownloadTempDirectory(String uid) {
+    final path = join(defaultTempFileDir.path, uid);
     final dir = Directory(path);
     if (dir.existsSync()) {
       dir.deleteSync(recursive: true);

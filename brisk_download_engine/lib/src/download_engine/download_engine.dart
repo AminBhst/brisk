@@ -13,11 +13,14 @@ import 'package:stream_channel/stream_channel.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
+import 'message/terminated_message.dart';
+
 class DownloadEngine {
   static final Map<String, StreamChannel?> engineChannels = {};
   static final Map<String, Isolate?> engineIsolates = {};
   static final Map<String, DownloadItemModel> downloadItems = {};
   static final Map<String, ButtonAvailabilityMessage> buttonAvailabilities = {};
+  static final Map<String, Completer> engineTerminationCompleter = {};
   static DownloadSettings? _settings;
   static Isolate? fileInfoExtractorIsolate;
 
@@ -39,8 +42,10 @@ class DownloadEngine {
     _executeCommand(uid, DownloadCommand.start);
   }
 
-  static void terminate(String uid) {
+  static Future<void> terminate(String uid) {
     _executeCommand(uid, DownloadCommand.terminate);
+    engineTerminationCompleter[uid] = Completer();
+    return engineTerminationCompleter[uid]!.future;
   }
 
   static void _executeCommand(String uid, DownloadCommand command) {
@@ -85,6 +90,9 @@ class DownloadEngine {
         if (message is ButtonAvailabilityMessage) {
           buttonAvailabilities[downloadItem.uid] = message;
           onButtonAvailability(message);
+        }
+        if (message is TerminatedMessage) {
+          engineTerminationCompleter[downloadItem.uid]?.complete();
         }
       },
     );

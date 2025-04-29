@@ -330,8 +330,6 @@ class PlutoGridUtil {
   ) async {
     final downloadItem = HiveUtil.instance.downloadItemsBox.get(id)!;
     PlutoGridUtil.plutoStateManager!.removeRows([row]);
-    FileUtil.deleteDownloadTempDirectory(id);
-    DownloadEngine.terminate(downloadItem.uid);
     if (deleteFile) {
       final file = File(downloadItem.filePath);
       if (file.existsSync()) {
@@ -341,6 +339,8 @@ class PlutoGridUtil {
     HiveUtil.instance.downloadItemsBox.delete(id);
     HiveUtil.instance.removeDownloadFromQueues(id);
     provider.downloads.removeWhere((key, _) => key == id);
+    DownloadEngine.terminate(downloadItem.uid)
+        .then((_) => FileUtil.deleteDownloadTempDirectory(downloadItem.uid));
   }
 
   static PlutoGridStateManager? get plutoStateManager => _stateManager;
