@@ -43,7 +43,10 @@ class DownloadEngine {
     _executeCommand(uid, DownloadCommand.start);
   }
 
-  static Future<void> terminate(String uid) {
+  static Future<void> terminate(String uid) async {
+    if (engineChannels[uid] == null) {
+      return Completer().complete();
+    }
     _executeCommand(uid, DownloadCommand.terminate);
     engineTerminationCompleter[uid] = Completer();
     return engineTerminationCompleter[uid]!.future;
