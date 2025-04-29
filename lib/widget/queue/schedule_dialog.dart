@@ -206,7 +206,7 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
         RoundedOutlinedButton.fromButtonColor(
           theme.alertDialogTheme.addButtonColor,
           text: startDateEnabled ? "Schedule" : "Start Now",
-          width: 120,
+          width: 110,
           onPressed: () {
             widget.onAcceptClicked(
               shutdownAfterCompletion: shutdownEnabled,
