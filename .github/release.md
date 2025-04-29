@@ -3,7 +3,6 @@
 ## :hammer_and_wrench: Bug Fixes and Improvements
 - Fixed an edge case bug in the download engine
 - Optimized the download engine's connection reuse mechanism
-- Fixed an issue that occasionally caused the new version dialog to appear incorrectly for the browser extension
 - Fixed download temp directories not being deleted properly
 - Minor UI fixes
 
