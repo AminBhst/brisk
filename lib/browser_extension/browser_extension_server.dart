@@ -7,6 +7,7 @@ import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/setting.dart';
+import 'package:brisk/util/app_logger.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/http_util.dart';
@@ -60,7 +61,7 @@ class BrowserExtensionServer {
           if (targetVersion == null || targetVersion.toString().isNullOrBlank) {
             await request.response.close();
             responseClosed = true;
-            break;
+            continue;
           }
           if (isNewVersionAvailable(extensionVersion, targetVersion)) {
             showNewBrowserExtensionVersion(context);
@@ -121,6 +122,7 @@ class BrowserExtensionServer {
   static Future<bool> _handleDownloadAddition(
       jsonBody, context, request) async {
     final type = jsonBody["type"] as String;
+    windowManager.show().then((_) => WindowToFront.activate());
     switch (type.toLowerCase()) {
       case "single":
         return _handleSingleDownloadRequest(jsonBody, context, request);
