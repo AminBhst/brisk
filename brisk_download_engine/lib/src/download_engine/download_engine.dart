@@ -6,6 +6,7 @@ import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/download_command.dart';
 import 'package:brisk_download_engine/src/download_engine/download_type.dart';
 import 'package:brisk_download_engine/src/download_engine/engine/http_download_engine.dart';
+import 'package:brisk_download_engine/src/download_engine/engine/m3u8_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/model/file_info.dart';
 import 'package:brisk_download_engine/src/download_engine/util/isolate_args.dart';
 import 'package:stream_channel/isolate_channel.dart';
@@ -79,7 +80,7 @@ class DownloadEngine {
       resume(downloadItem.uid);
       return;
     }
-    final channel = await _spawnDownloadEngineIsolate(downloadItem);
+    final channel = await _spawnDownloadEngineIsolate(downloadItem, type);
     _settings = settings;
     downloadItems[downloadItem.uid] = downloadItem;
     channel.stream.listen(
@@ -107,11 +108,14 @@ class DownloadEngine {
 
   static Future<StreamChannel> _spawnDownloadEngineIsolate(
     DownloadItemModel downloadItem,
+    DownloadType type,
   ) async {
     final rPort = ReceivePort();
     final channel = IsolateChannel.connectReceive(rPort);
     final isolate = await Isolate.spawn(
-      HttpDownloadEngine.start,
+      type == DownloadType.http
+          ? HttpDownloadEngine.start
+          : M3U8DownloadEngine.start,
       IsolateSingleArg(rPort.sendPort, downloadItem.uid),
       errorsAreFatal: false,
     );

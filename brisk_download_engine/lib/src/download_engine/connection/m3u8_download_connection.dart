@@ -203,7 +203,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
       this.progressCallback = progressCallback;
     }
     clearBuffer();
-    print("Setting pause for connection ${connectionNumber}");
+    print("Setting pause for connection $connectionNumber");
     updateStatus(DownloadStatus.paused);
     connectionStatus = DownloadStatus.paused;
     client.close();
