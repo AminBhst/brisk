@@ -55,7 +55,7 @@ class DownloadRequestProvider with ChangeNotifier {
         ? SettingsCache.connectionsNumber
         : 1;
     final settings = downloadSettingsFromCache()
-      ..totalM3u8Connections = totalConnections;
+      ..totalConnections = totalConnections;
     if (channel == null) {
       DownloadEngine.start(
         downloadItem,
