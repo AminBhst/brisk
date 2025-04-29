@@ -53,6 +53,13 @@ class M3U8DownloadEngine {
 
       /// TODO show error for unsupported encryption
       if (m3u8 == null) {
+        var progress = _downloadProgresses[downloadItem.uid] ??
+            DownloadProgressMessage(downloadItem: downloadItem);
+        progress
+          ..downloadItem = downloadItem
+          ..status = DownloadStatus.connecting
+          ..downloadItem.status = DownloadStatus.connecting;
+        engineChannel.sendMessage(progress);
         engineChannel.logger?.info("Creating the m3u8 file...");
         m3u8 = await M3U8.fromString(
           downloadItem.m3u8Content!,
@@ -299,6 +306,7 @@ class M3U8DownloadEngine {
     progress
       ..downloadItem.status = DownloadStatus.assembling
       ..totalDownloadProgress = 1
+      ..assembleProgress = 0
       ..downloadProgress = 1
       ..status = DownloadStatus.downloading;
     engineChannel.sendMessage(progress);
@@ -306,7 +314,7 @@ class M3U8DownloadEngine {
     final logger = engineChannel.logger;
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
     final tempDir = Directory(tempPath);
-    final tempFies = getM3u8TempFilesSorted(tempDir);
+    final tempFiles = getM3u8TempFilesSorted(tempDir);
     File fileToWrite = File(downloadItem.filePath);
     if (fileToWrite.existsSync()) {
       var newFilePath = FileUtil.getFilePath(
@@ -329,7 +337,10 @@ class M3U8DownloadEngine {
     }
     try {
       logger?.info("Creating file...");
-      for (var file in tempFies) {
+      for (int i = 0; i < tempFiles.length; i++) {
+        var file = tempFiles[i];
+        progress.assembleProgress = i / tempFiles.length;
+        engineChannel.sendMessage(progress);
         final bytes = file.readAsBytesSync();
         fileToWrite.writeAsBytesSync(bytes, mode: FileMode.writeOnlyAppend);
       }
