@@ -4,7 +4,7 @@ version: 1.0.0
 homepage: https://github.com/AminBhst/brisk_download_engine
 
 environment:
-  sdk: ^3.4.0
+  sdk: ^3.7.2
 
 # Add regular dependencies here.
 dependencies:
