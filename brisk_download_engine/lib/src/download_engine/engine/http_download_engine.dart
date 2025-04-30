@@ -360,6 +360,7 @@ class HttpDownloadEngine {
 
   static void _handleEnginePanicMessage(EnginePanicMessage message) {
     final uid = message.downloadItem.uid;
+    _engineChannels[uid]?.logger?.warn("Engine panicked!");
     final connChannels = _engineChannels[uid]?.connectionChannels;
     final conn = connChannels?.values.firstOrNull;
     if (conn == null) return;
