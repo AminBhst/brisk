@@ -162,7 +162,7 @@ class DownloadConnectionInvoker {
   static void _executeCommandHttp(
     HttpDownloadIsolateMessage data,
     IsolateChannel channel,
-  ) {
+  ) async {
     final uid = data.downloadItem.uid;
     final connectionNumber = data.connectionNumber;
     final connection = _connections[uid]![connectionNumber]!;
@@ -176,6 +176,7 @@ class DownloadConnectionInvoker {
       forcedConnectionReuse = true;
       connection.logger?.info("Invoker:: Forcing reuseConnection...");
     }
+    print("Received command ${data.command}");
     switch (data.command) {
       case DownloadCommand.startInitial:
         connection.previousBufferEndByte = data.previouslyWrittenByteLength;
@@ -207,10 +208,16 @@ class DownloadConnectionInvoker {
         connection.pause(channel.sink.add);
         break;
       case DownloadCommand.terminate: // TODO add sink.close()
-        _connections[uid]?.forEach((_, conn) => conn.pause(channel.sink.add));
+      case DownloadCommand.terminateAndEnginePanic:
+        for (final conn in _connections[uid]!.values) {
+          await conn.pause(null);
+        }
+        stopCommandTrackerMap.remove(uid);
         _connections[uid]?.clear();
         channel.sink.add(
           TerminatedMessage(
+            enginePanic:
+                data.command == DownloadCommand.terminateAndEnginePanic,
             downloadItem: data.downloadItem,
           ),
         );

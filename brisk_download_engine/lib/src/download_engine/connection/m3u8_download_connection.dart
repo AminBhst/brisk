@@ -194,7 +194,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
       );
 
   @override
-  void pause(DownloadProgressCallback? progressCallback) async {
+  Future<void> pause(DownloadProgressCallback? progressCallback) async {
     clientInitialized = false;
     paused = true;
     logger?.info("Paused connection $connectionNumber");

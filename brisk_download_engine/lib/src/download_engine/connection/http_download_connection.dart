@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/client/http_client_builder.dart';
 import 'package:brisk_download_engine/src/download_engine/download_status.dart';
 import 'package:brisk_download_engine/src/download_engine/engine/http_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/message/connection_segment_message.dart';
+import 'package:brisk_download_engine/src/download_engine/message/engine_panic_message.dart';
 import 'package:brisk_download_engine/src/download_engine/message/internal_messages.dart';
 import 'package:brisk_download_engine/src/download_engine/message/log_message.dart';
 import 'package:brisk_download_engine/src/download_engine/segment/segment.dart';
@@ -259,8 +261,8 @@ class HttpDownloadConnection {
         totalConnectionReceivedBytes / downloadItem.fileSize;
     if (downloadProgress > 1) {
       final excessBytes = totalConnectionReceivedBytes - segment.length;
-      totalDownloadProgress = (totalConnectionReceivedBytes - excessBytes) /
-          downloadItem.fileSize;
+      totalDownloadProgress =
+          (totalConnectionReceivedBytes - excessBytes) / downloadItem.fileSize;
     }
   }
 
@@ -465,11 +467,11 @@ class HttpDownloadConnection {
       ..writeAsBytesSync(mode: FileMode.writeOnly, bytes);
 
     if (tempFileStartByte > downloadItem.fileSize) {
-      logger?.warn(
-          "Attention:: Extremely Weird:: conn$connectionNumber::$segment "
+      logger?.error("Fatal:: conn$connectionNumber::$segment "
           "byteExceed?$receivedBytesExceededEndByte "
           "TotalReqRec:$totalRequestReceivedBytes "
           "prevbufs:$previousBufferEndByte");
+      _sendEnginePanic();
     }
     connectionCachedTempFiles.add(file);
     logger?.info(
@@ -479,6 +481,10 @@ class HttpDownloadConnection {
     _onTempFileWriteComplete(file);
     clearBuffer();
     sendLogBuffer();
+  }
+
+  void _sendEnginePanic() {
+    progressCallback!(EnginePanicMessage(downloadItem));
   }
 
   void _onTempFileWriteComplete(File file) {
@@ -535,7 +541,7 @@ class HttpDownloadConnection {
           newBufferStartByte! + newBufferToWrite.lengthInBytes - 1;
       final newTempFilePath = join(
         tempDirectory.path,
-        "${connectionNumber}#${newBufferStartByte}-${newBufferEndByte}",
+        "$connectionNumber#$newBufferStartByte-$newBufferEndByte",
       );
       logger?.info("Writing file ${basename(newTempFilePath)}");
       final file = File(newTempFilePath)..writeAsBytesSync(newBufferToWrite);
@@ -642,7 +648,7 @@ class HttpDownloadConnection {
     }
   }
 
-  void pause(DownloadProgressCallback? progressCallback) {
+  Future<void> pause(DownloadProgressCallback? progressCallback) async {
     if (isWritingTempFile) {
       logger?.warn("Tried to pause while writing temp files!");
     }
@@ -657,7 +663,7 @@ class HttpDownloadConnection {
     updateStatus(DownloadStatus.paused);
     connectionStatus = DownloadStatus.paused;
     client.close();
-    downloadSub?.cancel();
+    await downloadSub?.cancel();
     pauseButtonEnabled = false;
     notifyProgress();
   }
@@ -691,8 +697,7 @@ class HttpDownloadConnection {
       final validNewStartByte = startByte;
       if (newEndByte > 0 &&
           segment.startByte < newEndByte &&
-          validNewStartByte +
-                  HttpDownloadEngine.minimumDownloadSegmentLength <
+          validNewStartByte + HttpDownloadEngine.minimumDownloadSegmentLength <
               validNewEndByte) {
         this.segment = Segment(segment.startByte, newEndByte);
         message
@@ -701,8 +706,7 @@ class HttpDownloadConnection {
           ..refreshedStartByte = startByte
           ..refreshedEndByte = endByte;
       } else {
-        message.internalMessage =
-            messageRefreshSegmentRefused(reuseConnection);
+        message.internalMessage = messageRefreshSegmentRefused(reuseConnection);
       }
       progressCallback!.call(message);
       logger?.info(
@@ -960,7 +964,8 @@ class HttpDownloadConnection {
   int get endByte => segment.endByte;
 
   bool get connectionRetryAllowed =>
-      lastResponseTimeMillis + settings.connectionRetryTimeoutMillis < _nowMillis &&
+      lastResponseTimeMillis + settings.connectionRetryTimeoutMillis <
+          _nowMillis &&
       !isWritingTempFile &&
       overallStatus != DownloadStatus.paused &&
       overallStatus != DownloadStatus.connectionComplete &&

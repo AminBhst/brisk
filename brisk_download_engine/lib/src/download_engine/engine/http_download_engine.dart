@@ -8,6 +8,7 @@ import 'package:brisk_download_engine/src/download_engine/connection/download_co
 import 'package:brisk_download_engine/src/download_engine/download_command.dart';
 import 'package:brisk_download_engine/src/download_engine/message/connection_handshake_message.dart';
 import 'package:brisk_download_engine/src/download_engine/message/connection_segment_message.dart';
+import 'package:brisk_download_engine/src/download_engine/message/engine_panic_message.dart';
 import 'package:brisk_download_engine/src/download_engine/message/http_download_isolate_message.dart';
 import 'package:brisk_download_engine/src/download_engine/message/internal_messages.dart';
 import 'package:brisk_download_engine/src/download_engine/message/log_message.dart';
@@ -345,20 +346,58 @@ class HttpDownloadEngine {
       case const (LogMessage):
         _handleLogMessage(message);
         break;
+      case const (EnginePanicMessage):
+        _handleEnginePanicMessage(message);
+        break;
       default:
         break;
     }
   }
 
+  static void _terminateAndRestartEngine(DownloadItemModel downloadItem) {
+    _handleEnginePanicMessage(EnginePanicMessage(downloadItem));
+  }
+
+  static void _handleEnginePanicMessage(EnginePanicMessage message) {
+    final uid = message.downloadItem.uid;
+    final connChannels = _engineChannels[uid]?.connectionChannels;
+    final conn = connChannels?.values.firstOrNull;
+    if (conn == null) return;
+    final terminationMessage = HttpDownloadIsolateMessage(
+      downloadItem: message.downloadItem,
+      command: DownloadCommand.terminateAndEnginePanic,
+      settings: downloadSettings!,
+      connectionNumber: 0,
+    );
+    conn.sendMessage(terminationMessage);
+  }
+
   static void _handleEngineTermination(
     TerminatedMessage message,
-  ) {
+  ) async {
     final uid = message.downloadItem.uid;
     _connectionIsolates[uid]
         ?.forEach((_, isolate) => isolate.kill(priority: 0));
-    _connectionIsolates[uid]?.clear();
-    _engineChannels[uid]?.sendMessage(message);
-    _engineChannels.remove(uid);
+    _engineChannels[uid]!.connectionChannels.clear();
+    _engineChannels[uid]!.connectionReuseQueue.clear();
+    _connectionProgresses[uid]?.clear();
+    if (message.enginePanic) {
+      if (isAssembledFileInvalid(message.downloadItem)) {
+        File(message.downloadItem.filePath).deleteSync();
+      }
+      await sendToDownloadIsolates(
+        HttpDownloadIsolateMessage(
+          command: DownloadCommand.start,
+          downloadItem: message.downloadItem,
+          settings: downloadSettings!,
+        ),
+        _engineChannels[uid]!.channel,
+      );
+    } else {
+      _engineChannels[uid]?.sendMessage(message);
+      _engineChannels.remove(uid);
+    }
+    _connectionSpawnerIgnoreList.remove(uid);
     _connectionProgresses.remove(uid);
     _downloadProgresses.remove(uid);
   }
@@ -616,6 +655,10 @@ class HttpDownloadEngine {
       );
       _addToReuseQueue(downloadUid, progress.connectionNumber);
       _setSegmentComplete(progress);
+    }
+    if (downloadProgress.totalDownloadProgress > 1) {
+      _terminateAndRestartEngine(downloadItem);
+      return;
     }
     if (isTempWriteComplete && isAssembleEligible(downloadItem)) {
       engineChannel.sendMessage(downloadProgress);
@@ -911,6 +954,7 @@ class HttpDownloadEngine {
     DownloadItemModel downloadItem, {
     bool deleteCorruptedTempFiles = true,
     bool checkForMissingTempFile = true,
+    bool restartEngineOnBadTempFiles = false,
     IsolateChannel? progressUpdateChannel,
   }) {
     final logger = _engineChannels[downloadItem.uid]!.logger;
@@ -991,13 +1035,17 @@ class HttpDownloadEngine {
       }
     }
     if (deleteCorruptedTempFiles) {
+      if (restartEngineOnBadTempFiles) {
+        _terminateAndRestartEngine(downloadItem);
+        return;
+      }
       tempFilesToDelete.toSet().forEach((file) {
         logger?.info("Deleting bad temp file ${basename(file.path)}...");
         try {
           file.deleteSync();
         } catch (e) {
           logger?.error("Failed to delete file ${basename(file.path)}! $e");
-          rethrow;
+          _terminateAndRestartEngine(downloadItem);
         }
       });
     }
@@ -1237,6 +1285,7 @@ class HttpDownloadEngine {
     validateTempFilesIntegrity(
       downloadItem,
       progressUpdateChannel: _engineChannels[downloadItem.uid]!.channel,
+      restartEngineOnBadTempFiles: true,
     );
     final missingBytes = _findMissingByteRanges(downloadItem);
     logger?.info("Missing byte range check : $missingBytes");
