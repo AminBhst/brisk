@@ -57,7 +57,9 @@ class BrowserExtensionServer {
         addCORSHeaders(request);
         try {
           final jsonBody = jsonDecode(String.fromCharCodes(body));
+          Logger.log(jsonBody);
           final targetVersion = jsonBody["extensionVersion"];
+          Logger.log("Target Version: $targetVersion");
           if (targetVersion == null || targetVersion.toString().isNullOrBlank) {
             await request.response.close();
             responseClosed = true;
