@@ -50,6 +50,10 @@ String? extractFilenameFromHeaders(Map<String, String> headers) {
 String extractFileNameFromUrl(String url) {
   final slashIndex = url.lastIndexOf('/');
   final dotIndex = url.lastIndexOf('.');
+  final tailingStr = url.substring(slashIndex + 1);
+  if (tailingStr.contains("?")) {
+    return tailingStr.substring(0, tailingStr.indexOf("?"));
+  }
   return (url.substring(dotIndex).contains('?'))
       ? url.substring(slashIndex + 1, url.lastIndexOf('?'))
       : url.substring(slashIndex + 1);
