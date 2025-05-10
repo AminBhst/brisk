@@ -136,7 +136,7 @@ class DownloadRequestProvider with ChangeNotifier {
     final dl = HiveUtil.instance.downloadItemsBox.get(downloadItem.id);
     if (dl == null) return;
     if (progress.status == DownloadStatus.assembling) {
-      progress.totalDownloadProgress = 1;
+      progress.downloadProgress = 1;
     }
     if (progress.assembleProgress == 1) {
       HiveUtil.instance.removeDownloadFromQueues(dl.key);
