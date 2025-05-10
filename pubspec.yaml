@@ -70,7 +70,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: "^0.13.1"
+  flutter_launcher_icons: "^0.14.3"
   hive_generator: ^2.0.1
   build_runner: ^2.4.8
 dependency_overrides:
@@ -82,10 +82,10 @@ dependency_overrides:
       path: packages/window_manager
       ref: af74247d3c1616968ec281435f7410bcc7f9355c
 
-flutter_icons:
+flutter_launcher_icons:
   windows:
     generate: true
-    image_path: "assets/icons/logo.svg"
+    image_path: "assets/icons/logo.png"
     icon_size: 48
   macos:
     generate: true
