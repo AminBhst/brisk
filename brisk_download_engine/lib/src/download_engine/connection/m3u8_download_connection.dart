@@ -70,7 +70,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
     logger?.info("Resetting connection....");
     reset = true;
     clearBuffer();
-    closeClient_withCatch();
+    terminateConnection();
     dynamicFlushThreshold = double.infinity;
     clientInitialized = false;
     start(progressCallback!, connectionReset: true);
@@ -78,7 +78,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
 
   @override
   void init(connectionReset, progressCallback, _) {
-    closeClient_withCatch();
+    terminateConnection();
     connectionStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
     overallStatus = connectionStatus;

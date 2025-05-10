@@ -230,16 +230,25 @@ class HttpDownloadConnection {
 
   void sendDownloadRequest(http.Request request, {Duration? timeout}) {
     try {
-      final response = timeout != null
-          ? client.send(request).timeout(timeout)
-          : client.send(request);
-      response.asStream().cast<http.StreamedResponse>().listen((response) {
-        downloadSub = response.stream.listen(
-          _processChunk,
-          onDone: onDownloadComplete,
-          onError: onError,
-        );
-      }).onError(onError);
+      final response =
+          timeout != null
+              ? client.send(request).timeout(timeout)
+              : client.send(request);
+      response
+          .asStream()
+          .cast<http.StreamedResponse>()
+          .listen((response) {
+            if (!response.statusCode.toString().startsWith("2")) {
+              logger?.error("Received bad status code ${response.statusCode}");
+              throw Error();
+            }
+            downloadSub = response.stream.listen(
+              _processChunk,
+              onDone: onDownloadComplete,
+              onError: onError,
+            );
+          })
+          .onError(onError);
     } catch (e) {
       onError(e);
       notifyProgress();
@@ -269,7 +278,7 @@ class HttpDownloadConnection {
   void resetConnection() {
     logger?.info("Resetting connection....");
     reset = true;
-    closeClient_withCatch();
+    terminateConnection();
     totalConnectionReceivedBytes =
         totalConnectionReceivedBytes - tempReceivedBytes;
     totalRequestReceivedBytes = totalRequestReceivedBytes - tempReceivedBytes;
@@ -279,8 +288,7 @@ class HttpDownloadConnection {
   }
 
   void cancel({bool failure = false}) {
-    client.close();
-    downloadSub?.cancel();
+    terminateConnection();
     cancelLogFlushTimer();
     clearBuffer();
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
@@ -386,8 +394,8 @@ class HttpDownloadConnection {
       doProcessChunk(chunk);
     } catch (e) {
       if (e is http.ClientException && paused) return;
-      logger?.info("Error! $e");
-      client.close();
+      logger?.error("process chunk error! $e");
+      terminateConnection();
       clearBuffer();
     }
   }
@@ -428,26 +436,28 @@ class HttpDownloadConnection {
       "Received bytes match endByte! "
       "closing the connection and flushing the buffer...",
     );
-    if (this.endByte == downloadItem.fileSize) {
+    if (endByte == downloadItem.fileSize) {
       logger?.info("Connection corresponds to the last segment!");
       totalRequestReceivedBytes += 3;
       totalConnectionReceivedBytes += 3;
       totalDownloadProgress =
           totalConnectionReceivedBytes / downloadItem.fileSize;
     }
-    client.close();
+    terminateConnection();
     flushBuffer();
     _setDownloadComplete();
     terminatedOnCompletion = true;
+    notifyProgress(completionSignal: true);
   }
 
   void _onByteExceeded() {
     logger?.info("Received bytes exceeded endByte");
-    client.close();
+    terminateConnection();
     flushBuffer();
     _fixTempFiles();
     _setDownloadComplete();
     terminatedOnCompletion = true;
+    notifyProgress(completionSignal: true);
   }
 
   /// Flushes the buffer containing the received bytes to the disk.
@@ -467,10 +477,12 @@ class HttpDownloadConnection {
       ..writeAsBytesSync(mode: FileMode.writeOnly, bytes);
 
     if (tempFileStartByte > downloadItem.fileSize) {
-      logger?.error("Fatal:: conn$connectionNumber::$segment "
-          "byteExceed?$receivedBytesExceededEndByte "
-          "TotalReqRec:$totalRequestReceivedBytes "
-          "prevbufs:$previousBufferEndByte");
+      logger?.error(
+        "Fatal:: conn$connectionNumber::$segment "
+        "byteExceed?$receivedBytesExceededEndByte "
+        "TotalReqRec:$totalRequestReceivedBytes "
+        "prevbufs:$previousBufferEndByte",
+      );
       _sendEnginePanic();
     }
     connectionCachedTempFiles.add(file);
@@ -484,6 +496,7 @@ class HttpDownloadConnection {
   }
 
   void _sendEnginePanic() {
+    logger?.info("Sending engine panic to the engine");
     progressCallback!(EnginePanicMessage(downloadItem));
   }
 
@@ -559,12 +572,14 @@ class HttpDownloadConnection {
     final tempFiles = getConnectionTempFilesSorted(thisByteRangeOnly: true);
     if (tempFiles.isEmpty) {
       logger?.info(
-          "IsDownloadComplete::$connectionNumber::S$startByte-E$endByte ==> EMPTY");
+        "IsDownloadComplete::$connectionNumber::S$startByte-E$endByte ==> EMPTY",
+      );
       return false;
     }
 
     final str = StringBuffer(
-        "IsDownloadComplete::$connectionNumber::S$startByte-E$endByte ==> ");
+      "IsDownloadComplete::$connectionNumber::S$startByte-E$endByte ==> ",
+    );
     tempFiles.forEach((e) {
       str.writeln(basename(e.path));
     });
@@ -593,7 +608,8 @@ class HttpDownloadConnection {
       }
       if (fileStartByte != prevFileEndByte + 1) {
         logger?.info(
-            "IsDownloadComplete::Found inconsistent ranges : ${basename(prevFile.path)} != ${basename(file.path)}");
+          "IsDownloadComplete::Found inconsistent ranges : ${basename(prevFile.path)} != ${basename(file.path)}",
+        );
       }
       if (isLastFile) {
         if (endByte == downloadItem.fileSize &&
@@ -640,9 +656,10 @@ class HttpDownloadConnection {
 
   void calculateDynamicFlushThreshold() {
     const double eightMegaBytes = 8388608;
-    dynamicFlushThreshold = bytesTransferRate * 2 < eightMegaBytes
-        ? bytesTransferRate * 2
-        : eightMegaBytes;
+    dynamicFlushThreshold =
+        bytesTransferRate * 2 < eightMegaBytes
+            ? bytesTransferRate * 2
+            : eightMegaBytes;
     if (dynamicFlushThreshold <= 8192) {
       dynamicFlushThreshold = 64000;
     }
@@ -662,8 +679,8 @@ class HttpDownloadConnection {
     print("Setting pause for connection $connectionNumber");
     updateStatus(DownloadStatus.paused);
     connectionStatus = DownloadStatus.paused;
-    client.close();
-    await downloadSub?.cancel();
+    terminateConnection();
+    await terminateConnection();
     pauseButtonEnabled = false;
     notifyProgress();
   }
@@ -672,11 +689,14 @@ class HttpDownloadConnection {
   void refreshSegment(Segment segment, {bool reuseConnection = false}) {
     final prevEndByte = endByte;
     logger?.info(
-        "Refresh requested for connection $connectionNumber with status $overallStatus $connectionStatus");
+      "Refresh requested for connection $connectionNumber with status $overallStatus $connectionStatus",
+    );
     logger?.info(
-        "Inside refresh segment conn num $connectionNumber :: $startByte - $endByte ");
+      "Inside refresh segment conn num $connectionNumber :: $startByte - $endByte ",
+    );
     logger?.info(
-        "Inside refresh segment conn num $connectionNumber :: new ${segment.startByte} - ${segment.endByte} ");
+      "Inside refresh segment conn num $connectionNumber :: new ${segment.startByte} - ${segment.endByte} ",
+    );
     final message = ConnectionSegmentMessage(
       downloadItem: downloadItem,
       requestedSegment: segment,
@@ -686,8 +706,9 @@ class HttpDownloadConnection {
       message.internalMessage = messageRefreshSegmentRefused(reuseConnection);
       progressCallback!.call(message);
       logger?.info(
-          "Connection :: $connectionNumber ::::: Refresh segment :::: requested : ($segment) :::: validStart "
-          ": ${message.validNewStartByte} , validEnd : ${message.validNewEndByte} :: message: ${message.internalMessage}");
+        "Connection :: $connectionNumber ::::: Refresh segment :::: requested : ($segment) :::: validStart "
+        ": ${message.validNewStartByte} , validEnd : ${message.validNewEndByte} :: message: ${message.internalMessage}",
+      );
       return;
     }
     if (startByte + totalRequestReceivedBytes >= segment.endByte) {
@@ -748,11 +769,11 @@ class HttpDownloadConnection {
         : splitByte + startByte + totalRequestReceivedBytes;
   }
 
-  Future<void> closeClient_withCatch() async {
+  Future<void> terminateConnection() async {
     try {
+      await downloadSub?.cancel();
       client.close();
-      downloadSub?.cancel();
-    } catch (e) {}
+    } catch (_) {}
   }
 
   void clearBuffer() {
@@ -762,7 +783,8 @@ class HttpDownloadConnection {
 
   /// Flushes the remaining bytes in the buffer and completes the download.
   void onDownloadComplete() {
-    if (paused || reset) return;
+    logger?.info("onDownloadComplete paused $paused reset $reset");
+    if (paused || reset || terminatedOnCompletion) return;
     bytesTransferRate = 0;
     downloadProgress = totalRequestReceivedBytes / segment.length;
     totalDownloadProgress =
@@ -782,11 +804,9 @@ class HttpDownloadConnection {
   /// despite the connection not really being completed (the designated segment is not downloaded yet).
   /// Therefore, we handle the mentioned exception here in a way that [onDownloadComplete] will be called
   /// only when a download is actually completed.
-  void onError(dynamic error, [dynamic s]) {
+  void onError(dynamic error, [dynamic s]) async {
     clearBuffer();
-    try {
-      client.close();
-    } catch (e) {}
+    terminateConnection();
     notifyProgress();
     if (!(error is http.ClientException &&
         (paused || terminatedOnCompletion))) {
@@ -831,7 +851,8 @@ class HttpDownloadConnection {
     if (connectionReuse) {
       return false;
     }
-    final isAllowed = (paused && isWritingTempFile) ||
+    final isAllowed =
+        (paused && isWritingTempFile) ||
         (!paused && downloadProgress > 0) ||
         downloadItem.status == DownloadStatus.connectionComplete ||
         overallStatus == DownloadStatus.connectionComplete ||
@@ -852,11 +873,13 @@ class HttpDownloadConnection {
 
     var fileNames = connectionFiles.map((f) => basename(f.path));
     if (thisByteRangeOnly) {
-      fileNames = fileNames
-          .where(
-            (fileName) => fileNameToSegment(fileName).isInRangeOfOther(segment),
-          )
-          .toList();
+      fileNames =
+          fileNames
+              .where(
+                (fileName) =>
+                    fileNameToSegment(fileName).isInRangeOfOther(segment),
+              )
+              .toList();
     }
 
     if (fileNames.isEmpty) {
@@ -880,13 +903,7 @@ class HttpDownloadConnection {
       return connectionCachedTempFiles;
     }
     return connectionCachedTempFiles
-        .where(
-          (file) => isTempFileInByteRange(
-            file,
-            startByte,
-            endByte,
-          ),
-        )
+        .where((file) => isTempFileInByteRange(file, startByte, endByte))
         .toList()
       ..sort(sortByByteRanges);
   }
@@ -927,10 +944,8 @@ class HttpDownloadConnection {
   /// The start byte of the buffer with respect to the target file
   int get tempFileStartByte => startByte + previousBufferEndByte;
 
-  Directory get tempDirectory => Directory(join(
-        settings.baseTempDir.path,
-        downloadItem.uid.toString(),
-      ));
+  Directory get tempDirectory =>
+      Directory(join(settings.baseTempDir.path, downloadItem.uid.toString()));
 
   /// Sends the log buffer to the engine to be flushed to disk
   void sendLogBuffer() {

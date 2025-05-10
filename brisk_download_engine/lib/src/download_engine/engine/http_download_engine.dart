@@ -272,17 +272,19 @@ class HttpDownloadEngine {
     final logger = engineChannel.logger;
     if (engineChannel.segmentTree == null) return;
     try {
+      logger?.info(
+        "Pre-split segment tree:\n${engineChannel.segmentTree.toString()}",
+      );
       engineChannel.segmentTree!.split();
+      logger?.info(
+        "Post-split segment tree:\n${engineChannel.segmentTree.toString()}",
+      );
     } catch (e) {
       logger?.error("_refreshConnectionSegments:: Fatal! $e");
       return;
     }
-    final nodes = engineChannel.segmentTree!.lowestLevelNodes;
     logger?.info("refreshing connection segments...");
-    logger?.info("Current segment tree lowest level nodes:");
-    for (final element in nodes) {
-      engineChannel.logger?.info(element.segment.toString());
-    }
+    logger?.info("Segment tree :\n${engineChannel.segmentTree.toString()}");
     final segmentNodes = engineChannel.segmentTree!.lowestLevelNodes;
     engineChannel.connectionChannels.forEach((connNum, connectionChannel) {
       final relatedSegmentNode =
@@ -663,6 +665,9 @@ class HttpDownloadEngine {
       _setSegmentComplete(progress);
     }
     if (downloadProgress.totalDownloadProgress > 1) {
+      logger?.warn(
+        "Download progress exceeded 1! current: ${downloadProgress.totalDownloadProgress}. Sending engine panic!",
+      );
       _terminateAndRestartEngine(downloadItem);
       return;
     }
@@ -734,15 +739,18 @@ class HttpDownloadEngine {
       );
       return;
     }
-    logger?.info("Splitting segment node ${targetNode.segment}...");
     bool success = false;
     try {
+      logger?.info("Splitting segment node $targetNode");
+      logger?.info("Pre-split segment tree:\n${segmentTree.toString()}");
       success = segmentTree.splitSegmentNode(
         targetNode,
         setConnectionNumber: false,
       );
+      logger?.info("Post-split segment tree:\n${segmentTree.toString()}");
     } catch (e) {
-      logger?.error("Fatal! ${e.toString()}");
+      logger?.error("Failed to split segment node ${e.toString()}");
+      logger?.error("Tree: ${segmentTree.toString()}");
       success = false;
     }
 
@@ -845,12 +853,10 @@ class HttpDownloadEngine {
         downloadSettings!.totalConnections,
         missingByteRanges,
       );
+      print("Tree result: \n${engineChannel.segmentTree.toString()}");
       // If the tree was built on top of existing temp files, the dynamic connection spawner
       // should not be executed because multiple segments are already assigned to connections.
       // therefore we set the created connections to the max allowed value.
-      logger?.info(
-        "Tree lowest level nodes : ${engineChannel.segmentTree!.lowestLevelNodes.map((e) => e.segment).toList()}",
-      );
       if (engineChannel.segmentTree!.lowestLevelNodes.length != 1) {
         engineChannel.createdConnections = downloadSettings!.totalConnections;
       }
@@ -1058,7 +1064,9 @@ class HttpDownloadEngine {
         try {
           file.deleteSync();
         } catch (e) {
-          logger?.error("Failed to delete file ${basename(file.path)}! $e");
+          logger?.error(
+            "Failed to delete file ${basename(file.path)}! $e \nSending engine panic!",
+          );
           _terminateAndRestartEngine(downloadItem);
         }
       });
