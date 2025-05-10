@@ -52,11 +52,11 @@ class HttpDownloadEngine {
   /// A map of all stream channels related to the running download requests
   /// key: downloadId
   static final Map<String, EngineChannel<HttpDownloadConnectionChannel>>
-      _engineChannels = {};
+  _engineChannels = {};
 
   /// TODO Remove and use download channels
   static final Map<String, Map<int, DownloadProgressMessage>>
-      _connectionProgresses = {};
+  _connectionProgresses = {};
 
   static final Map<String, DownloadProgressMessage> _downloadProgresses = {};
 
@@ -137,19 +137,25 @@ class HttpDownloadEngine {
       if (engineChannel.downloadItem == null || engineChannel.paused) {
         return;
       }
-      final connectionsToReset = engineChannel.connectionChannels.values
-          .where((conn) =>
-              conn.detailsStatus != DownloadStatus.paused &&
-              conn.detailsStatus != DownloadStatus.canceled &&
-              conn.detailsStatus != DownloadStatus.connectionComplete)
-          .toList()
-          .where((conn) =>
-              (conn.resetCount < downloadSettings!.maxConnectionRetryCount ||
-                  downloadSettings!.maxConnectionRetryCount == -1) &&
-              conn.lastResponseTime +
-                      downloadSettings!.connectionRetryTimeoutMillis <
-                  _nowMillis)
-          .toList();
+      final connectionsToReset =
+          engineChannel.connectionChannels.values
+              .where(
+                (conn) =>
+                    conn.detailsStatus != DownloadStatus.paused &&
+                    conn.detailsStatus != DownloadStatus.canceled &&
+                    conn.detailsStatus != DownloadStatus.connectionComplete,
+              )
+              .toList()
+              .where(
+                (conn) =>
+                    (conn.resetCount <
+                            downloadSettings!.maxConnectionRetryCount ||
+                        downloadSettings!.maxConnectionRetryCount == -1) &&
+                    conn.lastResponseTime +
+                            downloadSettings!.connectionRetryTimeoutMillis <
+                        _nowMillis,
+              )
+              .toList();
 
       for (final connection in connectionsToReset) {
         final message = HttpDownloadIsolateMessage(
@@ -158,7 +164,8 @@ class HttpDownloadEngine {
           settings: downloadSettings!,
           connectionNumber: connection.connectionNumber,
         );
-        engineChannel.connectionChannels[connection.connectionNumber]
+        engineChannel
+            .connectionChannels[connection.connectionNumber]
             ?.awaitingResetResponse = true;
         connection.sendMessage(message);
         connection.resetCount++;
@@ -281,9 +288,7 @@ class HttpDownloadEngine {
       final relatedSegmentNode =
           segmentNodes.where((s) => s.connectionNumber == connNum).firstOrNull;
       if (relatedSegmentNode == null) {
-        logger?.error(
-          "Fatal error occurred! relatedSegmentNode is null!",
-        );
+        logger?.error("Fatal error occurred! relatedSegmentNode is null!");
         return;
       }
       final data = HttpDownloadIsolateMessage(
@@ -313,10 +318,10 @@ class HttpDownloadEngine {
   static bool _shouldCreateNewConnections(String downloadUid) {
     final progress = _downloadProgresses[downloadUid]!;
     final engineChannel = _engineChannels[downloadUid];
-    final pendingSegmentExists = _engineChannels[downloadUid]!
-            .segmentTree
-            ?.lowestLevelNodes
-            .any((s) => s.segmentStatus == SegmentStatus.refreshRequested) ??
+    final pendingSegmentExists =
+        _engineChannels[downloadUid]!.segmentTree?.lowestLevelNodes.any(
+          (s) => s.segmentStatus == SegmentStatus.refreshRequested,
+        ) ??
         true;
 
     return !pendingSegmentExists &&
@@ -373,12 +378,11 @@ class HttpDownloadEngine {
     conn.sendMessage(terminationMessage);
   }
 
-  static void _handleEngineTermination(
-    TerminatedMessage message,
-  ) async {
+  static void _handleEngineTermination(TerminatedMessage message) async {
     final uid = message.downloadItem.uid;
-    _connectionIsolates[uid]
-        ?.forEach((_, isolate) => isolate.kill(priority: 0));
+    _connectionIsolates[uid]?.forEach(
+      (_, isolate) => isolate.kill(priority: 0),
+    );
     _engineChannels[uid]!.connectionChannels.clear();
     _engineChannels[uid]!.connectionReuseQueue.clear();
     _connectionProgresses[uid]?.clear();
@@ -412,7 +416,9 @@ class HttpDownloadEngine {
       (h) => h.newConnectionNumber == message.newConnectionNumber,
     );
     if (message.reuseConnection) {
-      engineChannel.segmentTree?.lowestLevelNodes
+      engineChannel
+          .segmentTree
+          ?.lowestLevelNodes
           .where(
             (node) =>
                 node.segmentStatus == SegmentStatus.reuseRequested &&
@@ -444,8 +450,8 @@ class HttpDownloadEngine {
 
   static void _handleSegmentMessage(ConnectionSegmentMessage message) {
     _engineChannels[message.downloadItem.uid]?.logger?.info(
-          "Handling refresh segment response : ${message.internalMessage}",
-        );
+      "Handling refresh segment response : ${message.internalMessage}",
+    );
     switch (message.internalMessage) {
       case InternalMessage.refreshSegmentSuccess:
         _handleRefreshSegmentSuccess(message);
@@ -491,8 +497,9 @@ class HttpDownloadEngine {
       // TODO We should probably handle this better
       // _engineChannels[message.downloadItem.id]!.createdConnections--;
     }
-    final lIndex = tree.lowestLevelNodes
-        .indexWhere((node) => node.segment == parent.leftChild!.segment);
+    final lIndex = tree.lowestLevelNodes.indexWhere(
+      (node) => node.segment == parent.leftChild!.segment,
+    );
     if (lIndex != -1) {
       // parent.segmentStatus = SegmentStatus.IN_USE;
       tree.lowestLevelNodes
@@ -581,10 +588,7 @@ class HttpDownloadEngine {
         connectionNode,
         connectionNode.connectionNumber,
       );
-      _addHandshake(
-        message.downloadItem.uid,
-        connectionNode.connectionNumber,
-      );
+      _addHandshake(message.downloadItem.uid, connectionNode.connectionNumber);
     }
     parent.leftChild!.segmentStatus = SegmentStatus.inUse;
     connectionNode.segmentStatus = SegmentStatus.inUse;
@@ -645,7 +649,8 @@ class HttpDownloadEngine {
     );
     _setEstimation(downloadProgress, totalProgress);
     if (progress.status == DownloadStatus.downloading) {
-      engineChannel.connectionChannels[progress.connectionNumber]
+      engineChannel
+          .connectionChannels[progress.connectionNumber]
           ?.awaitingResetResponse = false;
     }
     _setButtonAvailability(downloadProgress, totalProgress);
@@ -707,9 +712,10 @@ class HttpDownloadEngine {
     final engineChannel = _engineChannels[downloadUid]!;
     final logger = engineChannel.logger;
     final segmentTree = engineChannel.segmentTree;
-    final nodes = segmentTree!.inQueueNodes!.isNotEmpty
-        ? segmentTree.inQueueNodes
-        : segmentTree.inUseNodes;
+    final nodes =
+        segmentTree!.inQueueNodes!.isNotEmpty
+            ? segmentTree.inQueueNodes
+            : segmentTree.inUseNodes;
     if (nodes!.isEmpty) {
       logger?.error(
         "_sendRefreshSegmentCommand_ReuseConnection:: Fatal! Failed to find segment node!",
@@ -717,10 +723,11 @@ class HttpDownloadEngine {
       return;
     }
     nodes.sort((a, b) => b.segment.length.compareTo(a.segment.length));
-    final targetNode = nodes
-        .where((node) => node.segment != connectionChannel.segment)
-        .toList()
-        .firstOrNull;
+    final targetNode =
+        nodes
+            .where((node) => node.segment != connectionChannel.segment)
+            .toList()
+            .firstOrNull;
     if (targetNode == null) {
       logger?.error(
         "_sendRefreshSegmentCommand_ReuseConnection:: Fatal! Target node is null!",
@@ -757,9 +764,10 @@ class HttpDownloadEngine {
       ..segmentStatus = SegmentStatus.refreshRequested
       ..leftChild?.segmentStatus = SegmentStatus.refreshRequested
       ..rightChild?.segmentStatus = SegmentStatus.initial;
-    final oldestSegmentConnection = engineChannel.connectionChannels.values
-        .where((conn) => conn.segment == targetNode.segment)
-        .firstOrNull;
+    final oldestSegmentConnection =
+        engineChannel.connectionChannels.values
+            .where((conn) => conn.segment == targetNode.segment)
+            .firstOrNull;
     logger?.info("Segment tree in reuseConnection :");
     for (final element in segmentTree.lowestLevelNodes) {
       logger?.info(
@@ -871,26 +879,28 @@ class HttpDownloadEngine {
         .where((node) => node.segmentStatus == SegmentStatus.initial)
         .toList()
         .forEach((segmentNode) {
-      var newData = data.clone()..segment = segmentNode.segment;
-      segmentNode.segmentStatus = SegmentStatus.inUse;
-      final completedSegments = segmentTree.lowestLevelNodes
-          .where((node) =>
-              node.segmentStatus == SegmentStatus.complete &&
-              node.connectionNumber == segmentNode.connectionNumber)
-          .map((e) => e.segment.length)
-          .toList();
-      int completedLength = completedSegments.isEmpty
-          ? 0
-          : completedSegments.reduce((first, second) => first + second);
-      data.previouslyWrittenByteLength = completedLength;
-      _spawnSingleDownloadIsolate(newData, segmentNode.connectionNumber);
-    });
+          var newData = data.clone()..segment = segmentNode.segment;
+          segmentNode.segmentStatus = SegmentStatus.inUse;
+          final completedSegments =
+              segmentTree.lowestLevelNodes
+                  .where(
+                    (node) =>
+                        node.segmentStatus == SegmentStatus.complete &&
+                        node.connectionNumber == segmentNode.connectionNumber,
+                  )
+                  .map((e) => e.segment.length)
+                  .toList();
+          int completedLength =
+              completedSegments.isEmpty
+                  ? 0
+                  : completedSegments.reduce((first, second) => first + second);
+          data.previouslyWrittenByteLength = completedLength;
+          _spawnSingleDownloadIsolate(newData, segmentNode.connectionNumber);
+        });
   }
 
   /// Analyzes the temp files and returns the missing temp byte ranges
-  static List<Segment> _findMissingByteRanges(
-    DownloadItemModel downloadItem,
-  ) {
+  static List<Segment> _findMissingByteRanges(DownloadItemModel downloadItem) {
     final contentLength = downloadItem.fileSize;
     List<File>? tempFiles;
     final tempDirPath = join(
@@ -959,7 +969,8 @@ class HttpDownloadEngine {
     IsolateChannel? progressUpdateChannel,
   }) {
     final logger = _engineChannels[downloadItem.uid]!.logger;
-    var progress = _downloadProgresses[downloadItem.uid] ??
+    var progress =
+        _downloadProgresses[downloadItem.uid] ??
         DownloadProgressMessage(downloadItem: downloadItem);
     progress
       ..downloadItem = downloadItem
@@ -1009,27 +1020,29 @@ class HttpDownloadEngine {
           "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)}",
         );
       }
-      final badTempFiles = tempFiles.where((f) => f != file).where((f) {
-        final fileSegment = Segment(
-          getStartByteFromTempFile(f),
-          getEndByteFromTempFile(f),
-        );
-        final currentFileSegment = Segment(start, end);
+      final badTempFiles =
+          tempFiles.where((f) => f != file).where((f) {
+            final fileSegment = Segment(
+              getStartByteFromTempFile(f),
+              getEndByteFromTempFile(f),
+            );
+            final currentFileSegment = Segment(start, end);
 
-        final fileOverlapsWithCurrent =
-            fileSegment.overlapsWithOther(currentFileSegment);
+            final fileOverlapsWithCurrent = fileSegment.overlapsWithOther(
+              currentFileSegment,
+            );
 
-        final currentOverlapsWithFile =
-            currentFileSegment.overlapsWithOther(fileSegment);
+            final currentOverlapsWithFile = currentFileSegment
+                .overlapsWithOther(fileSegment);
 
-        if (fileOverlapsWithCurrent || currentOverlapsWithFile) {
-          logger?.info(
-            "Found overlapping temp files : ${basename(file.path)} === ${basename(f.path)}",
-          );
-          return true;
-        }
-        return false;
-      }).toList();
+            if (fileOverlapsWithCurrent || currentOverlapsWithFile) {
+              logger?.info(
+                "Found overlapping temp files : ${basename(file.path)} === ${basename(f.path)}",
+              );
+              return true;
+            }
+            return false;
+          }).toList();
       tempFilesToDelete.addAll(badTempFiles);
       for (final badFile in badTempFiles) {
         logger?.info("Bad file :: ${basename(badFile.path)}");
@@ -1060,10 +1073,9 @@ class HttpDownloadEngine {
     required IsolateChannel progressChannel,
   }) {
     final engineChannel = _engineChannels[downloadItem.uid]!;
-    final progress = _downloadProgresses[downloadItem.uid] ??
-        DownloadProgressMessage(
-          downloadItem: downloadItem,
-        );
+    final progress =
+        _downloadProgresses[downloadItem.uid] ??
+        DownloadProgressMessage(downloadItem: downloadItem);
     progress
       ..downloadItem.status = DownloadStatus.assembling
       ..totalDownloadProgress = 1
@@ -1153,7 +1165,9 @@ class HttpDownloadEngine {
   }
 
   static void _setEstimation(
-      DownloadProgressMessage downloadProgress, double totalProgress) {
+    DownloadProgressMessage downloadProgress,
+    double totalProgress,
+  ) {
     final uid = downloadProgress.downloadItem.uid;
     if (completionEstimations[uid] == null) return;
     downloadProgress.estimatedRemaining =
@@ -1163,12 +1177,15 @@ class HttpDownloadEngine {
   static int _tempTime = _nowMillis;
 
   static void _calculateEstimatedRemaining(
-      String uid, double bytesTransferRate) {
+    String uid,
+    double bytesTransferRate,
+  ) {
     final progresses = _connectionProgresses[uid];
     final nowMillis = _nowMillis;
     if (progresses == null ||
         _tempTime + 1000 > nowMillis ||
-        bytesTransferRate == 0) return;
+        bytesTransferRate == 0)
+      return;
 
     int totalBytes = 0;
     final contentLength = progresses.values.first.downloadItem.fileSize;
@@ -1210,14 +1227,12 @@ class HttpDownloadEngine {
     final firstProgress = _connectionProgresses[uid]!.values.first;
     String status = firstProgress.status;
     final totalProgress = _calculateTotalDownloadProgress(uid);
-    final allConnecting = _engineChannels[uid]!
-        .connectionChannels
-        .values
-        .every((p) => p.detailsStatus == DownloadStatus.connecting);
-    final anyDownloading = _engineChannels[uid]!
-        .connectionChannels
-        .values
-        .any((p) => p.status == DownloadStatus.downloading);
+    final allConnecting = _engineChannels[uid]!.connectionChannels.values.every(
+      (p) => p.detailsStatus == DownloadStatus.connecting,
+    );
+    final anyDownloading = _engineChannels[uid]!.connectionChannels.values.any(
+      (p) => p.status == DownloadStatus.downloading,
+    );
     if (allConnecting) {
       status = DownloadStatus.connecting;
     }
@@ -1246,27 +1261,33 @@ class HttpDownloadEngine {
       progress.buttonAvailability = ButtonAvailability(false, false);
       return;
     }
-    final unfinishedConnections = progresses
-        .where((p) => p.connectionStatus != DownloadStatus.connectionComplete)
-        .toList();
+    final unfinishedConnections =
+        progresses
+            .where(
+              (p) => p.connectionStatus != DownloadStatus.connectionComplete,
+            )
+            .toList();
 
-    final pauseButtonEnabled = unfinishedConnections.every(
+    final pauseButtonEnabled =
+        unfinishedConnections.every(
           (c) => c.buttonAvailability.pauseButtonEnabled,
         ) &&
         engineChannel!.isPauseButtonWaitComplete;
 
-    final startButtonEnabled = unfinishedConnections.every(
+    final startButtonEnabled =
+        unfinishedConnections.every(
           (c) => c.buttonAvailability.startButtonEnabled,
         ) &&
         engineChannel!.isStartButtonWaitComplete;
 
-    progress.buttonAvailability =
-        ButtonAvailability(pauseButtonEnabled, startButtonEnabled);
+    progress.buttonAvailability = ButtonAvailability(
+      pauseButtonEnabled,
+      startButtonEnabled,
+    );
   }
 
   static double _calculateTotalDownloadProgress(String uid) {
-    return _connectionProgresses[uid]!
-        .values
+    return _connectionProgresses[uid]!.values
         .map((e) => e.totalDownloadProgress)
         .reduce((first, second) => first + second);
   }
@@ -1294,7 +1315,8 @@ class HttpDownloadEngine {
         _engineChannels[downloadItem.uid]!.segmentTree!.lowestLevelNodes;
     for (final element in nodes) {
       logger?.info(
-          "LowestLevelNode:: ${element.segment} :: ${element.segmentStatus}");
+        "LowestLevelNode:: ${element.segment} :: ${element.segmentStatus} #${element.connectionNumber}",
+      );
     }
     return missingBytes.isEmpty;
   }
@@ -1329,9 +1351,7 @@ class HttpDownloadEngine {
       rPort.sendPort,
       errorsAreFatal: false,
     );
-    logger?.info(
-      "Spawned connection $connNum with segment ${data.segment}",
-    );
+    logger?.info("Spawned connection $connNum with segment ${data.segment}");
     channel.sink.add(data);
     _connectionIsolates[uid] ??= {};
     _connectionIsolates[uid]![connNum] = isolate;
@@ -1360,9 +1380,10 @@ class HttpDownloadEngine {
       downloadItem,
       progressChannel: progressChannel,
     );
-    final status = success
-        ? DownloadStatus.assembleComplete
-        : DownloadStatus.assembleFailed;
+    final status =
+        success
+            ? DownloadStatus.assembleComplete
+            : DownloadStatus.assembleFailed;
     downloadItem.status = status;
     final progress = DownloadProgressMessage(
       downloadItem: downloadItem,
