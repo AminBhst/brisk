@@ -99,9 +99,10 @@ class DownloadSegmentTree {
           currentMissing.startByte,
           currentMissing.endByte,
           connectionNumber: currentMaxConnectionNumber,
-          segmentStatus: exceededMaxConnectionNumber
-              ? SegmentStatus.inQueue
-              : SegmentStatus.initial,
+          segmentStatus:
+              exceededMaxConnectionNumber
+                  ? SegmentStatus.inQueue
+                  : SegmentStatus.initial,
         );
         missingSegments.remove(currentMissing);
       } else {
@@ -114,9 +115,10 @@ class DownloadSegmentTree {
       iterationRoot.createRightChild(
         iterationRoot.leftChild!.segment.endByte + 1,
         contentLength,
-        segmentStatus: exceededMaxConnectionNumber
-            ? SegmentStatus.inQueue
-            : SegmentStatus.outdated,
+        segmentStatus:
+            exceededMaxConnectionNumber
+                ? SegmentStatus.inQueue
+                : SegmentStatus.outdated,
       );
       iterationRoot
         ..rightChild?.leftNeighbor = iterationRoot.leftChild
@@ -138,9 +140,10 @@ class DownloadSegmentTree {
       }
       iterationRoot = iterationRoot.rightChild!;
     }
-    var initialNodes = tree.lowestLevelNodes
-        .where((node) => node.segmentStatus == SegmentStatus.initial)
-        .toList();
+    var initialNodes =
+        tree.lowestLevelNodes
+            .where((node) => node.segmentStatus == SegmentStatus.initial)
+            .toList();
     if (initialNodes.length == maxNumberOfConnections) {
       return tree;
     }
@@ -149,9 +152,10 @@ class DownloadSegmentTree {
         initialNodes.maxBy((node) => node.connectionNumber)!.connectionNumber;
     loop:
     while (connectionNumber <= maxNumberOfConnections) {
-      initialNodes = tree.lowestLevelNodes
-          .where((node) => node.segmentStatus == SegmentStatus.initial)
-          .toList();
+      initialNodes =
+          tree.lowestLevelNodes
+              .where((node) => node.segmentStatus == SegmentStatus.initial)
+              .toList();
       for (final node in initialNodes) {
         if (connectionNumber + 1 >= maxNumberOfConnections) {
           break loop;
@@ -196,10 +200,11 @@ class DownloadSegmentTree {
   }
 
   SegmentNode? searchNode(Segment targetSegment) {
-    final nodeInLowestLevelList = lowestLevelNodes
-        .where((node) => node.segment == targetSegment)
-        .toList()
-        .firstOrNull;
+    final nodeInLowestLevelList =
+        lowestLevelNodes
+            .where((node) => node.segment == targetSegment)
+            .toList()
+            .firstOrNull;
     if (nodeInLowestLevelList != null) {
       return nodeInLowestLevelList;
     }
@@ -226,14 +231,15 @@ class DownloadSegmentTree {
     return null;
   }
 
-  List<SegmentNode>? get inUseNodes => lowestLevelNodes
-      .where((node) => node.segmentStatus == SegmentStatus.inUse)
-      .toList();
+  List<SegmentNode>? get inUseNodes =>
+      lowestLevelNodes
+          .where((node) => node.segmentStatus == SegmentStatus.inUse)
+          .toList();
 
-  List<SegmentNode>? get inQueueNodes => lowestLevelNodes
-      .where((node) => node.segmentStatus == SegmentStatus.inQueue)
-      .toList();
-
+  List<SegmentNode>? get inQueueNodes =>
+      lowestLevelNodes
+          .where((node) => node.segmentStatus == SegmentStatus.inQueue)
+          .toList();
 
   /// Splits the given [node] into 2 child segments.
   /// e.g.          [0-1000] ==> [node]
@@ -282,8 +288,9 @@ class DownloadSegmentTree {
     if (nodeIndex == -1) {
       final str = StringBuffer();
       str.writeln("Failed to find node index ${node.segment}");
-      lowestLevelNodes
-          .forEach((element) => str.writeln("LowestNode: ${element.segment}"));
+      lowestLevelNodes.forEach(
+        (element) => str.writeln("LowestNode: ${element.segment}"),
+      );
       print(str.toString());
       throw Exception(str.toString());
     }
@@ -291,6 +298,43 @@ class DownloadSegmentTree {
     lowestLevelNodes.insert(nodeIndex, node.leftChild!);
     lowestLevelNodes.insert(nodeIndex + 1, node.rightChild!);
     return true;
+  }
+
+  @override
+  String toString() {
+    final buffer = StringBuffer();
+    _buildTreeString(root, '', true, buffer);
+    return buffer.toString();
+  }
+
+  void _buildTreeString(
+    SegmentNode node,
+    String prefix,
+    bool isLast,
+    StringBuffer buffer,
+  ) {
+    final connector = isLast ? '└──' : '├──';
+    final segment = node.segment;
+    final status = node.segmentStatus.name;
+    final conn = node.connectionNumber;
+    buffer.writeln(
+      '$prefix$connector [${segment.startByte}-${segment.endByte}] '
+      '(status: $status, conn: $conn)',
+    );
+
+    final children = [
+      if (node.leftChild != null) node.leftChild!,
+      if (node.rightChild != null) node.rightChild!,
+    ];
+
+    for (var i = 0; i < children.length; i++) {
+      _buildTreeString(
+        children[i],
+        prefix + (isLast ? '    ' : '│   '),
+        i == children.length - 1,
+        buffer,
+      );
+    }
   }
 }
 
@@ -317,7 +361,7 @@ class SegmentNode {
     SegmentStatus segmentStatus = SegmentStatus.initial,
     int connectionNumber = 0,
   }) {
-    this.leftChild = SegmentNode(
+    leftChild = SegmentNode(
       segment: Segment(startByte, endByte),
       parent: this,
       segmentStatus: segmentStatus,
@@ -331,7 +375,7 @@ class SegmentNode {
     SegmentStatus segmentStatus = SegmentStatus.initial,
     int connectionNumber = 0,
   }) {
-    this.rightChild = SegmentNode(
+    rightChild = SegmentNode(
       segment: Segment(startByte, endByte),
       parent: this,
       segmentStatus: segmentStatus,
@@ -340,12 +384,12 @@ class SegmentNode {
   }
 
   void removeChildren() {
-    this.rightChild = null;
-    this.leftChild = null;
+    rightChild = null;
+    leftChild = null;
   }
 
   void setLastUpdateMillis() {
-    this.lastUpdateMillis = DateTime.now().millisecondsSinceEpoch;
+    lastUpdateMillis = DateTime.now().millisecondsSinceEpoch;
   }
 
   SegmentNode({
@@ -354,4 +398,9 @@ class SegmentNode {
     this.parent,
     this.segmentStatus = SegmentStatus.initial,
   });
+
+  @override
+  String toString() {
+    return "$segment conn: $connectionNumber status: ${segmentStatus.name}";
+  }
 }
