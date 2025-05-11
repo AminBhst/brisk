@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/app_logger.dart';
@@ -23,6 +24,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:window_to_front/window_to_front.dart';
 import 'package:window_manager/window_manager.dart';
+
+import '../widget/download/multi_download_addition_dialog.dart';
 
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
@@ -140,6 +143,7 @@ class BrowserExtensionServer {
   }
 
   static void _handleM3u8DownloadRequest(jsonBody, context, request) async {
+    final loc = AppLocalizations.of(context)!;
     bool canceled = false;
     showDialog(
       context: context,
@@ -174,15 +178,13 @@ class BrowserExtensionServer {
       Navigator.of(context).pop();
       showDialog(
         context: context,
-        builder: (_) => const ErrorDialog(
+        builder: (_) => ErrorDialog(
           textHeight: 0,
           height: 200,
           width: 380,
-          title: "Failed to retrieve file info",
-          description:
-              "Something went wrong when trying to retrieve file information from this URL.",
-          descriptionHint:
-              "In some cases, retrying a few times may solve the issue. Otherwise, make sure the resource you're to reach is valid.",
+          title: loc.err_failedToRetrieveFileInfo_title,
+          description: loc.err_failedToRetrieveFileInfo_description,
+          descriptionHint: loc.err_failedToRetrieveFileInfo_descriptionHint,
         ),
       );
       return;
@@ -226,6 +228,7 @@ class BrowserExtensionServer {
     if (downloadHrefs.isEmpty) return;
     downloadHrefs = downloadHrefs.toSet().toList() // removes duplicates
       ..removeWhere((url) => !isUrlValid(url));
+    print("Valids:  ${downloadHrefs}");
     final downloadItems =
         downloadHrefs.map((e) => DownloadItem.fromUrl(e)).toList();
     _cancelClicked = false;
@@ -237,21 +240,18 @@ class BrowserExtensionServer {
       if (_cancelClicked) {
         return;
       }
-      if (true) {
-        return onFileInfoRetrievalError(context);
-      }
-      // fileInfos.removeWhere(
-      //   (fileInfo) => SettingsCache.extensionSkipCaptureRules.any(
-      //     (rule) => rule.isSatisfiedByFileInfo(fileInfo),
-      //   ),
-      // );
-      // handleWindowToFront();
-      // Navigator.of(context).pop();
-      // showDialog(
-      //   context: context,
-      //   barrierDismissible: false,
-      //   builder: (_) => MultiDownloadAdditionDialog(fileInfos),
-      // );
+      fileInfos?.removeWhere(
+        (fileInfo) => SettingsCache.extensionSkipCaptureRules.any(
+          (rule) => rule.isSatisfiedByFileInfo(fileInfo),
+        ),
+      );
+      handleWindowToFront();
+      Navigator.of(context).pop();
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => MultiDownloadAdditionDialog(fileInfos!),
+      );
     }).onError((error, stackTrace) => onFileInfoRetrievalError(context));
   }
 
@@ -264,17 +264,16 @@ class BrowserExtensionServer {
   /// TODO add log file
   static onFileInfoRetrievalError(context) {
     Navigator.of(context).pop();
+    final loc = AppLocalizations.of(context)!;
     showDialog(
       context: context,
-      builder: (_) => const ErrorDialog(
+      builder: (_) => ErrorDialog(
         textHeight: 0,
         height: 200,
         width: 380,
-        title: "Failed to retrieve file info",
-        description:
-            "Something went wrong when trying to retrieve file information from this URL.",
-        descriptionHint:
-            "In some cases, retrying a few times may solve the issue. Otherwise, make sure the resource you're to reach is valid.",
+        title: loc.err_failedToRetrieveFileInfo_title,
+        description: loc.err_failedToRetrieveFileInfo_description,
+        descriptionHint: loc.err_failedToRetrieveFileInfo_descriptionHint,
       ),
     );
   }
