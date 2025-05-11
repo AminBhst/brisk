@@ -812,7 +812,6 @@ class HttpDownloadConnection {
         (paused || terminatedOnCompletion))) {
       logger?.error("connection $connectionNumber error : $error \n $s");
       reset = true; // set to prevent sending a completion signal to the engine
-      throw error;
     }
   }
 
