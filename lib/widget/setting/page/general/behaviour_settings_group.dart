@@ -1,4 +1,5 @@
 import 'package:brisk/constants/app_closure_behaviour.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:brisk/widget/setting/base/switch_setting.dart';
 import 'package:flutter/material.dart';
@@ -15,23 +16,18 @@ class BehaviourSettingsGroup extends StatefulWidget {
 }
 
 class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
-  static const dropDownAskStr = "Always Ask";
-  static const dropDownSkipStr = "Skip Download";
-  static const dropDownAddStr = "Add New";
-  static const dropDownUpdateUrlSTr = "Update URL";
-
-  static const dropDownExitStr = "Exit";
-  static const dropDownMinimizeToTrayStr = "Minimize to Tray";
+  late AppLocalizations loc;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    loc = AppLocalizations.of(context)!;
     return SettingsGroup(
       height: 300,
-      title: "Behavior",
+      title: loc.settings_behavior,
       children: [
         SwitchSetting(
-          text: "Launch at startup",
+          text: loc.settings_behavior_launchAtStartup,
           switchValue: SettingsCache.launchOnStartUp,
           onChanged: (val) =>
               setState(() => SettingsCache.launchOnStartUp = val),
@@ -39,7 +35,7 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
         const SizedBox(height: 5),
         const SizedBox(height: 5),
         SwitchSetting(
-          text: "Open download progress window when a new download starts",
+          text: loc.settings_behavior_showProgressOnNewDownload,
           switchValue: SettingsCache.openDownloadProgressWindow,
           onChanged: (val) =>
               setState(() => SettingsCache.openDownloadProgressWindow = val),
@@ -47,15 +43,14 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
         const SizedBox(height: 5),
         DropDownSetting(
           dropDownItemTextWidth: size.width * 0.17,
-          value: _appClosureActionToDropDownTxt(
-            SettingsCache.appClosureBehaviour,
-          ),
-          text: "App closure behavior",
+          value:
+              _appClosureActionToDropDownTxt(SettingsCache.appClosureBehaviour),
+          text: loc.settings_behavior_appClosureBehavior,
           onChanged: _onAppClosureDropDownChanged,
-          items: const [
-            dropDownMinimizeToTrayStr,
-            dropDownExitStr,
-            dropDownAskStr,
+          items: [
+            loc.settings_behavior_appClosureBehavior_minimizeToTray,
+            loc.settings_behavior_appClosureBehavior_exit,
+            loc.settings_behavior_appClosureBehavior_alwaysAsk,
           ],
         ),
         const SizedBox(height: 5),
@@ -63,14 +58,15 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
           dropDownItemTextWidth: size.width * 0.17,
           value: _fileDuplicationActionToDropDownTxt(
             SettingsCache.fileDuplicationBehaviour,
+            loc,
           ),
-          text: "Duplicate download action",
+          text: loc.settings_behavior_duplicateDownloadAction,
           onChanged: _onFileDuplicationDropDownChanged,
-          items: const [
-            dropDownAddStr,
-            dropDownUpdateUrlSTr,
-            dropDownSkipStr,
-            dropDownAskStr,
+          items: [
+            loc.settings_behavior_duplicateDownloadAction_addNew,
+            loc.settings_behavior_duplicateDownloadAction_updateUrl,
+            loc.settings_behavior_duplicateDownloadAction_skipDownload,
+            loc.settings_behavior_duplicateDownloadAction_alwaysAsk,
           ],
         )
       ],
@@ -78,27 +74,27 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
   }
 
   String _fileDuplicationActionToDropDownTxt(
-      FileDuplicationBehaviour behaviour) {
+      FileDuplicationBehaviour behaviour, AppLocalizations loc) {
     switch (behaviour) {
       case FileDuplicationBehaviour.ask:
-        return dropDownAskStr;
+        return loc.settings_behavior_duplicateDownloadAction_alwaysAsk;
       case FileDuplicationBehaviour.skip:
-        return dropDownSkipStr;
+        return loc.settings_behavior_duplicateDownloadAction_skipDownload;
       case FileDuplicationBehaviour.updateUrl:
-        return dropDownUpdateUrlSTr;
+        return loc.settings_behavior_duplicateDownloadAction_updateUrl;
       case FileDuplicationBehaviour.add:
-        return dropDownAddStr;
+        return loc.settings_behavior_duplicateDownloadAction_addNew;
     }
   }
 
   String _appClosureActionToDropDownTxt(AppClosureBehaviour behaviour) {
     switch (behaviour) {
       case AppClosureBehaviour.ask:
-        return dropDownAskStr;
+        return loc.settings_behavior_appClosureBehavior_alwaysAsk;
       case AppClosureBehaviour.exit:
-        return dropDownExitStr;
+        return loc.settings_behavior_appClosureBehavior_exit;
       case AppClosureBehaviour.minimizeToTray:
-        return dropDownMinimizeToTrayStr;
+        return loc.settings_behavior_appClosureBehavior_minimizeToTray;
     }
   }
 
@@ -115,30 +111,29 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
   }
 
   AppClosureBehaviour _appClosureDropDownTxtToBehaviour(String txt) {
-    switch (txt) {
-      case dropDownAskStr:
-        return AppClosureBehaviour.ask;
-      case dropDownExitStr:
-        return AppClosureBehaviour.exit;
-      case dropDownMinimizeToTrayStr:
-        return AppClosureBehaviour.minimizeToTray;
-      default:
-        return AppClosureBehaviour.ask;
+    if (txt == loc.settings_behavior_appClosureBehavior_alwaysAsk) {
+      return AppClosureBehaviour.ask;
+    } else if (txt == loc.settings_behavior_appClosureBehavior_exit) {
+      return AppClosureBehaviour.exit;
+    } else if (txt == loc.settings_behavior_appClosureBehavior_minimizeToTray) {
+      return AppClosureBehaviour.minimizeToTray;
+    } else {
+      return AppClosureBehaviour.ask;
     }
   }
 
   FileDuplicationBehaviour _fileDuplicationDropDownTxtToBehaviour(String txt) {
-    switch (txt) {
-      case dropDownAskStr:
-        return FileDuplicationBehaviour.ask;
-      case dropDownSkipStr:
-        return FileDuplicationBehaviour.skip;
-      case dropDownAddStr:
-        return FileDuplicationBehaviour.add;
-      case dropDownUpdateUrlSTr:
-        return FileDuplicationBehaviour.updateUrl;
-      default:
-        return FileDuplicationBehaviour.ask;
+    if (txt == loc.settings_behavior_duplicateDownloadAction_alwaysAsk) {
+      return FileDuplicationBehaviour.ask;
+    }
+    if (txt == loc.settings_behavior_duplicateDownloadAction_skipDownload) {
+      return FileDuplicationBehaviour.skip;
+    } else if (txt == loc.settings_behavior_duplicateDownloadAction_addNew) {
+      return FileDuplicationBehaviour.add;
+    } else if (txt == loc.settings_behavior_duplicateDownloadAction_updateUrl) {
+      return FileDuplicationBehaviour.updateUrl;
+    } else {
+      return FileDuplicationBehaviour.ask;
     }
   }
 }

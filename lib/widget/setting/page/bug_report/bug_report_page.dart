@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class BugReportPage extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
+    final loc = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -19,21 +21,21 @@ class BugReportPage extends StatelessWidget {
         children: [
           SettingsGroup(
             height: 180,
-            title: "How to report a bug",
+            title: loc.settings_howToBugReport,
             children: [
               SizedBox(
                 width: size.width * 0.6,
                 height: 50,
                 child: Text(
-                  "In order to report a bug or request a feature, open a new issue in the project github repo and add the proper labels.\n\n",
+                  "${loc.settings_howToBugReport_description}\n\n",
                   style: TextStyle(color: theme.titleTextColor),
                 ),
               ),
               InkWell(
                 child: SizedBox(
                   width: size.width * 0.6,
-                  child: const Text(
-                    "Click to open an issue",
+                  child: Text(
+                    loc.settings_howToBugReport_clickToOpenIssue,
                     style: TextStyle(color: Colors.blue),
                   ),
                 ),

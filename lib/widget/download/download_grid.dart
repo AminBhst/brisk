@@ -1,4 +1,5 @@
 import 'package:brisk/constants/file_type.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
@@ -27,9 +28,11 @@ class _DownloadGridState extends State<DownloadGrid> {
   DownloadRequestProvider? provider;
   QueueProvider? queueProvider;
   PlutoGridCheckRowProvider? plutoProvider;
+  late AppLocalizations loc;
 
   @override
   void didChangeDependencies() {
+    loc = AppLocalizations.of(context)!;
     initColumns(context);
     super.didChangeDependencies();
   }
@@ -55,7 +58,7 @@ class _DownloadGridState extends State<DownloadGrid> {
       PlutoColumn(
         enableRowChecked: true,
         width: 400,
-        title: 'File Name',
+        title: loc.fileName,
         field: 'file_name',
         type: PlutoColumnType.text(),
         renderer: (rendererContext) {
@@ -95,21 +98,21 @@ class _DownloadGridState extends State<DownloadGrid> {
       PlutoColumn(
         readOnly: true,
         width: 85,
-        title: 'Size',
+        title: loc.size,
         field: 'size',
         type: PlutoColumnType.text(),
       ),
       PlutoColumn(
         readOnly: true,
         width: 100,
-        title: 'Progress',
+        title: loc.progress,
         field: 'progress',
         type: PlutoColumnType.text(),
       ),
       PlutoColumn(
         readOnly: true,
         width: 130,
-        title: "Status",
+        title: loc.status,
         field: "status",
         type: PlutoColumnType.text(),
       ),
@@ -117,28 +120,28 @@ class _DownloadGridState extends State<DownloadGrid> {
         readOnly: true,
         enableSorting: false,
         width: 125,
-        title: 'Transfer Rate',
+        title: loc.speed,
         field: 'transfer_rate',
         type: PlutoColumnType.text(),
       ),
       PlutoColumn(
         readOnly: true,
         width: 120,
-        title: 'Time Left',
+        title: loc.timeLeft,
         field: 'time_left',
         type: PlutoColumnType.text(),
       ),
       PlutoColumn(
         readOnly: true,
         width: 105,
-        title: 'Start Date',
+        title: loc.startDate,
         field: 'start_date',
         type: PlutoColumnType.date(),
       ),
       PlutoColumn(
         readOnly: true,
         width: 115,
-        title: 'Finish Date',
+        title: loc.finishDate,
         field: 'finish_date',
         type: PlutoColumnType.date(),
       ),
@@ -215,6 +218,8 @@ class _DownloadGridState extends State<DownloadGrid> {
   ) {
     final provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);
+    final size = MediaQuery.of(context).size;
+    final loc = AppLocalizations.of(context)!;
     final theme = Provider.of<ThemeProvider>(context, listen: false);
     final id = event.row.cells["id"]!.value;
     final status = event.row.cells["status"]!.value;
@@ -225,6 +230,9 @@ class _DownloadGridState extends State<DownloadGrid> {
         ? (downloadProgress.status != DownloadStatus.assembleComplete ||
             downloadProgress.status != DownloadStatus.downloading)
         : (!downloadComplete || status == DownloadStatus.paused);
+    print(event.offset.dx);
+    print("Size width ${size.width}");
+
     showMenu(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5),
@@ -235,36 +243,44 @@ class _DownloadGridState extends State<DownloadGrid> {
         duration: Durations.short2,
       ),
       context: context,
-      position: RelativeRect.fromLTRB(
-        event.offset.dx,
-        event.offset.dy,
-        event.offset.dx,
-        event.offset.dy,
-      ),
+      position: Directionality.of(context) == TextDirection.rtl
+          ? RelativeRect.fromDirectional(
+              textDirection: TextDirection.rtl,
+              bottom: event.offset.dy,
+              top: event.offset.dy,
+              end: size.width - event.offset.dx,
+              start: size.width - event.offset.dx,
+            )
+          : RelativeRect.fromLTRB(
+              event.offset.dx,
+              event.offset.dy,
+              event.offset.dx,
+              event.offset.dy,
+            ),
       items: [
         PopupMenuItem(
-          value: "Open Progress Dialog",
-          child: Text("Open Progress Dialog"),
+          value: "Show Progress",
+          child: Text(loc.popupMenu_showProgress),
           enabled: downloadExists,
         ),
         PopupMenuItem(
           value: "Open File",
-          child: Text("Open File"),
+          child: Text(loc.btn_openFile),
           enabled: downloadComplete,
         ),
         PopupMenuItem(
           value: "Open File Location",
-          child: Text("Open File Location"),
+          child: Text(loc.btn_openFileLocation),
           enabled: downloadComplete,
         ),
         PopupMenuItem(
           value: "Update URL",
-          child: Text("Update URL"),
+          child: Text(loc.btn_updateUrl),
           enabled: updateUrlEnabled,
         ),
         PopupMenuItem(
           value: "Properties",
-          child: Text("Properties"),
+          child: Text(loc.popupMenu_properties),
         ),
       ],
     ).then((value) => onMenuItemClicked(value, event));
@@ -280,7 +296,7 @@ class _DownloadGridState extends State<DownloadGrid> {
       return;
     }
     switch (value) {
-      case "Open Progress Dialog":
+      case "Show Progress":
         showDialog(
           context: context,
           builder: (_) => DownloadProgressDialog(downloadItem.key),

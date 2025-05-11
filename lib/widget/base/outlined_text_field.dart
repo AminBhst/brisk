@@ -16,6 +16,7 @@ class OutLinedTextField extends StatelessWidget {
   final bool enabled;
   final String? hintText;
   final EdgeInsetsGeometry? contentPadding;
+  final Widget? suffixIcon;
 
   const OutLinedTextField({
     super.key,
@@ -31,49 +32,58 @@ class OutLinedTextField extends StatelessWidget {
     this.enabled = true,
     this.hintText,
     this.contentPadding,
+    this.suffixIcon,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context)
+    final theme = Provider
+        .of<ThemeProvider>(context)
         .activeTheme
         .settingTheme
         .pageTheme
         .widgetColor
         .textFieldColor;
     return TextField(
-        enabled: enabled,
-        focusNode: focusNode,
-        obscureText: obscureText,
-        readOnly: readOnly,
-        keyboardType: keyboardType,
-        inputFormatters: inputFormatters,
-        cursorColor: Colors.white,
-        controller: controller,
-        onChanged: onChanged,
-        textAlign: TextAlign.left,
-        textDirection: TextDirection.ltr,
-        style: TextStyle(color: theme.textColor, fontSize: 13),
-        decoration: InputDecoration(
-          contentPadding: contentPadding,
-          focusColor: Colors.white38,
-          fillColor: theme.fillColor,
-          hoverColor: theme.hoverColor,
-          hintText: hintText,
-          border: OutlineInputBorder(
-            borderSide: BorderSide(color: theme.borderColor, width: 0.5),
-            borderRadius: BorderRadius.circular(10),
+      enabled: enabled,
+      focusNode: focusNode,
+      obscureText: obscureText,
+      readOnly: readOnly,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
+      cursorColor: Colors.white,
+      controller: controller,
+      onChanged: onChanged,
+      textAlign: TextAlign.left,
+      textDirection: TextDirection.ltr,
+      style: TextStyle(color: theme.textColor, fontSize: 13),
+      decoration: InputDecoration(
+        suffixIcon: suffixIcon != null ? ClipOval(
+          child: Material(
+            color: Colors.transparent,
+            child: suffixIcon,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: theme.borderColor, width: 0.5),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: theme.focusBorderColor, width: 1.0),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          filled: true,
-          // iconColor: Colors.red,
-        ));
+        ) : null,
+        contentPadding: contentPadding,
+        focusColor: Colors.white38,
+        fillColor: theme.fillColor,
+        hoverColor: theme.hoverColor,
+        hintText: hintText,
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: theme.borderColor, width: 0.5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: theme.borderColor, width: 0.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: theme.focusBorderColor, width: 1.0),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        filled: true,
+        // iconColor: Colors.red,
+      ),
+    );
   }
 }

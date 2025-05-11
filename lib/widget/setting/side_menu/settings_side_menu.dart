@@ -24,7 +24,7 @@ class SettingsSideMenu extends StatelessWidget {
         borderRadius: BorderRadius.circular(25),
         child: Center(
           child: SingleChildScrollView(
-          padding: EdgeInsets.only(top: 10, bottom: 10),
+          padding: EdgeInsetsDirectional.only(top: 10, bottom: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,

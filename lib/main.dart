@@ -28,11 +28,13 @@ import 'package:brisk/widget/top_menu/download_queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/queue_top_menu.dart';
 import 'package:brisk/widget/top_menu/top_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
+import 'l10n/app_localizations.dart';
 import 'util/file_util.dart';
 import 'util/settings_cache.dart';
 
@@ -110,6 +112,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: Locale("en"),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('fa'),
+        Locale('en'),
+      ],
       navigatorKey: globalContext,
       debugShowCheckedModeBanner: false,
       title: 'Brisk',
@@ -218,12 +231,12 @@ class _MyHomePageState extends State<MyHomePage>
     var isSkippingTaskbar = await windowManager.isSkipTaskbar();
 
     if (Platform.isMacOS && (isMinimized || !isVisible || isSkippingTaskbar)) {
-       if (isSkippingTaskbar) {
-         await windowManager.setSkipTaskbar(false);
-       }
-       await windowManager.show();
-       windowManager.focus();
-     }
+      if (isSkippingTaskbar) {
+        await windowManager.setSkipTaskbar(false);
+      }
+      await windowManager.show();
+      windowManager.focus();
+    }
     super.onTrayIconMouseDown();
   }
 

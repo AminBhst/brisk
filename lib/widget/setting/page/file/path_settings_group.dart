@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:brisk/widget/setting/base/text_field_setting.dart';
 import 'package:file_picker/file_picker.dart';
@@ -32,40 +36,42 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
         .settingTheme
         .pageTheme
         .widgetColor;
+
+    final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      title: "Paths",
+      title: loc.settings_paths,
       children: [
         TextFieldSetting(
-          text: "Temp Files Path",
+          text: loc.settings_paths_tempFilesPath,
           textWidth: resolveTextWidth(size),
           width: resolveTextFieldWidth(size),
           txtController: tempPathController,
           onChanged: (value) {
             provider.tempPath = value;
           },
-          icon: IconButton(
+          suffixIcon: IconButton(
             onPressed: () async {
-              final newPath = await pickNewLocation(savePath);
+              final newPath = await pickNewLocation(tempPath);
               if (newPath == null) return;
               tempPathController.text = newPath;
               provider.tempPath = newPath;
             },
             icon: Icon(
-              Icons.open_in_new_rounded,
-              color: theme.launchIconColor,
+              Icons.folder,
+              color: Colors.white60,
             ),
           ),
         ),
         const SizedBox(height: 5),
         TextFieldSetting(
-          text: "Save Path",
+          text: loc.settings_paths_savePath,
           textWidth: resolveTextWidth(size),
           width: resolveTextFieldWidth(size),
           txtController: savePathController,
           onChanged: (value) {
             provider.savePath = value;
           },
-          icon: IconButton(
+          suffixIcon: IconButton(
             onPressed: () async {
               final newPath = await pickNewLocation(savePath);
               if (newPath == null) return;
@@ -73,8 +79,8 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
               provider.savePath = newPath;
             },
             icon: Icon(
-              Icons.open_in_new_rounded,
-              color: theme.launchIconColor,
+              Icons.folder,
+              color: Colors.white60,
             ),
           ),
         ),
@@ -114,5 +120,4 @@ class _PathSettingsGroupState extends State<PathSettingsGroup> {
     return await FilePicker.platform
         .getDirectoryPath(initialDirectory: initialDir);
   }
-
 }

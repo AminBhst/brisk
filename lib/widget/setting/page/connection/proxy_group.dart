@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
@@ -29,12 +30,13 @@ class _ProxyGroupState extends State<ProxyGroup> {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
     final size = MediaQuery.of(context).size;
+    final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
       height: 350,
-      title: "Proxy",
+      title: loc.settings_proxy,
       children: [
         SwitchSetting(
-          text: "Enabled",
+          text: loc.settings_proxy_enabled,
           switchValue: SettingsCache.proxyEnabled,
           onChanged: (value) => setState(
             () => SettingsCache.proxyEnabled = value,
@@ -47,7 +49,7 @@ class _ProxyGroupState extends State<ProxyGroup> {
           ),
           textWidth: resolveTextWidth(size),
           width: resolveTextFieldWidth(size),
-          text: "Address",
+          text: loc.settings_proxy_address,
           txtController: addressController,
         ),
         const SizedBox(height: 10),
@@ -61,7 +63,7 @@ class _ProxyGroupState extends State<ProxyGroup> {
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^[0-9]*$')),
           ],
-          text: "Port",
+          text: loc.port,
           txtController: portController,
         ),
         const SizedBox(height: 10),
@@ -71,7 +73,7 @@ class _ProxyGroupState extends State<ProxyGroup> {
           ),
           textWidth: resolveTextWidth(size),
           width: resolveTextFieldWidth(size),
-          text: "Username",
+          text: loc.username,
           txtController: usernameController,
         ),
         const SizedBox(height: 10),
@@ -82,7 +84,7 @@ class _ProxyGroupState extends State<ProxyGroup> {
           ),
           textWidth: resolveTextWidth(size),
           width: resolveTextFieldWidth(size),
-          text: "Password",
+          text: loc.password,
           txtController: passwordController,
         )
       ],

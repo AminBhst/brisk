@@ -8,6 +8,14 @@ class SettingsProvider with ChangeNotifier {
   String? tempPath = SettingsCache.temporaryDir.path;
   String? savePath = SettingsCache.saveDir.path;
 
+  void setSavePath(String path) {
+    savePath = path;
+    notifyListeners();
+  }
+
+  void setTempPath(String path) {
+    tempPath = path;
+  }
 
   void setSelectedSettingsTab(int tabId) {
     selectedTabId = tabId;

@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class AskDuplicationAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context).activeTheme;
+    final loc = AppLocalizations.of(context)!;
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -47,7 +49,7 @@ class AskDuplicationAction extends StatelessWidget {
           ),
           SizedBox(width: 10),
           Text(
-            "Duplicate Download",
+            loc.duplicateDownload_title,
             style: TextStyle(
                 color: theme.alertDialogTheme.textColor,
                 fontWeight: FontWeight.bold,
@@ -58,7 +60,7 @@ class AskDuplicationAction extends StatelessWidget {
       content: Container(
         width: 400,
         child: Text(
-          "This download already exists!\nPlease choose an action.",
+          loc.duplicateDownload_description,
           style: const TextStyle(fontSize: 17),
         ),
       ),
@@ -68,22 +70,20 @@ class AskDuplicationAction extends StatelessWidget {
           children: [
             RoundedOutlinedButton.fromButtonColor(
               theme.alertDialogTheme.cancelButtonColor,
-              text: "Skip",
-              width: 80,
+              text: loc.btn_cancel,
               onPressed: () => Navigator.of(context).pop(),
             ),
             const SizedBox(width: 5),
             RoundedOutlinedButton.fromButtonColor(
-              width: 100,
+              // width: 100,
               theme.downloadInfoDialogTheme.addToListColor,
-              text: "Update URL",
+              text: loc.btn_updateUrl,
               onPressed: onUpdateUrlPressed,
             ),
             const SizedBox(width: 5),
             RoundedOutlinedButton.fromButtonColor(
-              width: 90,
               theme.alertDialogTheme.addButtonColor,
-              text: "Add New",
+              text: loc.btn_addNew,
               onPressed: onCreateNewPressed,
             ),
           ],

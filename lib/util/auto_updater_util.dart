@@ -109,6 +109,23 @@ void handleBriskUpdateCheck(
     ..save();
 }
 
+void onUpdatePressed(String version) {
+  final buildMethod = String.fromEnvironment(
+    "BUILD_METHOD",
+    defaultValue: "basic",
+  );
+  if (buildMethod == "basic" || buildMethod == "exe" || buildMethod == "tar") {
+    launchAutoUpdater();
+  } else if (buildMethod == "dmg") {
+    launchUrlString(
+        "https://github.com/AminBhst/brisk/releases/download/v$version/Brisk-v$version-macos.dmg");
+  } else if (buildMethod == "flatpak") {
+
+  } else if (buildMethod == "snap") {
+
+  }
+}
+
 Future<String> getLatestVersionChangeLog({
   bool removeChangeLogHeader = false,
   bool browserExtension = false,

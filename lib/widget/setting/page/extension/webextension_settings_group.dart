@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/widget/setting/base/switch_setting.dart';
 import 'package:flutter/material.dart';
 
@@ -15,10 +16,11 @@ class PortSettingsGroup extends StatefulWidget {
 class _WebExtensionSettingsGroupState extends State<PortSettingsGroup> {
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final size = MediaQuery.of(context).size;
     return SettingsGroup(
       height: 175,
-      title: "Browser Extension",
+      title: loc.settings_browserExtension,
       children: [
         TextFieldSetting(
           onChanged: (value) => _onChanged(
@@ -27,12 +29,12 @@ class _WebExtensionSettingsGroupState extends State<PortSettingsGroup> {
           ),
           width: 75,
           textWidth: size.width * 0.6 * 0.32,
-          text: "Port",
+          text: loc.port,
           txtController: TextEditingController(
               text: SettingsCache.extensionPort.toString()),
         ),
         SwitchSetting(
-          text: "Bring window to front on new download request",
+          text: loc.settings_downloadBrowserExtension_bringWindowToFront,
           switchValue: SettingsCache.enableWindowToFront,
           onChanged: (val) =>
               setState(() => SettingsCache.enableWindowToFront = val),

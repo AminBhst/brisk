@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
@@ -22,17 +23,14 @@ class _AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) {
     final theme =
-        Provider
-            .of<ThemeProvider>(context)
-            .activeTheme
-            .settingTheme
-            .pageTheme;
+        Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
+    final loc = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SettingsGroup(title: "Info", height: 100, children: [
+          SettingsGroup(title: loc.settings_info, height: 100, children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -45,7 +43,7 @@ class _AboutPageState extends State<AboutPage> {
                 ),
                 const SizedBox(width: 30),
                 Text(
-                  "Version: ${SettingsCache.currentVersion}",
+                  "${loc.settings_version}: ${SettingsCache.currentVersion}",
                   style: TextStyle(color: theme.titleTextColor),
                 ),
               ],
@@ -53,7 +51,7 @@ class _AboutPageState extends State<AboutPage> {
           ]),
           SettingsGroup(
             height: 450,
-            title: "Developer",
+            title: loc.settings_developer,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -130,12 +128,11 @@ class _AboutPageState extends State<AboutPage> {
                   ),
                   const SizedBox(width: 30),
                   InkWell(
-                    onTap: () =>
-                        launchUrlString(
-                            "https://github.com/AminBhst/brisk?tab=readme-ov-file#money_with_wings-donations"),
+                    onTap: () => launchUrlString(
+                        "https://github.com/AminBhst/brisk?tab=readme-ov-file#money_with_wings-donations"),
                     onHover: (val) => setState(() => donationHover = val),
                     child: Text(
-                      "Donate",
+                      loc.settings_info_donate,
                       style: TextStyle(
                           color: donationHover
                               ? Colors.blue
@@ -167,9 +164,8 @@ class _AboutPageState extends State<AboutPage> {
                     child: Text(
                       "AminBhst/Brisk",
                       style: TextStyle(
-                          color: githubHover
-                              ? Colors.blue
-                              : theme.titleTextColor),
+                          color:
+                              githubHover ? Colors.blue : theme.titleTextColor),
                     ),
                   ),
                 ],
@@ -195,7 +191,7 @@ class _AboutPageState extends State<AboutPage> {
                         launchUrlString("https://discord.gg/hGBDWNDHG3"),
                     onHover: (val) => setState(() => discordHover = val),
                     child: Text(
-                      "Discord Server",
+                      loc.settings_info_discordServer,
                       style: TextStyle(
                           color: discordHover
                               ? Colors.blue
@@ -224,7 +220,7 @@ class _AboutPageState extends State<AboutPage> {
                     onTap: () => launchUrlString("https://t.me/ryedev"),
                     onHover: (val) => setState(() => telegramHover = val),
                     child: Text(
-                      "Telegram Channel",
+                      loc.settings_info_telegramChannel,
                       style: TextStyle(
                           color: telegramHover
                               ? Colors.blue

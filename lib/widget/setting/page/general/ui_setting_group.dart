@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/util/settings_cache.dart';
@@ -15,15 +16,16 @@ class UISettingGroup extends StatefulWidget {
 class _UISettingGroupState extends State<UISettingGroup> {
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
       height: 140,
-      title: "User Interface",
+      title: loc.settings_userInterface,
       children: [
         DropDownSetting(
           items: ApplicationThemeHolder.themes
               .map((t) => t.themeId.toString())
               .toList(),
-          text: "Active Theme",
+          text: loc.settings_userInterface_theme,
           value: SettingsCache.applicationThemeId,
           onChanged: _onChanged,
         )

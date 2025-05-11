@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
@@ -39,17 +40,20 @@ class MultiDownloadAdditionDialog extends StatefulWidget {
 
 class _MultiDownloadAdditionDialogState
     extends State<MultiDownloadAdditionDialog> {
+  late AppLocalizations loc;
+
   Widget build(BuildContext context) {
     widget.provider =
         Provider.of<DownloadRequestProvider>(context, listen: false);
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     final size = MediaQuery.of(context).size;
+    loc = AppLocalizations.of(context)!;
     return ScrollableDialog(
       title: Padding(
         padding: const EdgeInsets.all(15),
         child: Text(
-          "Add Download",
+          loc.addDownload,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
       ),
@@ -103,7 +107,7 @@ class _MultiDownloadAdditionDialogState
                             setState(() => widget.checkboxEnabled = value!),
                       ),
                       Text(
-                        "Custom Save Path",
+                        loc.customSavePath,
                         style: TextStyle(color: Colors.white60),
                       ),
                     ],
@@ -155,14 +159,14 @@ class _MultiDownloadAdditionDialogState
           theme.cancelButtonColor,
           width: 100,
           onPressed: () => Navigator.of(context).pop(),
-          text: "Cancel",
+          text: loc.btn_cancel,
         ),
         const SizedBox(width: 10),
         RoundedOutlinedButton.fromButtonColor(
           theme.addButtonColor,
           width: 100,
           onPressed: onAddPressed,
-          text: "Add",
+          text: loc.btn_add,
         ),
       ],
     );
@@ -206,13 +210,11 @@ class _MultiDownloadAdditionDialogState
       showDialog(
         context: context,
         builder: (context) => ErrorDialog(
-          width: 320,
-          height: 150,
-          textHeight: 40,
-          title: "Invalid Path",
-          description: "The selected custom path is invalid!",
-          descriptionHint:
-              "Please check again and make sure the target folder exists.",
+          title: loc.err_invalidPath_title,
+          description: loc.err_invalidPath_savePath_description,
+          descriptionHint: loc.err_invalidPath_descriptionHint,
+          height: 180,
+          width: 380,
         ),
       );
       return;

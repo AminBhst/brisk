@@ -44,7 +44,7 @@ class _SettingsSideMenuItemState extends State<SettingsSideMenuItem> {
                 : Colors.transparent,
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 10),
+            padding: EdgeInsetsDirectional.only(start: 10),
             child: Row(
               children: [
                 Icon(

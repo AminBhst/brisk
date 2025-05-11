@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/setting/page/extension/browser_extension_rules_group.dart';
 import 'package:brisk/widget/setting/page/extension/webextension_settings_download_group.dart';
@@ -14,6 +15,7 @@ class WebExtensionSettingsPage extends StatelessWidget {
         .activeTheme
         .settingTheme
         .pageTheme;
+    final loc = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       child: SizedBox(
         height: 500,
@@ -24,7 +26,7 @@ class WebExtensionSettingsPage extends StatelessWidget {
             const PortSettingsGroup(),
             Center(
               child: Text(
-                '* Changes require a restart',
+                '* ${loc.changesRequireRestart}',
                 style: TextStyle(color: theme.titleTextColor),
               ),
             ),

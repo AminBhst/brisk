@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/setting/rule/file_condition.dart';
 import 'package:brisk/setting/rule/rule_value_type.dart';
@@ -40,12 +41,25 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
   late FileCondition selectedCondition;
   late RuleValueType selectedType;
   late List<RuleValueType> validTypes;
-  final conditions = [...FileCondition.values.map((a) => a.name)];
+  late List<String> conditions;
+  late AppLocalizations loc;
+  late Map<FileCondition, String> fileConditionMap;
 
   @override
   void initState() {
+    valueController = TextEditingController(text: widget.value);
+    savePathController = TextEditingController(text: widget.savePath);
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    loc = AppLocalizations.of(context)!;
+    fileConditionMap = buildDropMenuLocaleMap();
+    conditions = fileConditionMap.values.toList();
     selectedCondition = widget.condition;
     selectedType = widget.ruleValueType;
+    conditions = fileConditionMap.values.toList();
     switch (FileCondition.values.byName(selectedCondition.name)) {
       case FileCondition.downloadUrlContains:
       case FileCondition.fileNameContains:
@@ -57,9 +71,7 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
         validTypes = [RuleValueType.KB, RuleValueType.MB, RuleValueType.GB];
         break;
     }
-    valueController = TextEditingController(text: widget.value);
-    savePathController = TextEditingController(text: widget.savePath);
-    super.initState();
+    super.didChangeDependencies();
   }
 
   @override
@@ -82,7 +94,7 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
                 SizedBox(
                   width: 205,
                   child: DropdownButton<String>(
-                    value: selectedCondition.name,
+                    value: fileConditionMap[selectedCondition],
                     dropdownColor: theme.settingTheme.pageTheme.widgetColor
                         .dropDownColor.dropDownBackgroundColor,
                     items: conditions.map((String value) {
@@ -156,22 +168,22 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
             const SizedBox(height: 30),
             titleRow2(),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                SizedBox(
-                  width: size.width > 686 ? 500 : size.width * 0.6,
-                  child: OutLinedTextField(controller: savePathController),
-                ),
-                const SizedBox(width: 5),
-                IconButton(
-                    onPressed: pickSaveLocation,
-                    icon: Icon(
-                      size: 30,
-                      Icons.open_in_new_rounded,
-                      color: Colors.white70,
-                    ))
-              ],
+            OutLinedTextField(
+              controller: savePathController,
+              suffixIcon: IconButton(
+                icon: Icon(Icons.folder, color: Colors.white60),
+                onPressed: pickSaveLocation,
+              ),
             ),
+            // Row(
+            //   children: [
+            //     SizedBox(
+            //       width: size.width > 686 ? 500 : size.width * 0.6,
+            //       child: OutLinedTextField(controller: savePathController),
+            //     ),
+            //     const SizedBox(width: 5),
+            //   ],
+            // ),
             const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -180,15 +192,13 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
                 RoundedOutlinedButton.fromButtonColor(
                   theme.alertDialogTheme.cancelButtonColor,
                   onPressed: () => Navigator.of(context).pop(),
-                  width: 95,
-                  text: "Cancel",
+                  text: loc.btn_cancel,
                 ),
                 const SizedBox(width: 30),
                 RoundedOutlinedButton.fromButtonColor(
                   theme.alertDialogTheme.addButtonColor,
                   onPressed: onSave,
-                  width: 95,
-                  text: "Save",
+                  text: loc.btn_save,
                 )
               ],
             ),
@@ -210,23 +220,27 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
   void onSave() {
     String? errorText = null;
     if (valueController.text.isEmpty) {
-      errorText = "Empty value!";
+      errorText = loc.err_emptyValue;
     }
     if (valueController.text.contains(",") ||
         savePathController.text.contains(",")) {
-      errorText = "Unsupported Character: \",\" ";
+      errorText = "${loc.err_unsupportedCharacter}: \",\" ";
     }
     if (valueController.text.contains("@:/") ||
         savePathController.text.contains("@:/")) {
-      errorText = "Unsupported Character: \"@:/\" ";
+      errorText = "${loc.err_unsupportedCharacter}: \"@:/\" ";
     }
     if (!Directory(savePathController.text).existsSync()) {
-      errorText = "Invalid Save Path!";
+      errorText = loc.err_invalidSavePath;
     }
     if (errorText != null) {
       showDialog(
         context: context,
-        builder: (context) => ErrorDialog(text: errorText!, textHeight: 20),
+        builder: (context) => ErrorDialog(
+          title: loc.error,
+          description: errorText!,
+          height: 100,
+        ),
       );
       return;
     }
@@ -250,11 +264,16 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
     Navigator.of(context).pop();
   }
 
-  void onConditionChanged(String? value) {
-    if (value == null) return;
+  void onConditionChanged(String? valueStr) {
+    if (valueStr == null) {
+      return;
+    }
+    final value = fileConditionMap.entries
+        .firstWhere((entry) => entry.value == valueStr)
+        .key;
     List<RuleValueType> validTypes = [];
     RuleValueType selectedType;
-    switch (FileCondition.values.byName(value)) {
+    switch (value) {
       case FileCondition.downloadUrlContains:
       case FileCondition.fileNameContains:
       case FileCondition.fileExtensionIs:
@@ -270,32 +289,42 @@ class _FileSaveRuleItemEditorState extends State<FileSaveRuleItemEditor> {
     setState(() {
       this.validTypes = validTypes;
       this.selectedType = selectedType;
-      selectedCondition = FileCondition.values.byName(value);
+      selectedCondition = value;
       valueController.clear();
     });
   }
-}
 
-Widget titleRow2() {
-  return Row(
-    children: [
-      Text("Save Path", style: TextStyle(color: Colors.grey)),
-      const Spacer(),
-    ],
-  );
-}
+  Widget titleRow() {
+    return Row(
+      children: [
+        Text(loc.condition, style: TextStyle(color: Colors.grey)),
+        const Spacer(),
+        Text(loc.value, style: TextStyle(color: Colors.grey)),
+        const SizedBox(width: 68),
+        Padding(
+          padding: const EdgeInsets.only(right: 35.0),
+          child: Text(loc.type, style: TextStyle(color: Colors.grey)),
+        ),
+      ],
+    );
+  }
 
-Widget titleRow() {
-  return Row(
-    children: [
-      Text("Condition", style: TextStyle(color: Colors.grey)),
-      const Spacer(),
-      Text("Value", style: TextStyle(color: Colors.grey)),
-      const SizedBox(width: 68),
-      Padding(
-        padding: const EdgeInsets.only(right: 35.0),
-        child: Text("Type", style: TextStyle(color: Colors.grey)),
-      ),
-    ],
-  );
+  Widget titleRow2() {
+    return Row(
+      children: [
+        Text(loc.savePath, style: TextStyle(color: Colors.grey)),
+        const Spacer(),
+      ],
+    );
+  }
+
+  Map<FileCondition, String> buildDropMenuLocaleMap() {
+    return {
+      FileCondition.downloadUrlContains: loc.ruleEditor_downloadUrlContains,
+      FileCondition.fileNameContains: loc.ruleEditor_fileNameContains,
+      FileCondition.fileExtensionIs: loc.ruleEditor_fileExtensionIs,
+      FileCondition.fileSizeLessThan: loc.ruleEditor_fileSizeLessThan,
+      FileCondition.fileSizeGreaterThan: loc.ruleEditor_fileSizeGreaterThan,
+    };
+  }
 }

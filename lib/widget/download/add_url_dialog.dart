@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
@@ -24,6 +25,7 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
   Widget build(BuildContext context) {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
+    final loc = AppLocalizations.of(context)!;
     return LoaderOverlay(
       overlayWidgetBuilder: (progress) => FileInfoLoader(
         onCancelPressed: () => DownloadAdditionUiUtil.cancelRequest(context),
@@ -36,7 +38,7 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
           borderRadius: BorderRadius.circular(10),
         ),
         title: Text(
-          widget.updateDialog ? "Update Download URL" : "Add a Download URL",
+          widget.updateDialog ? loc.updateDownloadUrl : loc.add_a_download_url,
           style: TextStyle(color: theme.textColor),
         ),
         content: SizedBox(
@@ -73,13 +75,13 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
         actions: <Widget>[
           RoundedOutlinedButton.fromButtonColor(
             theme.cancelButtonColor,
-            text: "Cancel",
+            text: loc.btn_cancel,
             width: 80,
             onPressed: () => _onCancelPressed(context),
           ),
           RoundedOutlinedButton.fromButtonColor(
             theme.addButtonColor,
-            text: widget.updateDialog ? "Update URL" : "Add URL",
+            text: widget.updateDialog ? loc.btn_updateUrl : loc.btn_addUrl,
             width: 120,
             onPressed: () => _onAddPressed(context),
           ),

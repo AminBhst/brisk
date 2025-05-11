@@ -15,6 +15,7 @@ class TextFieldSetting extends StatelessWidget {
   final Function(String value)? onChanged;
   final TextEditingController txtController;
   bool obscureText;
+  final Widget? suffixIcon;
 
   TextFieldSetting({
     super.key,
@@ -27,6 +28,7 @@ class TextFieldSetting extends StatelessWidget {
     this.textWidth,
     required this.txtController,
     this.obscureText = false,
+    this.suffixIcon,
   });
 
   @override
@@ -54,6 +56,7 @@ class TextFieldSetting extends StatelessWidget {
             controller: txtController,
             keyboardType: keyboardType,
             onChanged: onChanged,
+            suffixIcon: suffixIcon,
           ),
         ),
         SizedBox(width: icon != null ? 10 : 0),

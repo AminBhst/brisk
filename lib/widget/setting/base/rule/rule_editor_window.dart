@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/setting/rule/file_condition.dart';
 import 'package:brisk/setting/rule/file_rule.dart';
@@ -52,6 +53,7 @@ class _RuleEditorWindowState<T extends FileRule>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     theme = Provider.of<ThemeProvider>(context).activeTheme;
     final size = MediaQuery.of(context).size;
     return ClosableWindow(
@@ -105,7 +107,7 @@ class _RuleEditorWindowState<T extends FileRule>
                   theme.alertDialogTheme.cancelButtonColor,
                   onPressed: () => Navigator.of(context).pop(),
                   width: 95,
-                  text: "Cancel",
+                  text: loc.btn_cancel,
                 ),
                 const SizedBox(width: 30),
                 RoundedOutlinedButton.fromButtonColor(
@@ -115,7 +117,7 @@ class _RuleEditorWindowState<T extends FileRule>
                     Navigator.of(context).pop();
                   },
                   width: 95,
-                  text: "Save",
+                  text: loc.btn_save,
                 ),
               ],
             )

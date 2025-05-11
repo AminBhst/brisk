@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme_holder.dart';
+import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/setting/page/settings_page.dart';
 import 'package:brisk/widget/setting/side_menu/settings_side_menu_item.dart';
@@ -21,12 +23,14 @@ class SettingsDialog extends StatefulWidget {
 class _SettingsDialogState extends State<SettingsDialog> {
   SettingsProvider? settingsProvider;
   ThemeProvider? themeProvider;
+  late AppLocalizations loc;
 
   @override
   Widget build(BuildContext context) {
     settingsProvider = Provider.of<SettingsProvider>(context);
     themeProvider = Provider.of<ThemeProvider>(context);
     final settingTheme = themeProvider!.activeTheme.settingTheme;
+    loc = AppLocalizations.of(context)!;
     final size = MediaQuery.of(context).size;
     return AlertDialog(
       content: Padding(
@@ -45,9 +49,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
             children: [
               SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.only(left: 20.0),
+                padding: EdgeInsetsDirectional.only(start: 20),
                 child: Text(
-                  "Settings",
+                  loc.settings_title,
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -77,32 +81,32 @@ class _SettingsDialogState extends State<SettingsDialog> {
                             children: [
                               SettingsSideMenuItem(
                                 tabId: 0,
-                                title: "General",
+                                title: loc.settings_menu_general,
                                 icon: Icons.layers_rounded,
                               ),
                               SettingsSideMenuItem(
                                 tabId: 1,
-                                title: "File",
+                                title: loc.settings_menu_file,
                                 icon: Icons.folder_open_rounded,
                               ),
                               SettingsSideMenuItem(
                                 tabId: 2,
-                                title: "Connection",
+                                title: loc.settings_menu_connection,
                                 icon: Icons.wifi,
                               ),
                               SettingsSideMenuItem(
                                 tabId: 3,
-                                title: "Extension",
+                                title: loc.settings_menu_extension,
                                 icon: Icons.extension,
                               ),
                               SettingsSideMenuItem(
                                 tabId: 4,
-                                title: "About",
+                                title: loc.settings_menu_about,
                                 icon: Icons.info,
                               ),
                               SettingsSideMenuItem(
                                 tabId: 5,
-                                title: "Bug Report",
+                                title: loc.settings_menu_bugReport,
                                 icon: Icons.bug_report_rounded,
                               ),
                             ]),
@@ -133,7 +137,11 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   children: [
                     const SizedBox(height: 30),
                     Transform.translate(
-                      offset: Offset(-10, -15),
+                      offset: Offset(
+                          Directionality.of(context) == TextDirection.rtl
+                              ? 10
+                              : -10,
+                          -15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -141,22 +149,19 @@ class _SettingsDialogState extends State<SettingsDialog> {
                           SizedBox(width: size.width < 880 ? 10 : 20),
                           RoundedOutlinedButton.fromButtonColor(
                             settingTheme.resetDefaultsButtonColor,
-                            text: "Reset to Defaults",
-                            width: 140,
+                            text: loc.btn_resetDefaults,
                             onPressed: _onResetDefaultPressed,
                           ),
                           Spacer(),
                           RoundedOutlinedButton.fromButtonColor(
                             settingTheme.cancelButtonColor,
-                            text: "Cancel",
-                            width: 80,
+                            text: loc.btn_cancel,
                             onPressed: _onCancelPressed,
                           ),
                           SizedBox(width: size.width < 880 ? 10 : 20),
                           RoundedOutlinedButton.fromButtonColor(
                             settingTheme.saveButtonColor,
-                            text: "Save Changes",
-                            width: 130,
+                            text: loc.btn_saveChanges,
                             onPressed: _onApplyPressed,
                           ),
                         ],
@@ -189,12 +194,33 @@ class _SettingsDialogState extends State<SettingsDialog> {
     if (validatePathSettings(tempPath)) {
       SettingsCache.temporaryDir = Directory(tempPath!);
     } else {
-      settingsProvider?.tempPath = SettingsCache.temporaryDir.path;
+      settingsProvider?.setTempPath(SettingsCache.temporaryDir.path);
+      showDialog(
+        context: context,
+        builder: (context) => ErrorDialog(
+          title: loc.err_invalidPath_title,
+          description: loc.err_invalidPath_tempPath_description,
+          descriptionHint: loc.err_invalidPath_descriptionHint,
+          height: 180,
+          width: 380,
+        ),
+      );
+      return;
     }
     if (validatePathSettings(savePath)) {
       SettingsCache.saveDir = Directory(savePath!);
     } else {
       settingsProvider?.savePath = SettingsCache.saveDir.path;
+      showDialog(
+        context: context,
+        builder: (context) => ErrorDialog(
+          title: loc.err_invalidPath_title,
+          description: loc.err_invalidPath_savePath_description,
+          descriptionHint: loc.err_invalidPath_descriptionHint,
+          height: 210,
+          width: 330,
+        ),
+      );
     }
     SettingsCache.saveCachedSettingsToDB();
     ApplicationThemeHolder.setActiveTheme();

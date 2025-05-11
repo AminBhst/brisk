@@ -1,4 +1,5 @@
 import 'package:brisk/constants/file_type.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
@@ -15,8 +16,9 @@ import 'package:provider/provider.dart';
 
 class M3u8MasterPlaylistDialog extends StatelessWidget {
   final M3U8 m3u8;
+  late AppLocalizations loc;
 
-  const M3u8MasterPlaylistDialog({
+  M3u8MasterPlaylistDialog({
     super.key,
     required this.m3u8,
   });
@@ -24,7 +26,7 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context).activeTheme;
-    final size = MediaQuery.of(context).size;
+    loc = AppLocalizations.of(context)!;
     return ScrollableDialog(
       backgroundColor: theme.alertDialogTheme.backgroundColor,
       title: Column(
@@ -34,7 +36,7 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(20),
             child: Text(
-              "Available Downloads",
+              loc.availableDownloads,
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -81,7 +83,7 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
       scrollButtonVisible: false,
       buttons: [
         RoundedOutlinedButton(
-          text: "Cancel",
+          text: loc.btn_cancel,
           width: 80,
           onPressed: () => Navigator.of(context).pop(),
           backgroundColor: Color.fromRGBO(63, 19, 19, 0.5),
@@ -180,7 +182,7 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
                   color: Colors.white,
                   size: 18,
                 ),
-                text: "Download",
+                text: loc.btn_download,
                 width: 120,
                 onPressed: () => _onDownloadPressed(streamInf, context),
                 backgroundColor:

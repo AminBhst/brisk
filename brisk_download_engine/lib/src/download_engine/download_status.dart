@@ -1,4 +1,3 @@
-/// TODO use enum
 class DownloadStatus {
    static const connectionComplete = "Complete...";
    static const downloading = "Downloading...";

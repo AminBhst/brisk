@@ -1,4 +1,5 @@
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme.dart';
@@ -25,6 +26,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
   late Size size;
   late ApplicationTheme theme;
   late DownloadRequestProvider provider;
+  late AppLocalizations loc;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
     theme = Provider.of<ThemeProvider>(context).activeTheme;
     size = MediaQuery.of(context).size;
     final downloadProgress = provider.downloads[widget.downloadId]!;
+    loc = AppLocalizations.of(context)!;
     return ScrollableDialog(
       width: 500,
       height: showDetails
@@ -71,12 +74,12 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "File: ${downloadProgress.downloadItem.fileName}",
+              "${loc.file}: ${downloadProgress.downloadItem.fileName}",
               overflow: TextOverflow.ellipsis,
               style: TextStyle(color: Colors.white70),
             ),
             Text(
-              "URL: ${downloadProgress.downloadItem.downloadUrl}",
+              "${loc.url}: ${downloadProgress.downloadItem.downloadUrl}",
               overflow: TextOverflow.ellipsis,
               style: TextStyle(color: Colors.white70),
             ),
@@ -112,8 +115,8 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
               borderColor: Colors.transparent,
               textColor: Colors.blue,
               text: showDetails
-                  ? "Hide Connection Details"
-                  : "Show Connection Details",
+                  ? loc.btn_hideConnectionDetails
+                  : loc.btn_showConnectionDetails,
               icon: Icon(
                 showDetails
                     ? Icons.expand_less_rounded
@@ -162,7 +165,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              "Connection ${(index + 1).toString()}",
+                              "${loc.connection} ${(index + 1).toString()}",
                               style: const TextStyle(
                                 color: Color.fromRGBO(203, 203, 203, 1.0),
                                 fontSize: 15,
@@ -234,7 +237,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
                 ),
               ),
             ),
-            text: "Pause",
+            text: loc.btn_pause,
           );
         } else if (buttonEnabled.startButtonEnabled) {
           return RoundedOutlinedButton.fromButtonColor(
@@ -249,7 +252,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
                 color: theme.downloadProgressDialogTheme.resumeColor.textColor,
               ),
             ),
-            text: "Resume",
+            text: loc.btn_resume,
           );
         } else {
           return RoundedOutlinedButton(
@@ -264,7 +267,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
                 color: Colors.white70,
               ),
             ),
-            text: "Wait",
+            text: loc.btn_wait,
             textColor: Colors.white70,
           );
         }
@@ -295,21 +298,21 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
           provider.downloads[widget.downloadId]!.downloadItem.status,
       builder: (context, status, child) {
         if (status == DownloadStatus.validatingFiles) {
-          status = "Validating Files";
+          status = loc.status_validatingFiles;
         } else if (status == DownloadStatus.downloading) {
-          status = "Downloading File";
+          status = loc.status_downloadingFile;
         } else if (status == DownloadStatus.paused) {
-          status = "Paused";
+          status = loc.status_paused;
         } else if (status == DownloadStatus.assembleComplete) {
-          status = "Download Complete";
+          status = loc.status_complete;
         } else if (status == DownloadStatus.assembleFailed) {
-          status = "Critical Download Failure";
+          status = loc.status_downloadFailed;
         } else if (status == DownloadStatus.connecting) {
-          status = "Connecting";
+          status = loc.status_connecting;
         } else if (status == DownloadStatus.assembling) {
-          status = "Assembling File";
+          status = loc.status_assemblingFile;
         } else if (status == DownloadStatus.failed) {
-          status = "Download Failed";
+          status = loc.status_downloadFailed;
         }
         return Text(
           status,
@@ -337,12 +340,12 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
             .length;
         if (isDownloadInactive) {
           return textContainer(
-            title: "Active Connections",
+            title: loc.activeConnections,
             value: "",
           );
         }
         return textContainer(
-          title: "Active Connections",
+          title: loc.activeConnections,
           value: "$activeConnections/${connections.length}",
         );
       },
@@ -359,7 +362,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
               estimatedRemaining.substring(0, estimatedRemaining.indexOf(","));
         }
         return textContainer(
-          title: "Time Remaining",
+          title: loc.timeRemaining,
           value: isDownloadInactive ? "" : estimatedRemaining,
         );
       },
@@ -371,7 +374,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
       selector: (_, provider) =>
           provider.downloads[widget.downloadId]!.transferRate,
       builder: (context, transferRate, child) => textContainer(
-        title: "Speed",
+        title: loc.speed,
         value: isDownloadInactive ? "" : transferRate,
       ),
     );
@@ -417,7 +420,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
         final completedSizeStr =
             convertByteToReadableStr((totalSize * progress).toInt());
         return Text(
-          "$completedSizeStr of $totalSizeStr",
+          "$completedSizeStr ${loc.of_} $totalSizeStr",
           style: const TextStyle(
             color: Colors.white70,
           ),

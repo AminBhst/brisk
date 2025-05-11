@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:brisk/widget/setting/base/text_field_setting.dart';
@@ -21,9 +22,10 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
         .settingTheme
         .pageTheme;
     final size = MediaQuery.of(context).size;
+    final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
       height: 200,
-      title: "Connection Retry",
+      title: loc.settings_connectionRetry,
       children: [
         TextFieldSetting(
           onChanged: (value) => _onChanged(
@@ -33,10 +35,10 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
           width: 50,
           textWidth: size.width * 0.6 * 0.32,
           icon: Text(
-            "-1 = infinite",
+            "-1 = ${loc.infinite}",
             style: TextStyle(color: theme.titleTextColor),
           ),
-          text: "Max connection retry count",
+          text: loc.settings_connectionRetry_maxConnectionRetryCount,
           keyboardType: const TextInputType.numberWithOptions(
             signed: true,
             decimal: false,
@@ -52,9 +54,9 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
           ),
           width: 75,
           textWidth: size.width * 0.6 * 0.32,
-          text: "Connection retry timeout",
+          text: loc.settings_connectionRetry_connectionRetryTimeout,
           icon: Text(
-            "seconds",
+            loc.seconds,
             style: TextStyle(color: theme.titleTextColor),
           ),
           txtController: TextEditingController(

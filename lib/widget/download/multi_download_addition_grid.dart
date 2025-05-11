@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
@@ -49,12 +50,13 @@ class _DownloadGridState extends State<MultiDownloadAdditionGrid> {
   }
 
   void initColumns(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     columns = [
       PlutoColumn(
         enableRowDrag: true,
         enableRowChecked: true,
         width: 490,
-        title: 'File Name',
+        title: loc.fileName,
         field: 'file_name',
         type: PlutoColumnType.text(),
         renderer: (rendererContext) =>
@@ -63,7 +65,7 @@ class _DownloadGridState extends State<MultiDownloadAdditionGrid> {
       PlutoColumn(
         readOnly: true,
         width: 105,
-        title: 'Size',
+        title: loc.size,
         field: 'size',
         type: PlutoColumnType.text(),
       ),

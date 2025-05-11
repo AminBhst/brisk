@@ -36,7 +36,7 @@ class RoundedOutlinedButton extends StatefulWidget {
     Key? key,
     required VoidCallback? onPressed,
     required String text,
-    required double? width,
+     double? width,
     double? height = 35,
     double borderRadius = 8.0,
     Widget? icon = null,
@@ -67,58 +67,61 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.width,
-      height: widget.height,
-      child: OutlinedButton(
-        onPressed: widget.onPressed,
-        onHover: (val) => setState(() => hover = val),
-        style: ButtonStyle(
-          backgroundColor: WidgetStatePropertyAll(
-            widget.hoverBackgroundColor == null
-                ? (hover ? widget.borderColor : widget.backgroundColor)
-                : (hover
-                    ? widget.hoverBackgroundColor
-                    : widget.backgroundColor),
-          ),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(widget.borderRadius)),
-          ),
-          side: WidgetStateProperty.all(
-            BorderSide(
-              color: widget.borderColor,
-            ),
-          ),
-          padding: WidgetStateProperty.all(
-            EdgeInsets.symmetric(
-              horizontal: widget.icon == null ? 0 : 10,
-              vertical: 0,
-            ),
+    Widget button = OutlinedButton(
+      onPressed: widget.onPressed,
+      onHover: (val) => setState(() => hover = val),
+      style: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          widget.hoverBackgroundColor == null
+              ? (hover ? widget.borderColor : widget.backgroundColor)
+              : (hover ? widget.hoverBackgroundColor : widget.backgroundColor),
+        ),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: widget.mainAxisAlignment,
-          children: [
-            if (widget.icon != null) widget.icon!,
-            if (widget.icon != null && widget.text != null) SizedBox(width: 5),
-            if (widget.text != null)
-              Flexible(
-                child: Text(
-                  widget.text!,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: false,
-                  style: TextStyle(
-                    color: widget.hoverTextColor == null
-                        ? (hover ? Colors.white : widget.textColor)
-                        : (hover ? widget.hoverTextColor : widget.textColor),
-                  ),
-                ),
-              ),
-          ],
+        side: WidgetStateProperty.all(
+          BorderSide(color: widget.borderColor),
+        ),
+        padding: WidgetStateProperty.all(
+          EdgeInsets.symmetric(
+            horizontal: widget.icon == null ? 12 : 10,
+            vertical: 0,
+          ),
         ),
       ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min, // <- shrink-wrap
+        mainAxisAlignment: widget.mainAxisAlignment,
+        children: [
+          if (widget.icon != null) widget.icon!,
+          if (widget.icon != null && widget.text != null) SizedBox(width: 5),
+          if (widget.text != null)
+            Text(
+              widget.text!,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              softWrap: false,
+              style: TextStyle(
+                color: widget.hoverTextColor == null
+                    ? (hover ? Colors.white : widget.textColor)
+                    : (hover ? widget.hoverTextColor : widget.textColor),
+              ),
+            ),
+        ],
+      ),
     );
+
+    // Only constrain width/height if set
+    if (widget.width != null || widget.height != null) {
+      return SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: button,
+      );
+    }
+
+    return button;
   }
 }

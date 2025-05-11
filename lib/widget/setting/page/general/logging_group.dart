@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:brisk/widget/setting/base/switch_setting.dart';
@@ -13,12 +14,13 @@ class LoggingGroup extends StatefulWidget {
 class _LoggingGroupState extends State<LoggingGroup> {
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
       height: 150,
-      title: "Logger",
+      title: loc.settings_logging,
       children: [
         SwitchSetting(
-          text: "Enable Engine Logger",
+          text: loc.settings_logging_enableDownloadEngineLogging,
           switchValue: SettingsCache.loggerEnabled,
           onChanged: (val) =>
               setState(() => SettingsCache.loggerEnabled = val),

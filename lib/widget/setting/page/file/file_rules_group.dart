@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/setting/rule/file_condition.dart';
 import 'package:brisk/setting/rule/file_save_path_rule.dart';
 import 'package:brisk/setting/rule/rule_value_type.dart';
@@ -16,17 +17,19 @@ class FileRulesGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
       height: 150,
-      title: "Rules",
+      title: loc.settings_rules,
       children: [
         ExternalLinkSetting(
-          title: "File Save Path Rules",
+          title: loc.settings_rules_fileSavePathRules,
           titleWidth: resolveWidth(size),
-          linkText: "Open Rule Editor",
+          linkText: loc.settings_rules_edit,
+          customIcon: Icon(Icons.edit_note_rounded, color: Colors.white70),
           onLinkPressed: () => showDialog(
             builder: (context) => RuleEditorWindow<FileSavePathRule>(
-              ruleType: "File Save Path Rules",
+              ruleType: loc.settings_rules_fileSavePathRules,
               rules: [...SettingsCache.fileSavePathRules],
               buildItemTitle: (FileSavePathRule rule) {
                 return SizedBox(
@@ -72,22 +75,20 @@ class FileRulesGroup extends StatelessWidget {
                 );
               },
               onSavePressed: (List<FileSavePathRule> rules) {
-								SettingsCache.fileSavePathRules = rules;
-							},
+                SettingsCache.fileSavePathRules = rules;
+              },
               onEditPressed: (
                 FileSavePathRule rule,
-                Function(FileSavePathRule oldRule, FileSavePathRule newRule) update,
+                Function(FileSavePathRule oldRule, FileSavePathRule newRule)
+                    update,
               ) {
                 showDialog(
                   builder: (_) => FileSaveRuleItemEditor(
                     condition: rule.condition,
                     value: rule.valueWithTypeConsidered,
                     ruleValueType: RuleValueType.fromRule(rule),
-                    onSaveClicked: (
-                      FileCondition condition,
-                      String value,
-                      String savePath
-                    ) {
+                    onSaveClicked: (FileCondition condition, String value,
+                        String savePath) {
                       final newRule = FileSavePathRule(
                         condition: condition,
                         value: value,
@@ -123,8 +124,7 @@ class FileRulesGroup extends StatelessWidget {
             ),
             context: context,
           ),
-          tooltipMessage:
-              "Defines conditions which determine when a file should be saved in the specified location",
+          tooltipMessage: loc.settings_rules_fileSavePathRules_tooltip,
         )
       ],
     );

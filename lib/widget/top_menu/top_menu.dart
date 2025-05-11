@@ -1,4 +1,5 @@
 import 'package:brisk/constants/file_type.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
@@ -36,7 +37,8 @@ class _TopMenuState extends State<TopMenu> {
     final topMenuTheme =
         Provider.of<ThemeProvider>(context).activeTheme.topMenuTheme;
     Provider.of<PlutoGridCheckRowProvider>(context);
-    final queueProvider = Provider.of<QueueProvider>(context);
+    Provider.of<QueueProvider>(context);
+    final loc = AppLocalizations.of(context)!;
     final size = MediaQuery.of(context).size;
     return Container(
       width: resolveWindowWidth(size),
@@ -54,7 +56,7 @@ class _TopMenuState extends State<TopMenu> {
                 builder: (_) => AddUrlDialog(),
                 barrierDismissible: false,
               ),
-              title: 'Add URL',
+              title: loc.addUrl,
               icon: Icon(
                 Icons.add_rounded,
                 color: topMenuTheme.addUrlColor.iconColor,
@@ -72,7 +74,7 @@ class _TopMenuState extends State<TopMenu> {
           // ),
           TopMenuButton(
             onTap: isDownloadButtonEnabled(provider) ? onDownloadPressed : null,
-            title: 'Download',
+            title: loc.download,
             icon: Icon(
               Icons.download_rounded,
               color: isDownloadButtonEnabled(provider)
@@ -86,7 +88,7 @@ class _TopMenuState extends State<TopMenu> {
           ),
           TopMenuButton(
             onTap: isPauseButtonEnabled(provider) ? onStopPressed : null,
-            title: 'Stop',
+            title: loc.stop,
             icon: Icon(
               Icons.stop_rounded,
               color: isPauseButtonEnabled(provider)
@@ -102,7 +104,7 @@ class _TopMenuState extends State<TopMenu> {
             onTap: PlutoGridUtil.selectedRowExists
                 ? () => PlutoGridUtil.onRemovePressed(context)
                 : null,
-            title: 'Remove',
+            title: loc.remove,
             icon: Icon(
               Icons.delete,
               color: PlutoGridUtil.selectedRowExists
@@ -118,7 +120,7 @@ class _TopMenuState extends State<TopMenu> {
             onTap: PlutoGridUtil.selectedRowExists
                 ? () => onAddToQueuePressed(context)
                 : null,
-            title: 'Add To Queue',
+            title: loc.addToQueue,
             icon: Icon(
               Icons.queue,
               color: PlutoGridUtil.selectedRowExists
@@ -137,7 +139,7 @@ class _TopMenuState extends State<TopMenu> {
               showUpdateNotAvailableDialog: true,
               ignoreLastUpdateCheck: true,
             ),
-            title: 'Check for Update',
+            title: loc.checkForUpdate,
             icon: Icon(
               Icons.update,
               color: topMenuTheme.checkForUpdateColor.iconColor,
@@ -149,7 +151,7 @@ class _TopMenuState extends State<TopMenu> {
           SizedBox(width: 5),
           // Container(color: Colors.white, width: 1, height: 40),
           TopMenuButton(
-            title: 'Get Extension',
+            title: loc.getExtension,
             fontSize: 11,
             icon: Icon(
               Icons.extension,

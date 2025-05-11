@@ -1,8 +1,10 @@
 import 'package:brisk/constants/file_type.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/responsive_util.dart';
+import 'package:brisk/widget/base/default_tooltip.dart';
 import 'package:brisk/widget/setting/setting_dialog.dart';
 import 'package:brisk/widget/side_menu/side_menu_expansion_tile.dart';
 import 'package:brisk/widget/side_menu/side_menu_item.dart';
@@ -31,6 +33,7 @@ class _SideMenuState extends State<SideMenu> {
     final sideMenuTheme =
         Provider.of<ThemeProvider>(context).activeTheme.sideMenuTheme;
     final size = MediaQuery.of(context).size;
+    final loc = AppLocalizations.of(context)!;
     return Container(
       width: resolveSideMenuWidth(size),
       height: double.infinity,
@@ -40,7 +43,7 @@ class _SideMenuState extends State<SideMenu> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 10, top: 30),
+              padding: const EdgeInsetsDirectional.only(start: 10, top: 30),
               child: SvgPicture.asset(
                 "assets/icons/logo.svg",
                 height: 25,
@@ -55,8 +58,8 @@ class _SideMenuState extends State<SideMenu> {
             SideMenuExpansionTile(
               title: 'Downloads',
               active: selectedTab == 0,
-              icon: Tooltip(
-                message: "All Downloads",
+              icon: DefaultTooltip(
+                message: loc.allDownloads,
                 child: const Icon(
                   Icons.download_rounded,
                   color: Colors.white,
@@ -121,8 +124,8 @@ class _SideMenuState extends State<SideMenu> {
             ),
             SideMenuItem(
               onTap: () => setUnfinishedGridFilter(queueProvider),
-              leading: Tooltip(
-                message: "Unfinished",
+              leading: DefaultTooltip(
+                message: loc.unfinishedDownloads,
                 child: SvgPicture.asset(
                   'assets/icons/unfinished.svg',
                   colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
@@ -133,8 +136,8 @@ class _SideMenuState extends State<SideMenu> {
             ),
             SideMenuItem(
               onTap: () => setFinishedFilter(queueProvider),
-              leading: Tooltip(
-                message: "Finished",
+              leading: DefaultTooltip(
+                message: loc.finishedDownloads,
                 child: const Icon(
                   Icons.download_done_rounded,
                   color: Colors.white,
@@ -145,8 +148,8 @@ class _SideMenuState extends State<SideMenu> {
             ),
             SideMenuItem(
               onTap: () => onQueueTabPressed(queueProvider),
-              leading: Tooltip(
-                message: "Queues",
+              leading: DefaultTooltip(
+                message: loc.downloadQueues,
                 child: Icon(
                   Icons.queue,
                   color: Colors.white,

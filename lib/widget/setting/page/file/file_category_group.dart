@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:brisk/widget/setting/base/text_field_setting.dart';
@@ -11,12 +12,13 @@ class FileCategoryGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
       height: 380,
-      title: "File Category",
+      title: loc.settings_fileCategory,
       children: [
         TextFieldSetting(
-          text: "Video",
+          text: loc.settings_fileCategory_video,
           width: resolveTextFieldWidth(size),
           textWidth: resolveTextWidth(size),
           txtController: TextEditingController(text: parseListToCsv(SettingsCache.videoFormats)),
@@ -27,7 +29,7 @@ class FileCategoryGroup extends StatelessWidget {
         ),
         marginSizedBox,
         TextFieldSetting(
-          text: "Music",
+          text: loc.settings_fileCategory_music,
           width: resolveTextFieldWidth(size),
           textWidth: resolveTextWidth(size),
           txtController: TextEditingController(text: parseListToCsv(SettingsCache.musicFormats)),
@@ -38,7 +40,7 @@ class FileCategoryGroup extends StatelessWidget {
         ),
         marginSizedBox,
         TextFieldSetting(
-          text: "Archive",
+          text: loc.settings_fileCategory_archive,
           width: resolveTextFieldWidth(size),
           textWidth: resolveTextWidth(size),
           txtController: TextEditingController(text: parseListToCsv(SettingsCache.compressedFormats)),
@@ -49,7 +51,7 @@ class FileCategoryGroup extends StatelessWidget {
         ),
         marginSizedBox,
         TextFieldSetting(
-          text: "Program",
+          text: loc.settings_fileCategory_program,
           width: resolveTextFieldWidth(size),
           textWidth: resolveTextWidth(size),
           txtController: TextEditingController(text: parseListToCsv(SettingsCache.programFormats)),
@@ -60,7 +62,7 @@ class FileCategoryGroup extends StatelessWidget {
         ),
         marginSizedBox,
         TextFieldSetting(
-          text: "Document",
+          text: loc.settings_fileCategory_document,
           width: resolveTextFieldWidth(size),
           textWidth: resolveTextWidth(size),
           txtController: TextEditingController(text: parseListToCsv(SettingsCache.documentFormats)),

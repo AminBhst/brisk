@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/setting/rule/file_condition.dart';
 import 'package:brisk/setting/rule/file_rule.dart';
 import 'package:brisk/setting/rule/rule_value_type.dart';
@@ -14,18 +15,19 @@ class BrowserExtensionRulesGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
       height: 130,
-      title: "Rules",
+      title: loc.settings_rules,
       children: [
         ExternalLinkSetting(
-          title: "Extension Skip Capture Rules",
+          title: loc.settings_rules_extensionSkipCaptureRules,
           width: resolveLinkWidth(size),
           titleWidth: resolveTitleWidth(size),
-          linkText: "Open Rule Editor",
+          linkText: loc.settings_rules_edit,
           onLinkPressed: () => showDialog(
             builder: (context) => RuleEditorWindow<FileRule>(
-              ruleType: "Extension Skip Capture Rules",
+              ruleType: loc.settings_rules_extensionSkipCaptureRules,
               rules: [...SettingsCache.extensionSkipCaptureRules],
               onSavePressed: (List<FileRule> rules) {
                 SettingsCache.extensionSkipCaptureRules = rules;
@@ -68,8 +70,7 @@ class BrowserExtensionRulesGroup extends StatelessWidget {
             ),
             context: context,
           ),
-          tooltipMessage:
-              "Defines conditions which determine when a file should not be captures via browser extension",
+          tooltipMessage: loc.settings_rules_extensionSkipCaptureRules_tooltip,
         ),
       ],
     );

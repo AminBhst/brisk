@@ -67,7 +67,7 @@ class _SideMenuExpansionTileState extends State<SideMenuExpansionTile> {
               children: [
                 Padding(
                   padding:
-                      EdgeInsets.only(left: minimizedSideMenu(size) ? 30 : 20),
+                      EdgeInsetsDirectional.only(start: minimizedSideMenu(size) ? 35 : 20),
                   child: SizedBox(
                     width: 20,
                     height: 20,
@@ -77,7 +77,7 @@ class _SideMenuExpansionTileState extends State<SideMenuExpansionTile> {
                 minimizedSideMenu(size)
                     ? Container()
                     : Padding(
-                        padding: const EdgeInsets.only(left: 30.0),
+                        padding: const EdgeInsetsDirectional.only(start: 30.0),
                         child: Text(
                           widget.title,
                           style: const TextStyle(

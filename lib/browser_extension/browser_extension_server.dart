@@ -228,7 +228,6 @@ class BrowserExtensionServer {
     if (downloadHrefs.isEmpty) return;
     downloadHrefs = downloadHrefs.toSet().toList() // removes duplicates
       ..removeWhere((url) => !isUrlValid(url));
-    print("Valids:  ${downloadHrefs}");
     final downloadItems =
         downloadHrefs.map((e) => DownloadItem.fromUrl(e)).toList();
     _cancelClicked = false;

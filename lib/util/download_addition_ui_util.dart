@@ -4,6 +4,7 @@ import 'dart:isolate';
 
 import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/constants/file_type.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/isolate/isolate_args.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/info_dialog.dart';
@@ -50,20 +51,17 @@ class DownloadAdditionUiUtil {
 
   static void handleDownloadAddition(BuildContext context, String url,
       {bool updateDialog = false, int? downloadId, additionalPop = false}) {
+    final loc = AppLocalizations.of(context)!;
     if (!isUrlValid(url)) {
       showDialog(
         context: context,
-        builder: (_) => const ErrorDialog(
+        builder: (_) => ErrorDialog(
           width: 400,
-          height: 205,
+          height: 210,
           textHeight: 15,
-          title: 'Invalid URL',
-          description:
-              "The URL you've entered appears to be invalid.\nPlease check the format and try again.",
-          descriptionHint: "Make sure the URL:\n"
-              "\t • Starts with https:// or http://\n"
-              "\t • Contains a valid domain name\n"
-              "\t • Contains no invalid characters ",
+          title: loc.err_invalidUrl_title,
+          description: loc.err_invalidUrl_description,
+          descriptionHint: loc.err_invalidUrl_descriptionHint,
         ),
       );
       return;
@@ -85,15 +83,13 @@ class DownloadAdditionUiUtil {
           _cancelRequest(context);
           showDialog(
             context: context,
-            builder: (_) => const ErrorDialog(
+            builder: (_) => ErrorDialog(
               textHeight: 0,
               height: 200,
               width: 380,
-              title: "Failed to retrieve file info",
-              description:
-                  "Something went wrong when trying to retrieve file information from this URL.",
-              descriptionHint:
-                  "In some cases, retrying a few times may solve the issue. Otherwise, make sure the resource you're to reach is valid.",
+              title: loc.err_failedToRetrieveFileInfo_title,
+              description: loc.err_failedToRetrieveFileInfo_description,
+              descriptionHint: loc.err_failedToRetrieveFileInfo_descriptionHint,
             ),
           );
         },

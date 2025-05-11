@@ -9,6 +9,7 @@ class ExternalLinkSetting extends StatelessWidget {
   final String? tooltipMessage;
   double titleWidth;
   double? width;
+  final Widget? customIcon;
 
   ExternalLinkSetting({
     super.key,
@@ -18,6 +19,7 @@ class ExternalLinkSetting extends StatelessWidget {
     this.tooltipMessage,
     this.titleWidth = 100,
     this.width,
+    this.customIcon,
   });
 
   @override
@@ -62,7 +64,8 @@ class ExternalLinkSetting extends StatelessWidget {
           children: [
             IconButton(
               onPressed: onLinkPressed,
-              icon: Icon(Icons.launch_rounded, color: Colors.white),
+              icon:
+                  customIcon ?? Icon(Icons.launch_rounded, color: Colors.white),
             ),
             Text(linkText, style: TextStyle(color: Colors.white, fontSize: 11)),
           ],

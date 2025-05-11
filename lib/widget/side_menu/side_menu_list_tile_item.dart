@@ -41,7 +41,7 @@ class SideMenuListTileItem extends StatelessWidget {
               : SizedBox(width: size, height: size, child: icon),
           title: minimizedSideMenu(mSize)
               ? Padding(
-                  padding: const EdgeInsets.only(right: 3.0),
+                  padding: const EdgeInsetsDirectional.only(end: 3),
                   child: SizedBox(width: size, height: size, child: icon),
                 )
               : Text(

@@ -1,5 +1,6 @@
 import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/download_engine_util.dart';
@@ -68,6 +69,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
     final theme = Provider.of<ThemeProvider>(context).activeTheme;
     final size = MediaQuery.of(context).size;
     final alertDialogTheme = theme.alertDialogTheme;
+    final loc = AppLocalizations.of(context)!;
     return ScaleTransition(
       scale: scaleAnimation,
       child: ScrollableDialog(
@@ -86,7 +88,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
             Padding(
               padding: const EdgeInsets.all(20),
               child: Text(
-                widget.newDownload ? "Add New Download" : "Download Info",
+                widget.newDownload ? loc.addNewDownload : loc.downloadInfo,
                 style: TextStyle(
                   color: alertDialogTheme.textColor,
                   fontWeight: FontWeight.bold,
@@ -161,12 +163,16 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                                       ),
                                     ),
                             ),
-                            Text(
-                              "${widget.isM3u8 ? "Duration" : "Size"}: $fileSubtitle",
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Colors.white60,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  "${widget.isM3u8 ? loc.duration : loc.size}: $fileSubtitle",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white60,
+                                  ),
+                                )
+                              ],
                             ),
                           ],
                         ),
@@ -174,7 +180,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                     ),
                     const SizedBox(height: 10),
                     TextFieldWidget(
-                      title: "URL",
+                      title: loc.url,
                       size: size,
                       controller: TextEditingController(
                         text: widget.downloadItem.downloadUrl,
@@ -187,7 +193,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Save As",
+                          loc.saveAs,
                           style: TextStyle(color: Colors.white60, fontSize: 14),
                         ),
                         const SizedBox(height: 5),
@@ -248,7 +254,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                               color: Colors.white60,
                             ),
                             const SizedBox(width: 5),
-                            Text("Download can be pause/resumed",
+                            Text(loc.pauseCapable,
                                 style: const TextStyle(
                                     color: Colors.white, fontSize: 14)),
                           ],
@@ -269,21 +275,19 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
               children: [
                 RoundedOutlinedButton.fromButtonColor(
                   theme.downloadInfoDialogTheme.cancelColor,
-                  text: "Cancel",
-                  width: 80,
+                  text: loc.btn_cancel,
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 const SizedBox(width: 10),
                 RoundedOutlinedButton.fromButtonColor(
                   theme.downloadInfoDialogTheme.addToListColor,
-                  text: "Add to List",
-                  width: 110,
+                  text: loc.btn_addToList,
                   onPressed: addToList,
                 ),
                 const SizedBox(width: 10),
                 RoundedOutlinedButton.fromButtonColor(
                   theme.downloadInfoDialogTheme.downloadColor,
-                  text: "Download",
+                  text: loc.btn_download,
                   width: 100,
                   onPressed: () => _onDownloadPressed(context),
                 ),
@@ -296,7 +300,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
               children: [
                 RoundedOutlinedButton.fromButtonColor(
                   theme.downloadInfoDialogTheme.openFileLocationColor,
-                  text: "Open File Location",
+                  text: loc.btn_openFileLocation,
                   width: 151,
                   onPressed: () {
                     openFileLocation(widget.downloadItem);
@@ -306,7 +310,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                 const SizedBox(width: 10),
                 RoundedOutlinedButton(
                   width: 110,
-                  text: "Open File",
+                  text: loc.btn_openFile,
                   onPressed: () {
                     launchUrlString("file:${widget.downloadItem.filePath}");
                     Navigator.of(context).pop();
