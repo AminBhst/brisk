@@ -771,9 +771,8 @@ class HttpDownloadConnection {
   Future<void> terminateConnection() async {
     try {
       logger?.info("Terminating connection...");
-      await downloadSub?.cancel();
       client.close();
-      downloadSub = null;
+      await downloadSub?.cancel();
       logger?.info("Connection Terminated");
     } catch (_) {}
   }
