@@ -853,16 +853,12 @@ class HttpDownloadEngine {
         downloadSettings!.totalConnections,
         missingByteRanges,
       );
-      print("Tree result: \n${engineChannel.segmentTree.toString()}");
+      logger?.info("Tree result: \n${engineChannel.segmentTree.toString()}");
       // If the tree was built on top of existing temp files, the dynamic connection spawner
       // should not be executed because multiple segments are already assigned to connections.
       // therefore we set the created connections to the max allowed value.
       if (engineChannel.segmentTree!.lowestLevelNodes.length != 1) {
         engineChannel.createdConnections = downloadSettings!.totalConnections;
-      }
-      logger?.info("Built the download segment tree from temp files");
-      for (final element in engineChannel.segmentTree!.lowestLevelNodes) {
-        logger?.info("${element.segment} ==> ${element.segmentStatus}");
       }
       data.command = DownloadCommand.startInitial;
       await _spawnDownloadIsolates(data);
