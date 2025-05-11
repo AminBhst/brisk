@@ -9,6 +9,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get language => 'Language';
+
+  @override
   String get addUrl => 'Add URL';
 
   @override
@@ -234,10 +237,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_notification => 'Notification';
 
   @override
-  String get settings_notification_onDownloadCompletion => 'Notification On Download Completion';
+  String get settings_notification_onDownloadCompletion => 'Notification on download completion';
 
   @override
-  String get settings_notification_onDownloadFailure => 'Notification On Download Failure';
+  String get settings_notification_onDownloadFailure => 'Notification on download failure';
 
   @override
   String get settings_userInterface => 'User Interface';

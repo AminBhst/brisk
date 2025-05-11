@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:brisk/l10n/app_localizations.dart';
+import 'package:brisk/provider/locale_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme_holder.dart';
@@ -224,6 +225,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
     }
     SettingsCache.saveCachedSettingsToDB();
     ApplicationThemeHolder.setActiveTheme();
+    Provider.of<LocaleProvider>(context, listen: false).setCurrentLocale();
     themeProvider?.updateActiveTheme();
     Navigator.of(context).pop();
   }

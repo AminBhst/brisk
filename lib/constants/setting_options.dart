@@ -3,6 +3,7 @@ enum SettingOptions {
   notificationOnDownloadCompletion,
   notificationOnDownloadFailure,
   launchOnStartUp,
+  locale,
   openDownloadProgressWindow,
   enableWindowToFront,
   extensionPort,

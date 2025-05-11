@@ -8,6 +8,7 @@ class MigrationManager {
   static List<Migration> migrations = [
     Migration(0, "Add proxy Settings"),
     Migration(1, "Add m3u8 connection number"),
+    Migration(2, "Add i10n"),
   ];
 
   static runMigrations() async {
@@ -28,6 +29,9 @@ class MigrationManager {
         break;
       case 1:
         await runMigrationV1();
+        break;
+      case 2:
+        await runMigrationV2();
         break;
       default:
         break;
@@ -86,5 +90,15 @@ class MigrationManager {
           .defaultSettings[SettingOptions.m3u8ConnectionsNumber.name]![0],
     );
     await HiveUtil.instance.settingBox.add(connNumSetting);
+  }
+
+  static runMigrationV2() async {
+    final localeSetting = Setting(
+      name: SettingOptions.locale.name,
+      value: SettingsCache.defaultSettings[SettingOptions.locale.name]![1],
+      settingType:
+          SettingsCache.defaultSettings[SettingOptions.locale.name]![0],
+    );
+    await HiveUtil.instance.settingBox.add(localeSetting);
   }
 }

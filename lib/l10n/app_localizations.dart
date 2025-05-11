@@ -95,6 +95,12 @@ abstract class AppLocalizations {
     Locale('fa')
   ];
 
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
   /// No description provided for @addUrl.
   ///
   /// In en, this message translates to:
@@ -548,13 +554,13 @@ abstract class AppLocalizations {
   /// No description provided for @settings_notification_onDownloadCompletion.
   ///
   /// In en, this message translates to:
-  /// **'Notification On Download Completion'**
+  /// **'Notification on download completion'**
   String get settings_notification_onDownloadCompletion;
 
   /// No description provided for @settings_notification_onDownloadFailure.
   ///
   /// In en, this message translates to:
-  /// **'Notification On Download Failure'**
+  /// **'Notification on download failure'**
   String get settings_notification_onDownloadFailure;
 
   /// No description provided for @settings_userInterface.

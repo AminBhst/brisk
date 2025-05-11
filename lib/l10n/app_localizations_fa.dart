@@ -9,6 +9,9 @@ class AppLocalizationsFa extends AppLocalizations {
   AppLocalizationsFa([String locale = 'fa']) : super(locale);
 
   @override
+  String get language => 'زبان';
+
+  @override
   String get addUrl => 'اضافه کردن لینک';
 
   @override

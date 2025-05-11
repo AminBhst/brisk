@@ -1,4 +1,5 @@
 import 'package:brisk/l10n/app_localizations.dart';
+import 'package:brisk/provider/locale_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme_holder.dart';
 import 'package:brisk/util/settings_cache.dart';
@@ -18,7 +19,7 @@ class _UISettingGroupState extends State<UISettingGroup> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 140,
+      height: 280,
       title: loc.settings_userInterface,
       children: [
         DropDownSetting(
@@ -27,13 +28,27 @@ class _UISettingGroupState extends State<UISettingGroup> {
               .toList(),
           text: loc.settings_userInterface_theme,
           value: SettingsCache.applicationThemeId,
-          onChanged: _onChanged,
+          onChanged: _onThemeChanged,
+        ),
+        DropDownSetting(
+          items: LocaleProvider.locales.values.toList(),
+          text: loc.language,
+          value: LocaleProvider.locales[SettingsCache.locale]!,
+          onChanged: _onLocaleChanged,
         )
       ],
     );
   }
 
-  void _onChanged(String? value) {
+  void _onLocaleChanged(String? locale) {
+    if (locale == null || locale.isEmpty) return;
+    setState(
+      () => SettingsCache.locale = LocaleProvider.locales.keys
+          .firstWhere((key) => LocaleProvider.locales[key] == locale),
+    );
+  }
+
+  void _onThemeChanged(String? value) {
     if (value == null || value.isEmpty) return;
     setState(() => SettingsCache.applicationThemeId = value);
   }

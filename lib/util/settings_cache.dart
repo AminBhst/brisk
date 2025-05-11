@@ -28,6 +28,7 @@ class SettingsCache {
   static late bool openDownloadProgressWindow;
   static late bool enableWindowToFront;
   static late bool loggerEnabled;
+  static late String locale;
 
   /// File
   static late Directory temporaryDir;
@@ -64,6 +65,10 @@ class SettingsCache {
     SettingOptions.notificationOnDownloadCompletion.name: [
       SettingType.general.name,
       "false",
+    ],
+    SettingOptions.locale.name: [
+      SettingType.general.name,
+      "en",
     ],
     SettingOptions.notificationOnDownloadFailure.name: [
       SettingType.general.name,
@@ -179,6 +184,9 @@ class SettingsCache {
         case SettingOptions.applicationThemeId:
           applicationThemeId = value.toString();
           break;
+        case SettingOptions.locale:
+          locale = value.toString();
+          break;
         case SettingOptions.notificationOnDownloadCompletion:
           notificationOnDownloadCompletion = parseBool(value);
           break;
@@ -272,6 +280,8 @@ class SettingsCache {
       switch (parseSettingOptions(setting.name)) {
         case SettingOptions.applicationThemeId:
           setting.value = SettingsCache.applicationThemeId.toString();
+        case SettingOptions.locale:
+          setting.value = SettingsCache.locale;
         case SettingOptions.notificationOnDownloadCompletion:
           setting.value =
               parseBoolStr(SettingsCache.notificationOnDownloadCompletion);

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:brisk/db/migration_manager.dart';
+import 'package:brisk/provider/locale_provider.dart';
 import 'package:brisk/util/app_logger.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/browser_extension/browser_extension_server.dart';
@@ -64,6 +65,7 @@ void main() {
       await MigrationManager.runMigrations();
       await SettingsCache.setCachedSettings();
       await updateLaunchAtStartupSetting();
+      LocaleProvider.instance.setCurrentLocale();
       ApplicationThemeHolder.setActiveTheme();
 
       runApp(
@@ -80,6 +82,9 @@ void main() {
             ),
             ChangeNotifierProvider<PlutoGridCheckRowProvider>(
               create: (_) => PlutoGridCheckRowProvider(),
+            ),
+            ChangeNotifierProvider<LocaleProvider>(
+              create: (_) => LocaleProvider.instance,
             ),
             ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
                 DownloadRequestProvider>(
@@ -112,17 +117,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      locale: Locale("en"),
+      locale: Provider.of<LocaleProvider>(context).locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('fa'),
-        Locale('en'),
-      ],
+      supportedLocales: LocaleProvider.locales.keys.map(
+        (locale) => Locale(locale),
+      ),
       navigatorKey: globalContext,
       debugShowCheckedModeBanner: false,
       title: 'Brisk',
