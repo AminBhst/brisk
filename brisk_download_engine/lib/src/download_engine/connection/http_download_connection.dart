@@ -680,7 +680,6 @@ class HttpDownloadConnection {
     updateStatus(DownloadStatus.paused);
     connectionStatus = DownloadStatus.paused;
     terminateConnection();
-    await terminateConnection();
     pauseButtonEnabled = false;
     notifyProgress();
   }
