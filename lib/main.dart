@@ -164,6 +164,9 @@ class _MyHomePageState extends State<MyHomePage>
       case AppClosureBehaviour.minimizeToTray:
         initTray();
         windowManager.hide();
+        if (Platform.isMacOS) {
+          windowManager.setSkipTaskbar(true);
+        }
         break;
       case AppClosureBehaviour.exit:
         windowManager.destroy().then((_) => exit(0));
