@@ -48,6 +48,9 @@ class DownloadItem extends HiveObject {
   @HiveField(13, defaultValue: "HTTP")
   String downloadType;
 
+  @HiveField(14)
+  String? referer;
+
   DownloadItem({
     required this.uid,
     required this.fileName,

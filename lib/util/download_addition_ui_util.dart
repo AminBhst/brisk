@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:brisk/browser_extension/browser_extension_server.dart';
 import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/l10n/app_localizations.dart';
@@ -189,15 +190,16 @@ class DownloadAdditionUiUtil {
     if (dl.contentLength != fileInfo.contentLength) {
       showDialog(
         context: context,
-        builder: (context) => const ErrorDialog(
-          width: 400,
+        builder: (context) => ErrorDialog(
+          width: 450,
           height: 100,
-          title: "URL Update Error",
-          description: "The given URL does not refer to the same file!",
+          title: AppLocalizations.of(context)!.urlUpdateError_title,
+          description: AppLocalizations.of(context)!.urlUpdateError_description,
         ),
       );
     } else {
       updateUrl(context, fileInfo.url, dl, downloadId);
+      BrowserExtensionServer.awaitingUpdateUrlItem = null;
     }
   }
 
@@ -213,7 +215,7 @@ class DownloadAdditionUiUtil {
     showDialog(
       context: context,
       builder: (context) => InfoDialog(
-        titleText: "URL updated successfully!",
+        titleText: AppLocalizations.of(context)!.urlUpdateSuccess,
         titleIcon: Icon(Icons.done),
         titleIconBackgroundColor: Colors.lightGreen,
       ),

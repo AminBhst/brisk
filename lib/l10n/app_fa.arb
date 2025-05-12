@@ -233,5 +233,12 @@
   },
   "whatsNew": "ویژگی\u200Cهای جدید:",
   "btn_later": "بعدا",
-  "btn_update": "به\u200Cروزرسانی"
+  "btn_update": "به\u200Cروزرسانی",
+  "automaticUrlUpdate": "به\u200Cروزرسانی خودکار لینک دانلود",
+  "awaitingUrl": "در انتظار لینک",
+  "awaitingUrl_description": "شما به سایت مبدا این فایل منتقل شده\u200Cاید",
+  "awaitingUrl_descriptionHint": "برای به\u200Cروزرسانی خودکار لینک، لطفا روی لینک دانلود فایل مورد نظر کلیک کنید",
+  "urlUpdateError_title": "خطای به\u200Cروزرسانی لینک دانلود",
+  "urlUpdateError_description": "لینک دانلود مورد نظر مربوط به این فایل نمی\u200Cباشد!",
+  "urlUpdateSuccess": "لینک دانلود با موفقیت به\u200Cروزرسانی شد!"
 }

@@ -1394,6 +1394,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update'**
   String get btn_update;
+
+  /// No description provided for @automaticUrlUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic URL Update'**
+  String get automaticUrlUpdate;
+
+  /// No description provided for @awaitingUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting URL'**
+  String get awaitingUrl;
+
+  /// No description provided for @awaitingUrl_description.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been redirected to the referer website of this file.'**
+  String get awaitingUrl_description;
+
+  /// No description provided for @awaitingUrl_descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please click the download link for the download URL to be captured and updated automatically.'**
+  String get awaitingUrl_descriptionHint;
+
+  /// No description provided for @urlUpdateError_title.
+  ///
+  /// In en, this message translates to:
+  /// **'URL Update Error'**
+  String get urlUpdateError_title;
+
+  /// No description provided for @urlUpdateError_description.
+  ///
+  /// In en, this message translates to:
+  /// **'The given URL does not refer to the same file!'**
+  String get urlUpdateError_description;
+
+  /// No description provided for @urlUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'URL updated successfully!'**
+  String get urlUpdateSuccess;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

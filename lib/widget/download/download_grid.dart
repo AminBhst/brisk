@@ -1,3 +1,4 @@
+import 'package:brisk/browser_extension/browser_extension_server.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/download_request_provider.dart';
@@ -10,6 +11,7 @@ import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/download/download_info_dialog.dart';
 import 'package:brisk/widget/download/download_progress_dialog.dart';
+import 'package:brisk/widget/other/automatic_url_update_dialog.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -230,6 +232,8 @@ class _DownloadGridState extends State<DownloadGrid> {
         ? (downloadProgress.status != DownloadStatus.assembleComplete ||
             downloadProgress.status != DownloadStatus.downloading)
         : (!downloadComplete || status == DownloadStatus.paused);
+    final automaticUrlUpdateEnabled = updateUrlEnabled &&
+        HiveUtil.instance.downloadItemsBox.get(id)?.referer != null;
     print(event.offset.dx);
     print("Size width ${size.width}");
 
@@ -279,6 +283,11 @@ class _DownloadGridState extends State<DownloadGrid> {
           enabled: updateUrlEnabled,
         ),
         PopupMenuItem(
+          value: "Automatic URL Update",
+          child: Text(loc.automaticUrlUpdate),
+          enabled: automaticUrlUpdateEnabled,
+        ),
+        PopupMenuItem(
           value: "Properties",
           child: Text(loc.popupMenu_properties),
         ),
@@ -314,6 +323,15 @@ class _DownloadGridState extends State<DownloadGrid> {
           context: context,
           builder: (context) =>
               AddUrlDialog(downloadId: downloadItem.key, updateDialog: true),
+        );
+        break;
+      case "Automatic URL Update":
+        launchUrlString(downloadItem.referer!);
+        BrowserExtensionServer.awaitingUpdateUrlItem = downloadItem;
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AutomaticUrlUpdateDialog(),
         );
         break;
       case "Properties":

@@ -663,4 +663,25 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get btn_update => 'Aggiorna';
+
+  @override
+  String get automaticUrlUpdate => 'Aggiornamento automatico dell\'URL';
+
+  @override
+  String get awaitingUrl => 'In attesa dell\'URL';
+
+  @override
+  String get awaitingUrl_description => 'Sei stato reindirizzato al sito di riferimento di questo file.';
+
+  @override
+  String get awaitingUrl_descriptionHint => 'Clicca sul link di download per catturare e aggiornare automaticamente l\'URL di download.';
+
+  @override
+  String get urlUpdateError_title => 'Errore di aggiornamento URL';
+
+  @override
+  String get urlUpdateError_description => 'L\'URL fornito non si riferisce allo stesso file!';
+
+  @override
+  String get urlUpdateSuccess => 'URL aggiornato con successo!';
 }

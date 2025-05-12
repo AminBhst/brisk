@@ -235,5 +235,12 @@
   },
   "whatsNew": "What's New:",
   "btn_later": "Later",
-  "btn_update": "Update"
+  "btn_update": "Update",
+  "automaticUrlUpdate": "Automatic URL Update",
+  "awaitingUrl": "Awaiting URL",
+  "awaitingUrl_description": "You've been redirected to the referer website of this file.",
+  "awaitingUrl_descriptionHint": "Please click the download link for the download URL to be captured and updated automatically.",
+  "urlUpdateError_title": "URL Update Error",
+  "urlUpdateError_description": "The given URL does not refer to the same file!",
+  "urlUpdateSuccess": "URL updated successfully!"
 }

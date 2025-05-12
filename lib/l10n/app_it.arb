@@ -234,5 +234,12 @@
   },
   "whatsNew": "Novità:",
   "btn_later": "Più tardi",
-  "btn_update": "Aggiorna"
+  "btn_update": "Aggiorna",
+  "automaticUrlUpdate": "Aggiornamento automatico dell'URL",
+  "awaitingUrl": "In attesa dell'URL",
+  "awaitingUrl_description": "Sei stato reindirizzato al sito di riferimento di questo file.",
+  "awaitingUrl_descriptionHint": "Clicca sul link di download per catturare e aggiornare automaticamente l'URL di download.",
+  "urlUpdateError_title": "Errore di aggiornamento URL",
+  "urlUpdateError_description": "L'URL fornito non si riferisce allo stesso file!",
+  "urlUpdateSuccess": "URL aggiornato con successo!"
 }

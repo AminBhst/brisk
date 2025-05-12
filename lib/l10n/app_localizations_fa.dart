@@ -663,4 +663,25 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get btn_update => 'به‌روزرسانی';
+
+  @override
+  String get automaticUrlUpdate => 'به‌روزرسانی خودکار لینک دانلود';
+
+  @override
+  String get awaitingUrl => 'در انتظار لینک';
+
+  @override
+  String get awaitingUrl_description => 'شما به سایت مبدا این فایل منتقل شده‌اید';
+
+  @override
+  String get awaitingUrl_descriptionHint => 'برای به‌روزرسانی خودکار لینک، لطفا روی لینک دانلود فایل مورد نظر کلیک کنید';
+
+  @override
+  String get urlUpdateError_title => 'خطای به‌روزرسانی لینک دانلود';
+
+  @override
+  String get urlUpdateError_description => 'لینک دانلود مورد نظر مربوط به این فایل نمی‌باشد!';
+
+  @override
+  String get urlUpdateSuccess => 'لینک دانلود با موفقیت به‌روزرسانی شد!';
 }

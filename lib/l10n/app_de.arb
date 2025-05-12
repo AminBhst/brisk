@@ -233,5 +233,12 @@
   },
   "whatsNew": "Was ist neu:",
   "btn_later": "Später",
-  "btn_update": "Aktualisieren"
+  "btn_update": "Aktualisieren",
+  "automaticUrlUpdate": "Automatische URL-Aktualisierung",
+  "awaitingUrl": "Warte auf URL",
+  "awaitingUrl_description": "Sie wurden zur Verweis-Website dieser Datei weitergeleitet.",
+  "awaitingUrl_descriptionHint": "Bitte klicken Sie auf den Download-Link, damit die Download-URL automatisch erfasst und aktualisiert wird.",
+  "urlUpdateError_title": "Fehler bei der URL-Aktualisierung",
+  "urlUpdateError_description": "Die angegebene URL verweist nicht auf dieselbe Datei!",
+  "urlUpdateSuccess": "URL erfolgreich aktualisiert!"
 }
