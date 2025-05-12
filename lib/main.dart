@@ -258,7 +258,9 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Future<void> onTrayMenuItemClick(MenuItem menuItem) async {
     if (menuItem.key == 'show_window') {
-      await windowManager.setSkipTaskbar(false);
+      if (Platform.isMacOS) {
+        await windowManager.setSkipTaskbar(false);
+      }
       await windowManager.show();
       windowManager.focus();
     } else if (menuItem.key == 'exit_app') {
