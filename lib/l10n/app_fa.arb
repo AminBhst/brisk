@@ -174,5 +174,44 @@
   "installBrowserExtension_opera_step3_subtitle": "داخل سرچ بار اوپرا opera://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید",
   "installBrowserExtension_edge_step3_subtitle": "داخل سرچ بار اج edge://extensions را تایپ کرده و گزینه Developer Mode را که در منوی سمت چپ واقع شده فعال کنید",
   "installBrowserExtension_step4_title": "لود کردن افزونه",
-  "installBrowserExtension_step4_subtitle": "بر روی گزینه 'Load unpacked' کلیک کرده و پوشه حاوی فایل\u200Cهای استخراج شده را انتخاب کنید"
+  "installBrowserExtension_step4_subtitle": "بر روی گزینه 'Load unpacked' کلیک کرده و پوشه حاوی فایل\u200Cهای استخراج شده را انتخاب کنید",
+  "confirmAction": "تایید عملیات",
+  "downloadDeletionConfirmation": "آیا از حذف دانلود های انتخاب شده اطمینان دارید؟",
+  "deletionFromQueueConfirmation": "آیا از حذف دانلودهای انتخابی از صف اطمینان دارید؟",
+  "deleteDownloadedFiles": "حذف فایل\u200Cهای دانلود شده",
+  "btn_deleteConfirm": "حذف",
+  "downloadsInQueue": "{number} دانلود در صف",
+  "@downloadsInQueue": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "btn_createQueue": "ساخت صف",
+  "createNewQueue": "ساخت صف جدید",
+  "queueName": "نام صف",
+  "mainQueue": "صف اصلی",
+  "editQueueItems": "ویرایش صف",
+  "queueIsEmpty": "صف خالی است",
+  "addDownloadToQueue": "اضافه کردن دانلود به صف",
+  "selectQueue": "انتخاب صف",
+  "btn_addToQueue": "اضافه کردن به صف",
+  "deleteQueueConfirmation": "آیا از حذف صف {queue} اطمینان دارید؟",
+  "@deleteQueueConfirmation": {
+    "placeholders": {
+      "queue": {}
+    }
+  },
+  "btn_schedule": "برنامه ریزی",
+  "btn_stopQueue": "توقف صف",
+  "scheduleDownload": "برنامه ریزی دانلود",
+  "startDownloadAt": "شروع دانلود از",
+  "stopDownloadAt": "توقف دانلود",
+  "simultaneousDownloads": "دانلود\u200Cهای همزمان",
+  "shutdownAfterCompletion": "خاموش کردن سیستم بعد از تکمیل دانلود صف",
+  "btn_startNow": "شروع دانلود",
+  "chooseAction": "انتخاب عملیات",
+  "appChooseActionDescription": "لطفا عملیات مورد نظر را انتخاب کنید",
+  "btn_exitApplication": "خروج از برنامه",
+  "btn_minimizeToTray": "پنهان کردن پنجره به نوار وظیفه",
+  "rememberThisDecision": "این تصمیم را به خاطر بسپار"
 }

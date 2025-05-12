@@ -531,8 +531,99 @@ class AppLocalizationsDe extends AppLocalizations {
   String get installBrowserExtension_edge_step3_subtitle => 'Type edge://extensions in the navigation bar and enable developer mode in the left menu';
 
   @override
-  String get installBrowserExtension_step4_title => 'Load Extension';
+  String get installBrowserExtension_step4_title => 'Erweiterung laden';
 
   @override
-  String get installBrowserExtension_step4_subtitle => 'Click on the \'Load unpacked\' button and select the folder in which the package was extracted';
+  String get installBrowserExtension_step4_subtitle => 'Klicke auf die Schaltfläche „Entpackte Erweiterung laden“ und wähle den Ordner aus, in den das Paket extrahiert wurde.';
+
+  @override
+  String get confirmAction => 'Aktion bestätigen';
+
+  @override
+  String get downloadDeletionConfirmation => 'Bist du sicher, dass du die ausgewählten Downloads löschen möchtest?';
+
+  @override
+  String get deletionFromQueueConfirmation => 'Bist du sicher, dass du die ausgewählten Downloads aus der Warteschlange entfernen möchtest?';
+
+  @override
+  String get deleteDownloadedFiles => 'Heruntergeladene Dateien löschen';
+
+  @override
+  String get btn_deleteConfirm => 'Ja, löschen';
+
+  @override
+  String downloadsInQueue(Object number) {
+    return '$number Downloads in der Warteschlange';
+  }
+
+  @override
+  String get btn_createQueue => 'Warteschlange erstellen';
+
+  @override
+  String get createNewQueue => 'Neue Warteschlange erstellen';
+
+  @override
+  String get queueName => 'Name der Warteschlange';
+
+  @override
+  String get mainQueue => 'Hauptwarteschlange';
+
+  @override
+  String get editQueueItems => 'Warteschlangen-Elemente bearbeiten';
+
+  @override
+  String get queueIsEmpty => 'Die Warteschlange ist leer';
+
+  @override
+  String get addDownloadToQueue => 'Download zur Warteschlange hinzufügen';
+
+  @override
+  String get selectQueue => 'Warteschlange auswählen';
+
+  @override
+  String get btn_addToQueue => 'Zur Warteschlange hinzufügen';
+
+  @override
+  String deleteQueueConfirmation(Object queue) {
+    return 'Bist du sicher, dass du die Warteschlange $queue löschen möchtest?';
+  }
+
+  @override
+  String get btn_schedule => 'Planen';
+
+  @override
+  String get btn_stopQueue => 'Warteschlange stoppen';
+
+  @override
+  String get scheduleDownload => 'Download planen';
+
+  @override
+  String get startDownloadAt => 'Download starten um';
+
+  @override
+  String get stopDownloadAt => 'Download stoppen um';
+
+  @override
+  String get simultaneousDownloads => 'Gleichzeitige Downloads';
+
+  @override
+  String get shutdownAfterCompletion => 'Nach Abschluss herunterfahren';
+
+  @override
+  String get btn_startNow => 'Jetzt starten';
+
+  @override
+  String get chooseAction => 'Aktion wählen';
+
+  @override
+  String get appChooseActionDescription => 'Wählen Sie, was Sie mit der Anwendung tun möchten';
+
+  @override
+  String get btn_exitApplication => 'Anwendung beenden';
+
+  @override
+  String get btn_minimizeToTray => 'In die Taskleiste minimieren';
+
+  @override
+  String get rememberThisDecision => 'Diese Entscheidung merken';
 }

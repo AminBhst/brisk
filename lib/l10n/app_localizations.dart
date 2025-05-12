@@ -1154,6 +1154,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Click on the \'Load unpacked\' button and select the folder in which the package was extracted'**
   String get installBrowserExtension_step4_subtitle;
+
+  /// No description provided for @confirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Action'**
+  String get confirmAction;
+
+  /// No description provided for @downloadDeletionConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the selected downloads?'**
+  String get downloadDeletionConfirmation;
+
+  /// No description provided for @deletionFromQueueConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove the selected downloads from the queue?'**
+  String get deletionFromQueueConfirmation;
+
+  /// No description provided for @deleteDownloadedFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete downloaded files'**
+  String get deleteDownloadedFiles;
+
+  /// No description provided for @btn_deleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, Delete'**
+  String get btn_deleteConfirm;
+
+  /// No description provided for @downloadsInQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'{number} Downloads in queue'**
+  String downloadsInQueue(Object number);
+
+  /// No description provided for @btn_createQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Queue'**
+  String get btn_createQueue;
+
+  /// No description provided for @createNewQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Queue'**
+  String get createNewQueue;
+
+  /// No description provided for @queueName.
+  ///
+  /// In en, this message translates to:
+  /// **'Queue Name'**
+  String get queueName;
+
+  /// No description provided for @mainQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Queue'**
+  String get mainQueue;
+
+  /// No description provided for @editQueueItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Queue Items'**
+  String get editQueueItems;
+
+  /// No description provided for @queueIsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Queue is empty'**
+  String get queueIsEmpty;
+
+  /// No description provided for @addDownloadToQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Download To Queue'**
+  String get addDownloadToQueue;
+
+  /// No description provided for @selectQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Queue'**
+  String get selectQueue;
+
+  /// No description provided for @btn_addToQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Add To Queue'**
+  String get btn_addToQueue;
+
+  /// No description provided for @deleteQueueConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {queue} queue?'**
+  String deleteQueueConfirmation(Object queue);
+
+  /// No description provided for @btn_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get btn_schedule;
+
+  /// No description provided for @btn_stopQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Queue'**
+  String get btn_stopQueue;
+
+  /// No description provided for @scheduleDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule Download'**
+  String get scheduleDownload;
+
+  /// No description provided for @startDownloadAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Start download at'**
+  String get startDownloadAt;
+
+  /// No description provided for @stopDownloadAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop download at'**
+  String get stopDownloadAt;
+
+  /// No description provided for @simultaneousDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Simultaneous Downloads'**
+  String get simultaneousDownloads;
+
+  /// No description provided for @shutdownAfterCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Shutdown after completion'**
+  String get shutdownAfterCompletion;
+
+  /// No description provided for @btn_startNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Now'**
+  String get btn_startNow;
+
+  /// No description provided for @chooseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Action'**
+  String get chooseAction;
+
+  /// No description provided for @appChooseActionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what you\'d like to do with the application'**
+  String get appChooseActionDescription;
+
+  /// No description provided for @btn_exitApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Application'**
+  String get btn_exitApplication;
+
+  /// No description provided for @btn_minimizeToTray.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimize To Tray'**
+  String get btn_minimizeToTray;
+
+  /// No description provided for @rememberThisDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember this decision'**
+  String get rememberThisDecision;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

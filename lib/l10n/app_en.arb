@@ -175,5 +175,44 @@
   "installBrowserExtension_opera_step3_subtitle": "Type opera://extensions in the navigation bar and enable developer mode right next to the search bar",
   "installBrowserExtension_edge_step3_subtitle": "Type edge://extensions in the navigation bar and enable developer mode in the left menu",
   "installBrowserExtension_step4_title": "Load Extension",
-  "installBrowserExtension_step4_subtitle": "Click on the 'Load unpacked' button and select the folder in which the package was extracted"
+  "installBrowserExtension_step4_subtitle": "Click on the 'Load unpacked' button and select the folder in which the package was extracted",
+  "confirmAction": "Confirm Action",
+  "downloadDeletionConfirmation": "Are you sure you want to delete the selected downloads?",
+  "deletionFromQueueConfirmation": "Are you sure you want to remove the selected downloads from the queue?",
+  "deleteDownloadedFiles": "Delete downloaded files",
+  "btn_deleteConfirm": "Yes, Delete",
+  "downloadsInQueue": "{number} Downloads in queue",
+  "@downloadsInQueue": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "btn_createQueue": "Create Queue",
+  "createNewQueue": "Create New Queue",
+  "queueName": "Queue Name",
+  "mainQueue": "Main Queue",
+  "editQueueItems": "Edit Queue Items",
+  "queueIsEmpty": "Queue is empty",
+  "addDownloadToQueue": "Add Download To Queue",
+  "selectQueue": "Select Queue",
+  "btn_addToQueue": "Add To Queue",
+  "deleteQueueConfirmation": "Are you sure you want to delete {queue} queue?",
+  "@deleteQueueConfirmation": {
+    "placeholders": {
+      "queue": {}
+    }
+  },
+  "btn_schedule": "Schedule",
+  "btn_stopQueue": "Stop Queue",
+  "scheduleDownload": "Schedule Download",
+  "startDownloadAt": "Start download at",
+  "stopDownloadAt": "Stop download at",
+  "simultaneousDownloads": "Simultaneous Downloads",
+  "shutdownAfterCompletion": "Shutdown after completion",
+  "btn_startNow": "Start Now",
+  "chooseAction": "Choose Action",
+  "appChooseActionDescription": "Choose what you'd like to do with the application",
+  "btn_exitApplication": "Exit Application",
+  "btn_minimizeToTray": "Minimize To Tray",
+  "rememberThisDecision": "Remember this decision"
 }

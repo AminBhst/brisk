@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ class _CheckedBoxedConfirmationDialogState
           ),
           SizedBox(width: 10),
           Text(
-            "Confirm Action",
+            AppLocalizations.of(context)!.confirmAction,
             style: TextStyle(
                 color: theme.textColor,
                 fontWeight: FontWeight.bold,
@@ -107,16 +108,14 @@ class _CheckedBoxedConfirmationDialogState
       actions: [
         RoundedOutlinedButton.fromButtonColor(
           theme.deleteCancelColor,
-          text: "Cancel",
-          width: 80,
+          text: AppLocalizations.of(context)!.btn_cancel,
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         RoundedOutlinedButton.fromButtonColor(
           theme.deleteConfirmColor,
-          text: "Yes, Delete",
-          width: 101,
+          text: AppLocalizations.of(context)!.btn_deleteConfirm,
           onPressed: () {
             Navigator.of(context).pop();
             widget.onConfirmPressed(checkBoxValue!);

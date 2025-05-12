@@ -535,4 +535,95 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get installBrowserExtension_step4_subtitle => 'Click on the \'Load unpacked\' button and select the folder in which the package was extracted';
+
+  @override
+  String get confirmAction => 'Confirm Action';
+
+  @override
+  String get downloadDeletionConfirmation => 'Are you sure you want to delete the selected downloads?';
+
+  @override
+  String get deletionFromQueueConfirmation => 'Are you sure you want to remove the selected downloads from the queue?';
+
+  @override
+  String get deleteDownloadedFiles => 'Delete downloaded files';
+
+  @override
+  String get btn_deleteConfirm => 'Yes, Delete';
+
+  @override
+  String downloadsInQueue(Object number) {
+    return '$number Downloads in queue';
+  }
+
+  @override
+  String get btn_createQueue => 'Create Queue';
+
+  @override
+  String get createNewQueue => 'Create New Queue';
+
+  @override
+  String get queueName => 'Queue Name';
+
+  @override
+  String get mainQueue => 'Main Queue';
+
+  @override
+  String get editQueueItems => 'Edit Queue Items';
+
+  @override
+  String get queueIsEmpty => 'Queue is empty';
+
+  @override
+  String get addDownloadToQueue => 'Add Download To Queue';
+
+  @override
+  String get selectQueue => 'Select Queue';
+
+  @override
+  String get btn_addToQueue => 'Add To Queue';
+
+  @override
+  String deleteQueueConfirmation(Object queue) {
+    return 'Are you sure you want to delete $queue queue?';
+  }
+
+  @override
+  String get btn_schedule => 'Schedule';
+
+  @override
+  String get btn_stopQueue => 'Stop Queue';
+
+  @override
+  String get scheduleDownload => 'Schedule Download';
+
+  @override
+  String get startDownloadAt => 'Start download at';
+
+  @override
+  String get stopDownloadAt => 'Stop download at';
+
+  @override
+  String get simultaneousDownloads => 'Simultaneous Downloads';
+
+  @override
+  String get shutdownAfterCompletion => 'Shutdown after completion';
+
+  @override
+  String get btn_startNow => 'Start Now';
+
+  @override
+  String get chooseAction => 'Choose Action';
+
+  @override
+  String get appChooseActionDescription => 'Choose what you\'d like to do with the application';
+
+  @override
+  String get btn_exitApplication => 'Exit Application';
+
+  @override
+  String get btn_minimizeToTray => 'Minimize To Tray';
+
+  @override
+  String get rememberThisDecision => 'Remember this decision';
 }

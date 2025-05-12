@@ -535,4 +535,95 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get installBrowserExtension_step4_subtitle => 'Clicca sul pulsante \'Carica estensione non pacchettizzata\' e seleziona la cartella dove hai estratto il pacchetto';
+
+  @override
+  String get confirmAction => 'Conferma azione';
+
+  @override
+  String get downloadDeletionConfirmation => 'Sei sicuro di voler eliminare i download selezionati?';
+
+  @override
+  String get deletionFromQueueConfirmation => 'Sei sicuro di voler rimuovere i download selezionati dalla coda?';
+
+  @override
+  String get deleteDownloadedFiles => 'Elimina i file scaricati';
+
+  @override
+  String get btn_deleteConfirm => 'Sì, elimina';
+
+  @override
+  String downloadsInQueue(Object number) {
+    return '$number download in coda';
+  }
+
+  @override
+  String get btn_createQueue => 'Crea coda';
+
+  @override
+  String get createNewQueue => 'Crea nuova coda';
+
+  @override
+  String get queueName => 'Nome della coda';
+
+  @override
+  String get mainQueue => 'Coda principale';
+
+  @override
+  String get editQueueItems => 'Modifica elementi della coda';
+
+  @override
+  String get queueIsEmpty => 'La coda è vuota';
+
+  @override
+  String get addDownloadToQueue => 'Aggiungi download alla coda';
+
+  @override
+  String get selectQueue => 'Seleziona coda';
+
+  @override
+  String get btn_addToQueue => 'Aggiungi alla coda';
+
+  @override
+  String deleteQueueConfirmation(Object queue) {
+    return 'Sei sicuro di voler eliminare la coda $queue?';
+  }
+
+  @override
+  String get btn_schedule => 'Pianifica';
+
+  @override
+  String get btn_stopQueue => 'Ferma coda';
+
+  @override
+  String get scheduleDownload => 'Pianifica download';
+
+  @override
+  String get startDownloadAt => 'Inizia il download alle';
+
+  @override
+  String get stopDownloadAt => 'Ferma il download alle';
+
+  @override
+  String get simultaneousDownloads => 'Download simultanei';
+
+  @override
+  String get shutdownAfterCompletion => 'Spegni dopo il completamento';
+
+  @override
+  String get btn_startNow => 'Avvia ora';
+
+  @override
+  String get chooseAction => 'Scegli un\'azione';
+
+  @override
+  String get appChooseActionDescription => 'Scegli cosa vuoi fare con l\'applicazione';
+
+  @override
+  String get btn_exitApplication => 'Esci dall\'applicazione';
+
+  @override
+  String get btn_minimizeToTray => 'Minimizza nella tray';
+
+  @override
+  String get rememberThisDecision => 'Ricorda questa decisione';
 }

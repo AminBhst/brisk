@@ -172,5 +172,46 @@
   "installBrowserExtension_step2_subtitle": "Entpacken Sie das heruntergeladene Paket an einem gewünschten Ort",
   "installBrowserExtension_step3_title": "Entwicklermodus aktivieren",
   "installBrowserExtension_chrome_step3_subtitle": "Geben Sie chrome://extensions in die Adressleiste ein und aktivieren Sie den Entwicklermodus neben der Suchleiste",
-  "installBrowserExtension_opera_step3_subtitle": "Geben Sie opera://extensions in die Adressleiste ein und aktivieren Sie den Entwicklermodus neben der Suchleiste"
+  "installBrowserExtension_opera_step3_subtitle": "Geben Sie opera://extensions in die Adressleiste ein und aktivieren Sie den Entwicklermodus neben der Suchleiste",
+  "installBrowserExtension_step4_title": "Erweiterung laden",
+  "installBrowserExtension_step4_subtitle": "Klicke auf die Schaltfläche „Entpackte Erweiterung laden“ und wähle den Ordner aus, in den das Paket extrahiert wurde.",
+  "confirmAction": "Aktion bestätigen",
+  "downloadDeletionConfirmation": "Bist du sicher, dass du die ausgewählten Downloads löschen möchtest?",
+  "deletionFromQueueConfirmation": "Bist du sicher, dass du die ausgewählten Downloads aus der Warteschlange entfernen möchtest?",
+  "deleteDownloadedFiles": "Heruntergeladene Dateien löschen",
+  "btn_deleteConfirm": "Ja, löschen",
+  "downloadsInQueue": "{number} Downloads in der Warteschlange",
+  "@downloadsInQueue": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "btn_createQueue": "Warteschlange erstellen",
+  "createNewQueue": "Neue Warteschlange erstellen",
+  "queueName": "Name der Warteschlange",
+  "mainQueue": "Hauptwarteschlange",
+  "editQueueItems": "Warteschlangen-Elemente bearbeiten",
+  "queueIsEmpty": "Die Warteschlange ist leer",
+  "addDownloadToQueue": "Download zur Warteschlange hinzufügen",
+  "selectQueue": "Warteschlange auswählen",
+  "btn_addToQueue": "Zur Warteschlange hinzufügen",
+  "deleteQueueConfirmation": "Bist du sicher, dass du die Warteschlange {queue} löschen möchtest?",
+  "@deleteQueueConfirmation": {
+    "placeholders": {
+      "queue": {}
+    }
+  },
+  "btn_schedule": "Planen",
+  "btn_stopQueue": "Warteschlange stoppen",
+  "scheduleDownload": "Download planen",
+  "startDownloadAt": "Download starten um",
+  "stopDownloadAt": "Download stoppen um",
+  "simultaneousDownloads": "Gleichzeitige Downloads",
+  "shutdownAfterCompletion": "Nach Abschluss herunterfahren",
+  "btn_startNow": "Jetzt starten",
+  "chooseAction": "Aktion wählen",
+  "appChooseActionDescription": "Wählen Sie, was Sie mit der Anwendung tun möchten",
+  "btn_exitApplication": "Anwendung beenden",
+  "btn_minimizeToTray": "In die Taskleiste minimieren",
+  "rememberThisDecision": "Diese Entscheidung merken"
 }

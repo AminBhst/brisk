@@ -14,6 +14,7 @@ class RoundedOutlinedButton extends StatefulWidget {
   final double borderRadius;
   final Widget? icon;
   final MainAxisAlignment mainAxisAlignment;
+  final MainAxisSize mainAxisSize;
 
   RoundedOutlinedButton({
     Key? key,
@@ -29,6 +30,7 @@ class RoundedOutlinedButton extends StatefulWidget {
     this.borderRadius = 8.0,
     this.icon = null,
     this.mainAxisAlignment = MainAxisAlignment.center,
+    this.mainAxisSize = MainAxisSize.min,
   }) : super(key: key);
 
   factory RoundedOutlinedButton.fromButtonColor(
@@ -92,7 +94,7 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
         ),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min, // <- shrink-wrap
+        mainAxisSize: widget.mainAxisSize,
         mainAxisAlignment: widget.mainAxisAlignment,
         children: [
           if (widget.icon != null) widget.icon!,

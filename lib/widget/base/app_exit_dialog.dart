@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class _AppExitDialogState extends State<AppExitDialog> {
   Widget build(BuildContext context) {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
+    final loc = AppLocalizations.of(context)!;
     return AlertDialog(
       backgroundColor: theme.backgroundColor,
       surfaceTintColor: theme.backgroundColor,
@@ -52,7 +54,7 @@ class _AppExitDialogState extends State<AppExitDialog> {
           ),
           SizedBox(width: 10),
           Text(
-            "Choose Action",
+            loc.chooseAction,
             style: TextStyle(
               color: theme.textColor,
               fontWeight: FontWeight.bold,
@@ -68,15 +70,14 @@ class _AppExitDialogState extends State<AppExitDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
-              "Choose what you'd like to do with the application",
-            ),
+            Text(loc.appChooseActionDescription),
             const SizedBox(height: 20),
             Column(
               children: [
                 RoundedOutlinedButton(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  text: "Exit Application",
+                  text: loc.btn_exitApplication,
+                  mainAxisSize: MainAxisSize.max,
                   icon: Icon(
                     Icons.power_settings_new_rounded,
                     color: Colors.white54,
@@ -95,7 +96,8 @@ class _AppExitDialogState extends State<AppExitDialog> {
                 SizedBox(height: 10),
                 RoundedOutlinedButton(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  text: "Minimize To System Tray",
+                  mainAxisSize: MainAxisSize.max,
+                  text: loc.btn_minimizeToTray,
                   height: 45,
                   icon: Icon(Icons.minimize_rounded, color: Colors.white54),
                   textColor: Colors.white,
@@ -111,7 +113,8 @@ class _AppExitDialogState extends State<AppExitDialog> {
                 SizedBox(height: 10),
                 RoundedOutlinedButton(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  text: "Cancel",
+                  mainAxisSize: MainAxisSize.max,
+                  text: loc.btn_cancel,
                   height: 45,
                   icon: Icon(Icons.close_rounded, color: Colors.white54),
                   textColor: Colors.white,
@@ -138,7 +141,7 @@ class _AppExitDialogState extends State<AppExitDialog> {
                         () => rememberChecked = value!,
                       ),
                     ),
-                    Text("Remember this decision"),
+                    Text(loc.rememberThisDecision),
                   ],
                 )
               ],

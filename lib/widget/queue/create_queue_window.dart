@@ -1,4 +1,5 @@
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
@@ -21,6 +22,7 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     return AlertDialog(
@@ -29,7 +31,7 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
         borderRadius: BorderRadius.circular(10),
       ),
       title: Text(
-        "Create New Queue",
+        loc.createNewQueue,
         style: TextStyle(
             color: theme.textColor, fontWeight: FontWeight.bold, fontSize: 20),
       ),
@@ -40,7 +42,7 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text("Queue Name"),
+            Text(loc.queueName),
             const SizedBox(height: 10),
             SizedBox(
               width: 400,
@@ -52,14 +54,12 @@ class _CreateQueueWindowState extends State<CreateQueueWindow> {
       actions: [
         RoundedOutlinedButton.fromButtonColor(
           theme.cancelButtonColor,
-          text: "Cancel",
-          width: 80,
+          text: loc.btn_cancel,
           onPressed: () => Navigator.of(context).pop(),
         ),
         RoundedOutlinedButton.fromButtonColor(
           theme.addButtonColor,
-          text: "Create Queue",
-          width: 120,
+          text: loc.btn_createQueue,
           onPressed: () => onCreatePressed(context),
         ),
       ],

@@ -1,4 +1,5 @@
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
@@ -24,10 +25,11 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
     setDownloadQueues();
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
+    final loc = AppLocalizations.of(context)!;
     return AlertDialog(
       backgroundColor: theme.backgroundColor,
       title: Text(
-        "Add Download To Queue",
+        loc.addDownloadToQueue,
         style: TextStyle(
             color: theme.textColor, fontWeight: FontWeight.bold, fontSize: 20),
       ),
@@ -38,7 +40,7 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Select Queue"),
+            Text(loc.selectQueue),
             const SizedBox(height: 10),
             SizedBox(
               width: 400,
@@ -64,14 +66,12 @@ class _AddToQueueWindowState extends State<AddToQueueWindow> {
       actions: [
         RoundedOutlinedButton.fromButtonColor(
           theme.cancelButtonColor,
-          text: "Cancel",
-          width: 80,
+          text: loc.btn_cancel,
           onPressed: () => Navigator.of(context).pop(),
         ),
         RoundedOutlinedButton.fromButtonColor(
           theme.addButtonColor,
-          text: "Add To Queue",
-          width: 130,
+          text: loc.btn_addToQueue,
           onPressed: onAddPressed,
         ),
       ],

@@ -535,4 +535,95 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get installBrowserExtension_step4_subtitle => 'بر روی گزینه \'Load unpacked\' کلیک کرده و پوشه حاوی فایل‌های استخراج شده را انتخاب کنید';
+
+  @override
+  String get confirmAction => 'تایید عملیات';
+
+  @override
+  String get downloadDeletionConfirmation => 'آیا از حذف دانلود های انتخاب شده اطمینان دارید؟';
+
+  @override
+  String get deletionFromQueueConfirmation => 'آیا از حذف دانلودهای انتخابی از صف اطمینان دارید؟';
+
+  @override
+  String get deleteDownloadedFiles => 'حذف فایل‌های دانلود شده';
+
+  @override
+  String get btn_deleteConfirm => 'حذف';
+
+  @override
+  String downloadsInQueue(Object number) {
+    return '$number دانلود در صف';
+  }
+
+  @override
+  String get btn_createQueue => 'ساخت صف';
+
+  @override
+  String get createNewQueue => 'ساخت صف جدید';
+
+  @override
+  String get queueName => 'نام صف';
+
+  @override
+  String get mainQueue => 'صف اصلی';
+
+  @override
+  String get editQueueItems => 'ویرایش صف';
+
+  @override
+  String get queueIsEmpty => 'صف خالی است';
+
+  @override
+  String get addDownloadToQueue => 'اضافه کردن دانلود به صف';
+
+  @override
+  String get selectQueue => 'انتخاب صف';
+
+  @override
+  String get btn_addToQueue => 'اضافه کردن به صف';
+
+  @override
+  String deleteQueueConfirmation(Object queue) {
+    return 'آیا از حذف صف $queue اطمینان دارید؟';
+  }
+
+  @override
+  String get btn_schedule => 'برنامه ریزی';
+
+  @override
+  String get btn_stopQueue => 'توقف صف';
+
+  @override
+  String get scheduleDownload => 'برنامه ریزی دانلود';
+
+  @override
+  String get startDownloadAt => 'شروع دانلود از';
+
+  @override
+  String get stopDownloadAt => 'توقف دانلود';
+
+  @override
+  String get simultaneousDownloads => 'دانلود‌های همزمان';
+
+  @override
+  String get shutdownAfterCompletion => 'خاموش کردن سیستم بعد از تکمیل دانلود صف';
+
+  @override
+  String get btn_startNow => 'شروع دانلود';
+
+  @override
+  String get chooseAction => 'انتخاب عملیات';
+
+  @override
+  String get appChooseActionDescription => 'لطفا عملیات مورد نظر را انتخاب کنید';
+
+  @override
+  String get btn_exitApplication => 'خروج از برنامه';
+
+  @override
+  String get btn_minimizeToTray => 'پنهان کردن پنجره به نوار وظیفه';
+
+  @override
+  String get rememberThisDecision => 'این تصمیم را به خاطر بسپار';
 }

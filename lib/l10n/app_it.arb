@@ -175,5 +175,44 @@
   "installBrowserExtension_opera_step3_subtitle": "Digita opera://extensions nella barra degli indirizzi e abilita la modalità sviluppatore accanto alla barra di ricerca",
   "installBrowserExtension_edge_step3_subtitle": "Digita edge://extensions nella barra degli indirizzi e abilita la modalità sviluppatore nel menu a sinistra",
   "installBrowserExtension_step4_title": "Carica estensione",
-  "installBrowserExtension_step4_subtitle": "Clicca sul pulsante 'Carica estensione non pacchettizzata' e seleziona la cartella dove hai estratto il pacchetto"
+  "installBrowserExtension_step4_subtitle": "Clicca sul pulsante 'Carica estensione non pacchettizzata' e seleziona la cartella dove hai estratto il pacchetto",
+  "confirmAction": "Conferma azione",
+  "downloadDeletionConfirmation": "Sei sicuro di voler eliminare i download selezionati?",
+  "deletionFromQueueConfirmation": "Sei sicuro di voler rimuovere i download selezionati dalla coda?",
+  "deleteDownloadedFiles": "Elimina i file scaricati",
+  "btn_deleteConfirm": "Sì, elimina",
+  "downloadsInQueue": "{number} download in coda",
+  "@downloadsInQueue": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "btn_createQueue": "Crea coda",
+  "createNewQueue": "Crea nuova coda",
+  "queueName": "Nome della coda",
+  "mainQueue": "Coda principale",
+  "editQueueItems": "Modifica elementi della coda",
+  "queueIsEmpty": "La coda è vuota",
+  "addDownloadToQueue": "Aggiungi download alla coda",
+  "selectQueue": "Seleziona coda",
+  "btn_addToQueue": "Aggiungi alla coda",
+  "deleteQueueConfirmation": "Sei sicuro di voler eliminare la coda {queue}?",
+  "@deleteQueueConfirmation": {
+    "placeholders": {
+      "queue": {}
+    }
+  },
+  "btn_schedule": "Pianifica",
+  "btn_stopQueue": "Ferma coda",
+  "scheduleDownload": "Pianifica download",
+  "startDownloadAt": "Inizia il download alle",
+  "stopDownloadAt": "Ferma il download alle",
+  "simultaneousDownloads": "Download simultanei",
+  "shutdownAfterCompletion": "Spegni dopo il completamento",
+  "btn_startNow": "Avvia ora",
+  "chooseAction": "Scegli un'azione",
+  "appChooseActionDescription": "Scegli cosa vuoi fare con l'applicazione",
+  "btn_exitApplication": "Esci dall'applicazione",
+  "btn_minimizeToTray": "Minimizza nella tray",
+  "rememberThisDecision": "Ricorda questa decisione"
 }
