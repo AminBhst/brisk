@@ -188,7 +188,9 @@ class _MyHomePageState extends State<MyHomePage>
           }
           initTray();
           windowManager.hide();
-          windowManager.setSkipTaskbar(true);
+          if (Platform.isLinux) {
+            windowManager.setSkipTaskbar(true);
+          }
         },
       ),
     );
