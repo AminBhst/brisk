@@ -188,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage>
           }
           initTray();
           windowManager.hide();
-          if (Platform.isLinux) {
+          if (Platform.isMacOS) {
             windowManager.setSkipTaskbar(true);
           }
         },
