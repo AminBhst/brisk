@@ -29,7 +29,6 @@ class _SettingsSideMenuItemState extends State<SettingsSideMenuItem> {
         .activeTheme
         .settingTheme
         .sideMenuTheme;
-    final size = MediaQuery.of(context).size;
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
@@ -37,7 +36,7 @@ class _SettingsSideMenuItemState extends State<SettingsSideMenuItem> {
         onTap: () => provider.setSelectedSettingsTab(widget.tabId),
         child: Container(
           height: 40,
-          width: 150,
+          width: 160,
           decoration: BoxDecoration(
             color: isTabSelected
                 ? sideMenuTheme.activeTabBackgroundColor
@@ -54,7 +53,7 @@ class _SettingsSideMenuItemState extends State<SettingsSideMenuItem> {
                       : sideMenuTheme.inactiveTabIconColor,
                 ),
                 SizedBox(width: 10),
-                Text(widget.title)
+                Text(widget.title, overflow: TextOverflow.ellipsis,)
               ],
             ),
           ),

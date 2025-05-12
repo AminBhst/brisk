@@ -75,7 +75,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     height: resolveDialogHeight(size) - 144,
                     child: SingleChildScrollView(
                       child: SizedBox(
-                        width: 150,
+                        width: 160,
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
