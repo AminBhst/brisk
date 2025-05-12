@@ -14,6 +14,7 @@ If you're interested in adding support for your language, please open an issue.
 - Download Engine bug fixes and improvements
 - Fixed failing to retrieve file info for multiple selected links from the browser
 - Added automatic URL update feature [#66](https://github.com/Brisk-Apps/brisk/issues/66)
+- Added browser extension installation guide in the UI
 - Minor UI fixes
 
 ## :heart: Credits
