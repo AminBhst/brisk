@@ -214,5 +214,25 @@
   "appChooseActionDescription": "Scegli cosa vuoi fare con l'applicazione",
   "btn_exitApplication": "Esci dall'applicazione",
   "btn_minimizeToTray": "Minimizza nella tray",
-  "rememberThisDecision": "Ricorda questa decisione"
+  "rememberThisDecision": "Ricorda questa decisione",
+  "shutdownWarning_title": "Avviso di Spegnimento",
+  "shutdownWarning_description": "Il tuo PC si spegnerà tra {seconds} secondi",
+  "btn_cancelShutdown": "Annulla Spegnimento",
+  "btn_shutdownNow": "Spegni Ora",
+  "@shutdownWarning": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "extensionUpdateAvailable": "Aggiornamento dell'estensione disponibile",
+  "updateAvailable": "Aggiornamento disponibile",
+  "updateAvailable_description": "È disponibile una nuova versione di {target}.\nVuoi aggiornare ora?",
+  "@updateAvailable_description": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "whatsNew": "Novità:",
+  "btn_later": "Più tardi",
+  "btn_update": "Aggiorna"
 }

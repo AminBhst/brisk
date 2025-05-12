@@ -125,7 +125,7 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
       ),
       height: 400,
       scrollviewHeight: 300,
-      backgroundColor: theme.queuePageTheme.backgroundColor,
+      backgroundColor: theme.alertDialogTheme.backgroundColor,
       borderRadius: 10,
       width: 400,
       content: Padding(
@@ -207,7 +207,6 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
         RoundedOutlinedButton.fromButtonColor(
           theme.alertDialogTheme.addButtonColor,
           text: startDateEnabled ? loc.btn_schedule : loc.btn_startNow,
-          width: 110,
           onPressed: () {
             widget.onAcceptClicked(
               shutdownAfterCompletion: shutdownEnabled,

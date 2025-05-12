@@ -99,6 +99,12 @@ abstract class AppLocalizations {
     Locale('it')
   ];
 
+  /// No description provided for @application.
+  ///
+  /// In en, this message translates to:
+  /// **'application'**
+  String get application;
+
   /// No description provided for @language.
   ///
   /// In en, this message translates to:
@@ -1328,6 +1334,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remember this decision'**
   String get rememberThisDecision;
+
+  /// No description provided for @shutdownWarning_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Shutdown Warning'**
+  String get shutdownWarning_title;
+
+  /// No description provided for @shutdownWarning_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Your PC will shutdown in {seconds} seconds'**
+  String shutdownWarning_description(Object seconds);
+
+  /// No description provided for @btn_cancelShutdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Shutdown'**
+  String get btn_cancelShutdown;
+
+  /// No description provided for @btn_shutdownNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Shutdown Now'**
+  String get btn_shutdownNow;
+
+  /// No description provided for @extensionUpdateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Extension Update Available'**
+  String get extensionUpdateAvailable;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Available'**
+  String get updateAvailable;
+
+  /// No description provided for @updateAvailable_description.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of the {target} is available.\nWould you like to update now?'**
+  String updateAvailable_description(Object target);
+
+  /// No description provided for @whatsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s New:'**
+  String get whatsNew;
+
+  /// No description provided for @btn_later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get btn_later;
+
+  /// No description provided for @btn_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get btn_update;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

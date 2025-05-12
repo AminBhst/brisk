@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+  "application": "application",
   "language": "Language",
   "noUpdateAvailable": "No new update is available yet",
   "addUrl": "Add URL",
@@ -214,5 +215,25 @@
   "appChooseActionDescription": "Choose what you'd like to do with the application",
   "btn_exitApplication": "Exit Application",
   "btn_minimizeToTray": "Minimize To Tray",
-  "rememberThisDecision": "Remember this decision"
+  "rememberThisDecision": "Remember this decision",
+  "shutdownWarning_title": "Shutdown Warning",
+  "shutdownWarning_description": "Your PC will shutdown in {seconds} seconds",
+  "btn_cancelShutdown": "Cancel Shutdown",
+  "btn_shutdownNow": "Shutdown Now",
+  "@shutdownWarning": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "extensionUpdateAvailable": "Extension Update Available",
+  "updateAvailable": "Update Available",
+  "updateAvailable_description": "A new version of the {target} is available.\nWould you like to update now?",
+  "@updateAvailable_description": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "whatsNew": "What's New:",
+  "btn_later": "Later",
+  "btn_update": "Update"
 }

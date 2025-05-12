@@ -9,6 +9,9 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get application => 'application';
+
+  @override
   String get language => 'Sprache';
 
   @override
@@ -626,4 +629,38 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get rememberThisDecision => 'Diese Entscheidung merken';
+
+  @override
+  String get shutdownWarning_title => 'Herunterfahr-Warnung';
+
+  @override
+  String shutdownWarning_description(Object seconds) {
+    return 'Ihr PC wird in $seconds Sekunden heruntergefahren';
+  }
+
+  @override
+  String get btn_cancelShutdown => 'Herunterfahren abbrechen';
+
+  @override
+  String get btn_shutdownNow => 'Jetzt herunterfahren';
+
+  @override
+  String get extensionUpdateAvailable => 'Erweiterungs-Update verfügbar';
+
+  @override
+  String get updateAvailable => 'Update verfügbar';
+
+  @override
+  String updateAvailable_description(Object target) {
+    return 'Eine neue Version von $target ist verfügbar.\nMöchten Sie jetzt aktualisieren?';
+  }
+
+  @override
+  String get whatsNew => 'Was ist neu:';
+
+  @override
+  String get btn_later => 'Später';
+
+  @override
+  String get btn_update => 'Aktualisieren';
 }

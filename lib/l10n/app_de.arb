@@ -213,5 +213,25 @@
   "appChooseActionDescription": "Wählen Sie, was Sie mit der Anwendung tun möchten",
   "btn_exitApplication": "Anwendung beenden",
   "btn_minimizeToTray": "In die Taskleiste minimieren",
-  "rememberThisDecision": "Diese Entscheidung merken"
+  "rememberThisDecision": "Diese Entscheidung merken",
+  "shutdownWarning_title": "Herunterfahr-Warnung",
+  "shutdownWarning_description": "Ihr PC wird in {seconds} Sekunden heruntergefahren",
+  "btn_cancelShutdown": "Herunterfahren abbrechen",
+  "btn_shutdownNow": "Jetzt herunterfahren",
+  "@shutdownWarning": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "extensionUpdateAvailable": "Erweiterungs-Update verfügbar",
+  "updateAvailable": "Update verfügbar",
+  "updateAvailable_description": "Eine neue Version von {target} ist verfügbar.\nMöchten Sie jetzt aktualisieren?",
+  "@updateAvailable_description": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "whatsNew": "Was ist neu:",
+  "btn_later": "Später",
+  "btn_update": "Aktualisieren"
 }

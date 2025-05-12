@@ -84,7 +84,6 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
       buttons: [
         RoundedOutlinedButton(
           text: loc.btn_cancel,
-          width: 80,
           onPressed: () => Navigator.of(context).pop(),
           backgroundColor: Color.fromRGBO(63, 19, 19, 0.5),
           hoverBackgroundColor: Color.fromRGBO(244, 67, 54, 0.6),
@@ -183,7 +182,6 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
                   size: 18,
                 ),
                 text: loc.btn_download,
-                width: 120,
                 onPressed: () => _onDownloadPressed(streamInf, context),
                 backgroundColor:
                     theme.downloadInfoDialogTheme.downloadColor.backgroundColor,

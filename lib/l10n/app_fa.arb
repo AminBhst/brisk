@@ -213,5 +213,25 @@
   "appChooseActionDescription": "لطفا عملیات مورد نظر را انتخاب کنید",
   "btn_exitApplication": "خروج از برنامه",
   "btn_minimizeToTray": "پنهان کردن پنجره به نوار وظیفه",
-  "rememberThisDecision": "این تصمیم را به خاطر بسپار"
+  "rememberThisDecision": "این تصمیم را به خاطر بسپار",
+  "shutdownWarning_title": "اخطار خاموشی سیستم",
+  "shutdownWarning_description": "سیستم شما تا {seconds} ثانیه دیگر خاموش میشود",
+  "btn_cancelShutdown": "لغو خاموشی",
+  "btn_shutdownNow": "الان خاموش کن",
+  "@shutdownWarning": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "extensionUpdateAvailable": "ورژن جدید افزونه مرورگر در دسترس است",
+  "updateAvailable": "ورژن جدید در دسترس است",
+  "updateAvailable_description": "ورژن جدید {target} در دسترس است.\n\"آیا می\u200Cخواهید اکنون به\u200Cروزرسانی کنید؟",
+  "@updateAvailable_description": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "whatsNew": "ویژگی\u200Cهای جدید:",
+  "btn_later": "بعدا",
+  "btn_update": "به\u200Cروزرسانی"
 }

@@ -9,6 +9,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get application => 'application';
+
+  @override
   String get language => 'Language';
 
   @override
@@ -626,4 +629,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rememberThisDecision => 'Remember this decision';
+
+  @override
+  String get shutdownWarning_title => 'Shutdown Warning';
+
+  @override
+  String shutdownWarning_description(Object seconds) {
+    return 'Your PC will shutdown in $seconds seconds';
+  }
+
+  @override
+  String get btn_cancelShutdown => 'Cancel Shutdown';
+
+  @override
+  String get btn_shutdownNow => 'Shutdown Now';
+
+  @override
+  String get extensionUpdateAvailable => 'Extension Update Available';
+
+  @override
+  String get updateAvailable => 'Update Available';
+
+  @override
+  String updateAvailable_description(Object target) {
+    return 'A new version of the $target is available.\nWould you like to update now?';
+  }
+
+  @override
+  String get whatsNew => 'What\'s New:';
+
+  @override
+  String get btn_later => 'Later';
+
+  @override
+  String get btn_update => 'Update';
 }

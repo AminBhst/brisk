@@ -9,6 +9,9 @@ class AppLocalizationsFa extends AppLocalizations {
   AppLocalizationsFa([String locale = 'fa']) : super(locale);
 
   @override
+  String get application => 'application';
+
+  @override
   String get language => 'زبان';
 
   @override
@@ -626,4 +629,38 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get rememberThisDecision => 'این تصمیم را به خاطر بسپار';
+
+  @override
+  String get shutdownWarning_title => 'اخطار خاموشی سیستم';
+
+  @override
+  String shutdownWarning_description(Object seconds) {
+    return 'سیستم شما تا $seconds ثانیه دیگر خاموش میشود';
+  }
+
+  @override
+  String get btn_cancelShutdown => 'لغو خاموشی';
+
+  @override
+  String get btn_shutdownNow => 'الان خاموش کن';
+
+  @override
+  String get extensionUpdateAvailable => 'ورژن جدید افزونه مرورگر در دسترس است';
+
+  @override
+  String get updateAvailable => 'ورژن جدید در دسترس است';
+
+  @override
+  String updateAvailable_description(Object target) {
+    return 'ورژن جدید $target در دسترس است.\n\"آیا می‌خواهید اکنون به‌روزرسانی کنید؟';
+  }
+
+  @override
+  String get whatsNew => 'ویژگی‌های جدید:';
+
+  @override
+  String get btn_later => 'بعدا';
+
+  @override
+  String get btn_update => 'به‌روزرسانی';
 }

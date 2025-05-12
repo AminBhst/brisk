@@ -76,13 +76,11 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
           RoundedOutlinedButton.fromButtonColor(
             theme.cancelButtonColor,
             text: loc.btn_cancel,
-            width: 80,
             onPressed: () => _onCancelPressed(context),
           ),
           RoundedOutlinedButton.fromButtonColor(
             theme.addButtonColor,
             text: widget.updateDialog ? loc.btn_updateUrl : loc.btn_addUrl,
-            width: 120,
             onPressed: () => _onAddPressed(context),
           ),
         ],

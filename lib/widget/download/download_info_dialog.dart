@@ -288,7 +288,6 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                 RoundedOutlinedButton.fromButtonColor(
                   theme.downloadInfoDialogTheme.downloadColor,
                   text: loc.btn_download,
-                  width: 100,
                   onPressed: () => _onDownloadPressed(context),
                 ),
               ],
@@ -301,7 +300,6 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                 RoundedOutlinedButton.fromButtonColor(
                   theme.downloadInfoDialogTheme.openFileLocationColor,
                   text: loc.btn_openFileLocation,
-                  width: 151,
                   onPressed: () {
                     openFileLocation(widget.downloadItem);
                     Navigator.of(context).pop();
@@ -309,7 +307,6 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                 ),
                 const SizedBox(width: 10),
                 RoundedOutlinedButton(
-                  width: 110,
                   text: loc.btn_openFile,
                   onPressed: () {
                     launchUrlString("file:${widget.downloadItem.filePath}");

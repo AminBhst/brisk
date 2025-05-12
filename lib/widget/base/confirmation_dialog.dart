@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class ConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
+    final loc = AppLocalizations.of(context)!;
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -70,8 +72,7 @@ class ConfirmationDialog extends StatelessWidget {
       actions: [
         RoundedOutlinedButton.fromButtonColor(
           theme.deleteCancelColor,
-          text: "Cancel",
-          width: 80,
+          text: loc.btn_cancel,
           onPressed: () {
             Navigator.of(context).pop();
           },

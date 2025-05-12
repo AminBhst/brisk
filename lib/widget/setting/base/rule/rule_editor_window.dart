@@ -106,7 +106,6 @@ class _RuleEditorWindowState<T extends FileRule>
                 RoundedOutlinedButton.fromButtonColor(
                   theme.alertDialogTheme.cancelButtonColor,
                   onPressed: () => Navigator.of(context).pop(),
-                  width: 95,
                   text: loc.btn_cancel,
                 ),
                 const SizedBox(width: 30),
@@ -116,7 +115,6 @@ class _RuleEditorWindowState<T extends FileRule>
                     widget.onSavePressed(widget.rules);
                     Navigator.of(context).pop();
                   },
-                  width: 95,
                   text: loc.btn_save,
                 ),
               ],

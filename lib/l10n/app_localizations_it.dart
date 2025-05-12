@@ -9,6 +9,9 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get application => 'application';
+
+  @override
   String get language => 'Lingua';
 
   @override
@@ -626,4 +629,38 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get rememberThisDecision => 'Ricorda questa decisione';
+
+  @override
+  String get shutdownWarning_title => 'Avviso di Spegnimento';
+
+  @override
+  String shutdownWarning_description(Object seconds) {
+    return 'Il tuo PC si spegnerà tra $seconds secondi';
+  }
+
+  @override
+  String get btn_cancelShutdown => 'Annulla Spegnimento';
+
+  @override
+  String get btn_shutdownNow => 'Spegni Ora';
+
+  @override
+  String get extensionUpdateAvailable => 'Aggiornamento dell\'estensione disponibile';
+
+  @override
+  String get updateAvailable => 'Aggiornamento disponibile';
+
+  @override
+  String updateAvailable_description(Object target) {
+    return 'È disponibile una nuova versione di $target.\nVuoi aggiornare ora?';
+  }
+
+  @override
+  String get whatsNew => 'Novità:';
+
+  @override
+  String get btn_later => 'Più tardi';
+
+  @override
+  String get btn_update => 'Aggiorna';
 }
