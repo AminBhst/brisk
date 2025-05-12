@@ -12,6 +12,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get language => 'Lingua';
 
   @override
+  String get noUpdateAvailable => 'Nessun nuovo aggiornamento disponibile al momento';
+
+  @override
   String get addUrl => 'Aggiungi URL';
 
   @override
@@ -481,4 +484,55 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get availableDownloads => 'Download disponibili';
+
+  @override
+  String get installationGuide => 'Guida all\'installazione';
+
+  @override
+  String get installBrowserExtension_title => 'Installa l\'estensione del browser';
+
+  @override
+  String get installTheBrowserExtension_description => 'Scegli il tuo browser per installare l\'estensione di Brisk e catturare i download dal browser';
+
+  @override
+  String get installTheBrowserExtension_description_subtitle => 'A causa di restrizioni, l\'estensione è disponibile solo nello store ufficiale per Firefox. Per altri browser è necessaria l\'installazione manuale. Speriamo che in futuro l\'estensione sarà disponibile per tutti i browser nei rispettivi siti ufficiali.';
+
+  @override
+  String get installBrowserExtensionGuide_title => 'Guida all\'installazione';
+
+  @override
+  String get downloadExtension => 'Scarica estensione';
+
+  @override
+  String get installBrowserExtension_chrome_step1_subtitle => 'Clicca sul pulsante qui sotto per scaricare il pacchetto dell\'estensione per Chrome';
+
+  @override
+  String get installBrowserExtension_edge_step1_subtitle => 'Clicca sul pulsante qui sotto per scaricare il pacchetto dell\'estensione per Edge';
+
+  @override
+  String get installBrowserExtension_opera_step1_subtitle => 'Clicca sul pulsante qui sotto per scaricare il pacchetto dell\'estensione per Opera';
+
+  @override
+  String get installBrowserExtension_step2_title => 'Estrai il pacchetto';
+
+  @override
+  String get installBrowserExtension_step2_subtitle => 'Estrai il pacchetto scaricato nella destinazione desiderata';
+
+  @override
+  String get installBrowserExtension_step3_title => 'Abilita la modalità sviluppatore';
+
+  @override
+  String get installBrowserExtension_chrome_step3_subtitle => 'Digita chrome://extensions nella barra degli indirizzi e abilita la modalità sviluppatore accanto alla barra di ricerca';
+
+  @override
+  String get installBrowserExtension_opera_step3_subtitle => 'Digita opera://extensions nella barra degli indirizzi e abilita la modalità sviluppatore accanto alla barra di ricerca';
+
+  @override
+  String get installBrowserExtension_edge_step3_subtitle => 'Digita edge://extensions nella barra degli indirizzi e abilita la modalità sviluppatore nel menu a sinistra';
+
+  @override
+  String get installBrowserExtension_step4_title => 'Carica estensione';
+
+  @override
+  String get installBrowserExtension_step4_subtitle => 'Clicca sul pulsante \'Carica estensione non pacchettizzata\' e seleziona la cartella dove hai estratto il pacchetto';
 }

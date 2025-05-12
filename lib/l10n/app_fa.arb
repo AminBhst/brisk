@@ -1,6 +1,7 @@
 {
   "@@locale": "fa",
   "language": "زبان",
+  "noUpdateAvailable": "هنوز نسخه جدیدی منتشر نشده است",
   "addUrl": "اضافه کردن لینک",
   "download": "دانلود",
   "stop": "توقف",
@@ -157,5 +158,21 @@
   "err_emptyValue": "مقدار خالی!",
   "err_unsupportedCharacter": "کارکتر غیرمجاز",
   "err_invalidSavePath": "مسیر مسیر ذخیره\u200Cسازی نامعتبر",
-  "availableDownloads": "فایل های قابل دانلود"
+  "availableDownloads": "فایل های قابل دانلود",
+  "installBrowserExtension_title": "نصب افزونه مرورگر",
+  "installTheBrowserExtension_description": "مرورگر خود را برای نصب افزونه انتخاب کنید",
+  "installTheBrowserExtension_description_subtitle": "به علت تحریم ها، افزونه فقط برای مرورگر فایرفاکس به صورت رسمی منتشر شده است. برای دیگر مرورگرها نیاز به نصب دستی افزونه می‌باشد",
+  "installBrowserExtensionGuide_title": "آموزش نصب",
+  "downloadExtension": "دانلود افزونه",
+  "installBrowserExtension_chrome_step1_subtitle": "برای دانلود افزونه کروم روی دکمه زیر کلیک کنید",
+  "installBrowserExtension_edge_step1_subtitle": "برای دانلود افزونه اج روی دکمه زیر کلیک کنید",
+  "installBrowserExtension_opera_step1_subtitle": "برای نصب افزونه اوپرا روی دکمه زیر کلیک کنید",
+  "installBrowserExtension_step2_title": "استخراج فایل\u200Cها",
+  "installBrowserExtension_step2_subtitle": "فایل دانلود شده را در مسیر دلخواه خود استخراج کنید",
+  "installBrowserExtension_step3_title": "فعال سازی Developer Mode",
+  "installBrowserExtension_chrome_step3_subtitle": "داخل سرچ بار کروم chrome://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید",
+  "installBrowserExtension_opera_step3_subtitle": "داخل سرچ بار اوپرا opera://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید",
+  "installBrowserExtension_edge_step3_subtitle": "داخل سرچ بار اج edge://extensions را تایپ کرده و گزینه Developer Mode را که در منوی سمت چپ واقع شده فعال کنید",
+  "installBrowserExtension_step4_title": "لود کردن افزونه",
+  "installBrowserExtension_step4_subtitle": "بر روی گزینه 'Load unpacked' کلیک کرده و پوشه حاوی فایل\u200Cهای استخراج شده را انتخاب کنید"
 }

@@ -12,6 +12,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get language => 'زبان';
 
   @override
+  String get noUpdateAvailable => 'هنوز نسخه جدیدی منتشر نشده است';
+
+  @override
   String get addUrl => 'اضافه کردن لینک';
 
   @override
@@ -481,4 +484,55 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get availableDownloads => 'فایل های قابل دانلود';
+
+  @override
+  String get installationGuide => 'Installation Guide';
+
+  @override
+  String get installBrowserExtension_title => 'نصب افزونه مرورگر';
+
+  @override
+  String get installTheBrowserExtension_description => 'مرورگر خود را برای نصب افزونه انتخاب کنید';
+
+  @override
+  String get installTheBrowserExtension_description_subtitle => 'به علت تحریم ها، افزونه فقط برای مرورگر فایرفاکس به صورت رسمی منتشر شده است. برای دیگر مرورگرها نیاز به نصب دستی افزونه می‌باشد';
+
+  @override
+  String get installBrowserExtensionGuide_title => 'آموزش نصب';
+
+  @override
+  String get downloadExtension => 'دانلود افزونه';
+
+  @override
+  String get installBrowserExtension_chrome_step1_subtitle => 'برای دانلود افزونه کروم روی دکمه زیر کلیک کنید';
+
+  @override
+  String get installBrowserExtension_edge_step1_subtitle => 'برای دانلود افزونه اج روی دکمه زیر کلیک کنید';
+
+  @override
+  String get installBrowserExtension_opera_step1_subtitle => 'برای نصب افزونه اوپرا روی دکمه زیر کلیک کنید';
+
+  @override
+  String get installBrowserExtension_step2_title => 'استخراج فایل‌ها';
+
+  @override
+  String get installBrowserExtension_step2_subtitle => 'فایل دانلود شده را در مسیر دلخواه خود استخراج کنید';
+
+  @override
+  String get installBrowserExtension_step3_title => 'فعال سازی Developer Mode';
+
+  @override
+  String get installBrowserExtension_chrome_step3_subtitle => 'داخل سرچ بار کروم chrome://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید';
+
+  @override
+  String get installBrowserExtension_opera_step3_subtitle => 'داخل سرچ بار اوپرا opera://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید';
+
+  @override
+  String get installBrowserExtension_edge_step3_subtitle => 'داخل سرچ بار اج edge://extensions را تایپ کرده و گزینه Developer Mode را که در منوی سمت چپ واقع شده فعال کنید';
+
+  @override
+  String get installBrowserExtension_step4_title => 'لود کردن افزونه';
+
+  @override
+  String get installBrowserExtension_step4_subtitle => 'بر روی گزینه \'Load unpacked\' کلیک کرده و پوشه حاوی فایل‌های استخراج شده را انتخاب کنید';
 }

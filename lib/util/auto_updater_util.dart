@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
@@ -64,7 +65,7 @@ void handleBriskUpdateCheck(
             color: Colors.blueAccent,
           ),
           titleIconBackgroundColor: Colors.black12,
-          titleText: "No new update is available yet",
+          titleText: AppLocalizations.of(context)!.noUpdateAvailable,
         ),
       );
       return;
@@ -120,10 +121,7 @@ void onUpdatePressed(String version) {
     launchUrlString(
         "https://github.com/AminBhst/brisk/releases/download/v$version/Brisk-v$version-macos.dmg");
   } else if (buildMethod == "flatpak") {
-
-  } else if (buildMethod == "snap") {
-
-  }
+  } else if (buildMethod == "snap") {}
 }
 
 Future<String> getLatestVersionChangeLog({

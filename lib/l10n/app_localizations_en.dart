@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
+  String get noUpdateAvailable => 'No new update is available yet';
+
+  @override
   String get addUrl => 'Add URL';
 
   @override
@@ -481,4 +484,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get availableDownloads => 'Available Downloads';
+
+  @override
+  String get installationGuide => 'Installation Guide';
+
+  @override
+  String get installBrowserExtension_title => 'Install Browser Extension';
+
+  @override
+  String get installTheBrowserExtension_description => 'Choose your browser to install Brisk\'s browser extension to capture downloads from the browser';
+
+  @override
+  String get installTheBrowserExtension_description_subtitle => 'Due to restrictions, the extension is only available in the official store for Firefox. For other browsers, manual installation is required. This will hopefully change in the future and the extension will be available for all browsers in their official websites.';
+
+  @override
+  String get installBrowserExtensionGuide_title => 'Installation Guide';
+
+  @override
+  String get downloadExtension => 'Download Extension';
+
+  @override
+  String get installBrowserExtension_chrome_step1_subtitle => 'Click the button below to download the extension package for Chrome';
+
+  @override
+  String get installBrowserExtension_edge_step1_subtitle => 'Click the button below to download the extension package for Edge';
+
+  @override
+  String get installBrowserExtension_opera_step1_subtitle => 'Click the button below to download the extension package for Opera';
+
+  @override
+  String get installBrowserExtension_step2_title => 'Extract The Package';
+
+  @override
+  String get installBrowserExtension_step2_subtitle => 'Extract downloaded package in your desired destination';
+
+  @override
+  String get installBrowserExtension_step3_title => 'Enable Developer Mode';
+
+  @override
+  String get installBrowserExtension_chrome_step3_subtitle => 'Type chrome://extensions in the navigation bar and enable developer mode right next to the search bar';
+
+  @override
+  String get installBrowserExtension_opera_step3_subtitle => 'Type opera://extensions in the navigation bar and enable developer mode right next to the search bar';
+
+  @override
+  String get installBrowserExtension_edge_step3_subtitle => 'Type edge://extensions in the navigation bar and enable developer mode in the left menu';
+
+  @override
+  String get installBrowserExtension_step4_title => 'Load Extension';
+
+  @override
+  String get installBrowserExtension_step4_subtitle => 'Click on the \'Load unpacked\' button and select the folder in which the package was extracted';
 }

@@ -1,6 +1,7 @@
 {
   "@@locale": "it",
   "language": "Lingua",
+  "noUpdateAvailable": "Nessun nuovo aggiornamento disponibile al momento",
   "addUrl": "Aggiungi URL",
   "download": "Download",
   "stop": "Stop",
@@ -157,5 +158,22 @@
   "err_emptyValue": "Valore vuoto!",
   "err_unsupportedCharacter": "Carattere non supportato",
   "err_invalidSavePath": "Percorso salvataggio non valido!",
-  "availableDownloads": "Download disponibili"
+  "availableDownloads": "Download disponibili",
+  "installationGuide": "Guida all'installazione",
+  "installBrowserExtension_title": "Installa l'estensione del browser",
+  "installTheBrowserExtension_description": "Scegli il tuo browser per installare l'estensione di Brisk e catturare i download dal browser",
+  "installTheBrowserExtension_description_subtitle": "A causa di restrizioni, l'estensione è disponibile solo nello store ufficiale per Firefox. Per altri browser è necessaria l'installazione manuale. Speriamo che in futuro l'estensione sarà disponibile per tutti i browser nei rispettivi siti ufficiali.",
+  "installBrowserExtensionGuide_title": "Guida all'installazione",
+  "downloadExtension": "Scarica estensione",
+  "installBrowserExtension_chrome_step1_subtitle": "Clicca sul pulsante qui sotto per scaricare il pacchetto dell'estensione per Chrome",
+  "installBrowserExtension_edge_step1_subtitle": "Clicca sul pulsante qui sotto per scaricare il pacchetto dell'estensione per Edge",
+  "installBrowserExtension_opera_step1_subtitle": "Clicca sul pulsante qui sotto per scaricare il pacchetto dell'estensione per Opera",
+  "installBrowserExtension_step2_title": "Estrai il pacchetto",
+  "installBrowserExtension_step2_subtitle": "Estrai il pacchetto scaricato nella destinazione desiderata",
+  "installBrowserExtension_step3_title": "Abilita la modalità sviluppatore",
+  "installBrowserExtension_chrome_step3_subtitle": "Digita chrome://extensions nella barra degli indirizzi e abilita la modalità sviluppatore accanto alla barra di ricerca",
+  "installBrowserExtension_opera_step3_subtitle": "Digita opera://extensions nella barra degli indirizzi e abilita la modalità sviluppatore accanto alla barra di ricerca",
+  "installBrowserExtension_edge_step3_subtitle": "Digita edge://extensions nella barra degli indirizzi e abilita la modalità sviluppatore nel menu a sinistra",
+  "installBrowserExtension_step4_title": "Carica estensione",
+  "installBrowserExtension_step4_subtitle": "Clicca sul pulsante 'Carica estensione non pacchettizzata' e seleziona la cartella dove hai estratto il pacchetto"
 }

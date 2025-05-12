@@ -103,6 +103,12 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
+  /// No description provided for @noUpdateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No new update is available yet'**
+  String get noUpdateAvailable;
+
   /// No description provided for @addUrl.
   ///
   /// In en, this message translates to:
@@ -1044,6 +1050,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available Downloads'**
   String get availableDownloads;
+
+  /// No description provided for @installationGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation Guide'**
+  String get installationGuide;
+
+  /// No description provided for @installBrowserExtension_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Install Browser Extension'**
+  String get installBrowserExtension_title;
+
+  /// No description provided for @installTheBrowserExtension_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your browser to install Brisk\'s browser extension to capture downloads from the browser'**
+  String get installTheBrowserExtension_description;
+
+  /// No description provided for @installTheBrowserExtension_description_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Due to restrictions, the extension is only available in the official store for Firefox. For other browsers, manual installation is required. This will hopefully change in the future and the extension will be available for all browsers in their official websites.'**
+  String get installTheBrowserExtension_description_subtitle;
+
+  /// No description provided for @installBrowserExtensionGuide_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation Guide'**
+  String get installBrowserExtensionGuide_title;
+
+  /// No description provided for @downloadExtension.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Extension'**
+  String get downloadExtension;
+
+  /// No description provided for @installBrowserExtension_chrome_step1_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Click the button below to download the extension package for Chrome'**
+  String get installBrowserExtension_chrome_step1_subtitle;
+
+  /// No description provided for @installBrowserExtension_edge_step1_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Click the button below to download the extension package for Edge'**
+  String get installBrowserExtension_edge_step1_subtitle;
+
+  /// No description provided for @installBrowserExtension_opera_step1_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Click the button below to download the extension package for Opera'**
+  String get installBrowserExtension_opera_step1_subtitle;
+
+  /// No description provided for @installBrowserExtension_step2_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract The Package'**
+  String get installBrowserExtension_step2_title;
+
+  /// No description provided for @installBrowserExtension_step2_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract downloaded package in your desired destination'**
+  String get installBrowserExtension_step2_subtitle;
+
+  /// No description provided for @installBrowserExtension_step3_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Developer Mode'**
+  String get installBrowserExtension_step3_title;
+
+  /// No description provided for @installBrowserExtension_chrome_step3_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Type chrome://extensions in the navigation bar and enable developer mode right next to the search bar'**
+  String get installBrowserExtension_chrome_step3_subtitle;
+
+  /// No description provided for @installBrowserExtension_opera_step3_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Type opera://extensions in the navigation bar and enable developer mode right next to the search bar'**
+  String get installBrowserExtension_opera_step3_subtitle;
+
+  /// No description provided for @installBrowserExtension_edge_step3_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Type edge://extensions in the navigation bar and enable developer mode in the left menu'**
+  String get installBrowserExtension_edge_step3_subtitle;
+
+  /// No description provided for @installBrowserExtension_step4_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Load Extension'**
+  String get installBrowserExtension_step4_title;
+
+  /// No description provided for @installBrowserExtension_step4_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Click on the \'Load unpacked\' button and select the folder in which the package was extracted'**
+  String get installBrowserExtension_step4_subtitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
