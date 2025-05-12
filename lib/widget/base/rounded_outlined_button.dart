@@ -15,6 +15,7 @@ class RoundedOutlinedButton extends StatefulWidget {
   final Widget? icon;
   final MainAxisAlignment mainAxisAlignment;
   final MainAxisSize mainAxisSize;
+  EdgeInsetsGeometry? contentPadding;
 
   RoundedOutlinedButton({
     Key? key,
@@ -31,6 +32,7 @@ class RoundedOutlinedButton extends StatefulWidget {
     this.icon = null,
     this.mainAxisAlignment = MainAxisAlignment.center,
     this.mainAxisSize = MainAxisSize.min,
+    this.contentPadding,
   }) : super(key: key);
 
   factory RoundedOutlinedButton.fromButtonColor(
@@ -43,6 +45,8 @@ class RoundedOutlinedButton extends StatefulWidget {
     double borderRadius = 8.0,
     Widget? icon = null,
     mainAxisAlignment = MainAxisAlignment.center,
+    mainAxisSize = MainAxisSize.min,
+    EdgeInsetsGeometry? contentPadding,
   }) {
     return RoundedOutlinedButton(
       text: text,
@@ -53,7 +57,9 @@ class RoundedOutlinedButton extends StatefulWidget {
       backgroundColor: buttonColor.backgroundColor,
       hoverBackgroundColor: buttonColor.hoverBackgroundColor,
       textColor: buttonColor.textColor,
+      mainAxisSize: mainAxisSize,
       onPressed: onPressed,
+      contentPadding: contentPadding,
       icon: icon,
       mainAxisAlignment: mainAxisAlignment,
       borderRadius: borderRadius,
@@ -83,9 +89,7 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
             borderRadius: BorderRadius.circular(widget.borderRadius),
           ),
         ),
-        side: WidgetStateProperty.all(
-          BorderSide(color: widget.borderColor),
-        ),
+        side: WidgetStateProperty.all(BorderSide(color: widget.borderColor)),
         padding: WidgetStateProperty.all(
           EdgeInsets.symmetric(
             horizontal: widget.icon == null ? 12 : 10,
@@ -93,29 +97,32 @@ class _RoundedOutlinedButtonState extends State<RoundedOutlinedButton> {
           ),
         ),
       ),
-      child: Row(
-        mainAxisSize: widget.mainAxisSize,
-        mainAxisAlignment: widget.mainAxisAlignment,
-        children: [
-          if (widget.icon != null) widget.icon!,
-          if (widget.icon != null && widget.text != null) SizedBox(width: 5),
-          if (widget.text != null)
-            Text(
-              widget.text!,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              softWrap: false,
-              style: TextStyle(
-                color: widget.hoverTextColor == null
-                    ? (hover ? Colors.white : widget.textColor)
-                    : (hover ? widget.hoverTextColor : widget.textColor),
+      child: Padding(
+        padding: widget.contentPadding ?? EdgeInsets.zero,
+        child: Row(
+          mainAxisSize: widget.mainAxisSize,
+          mainAxisAlignment: widget.mainAxisAlignment,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (widget.icon != null) widget.icon!,
+            if (widget.icon != null && widget.text != null) SizedBox(width: 5),
+            if (widget.text != null)
+              Text(
+                widget.text!,
+                // textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+                style: TextStyle(
+                  color: widget.hoverTextColor == null
+                      ? (hover ? Colors.white : widget.textColor)
+                      : (hover ? widget.hoverTextColor : widget.textColor),
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
 
-    // Only constrain width/height if set
     if (widget.width != null || widget.height != null) {
       return SizedBox(
         width: widget.width,
