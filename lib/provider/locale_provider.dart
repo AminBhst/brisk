@@ -12,8 +12,8 @@ class LocaleProvider with ChangeNotifier {
 
   static const locales = {
     "en": "English",
+    "it": "Italiano",
     "fa": "فارسی",
-    "it": "Italiano"
   };
 
   void setCurrentLocale() {
