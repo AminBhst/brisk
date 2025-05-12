@@ -32,7 +32,7 @@ import '../widget/download/multi_download_addition_dialog.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.2.2";
+  static const String extensionVersion = "1.2.3";
 
   static void setup(BuildContext context) async {
     if (_isServerRunning) return;
