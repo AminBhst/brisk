@@ -1,5 +1,6 @@
 {
   "@@locale": "it",
+  "application": "applicazione",
   "language": "Lingua",
   "noUpdateAvailable": "Nessun nuovo aggiornamento disponibile al momento",
   "addUrl": "Aggiungi URL",
@@ -189,14 +190,14 @@
   },
   "btn_createQueue": "Crea coda",
   "createNewQueue": "Crea nuova coda",
-  "queueName": "Nome della coda",
+  "queueName": "Nome coda",
   "mainQueue": "Coda principale",
-  "editQueueItems": "Modifica elementi della coda",
+  "editQueueItems": "Modifica elementi coda",
   "queueIsEmpty": "La coda è vuota",
   "addDownloadToQueue": "Aggiungi download alla coda",
   "selectQueue": "Seleziona coda",
   "btn_addToQueue": "Aggiungi alla coda",
-  "deleteQueueConfirmation": "Sei sicuro di voler eliminare la coda {queue}?",
+  "deleteQueueConfirmation": "Vuoi eliminare la coda {queue}?",
   "@deleteQueueConfirmation": {
     "placeholders": {
       "queue": {}
@@ -205,27 +206,27 @@
   "btn_schedule": "Pianifica",
   "btn_stopQueue": "Ferma coda",
   "scheduleDownload": "Pianifica download",
-  "startDownloadAt": "Inizia il download alle",
-  "stopDownloadAt": "Ferma il download alle",
+  "startDownloadAt": "Inizia download alle",
+  "stopDownloadAt": "Ferma download alle",
   "simultaneousDownloads": "Download simultanei",
   "shutdownAfterCompletion": "Spegni dopo il completamento",
-  "btn_startNow": "Avvia ora",
-  "chooseAction": "Scegli un'azione",
+  "btn_startNow": "Avvia",
+  "chooseAction": "Scegli azione",
   "appChooseActionDescription": "Scegli cosa vuoi fare con l'applicazione",
   "btn_exitApplication": "Esci dall'applicazione",
-  "btn_minimizeToTray": "Minimizza nella tray",
+  "btn_minimizeToTray": "Minimizza nella barra sistema",
   "rememberThisDecision": "Ricorda questa decisione",
-  "shutdownWarning_title": "Avviso di Spegnimento",
-  "shutdownWarning_description": "Il tuo PC si spegnerà tra {seconds} secondi",
-  "btn_cancelShutdown": "Annulla Spegnimento",
-  "btn_shutdownNow": "Spegni Ora",
+  "shutdownWarning_title": "Avviso spegnimento",
+  "shutdownWarning_description": "Il PC si spegnerà tra {seconds} secondi",
+  "btn_cancelShutdown": "Annulla spegnimento",
+  "btn_shutdownNow": "Spegni",
   "@shutdownWarning": {
     "placeholders": {
       "seconds": {}
     }
   },
-  "extensionUpdateAvailable": "Aggiornamento dell'estensione disponibile",
-  "updateAvailable": "Aggiornamento disponibile",
+  "extensionUpdateAvailable": "Disponibile aggiornamento estensione",
+  "updateAvailable": "Disponibile aggiornamento",
   "updateAvailable_description": "È disponibile una nuova versione di {target}.\nVuoi aggiornare ora?",
   "@updateAvailable_description": {
     "placeholders": {
@@ -235,11 +236,11 @@
   "whatsNew": "Novità:",
   "btn_later": "Più tardi",
   "btn_update": "Aggiorna",
-  "automaticUrlUpdate": "Aggiornamento automatico dell'URL",
+  "automaticUrlUpdate": "Aggiornamento automatico URL",
   "awaitingUrl": "In attesa dell'URL",
   "awaitingUrl_description": "Sei stato reindirizzato al sito di riferimento di questo file.",
-  "awaitingUrl_descriptionHint": "Clicca sul link di download per catturare e aggiornare automaticamente l'URL di download.",
-  "urlUpdateError_title": "Errore di aggiornamento URL",
+  "awaitingUrl_descriptionHint": "Clic sul collegamento download per catturare e aggiornare automaticamente l'URL download.",
+  "urlUpdateError_title": "Errore aggiornamento URL",
   "urlUpdateError_description": "L'URL fornito non si riferisce allo stesso file!",
-  "urlUpdateSuccess": "URL aggiornato con successo!"
+  "urlUpdateSuccess": "URL aggiornato correttamente!"
 }
