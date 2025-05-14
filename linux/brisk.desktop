@@ -6,4 +6,4 @@ Icon=data/flutter_assets/assets/icons/logo.png
 Terminal=false
 Type=Application
 Categories=Network;Utility;
-StartupNotify=true
+StartupNotify=false
