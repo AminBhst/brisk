@@ -264,7 +264,8 @@ class _MyHomePageState extends State<MyHomePage>
       await windowManager.show();
       windowManager.focus();
     } else if (menuItem.key == 'exit_app') {
-      windowManager.close();
+      await windowManager.setPreventClose(false);
+      windowManager.close().then((_) => exit(0));
     }
   }
 
