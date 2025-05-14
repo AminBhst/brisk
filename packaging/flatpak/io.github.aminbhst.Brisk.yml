@@ -56,5 +56,6 @@ modules:
 
     sources:
       - type: dir
-        path: .
+        only-arches:
+         - x86_64
 
