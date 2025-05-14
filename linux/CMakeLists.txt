@@ -1,6 +1,7 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
+add_compile_options(-Wno-deprecated-declarations)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
