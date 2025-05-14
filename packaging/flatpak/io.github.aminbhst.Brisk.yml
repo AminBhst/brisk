@@ -11,11 +11,7 @@ finish-args:
   - --device=dri
   - --filesystem=xdg-download
   - --talk-name=org.freedesktop.Notifications
-  - --talk-name=org.freedesktop.secrets
   - --talk-name=org.kde.StatusNotifierWatcher
-  - --system-talk-name=org.freedesktop.Avahi.*
-  - --filesystem=xdg-documents
-  - --filesystem=xdg-run/pipewire-0:ro
 
 modules:
   - shared-modules/libayatana-appindicator/libayatana-appindicator-gtk3.json
@@ -34,16 +30,24 @@ modules:
     sources:
       - type: git
         url: https://github.com/kupferlauncher/keybinder.git
+        commit: 04ae06724d914c7d4fec6a2723edf9c6320ec502
     cleanup:
       - /include
       - /lib/pkgconfig
       - /share/gtk-doc
+      - /share/man
+      - /share/info
       - '*.la'
+      - '*.a'
+      # - /include
+      # - /lib/pkgconfig
+      # - /share/gtk-doc
+      # - '*.la'
 
   - name: brisk
     buildsystem: simple
     build-commands:
-      - install -Dm644 brisk/data/flutter_assets/assets/icons/logo.png /app/share/icons/hicolor/128x128/apps/io.github.aminbhst.Brisk.png
+      - install -Dm644 brisk/data/flutter_assets/assets/icons/logo-128.png /app/share/icons/hicolor/128x128/apps/io.github.aminbhst.Brisk.png
       - install -Dm644 brisk/brisk.desktop /app/share/applications/io.github.aminbhst.Brisk.desktop
       - install -dm755 /app/bin /app/brisk
       - cp -R brisk/ /app
