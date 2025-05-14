@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Brisk
+Comment=Ultra-fast, modern download manager for desktop
+Exec=brisk
+Icon=io.github.aminbhst.Brisk
+Terminal=false
+Type=Application
+Categories=Network;Utility;
+StartupNotify=true
