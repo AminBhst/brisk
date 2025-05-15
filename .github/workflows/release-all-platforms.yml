@@ -3,18 +3,7 @@ name: Release All Platforms
 on:
 
   workflow_dispatch:
-  # inputs:
-
-  #   tag:
-  #     description: 'Enter a tag for this release'
-  #     required: true
-  #     type: string
-
-  # Release_note:
-  #   description: 'Enter your release notes'
-  #   required: true
-  #   type: string
-
+  
 jobs:
   version:
     runs-on: windows-latest
