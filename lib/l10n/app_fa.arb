@@ -240,5 +240,9 @@
   "awaitingUrl_descriptionHint": "برای به\u200Cروزرسانی خودکار لینک، لطفا روی لینک دانلود فایل مورد نظر کلیک کنید",
   "urlUpdateError_title": "خطای به\u200Cروزرسانی لینک دانلود",
   "urlUpdateError_description": "لینک دانلود مورد نظر مربوط به این فایل نمی\u200Cباشد!",
-  "urlUpdateSuccess": "لینک دانلود با موفقیت به\u200Cروزرسانی شد!"
+  "urlUpdateSuccess": "لینک دانلود با موفقیت به\u200Cروزرسانی شد!",
+  "flatpakUpdate": "به‌روزرسانی Flatpak",
+  "flatpakUpdate_description": "به\u200Cروزرسانی خودکار درون\u200Cبرنامه\u200Cای برای Flatpak غیرفعال است.",
+  "flatpakUpdate_hint": "لطفاً برای به‌روزرسانی برنامه از دستور زیر استفاده کنید.",
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد"
 }

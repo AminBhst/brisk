@@ -6,11 +6,13 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/parse_util.dart';
+import 'package:brisk/util/platform.dart';
 import 'package:brisk/widget/base/confirmation_dialog.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/info_dialog.dart';
 import 'package:brisk/widget/download/update_available_dialog.dart';
 import 'package:brisk/widget/other/brisk_change_log_dialog.dart';
+import 'package:brisk/widget/other/flatpak_update_dialog.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -52,7 +54,7 @@ void handleBriskUpdateCheck(
       builder: (context) => UpdateAvailableDialog(
         newVersion: versionCheckResult.second,
         changeLog: changeLog,
-        onUpdatePressed: launchAutoUpdater,
+        onUpdatePressed: () => handleUpdate(context),
       ),
     );
   } else {
@@ -140,6 +142,18 @@ Future<String> getLatestVersionChangeLog({
     return lines.join('\n');
   }
   return changeLog;
+}
+
+void handleUpdate(BuildContext context) {
+  if (isFlatpak) {
+    showDialog(
+      context: context,
+      builder: (context) => FlatpakUpdateDialog(),
+      barrierDismissible: false,
+    );
+    return;
+  }
+  launchAutoUpdater();
 }
 
 void launchAutoUpdater() async {

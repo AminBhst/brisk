@@ -684,4 +684,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get urlUpdateSuccess => 'URL erfolgreich aktualisiert!';
+
+  @override
+  String get flatpakUpdate => 'Flatpak-Aktualisierung';
+
+  @override
+  String get flatpakUpdate_description => 'Brisk wurde über Flatpak installiert, daher ist die automatische Aktualisierung in der App deaktiviert.';
+
+  @override
+  String get flatpakUpdate_hint => 'Bitte verwenden Sie den folgenden Befehl, um die App zu aktualisieren';
+
+  @override
+  String get copiedToClipboard => 'In die Zwischenablage kopiert';
 }

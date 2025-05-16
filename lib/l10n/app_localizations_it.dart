@@ -9,7 +9,7 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
-  String get application => 'application';
+  String get application => 'applicazione';
 
   @override
   String get language => 'Lingua';
@@ -566,13 +566,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get createNewQueue => 'Crea nuova coda';
 
   @override
-  String get queueName => 'Nome della coda';
+  String get queueName => 'Nome coda';
 
   @override
   String get mainQueue => 'Coda principale';
 
   @override
-  String get editQueueItems => 'Modifica elementi della coda';
+  String get editQueueItems => 'Modifica elementi coda';
 
   @override
   String get queueIsEmpty => 'La coda è vuota';
@@ -588,7 +588,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String deleteQueueConfirmation(Object queue) {
-    return 'Sei sicuro di voler eliminare la coda $queue?';
+    return 'Vuoi eliminare la coda $queue?';
   }
 
   @override
@@ -601,10 +601,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scheduleDownload => 'Pianifica download';
 
   @override
-  String get startDownloadAt => 'Inizia il download alle';
+  String get startDownloadAt => 'Inizia download alle';
 
   @override
-  String get stopDownloadAt => 'Ferma il download alle';
+  String get stopDownloadAt => 'Ferma download alle';
 
   @override
   String get simultaneousDownloads => 'Download simultanei';
@@ -613,10 +613,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get shutdownAfterCompletion => 'Spegni dopo il completamento';
 
   @override
-  String get btn_startNow => 'Avvia ora';
+  String get btn_startNow => 'Avvia';
 
   @override
-  String get chooseAction => 'Scegli un\'azione';
+  String get chooseAction => 'Scegli azione';
 
   @override
   String get appChooseActionDescription => 'Scegli cosa vuoi fare con l\'applicazione';
@@ -625,30 +625,30 @@ class AppLocalizationsIt extends AppLocalizations {
   String get btn_exitApplication => 'Esci dall\'applicazione';
 
   @override
-  String get btn_minimizeToTray => 'Minimizza nella tray';
+  String get btn_minimizeToTray => 'Minimizza nella barra sistema';
 
   @override
   String get rememberThisDecision => 'Ricorda questa decisione';
 
   @override
-  String get shutdownWarning_title => 'Avviso di Spegnimento';
+  String get shutdownWarning_title => 'Avviso spegnimento';
 
   @override
   String shutdownWarning_description(Object seconds) {
-    return 'Il tuo PC si spegnerà tra $seconds secondi';
+    return 'Il PC si spegnerà tra $seconds secondi';
   }
 
   @override
-  String get btn_cancelShutdown => 'Annulla Spegnimento';
+  String get btn_cancelShutdown => 'Annulla spegnimento';
 
   @override
-  String get btn_shutdownNow => 'Spegni Ora';
+  String get btn_shutdownNow => 'Spegni';
 
   @override
-  String get extensionUpdateAvailable => 'Aggiornamento dell\'estensione disponibile';
+  String get extensionUpdateAvailable => 'Disponibile aggiornamento estensione';
 
   @override
-  String get updateAvailable => 'Aggiornamento disponibile';
+  String get updateAvailable => 'Disponibile aggiornamento';
 
   @override
   String updateAvailable_description(Object target) {
@@ -665,7 +665,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get btn_update => 'Aggiorna';
 
   @override
-  String get automaticUrlUpdate => 'Aggiornamento automatico dell\'URL';
+  String get automaticUrlUpdate => 'Aggiornamento automatico URL';
 
   @override
   String get awaitingUrl => 'In attesa dell\'URL';
@@ -674,14 +674,26 @@ class AppLocalizationsIt extends AppLocalizations {
   String get awaitingUrl_description => 'Sei stato reindirizzato al sito di riferimento di questo file.';
 
   @override
-  String get awaitingUrl_descriptionHint => 'Clicca sul link di download per catturare e aggiornare automaticamente l\'URL di download.';
+  String get awaitingUrl_descriptionHint => 'Clic sul collegamento download per catturare e aggiornare automaticamente l\'URL download.';
 
   @override
-  String get urlUpdateError_title => 'Errore di aggiornamento URL';
+  String get urlUpdateError_title => 'Errore aggiornamento URL';
 
   @override
   String get urlUpdateError_description => 'L\'URL fornito non si riferisce allo stesso file!';
 
   @override
-  String get urlUpdateSuccess => 'URL aggiornato con successo!';
+  String get urlUpdateSuccess => 'URL aggiornato correttamente!';
+
+  @override
+  String get flatpakUpdate => 'Aggiornamento Flatpak';
+
+  @override
+  String get flatpakUpdate_description => 'Brisk è stato installato tramite flatpak, quindi l\'aggiornamento automatico in-app è disabilitato.';
+
+  @override
+  String get flatpakUpdate_hint => 'Utilizza il seguente comando per aggiornare l\'app';
+
+  @override
+  String get copiedToClipboard => 'Copiato negli appunti';
 }

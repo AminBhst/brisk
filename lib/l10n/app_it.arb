@@ -242,5 +242,9 @@
   "awaitingUrl_descriptionHint": "Clic sul collegamento download per catturare e aggiornare automaticamente l'URL download.",
   "urlUpdateError_title": "Errore aggiornamento URL",
   "urlUpdateError_description": "L'URL fornito non si riferisce allo stesso file!",
-  "urlUpdateSuccess": "URL aggiornato correttamente!"
+  "urlUpdateSuccess": "URL aggiornato correttamente!",
+  "flatpakUpdate": "Aggiornamento Flatpak",
+  "flatpakUpdate_description": "Brisk è stato installato tramite flatpak, quindi l'aggiornamento automatico in-app è disabilitato.",
+  "flatpakUpdate_hint": "Utilizza il seguente comando per aggiornare l'app",
+  "copiedToClipboard": "Copiato negli appunti"
 }

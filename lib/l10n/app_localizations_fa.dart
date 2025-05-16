@@ -684,4 +684,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get urlUpdateSuccess => 'لینک دانلود با موفقیت به‌روزرسانی شد!';
+
+  @override
+  String get flatpakUpdate => 'به‌روزرسانی Flatpak';
+
+  @override
+  String get flatpakUpdate_description => 'به‌روزرسانی خودکار درون‌برنامه‌ای برای Flatpak غیرفعال است.';
+
+  @override
+  String get flatpakUpdate_hint => 'لطفاً برای به‌روزرسانی برنامه از دستور زیر استفاده کنید.';
+
+  @override
+  String get copiedToClipboard => 'در کلیپ‌بورد کپی شد';
 }

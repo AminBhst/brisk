@@ -684,4 +684,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get urlUpdateSuccess => 'URL updated successfully!';
+
+  @override
+  String get flatpakUpdate => 'Flatpak Update';
+
+  @override
+  String get flatpakUpdate_description => 'Brisk was installed via flatpak and therefore, in-app automatic update is disabled.';
+
+  @override
+  String get flatpakUpdate_hint => 'Please use the following command to update the app';
+
+  @override
+  String get copiedToClipboard => 'Copied to Clipboard';
 }

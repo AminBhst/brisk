@@ -1436,6 +1436,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'URL updated successfully!'**
   String get urlUpdateSuccess;
+
+  /// No description provided for @flatpakUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Flatpak Update'**
+  String get flatpakUpdate;
+
+  /// No description provided for @flatpakUpdate_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Brisk was installed via flatpak and therefore, in-app automatic update is disabled.'**
+  String get flatpakUpdate_description;
+
+  /// No description provided for @flatpakUpdate_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please use the following command to update the app'**
+  String get flatpakUpdate_hint;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to Clipboard'**
+  String get copiedToClipboard;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
