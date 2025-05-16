@@ -45,7 +45,7 @@ class _SideMenuState extends State<SideMenu> {
             Padding(
               padding: const EdgeInsetsDirectional.only(start: 10, top: 30),
               child: SvgPicture.asset(
-                "assets/icons/logo.svg",
+                "assets/icons/logo-basic.svg",
                 height: 25,
                 width: 25,
                 colorFilter: ColorFilter.mode(
