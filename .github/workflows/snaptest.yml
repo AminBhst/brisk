@@ -16,10 +16,9 @@ jobs:
       - uses: snapcore/action-build@v1
         id: build
 
-      - uses: diddlesnaps/snapcraft-review-action@v1
+      - name: Upload artifact 
+        uses: actions/upload-artifact@v4.3.3
         with:
-          snap: ${{ steps.build.outputs.snap }}
-          isClassic: 'true'
-          # Plugs and Slots declarations to override default denial (requires store assertion to publish)
-          # plugs: ./plug-declaration.json
-          # slots: ./slot-declaration.json
+          name: brisk-package
+          path: ./brisk_2.2.3_amd64.snap
+          retention-days: 1
