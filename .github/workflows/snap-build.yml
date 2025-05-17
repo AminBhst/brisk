@@ -35,11 +35,8 @@ jobs:
       - name: Install Snapcraft
         uses: samuelmeuli/action-snapcraft@v3
 
-      - name: lxd
-        run: sudo snap install lxd
-
       - name: Build Snap package
-        run: snapcraft
+        run: snapcraft --destructive-mode
 
       - name: Upload Snap artifact
         uses: actions/upload-artifact@v4
