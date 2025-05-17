@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.1.5
 
-      - name: Install flutter
+      - name: Install Flutter
         uses: subosito/flutter-action@v2.14.0
         with:
           flutter-version: "3.29.3"
@@ -26,23 +26,16 @@ jobs:
       - name: Enable Linux Desktop
         run: flutter config --enable-linux-desktop
 
-      - name: Get Flutter dependencies
-        run: flutter pub get
+      - name: Build Flutter Linux app
+        run: flutter build linux
 
-      - name: Install snapcraft build dependencies
+      - name: Build Snap inside Docker
         run: |
-         sudo apt-get update
-         sudo apt-get install -y \
-         clang cmake curl gcc git libkeybinder-3.0-dev make ninja-build unzip
-
-      - name: Install Linux build dependencies
-        run: sudo apt-get update && sudo apt-get install -y libkeybinder-3.0-dev
-
-      - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v3
-
-      - name: Build Snap package
-        run: snapcraft --destructive-mode
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -w /workspace/linux \
+            snapcore/snapcraft:stable \
+            snapcraft
 
       - name: Upload Snap artifact
         uses: actions/upload-artifact@v4
