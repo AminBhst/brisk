@@ -29,9 +29,6 @@ jobs:
       - name: Enable Linux Desktop
         run: flutter config --enable-linux-desktop
 
-      - name: Build Flutter Linux app
-        run: flutter build linux
-
       - name: Build Snap inside Docker
         run: |
           docker run --rm \
