@@ -22,12 +22,20 @@ import 'package:window_manager/window_manager.dart';
 import 'package:http/http.dart';
 
 import 'http_util.dart';
+import 'platform.dart';
 
 void handleBriskUpdateCheck(
   BuildContext context, {
   bool showUpdateNotAvailableDialog = false,
   bool ignoreLastUpdateCheck = false,
 }) async {
+	if (isSnap) {
+    showDialog(
+      context: context,
+      builder: (context) => FlatpakUpdateDialog(),
+      barrierDismissible: false,
+    );
+	}
   Pair<bool, String> versionCheckResult;
   try {
     versionCheckResult = await isNewBriskVersionAvailable(
