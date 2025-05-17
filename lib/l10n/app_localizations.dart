@@ -1437,23 +1437,23 @@ abstract class AppLocalizations {
   /// **'URL updated successfully!'**
   String get urlUpdateSuccess;
 
-  /// No description provided for @flatpakUpdate.
+  /// No description provided for @packageManager_updateTitle.
   ///
   /// In en, this message translates to:
-  /// **'Flatpak Update'**
-  String get flatpakUpdate;
+  /// **'{target} Update'**
+  String packageManager_updateTitle(Object target);
 
-  /// No description provided for @flatpakUpdate_description.
+  /// No description provided for @packageManager_updateDescription.
   ///
   /// In en, this message translates to:
-  /// **'Brisk was installed via flatpak and therefore, in-app automatic update is disabled.'**
-  String get flatpakUpdate_description;
+  /// **'Brisk was installed via {target} and therefore, in-app automatic update is disabled.'**
+  String packageManager_updateDescription(Object target);
 
-  /// No description provided for @flatpakUpdate_hint.
+  /// No description provided for @packageManager_updateDescriptionHint.
   ///
   /// In en, this message translates to:
   /// **'Please use the following command to update the app'**
-  String get flatpakUpdate_hint;
+  String get packageManager_updateDescriptionHint;
 
   /// No description provided for @copiedToClipboard.
   ///

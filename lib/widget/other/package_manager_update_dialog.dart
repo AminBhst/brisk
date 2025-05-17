@@ -7,11 +7,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
-class FlatpakUpdateDialog extends StatelessWidget {
-  FlatpakUpdateDialog({super.key});
+class PackageManagerUpdateDialog extends StatelessWidget {
+  final String target;
+  final String updateCommand;
+  final String logo;
 
-  final txtController =
-      TextEditingController(text: "flatpak update io.github.BrisklyDev.Brisk");
+  PackageManagerUpdateDialog({
+    super.key,
+    required this.target,
+    required this.updateCommand,
+    required this.logo,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +36,7 @@ class FlatpakUpdateDialog extends StatelessWidget {
             SvgPicture.asset(
               width: 30,
               height: 30,
-              "assets/icons/flathub.svg",
+              logo,
               colorFilter: ColorFilter.mode(
                 Colors.white70,
                 BlendMode.srcIn,
@@ -38,7 +44,7 @@ class FlatpakUpdateDialog extends StatelessWidget {
             ),
             SizedBox(width: 10),
             Text(
-              loc.flatpakUpdate,
+              loc.packageManager_updateTitle(target),
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -62,21 +68,19 @@ class FlatpakUpdateDialog extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(loc.flatpakUpdate_description),
+            Text(loc.packageManager_updateDescription(target)),
             const SizedBox(height: 5),
             Text(
-              loc.flatpakUpdate_hint,
+              loc.packageManager_updateDescriptionHint,
               style: TextStyle(color: Colors.white60),
             ),
             const SizedBox(height: 10),
             OutLinedTextField(
-              controller: txtController,
+              controller: TextEditingController(text: updateCommand),
               readOnly: true,
               suffixIcon: IconButton(
                 onPressed: () async {
-                  Clipboard.setData(
-                    ClipboardData(text: txtController.text),
-                  );
+                  Clipboard.setData(ClipboardData(text: updateCommand));
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       backgroundColor: Color.fromRGBO(38, 38, 38, 1.0),

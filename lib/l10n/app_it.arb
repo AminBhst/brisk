@@ -243,8 +243,18 @@
   "urlUpdateError_title": "Errore aggiornamento URL",
   "urlUpdateError_description": "L'URL fornito non si riferisce allo stesso file!",
   "urlUpdateSuccess": "URL aggiornato correttamente!",
-  "flatpakUpdate": "Aggiornamento Flatpak",
-  "flatpakUpdate_description": "Brisk è stato installato tramite flatpak, quindi l'aggiornamento automatico in-app è disabilitato.",
-  "flatpakUpdate_hint": "Per aggiornare l'app usa il seguente comando",
+  "packageManager_updateTitle": "Aggiornamento {target}",
+  "@packageManager_updateTitle": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "packageManager_updateDescription": "Brisk è stato installato tramite {target}, quindi l'aggiornamento automatico in-app è disabilitato.",
+  "@packageManager_updateDescription": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "packageManager_updateDescriptionHint": "Per aggiornare l'app usa il seguente comando",
   "copiedToClipboard": "Copiato negli appunti"
 }

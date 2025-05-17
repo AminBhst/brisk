@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:brisk/util/platform.dart';
 import 'package:tray_manager/tray_manager.dart';
 
-import 'platform.dart';
-
 Future<void> initTray() async {
   Menu menu = Menu(
     items: [
