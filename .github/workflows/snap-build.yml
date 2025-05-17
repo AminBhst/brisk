@@ -29,6 +29,12 @@ jobs:
       - name: Get Flutter dependencies
         run: flutter pub get
 
+      - name: Install snapcraft build dependencies
+        run: |
+         sudo apt-get update
+         sudo apt-get install -y \
+         clang cmake curl gcc git libkeybinder-3.0-dev make ninja-build unzip
+
       - name: Install Linux build dependencies
         run: sudo apt-get update && sudo apt-get install -y libkeybinder-3.0-dev
 
