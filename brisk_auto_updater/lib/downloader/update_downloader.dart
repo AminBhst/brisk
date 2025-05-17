@@ -40,7 +40,7 @@ class UpdateDownloader {
       return;
     }
     final latestTag = await getJsonResponse(
-      "https://api.github.com/repos/AminBhst/brisk/releases/latest",
+      "https://api.github.com/repos/BrisklyDev/brisk/releases/latest",
     );
     print("god json response");
     final version = latestTag["tag_name"];
