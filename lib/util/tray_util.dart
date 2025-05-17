@@ -18,7 +18,7 @@ Future<void> initTray() async {
     ],
   );
   if (isFlatpak) {
-    await trayManager.setIcon("io.github.aminbhst.Brisk");
+    await trayManager.setIcon("io.github.BrisklyDev.Brisk");
   } else {
     await trayManager.setIcon(
       Platform.isWindows ? 'assets/icons/logo.ico' : 'assets/icons/logo.png',
