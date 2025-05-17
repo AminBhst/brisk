@@ -1,0 +1,30 @@
+name: brisk
+version: 2.2.3
+summary: Ultra-fast, modern download manager
+description: Brisk is a fast, modern download manager with browser integration support
+
+confinement: strict
+base: core22
+grade: stable
+
+slots:
+  dbus-brisk:
+    interface: dbus
+    bus: session
+    name: io.github.BrisklyDev.brisk
+    
+apps:
+  brisk:
+    command: brisk
+    extensions: [gnome]
+    plugs:
+    - network
+    slots:
+      - dbus-brisk
+parts:
+  brisk:
+    source: .
+    plugin: flutter
+    build-packages:
+      - libkeybinder-3.0-dev
+    flutter-target: lib/main.dart
