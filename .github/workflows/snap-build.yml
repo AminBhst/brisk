@@ -11,12 +11,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.5
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - name: Install flutter
+        uses: subosito/flutter-action@v2.14.0
         with:
-          flutter-version: stable
+          flutter-version: "3.29.3"
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' 
+          architecture: x64
 
       - name: Enable Linux Desktop
         run: flutter config --enable-linux-desktop
@@ -27,11 +32,8 @@ jobs:
       - name: Install Linux build dependencies
         run: sudo apt-get update && sudo apt-get install -y libkeybinder-3.0-dev
 
-      - name: Build Flutter Linux app
-        run: flutter build linux
-
       - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v2
+        uses: samuelmeuli/action-snapcraft@v3
 
       - name: Build Snap package
         run: snapcraft
