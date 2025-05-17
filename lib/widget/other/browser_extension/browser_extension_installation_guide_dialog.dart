@@ -78,7 +78,7 @@ class _BrowserExtensionInstallationGuideDialogState
                   height: 30,
                   onPressed: () => launchUrlString(
                     widget.downloadUrl ??
-                        "https://github.com/Brisk-Apps/brisk-browser-extension/releases/tag/v1.2.2",
+                        "https://github.com/BrisklyDev/brisk-browser-extension/releases/tag/v1.2.2",
                   ),
                   text: loc.downloadExtension,
                   hoverBackgroundColor: Colors.blueAccent,

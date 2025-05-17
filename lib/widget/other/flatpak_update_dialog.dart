@@ -11,7 +11,7 @@ class FlatpakUpdateDialog extends StatelessWidget {
   FlatpakUpdateDialog({super.key});
 
   final txtController =
-      TextEditingController(text: "flatpak update io.github.aminbhst.Brisk");
+      TextEditingController(text: "flatpak update io.github.BrisklyDev.Brisk");
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +75,7 @@ class FlatpakUpdateDialog extends StatelessWidget {
               suffixIcon: IconButton(
                 onPressed: () async {
                   Clipboard.setData(
-                    ClipboardData(
-                        text: "flatpak update io.github.aminbhst.Brisk"),
+                    ClipboardData(text: txtController.text),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

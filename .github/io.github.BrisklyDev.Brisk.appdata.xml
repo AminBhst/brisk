@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.aminbhst.Brisk</id>
+  <id>io.github.BrisklyDev.Brisk</id>
   <name>Brisk</name>
   <summary>Ultra-fast, modern download manager for desktop</summary>
   <metadata_license>CC0-1.0</metadata_license>
@@ -23,12 +23,12 @@
     </ul>
   </description>
 
-  <url type="homepage">https://github.com/Brisk-Apps/brisk</url>
-  <url type="bugtracker">https://github.com/Brisk-Apps/brisk/issues</url>
+  <url type="homepage">https://github.com/BrisklyDev/brisk</url>
+  <url type="bugtracker">https://github.com/BrisklyDev/brisk/issues</url>
 
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/Brisk-Apps/brisk/refs/heads/main/assets/brisk-header.png</image>
+      <image>https://raw.githubusercontent.com/BrisklyDev/brisk/refs/heads/main/assets/brisk-header.png</image>
     </screenshot>
   </screenshots>
 
@@ -69,6 +69,6 @@
     <category>Utility</category>
   </categories>
 
-  <launchable type="desktop-id">io.github.aminbhst.Brisk.desktop</launchable>
+  <launchable type="desktop-id">io.github.BrisklyDev.Brisk.desktop</launchable>
 </component>
 

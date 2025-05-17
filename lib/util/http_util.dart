@@ -188,7 +188,7 @@ Future<dynamic> getJson(String url) async {
 
 Future<String?> getBrowserExtensionDownloadLink(String browser) async {
   final json = await getJson(
-    "https://api.github.com/repos/Brisk-Apps/brisk-browser-extension/releases/latest",
+    "https://api.github.com/repos/BrisklyDev/brisk-browser-extension/releases/latest",
   );
   if (json['message'].toString().contains("rate limit")) {
     return null;
