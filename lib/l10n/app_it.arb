@@ -245,6 +245,6 @@
   "urlUpdateSuccess": "URL aggiornato correttamente!",
   "flatpakUpdate": "Aggiornamento Flatpak",
   "flatpakUpdate_description": "Brisk è stato installato tramite flatpak, quindi l'aggiornamento automatico in-app è disabilitato.",
-  "flatpakUpdate_hint": "Utilizza il seguente comando per aggiornare l'app",
+  "flatpakUpdate_hint": "Per aggiornare l'app usa il seguente comando",
   "copiedToClipboard": "Copiato negli appunti"
 }
