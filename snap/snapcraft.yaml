@@ -38,7 +38,7 @@ parts:
       - make
       - ninja-build
       - unzip
-      - pkg-config  # <-- This is also needed!
+      - pkg-config
     stage-packages:
       - libgtk-3-0
       - libkeybinder-3.0-0
