@@ -29,13 +29,6 @@ void handleBriskUpdateCheck(
   bool showUpdateNotAvailableDialog = false,
   bool ignoreLastUpdateCheck = false,
 }) async {
-	if (isSnap) {
-    showDialog(
-      context: context,
-      builder: (context) => FlatpakUpdateDialog(),
-      barrierDismissible: false,
-    );
-	}
   Pair<bool, String> versionCheckResult;
   try {
     versionCheckResult = await isNewBriskVersionAvailable(
