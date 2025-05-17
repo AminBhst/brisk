@@ -38,6 +38,9 @@ parts:
       - make
       - ninja-build
       - unzip
+      - pkg-config  # <-- This is also needed!
     stage-packages:
       - libgtk-3-0
       - libkeybinder-3.0-0
+    build-environment:
+      - PKG_CONFIG_PATH: /usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig
