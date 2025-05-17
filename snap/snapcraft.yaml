@@ -39,8 +39,11 @@ parts:
       - ninja-build
       - unzip
       - pkg-config
+
     stage-packages:
       - libgtk-3-0
       - libkeybinder-3.0-0
+
     build-environment:
       - PKG_CONFIG_PATH: /usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig
+      - CMAKE_PREFIX_PATH: /usr/lib/x86_64-linux-gnu/cmake:/usr/share/cmake
