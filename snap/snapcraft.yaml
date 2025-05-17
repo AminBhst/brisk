@@ -27,7 +27,6 @@ parts:
     plugin: flutter
     source: .
     flutter-target: lib/main.dart
-
     build-packages:
       - clang
       - cmake
