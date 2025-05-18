@@ -52,6 +52,10 @@ jobs:
         with:
           name: brisk-package
           path: snap-artifact
+      
+      - name: Install Snapcraft
+        run: |
+          sudo snap install snapcraft --classic
 
       - name: List contents
         run: ls -R snap-artifact
