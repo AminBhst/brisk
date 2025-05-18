@@ -240,6 +240,7 @@ class _AboutPageState extends State<AboutPage> {
   String get buildType {
     if (isFlatpak) return "-flatpak";
     if (isSnap) return "-snap";
+    if (isAur) return "-aur";
     return "";
   }
 }

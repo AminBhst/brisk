@@ -169,6 +169,18 @@ void handleUpdate(BuildContext context) {
     );
     return;
   }
+  if (isAur) {
+    showDialog(
+      context: context,
+      builder: (context) => PackageManagerUpdateDialog(
+        target: "AUR",
+        updateCommand: "yay -S brisk  #If you're using yay",
+        logo: "assets/icons/arch.svg",
+      ),
+      barrierDismissible: false,
+    );
+    return;
+  }
   launchAutoUpdater();
 }
 
