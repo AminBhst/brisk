@@ -100,7 +100,6 @@ jobs:
     - name: Update .SRCINFO
       run: |
         cd aur-repo
-        updpkgsums
         makepkg --printsrcinfo > .SRCINFO
 
     - name: Commit and push changes
