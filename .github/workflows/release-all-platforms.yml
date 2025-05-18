@@ -168,9 +168,6 @@ jobs:
 
       - name: Copy desktop entry file
         run: cp linux/brisk.desktop build/linux/x64/release/bundle/
-
-      - name: Copy flatpak appdata
-        run: cp .github/io.github.aminbhst.Brisk.appdata.xml build/linux/x64/release/bundle/
         
       - name: Compress the release file
         run: tar -cJf Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
