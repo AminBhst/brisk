@@ -10,15 +10,58 @@
 
 ## :package: Installation
 
-Installation files for Windows, Linux, and MacOS are available at [Github Releases](https://github.com/AminBhst/brisk/releases/latest).
-
-Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin).
+<table>
+  <tr>
+    <th>Platform</th>
+    <th>Package/Installation Method</th>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>
+      <a href="https://github.com/BrisklyDev/brisk/releases/latest">
+        <img width="220" alt="Windows Download" src="https://github.com/BrisklyDev/brisk/blob/main/images/windows-download.png?raw=true">
+      </a>
+  </tr>
+  <tr>
+    <td>MacOS</td>
+    <td>
+      <a href="https://github.com/BrisklyDev/brisk/releases/latest">
+        <img width="220" alt="MacOS Download" src="https://github.com/BrisklyDev/brisk/blob/main/images/macos-download.png?raw=true">
+      </a>
+    </td>
+  </tr>
+  <tr>
+  <tr>
+    <td>Flatpak</td>
+    <td>
+      <a href="https://flathub.org/apps/io.github.BrisklyDev.Brisk">
+        <img width="220" alt="Download on Flathub" src="https://github.com/BrisklyDev/brisk/blob/main/images/flathub-download.png?raw=true">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>Arch</td>
+    <td>
+      <a href="https://aur.archlinux.org/packages/brisk">
+        <img width="220" alt="Download on AUR" src="https://github.com/BrisklyDev/brisk/blob/main/images/download-aur.png?raw=true">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>
+      <a href="https://github.com/BrisklyDev/brisk/releases/latest">
+        <img width="220" alt="Tarball Download" src="https://github.com/BrisklyDev/brisk/blob/main/images/download-linux.png?raw=true">
+      </a>
+    </td>
+  </tr>
+</table>
 
 To install the browser extension, please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension).
 
 
 > [!IMPORTANT]
-> For Linux, make sure to check the [Linux Prerequisites](#key-linux-prerequisites)
+> For Linux, make sure to check the [Linux Prerequisites](#key-linux-prerequisites) (for tarball usage only)
 > 
 > On Windows, if you encountered a "Windows Protected your PC" warning, click `more info -> run anyway`
 >
