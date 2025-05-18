@@ -18,7 +18,7 @@ To install the browser extension, please refer to the [brisk-browser-extension r
     <th>Package/Installation Method</th>
   </tr>
   <tr>
-    <td>Windows</td>
+    <td>Windows (x86_64)</td>
     <td>
       <a href="https://github.com/BrisklyDev/brisk/releases/latest">
         <img width="220" alt="Windows Download" src="https://github.com/BrisklyDev/brisk/blob/main/images/windows-download.png?raw=true">
@@ -34,7 +34,7 @@ To install the browser extension, please refer to the [brisk-browser-extension r
   </tr>
   <tr>
   <tr>
-    <td>Flatpak</td>
+    <td>Flatpak (x86_64, aarch64)</td>
     <td>
       <a href="https://flathub.org/apps/io.github.BrisklyDev.Brisk">
         <img width="220" alt="Download on Flathub" src="https://github.com/BrisklyDev/brisk/blob/main/images/flathub-download.png?raw=true">
@@ -42,7 +42,7 @@ To install the browser extension, please refer to the [brisk-browser-extension r
     </td>
   </tr>
   <tr>
-    <td>Arch</td>
+    <td>Arch (x86_64)</td>
     <td>
       <a href="https://aur.archlinux.org/packages/brisk">
         <img width="220" alt="Download on AUR" src="https://github.com/BrisklyDev/brisk/blob/main/images/download-aur.png?raw=true">
@@ -50,7 +50,7 @@ To install the browser extension, please refer to the [brisk-browser-extension r
     </td>
   </tr>
   <tr>
-    <td>Linux</td>
+    <td>Linux (x86_64)</td>
     <td>
       <a href="https://github.com/BrisklyDev/brisk/releases/latest">
         <img width="220" alt="Tarball Download" src="https://github.com/BrisklyDev/brisk/blob/main/images/download-linux.png?raw=true">
