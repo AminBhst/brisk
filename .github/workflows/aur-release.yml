@@ -68,11 +68,11 @@ jobs:
       run: |
         git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/BrisklyDev/brisklydev.github.io.git
         cd brisklydev.github.io
-        mkdir -p aur-builds
+        mkdir -p brisk/releases/aur
 
     - name: Copy artifact to pages repo
       run: |
-        cp Brisk-v${{ needs.version.outputs.version }}-linux-aur-x86_64.tar.xz brisklydev.github.io/aur-builds
+        cp Brisk-v${{ needs.version.outputs.version }}-linux-aur-x86_64.tar.xz brisklydev.github.io/brisk/releases/aur
       
     - name: Commit and push
       run: |
