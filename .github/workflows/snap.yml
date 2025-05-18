@@ -1,4 +1,4 @@
-name: Build snap
+name: Build and Upload Snap
 
 on:
   workflow_dispatch:
@@ -13,9 +13,8 @@ jobs:
       - uses: snapcore/action-build@v1
         id: build
 
-      - name: Upload artifact 
-        uses: actions/upload-artifact@v4.3.3
-        with:
-          name: brisk-package
-          path: ./brisk_2.2.3_amd64.snap
-          retention-days: 1
+      - name: Upload to Snap Store
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_CREDENTIALS }}
+        run: |
+          snapcraft upload ./brisk_2.2.3_amd64.snap --release=stable
