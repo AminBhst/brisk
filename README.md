@@ -10,6 +10,8 @@
 
 ## :package: Installation
 
+To install the browser extension, please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension).
+
 <table>
   <tr>
     <th>Platform</th>
@@ -57,11 +59,8 @@
   </tr>
 </table>
 
-To install the browser extension, please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension).
-
-
 > [!IMPORTANT]
-> For Linux, make sure to check the [Linux Prerequisites](#key-linux-prerequisites) (for tarball usage only)
+> For Linux, make sure to check the [Linux Prerequisites](#key-linux-prerequisites) (for tarball only)
 > 
 > On Windows, if you encountered a "Windows Protected your PC" warning, click `more info -> run anyway`
 >
