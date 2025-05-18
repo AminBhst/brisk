@@ -64,7 +64,7 @@ jobs:
 
     - name: Clone GitHub Pages repo
       env:
-        PAGES_REPO_PAT: ${{ secrets.PAGES_REPO_PAT }}
+        PAGES_REPO_PAT: ${{ secrets.REPO_PAT }}
       run: |
         git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/BrisklyDev/brisklydev.github.io.git
         cd brisklydev.github.io
