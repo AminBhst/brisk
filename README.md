@@ -25,7 +25,7 @@ To install the browser extension, please refer to the [brisk-browser-extension r
       </a>
   </tr>
   <tr>
-    <td>MacOS</td>
+    <td>MacOS (x86_64, arm64)</td>
     <td>
       <a href="https://github.com/BrisklyDev/brisk/releases/latest">
         <img width="220" alt="MacOS Download" src="https://github.com/BrisklyDev/brisk/blob/main/images/macos-download.png?raw=true">
