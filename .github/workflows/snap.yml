@@ -1,0 +1,71 @@
+name: Build and Upload Snap
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  version:
+    runs-on: windows-latest
+    permissions:
+      contents: read 
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4.1.5
+      
+      - name: Extract Version from pubspec.yaml
+        id: extract_version
+        run: |
+           $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "^\s*version:\s*(\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
+           echo version=$VERSION >> $env:GITHUB_OUTPUT
+           
+  Build-Snap:
+    needs: [version]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: snapcore/action-build@v1
+        id: build
+
+      - name: Upload artifact 
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: brisk-package
+          path: ./brisk_2.2.3_amd64.snap
+          retention-days: 1
+
+  Release:
+    runs-on: ubuntu-22.04
+    needs: [Build-Snap, version]
+    permissions:
+      contents: write
+    steps:
+
+      - name: Checkout the code
+        uses: actions/checkout@v4.1.5
+
+      - name: Download artifact package
+        uses: actions/download-artifact@v4.1.0
+        with:
+          name: brisk-package
+          path: snap-artifact
+      
+      - name: Install Snapcraft
+        run: |
+          sudo snap install snapcraft --classic
+
+      - name: List contents
+        run: ls -R snap-artifact
+
+      - name: Upload to Snap Store
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_CREDENTIALS }}
+        run: |
+          SNAP_FILE=$(find snap-artifact -name "brisk_${{ needs.version.outputs.version }}_amd64.snap")
+          echo "Uploading $SNAP_FILE"
+          snapcraft upload "$SNAP_FILE" --release=stable
+
+          

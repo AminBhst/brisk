@@ -686,13 +686,17 @@ class AppLocalizationsIt extends AppLocalizations {
   String get urlUpdateSuccess => 'URL aggiornato correttamente!';
 
   @override
-  String get flatpakUpdate => 'Aggiornamento Flatpak';
+  String packageManager_updateTitle(Object target) {
+    return 'Aggiornamento $target';
+  }
 
   @override
-  String get flatpakUpdate_description => 'Brisk è stato installato tramite flatpak, quindi l\'aggiornamento automatico in-app è disabilitato.';
+  String packageManager_updateDescription(Object target) {
+    return 'Brisk è stato installato tramite $target, quindi l\'aggiornamento automatico in-app è disabilitato.';
+  }
 
   @override
-  String get flatpakUpdate_hint => 'Utilizza il seguente comando per aggiornare l\'app';
+  String get packageManager_updateDescriptionHint => 'Per aggiornare l\'app usa il seguente comando';
 
   @override
   String get copiedToClipboard => 'Copiato negli appunti';

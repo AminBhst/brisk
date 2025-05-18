@@ -12,7 +12,7 @@ import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/info_dialog.dart';
 import 'package:brisk/widget/download/update_available_dialog.dart';
 import 'package:brisk/widget/other/brisk_change_log_dialog.dart';
-import 'package:brisk/widget/other/flatpak_update_dialog.dart';
+import 'package:brisk/widget/other/package_manager_update_dialog.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -148,7 +148,35 @@ void handleUpdate(BuildContext context) {
   if (isFlatpak) {
     showDialog(
       context: context,
-      builder: (context) => FlatpakUpdateDialog(),
+      builder: (context) => PackageManagerUpdateDialog(
+        target: "Flatpak",
+        updateCommand: "flatpak update io.github.BrisklyDev.Brisk",
+        logo: "assets/icons/flathub.svg",
+      ),
+      barrierDismissible: false,
+    );
+    return;
+  }
+  if (isSnap) {
+    showDialog(
+      context: context,
+      builder: (context) => PackageManagerUpdateDialog(
+        target: "Snap",
+        updateCommand: "sudo snap refresh brisk",
+        logo: "assets/icons/snapcraft.svg",
+      ),
+      barrierDismissible: false,
+    );
+    return;
+  }
+  if (isAur) {
+    showDialog(
+      context: context,
+      builder: (context) => PackageManagerUpdateDialog(
+        target: "AUR",
+        updateCommand: "yay -S brisk  #If you're using yay",
+        logo: "assets/icons/arch.svg",
+      ),
       barrierDismissible: false,
     );
     return;

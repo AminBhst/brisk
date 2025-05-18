@@ -243,8 +243,18 @@
   "urlUpdateError_title": "URL Update Error",
   "urlUpdateError_description": "The given URL does not refer to the same file!",
   "urlUpdateSuccess": "URL updated successfully!",
-  "flatpakUpdate": "Flatpak Update",
-  "flatpakUpdate_description": "Brisk was installed via flatpak and therefore, in-app automatic update is disabled.",
-  "flatpakUpdate_hint": "Please use the following command to update the app",
+  "packageManager_updateTitle": "{target} Update",
+  "@packageManager_updateTitle": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "packageManager_updateDescription": "Brisk was installed via {target} and therefore, in-app automatic update is disabled.",
+  "@packageManager_updateDescription": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "packageManager_updateDescriptionHint": "Please use the following command to update the app",
   "copiedToClipboard": "Copied to Clipboard"
 }

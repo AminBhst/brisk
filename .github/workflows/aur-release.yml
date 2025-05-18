@@ -1,0 +1,116 @@
+name: AUR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  version:
+    runs-on: windows-latest
+    permissions:
+      contents: read 
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4.1.5
+      
+      - name: Extract Version from pubspec.yaml
+        id: extract_version
+        run: |
+           $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "^\s*version:\s*(\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
+           echo version=$VERSION >> $env:GITHUB_OUTPUT 
+           
+  build-and-deploy:
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout main repo
+      uses: actions/checkout@v3
+      
+    - name: Install flutter
+      uses: subosito/flutter-action@v2.14.0
+      with:
+        flutter-version: "3.29.3"
+        channel: 'stable'
+        cache: true
+        cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' 
+        cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' 
+        architecture: x64
+
+    - name: Install required tools     
+      run: |
+         sudo apt-get update -y
+         sudo apt-get install -y keybinder-3.0 clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev rpm patchelf libayatana-appindicator3-dev
+         
+    - name: Enable linux-desktop for flutter
+      run: flutter config --enable-linux-desktop && export PATH="$PATH":"$HOME/.pub-cache/bin"
+
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Start the build process
+      run: flutter build linux --release --dart-define=BUILD_METHOD=aur
+
+    - name: Copy desktop entry file
+      run: cp linux/brisk.desktop build/linux/x64/release/bundle/
+             
+    - name: Compress the release file
+      run: tar -cJf Brisk-v${{ needs.version.outputs.version }}-linux-aur-x86_64.tar.xz -C build/linux/x64/release/bundle/ .
+          
+    - name: Setup Git
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+
+    - name: Clone GitHub Pages repo
+      env:
+        PAGES_REPO_PAT: ${{ secrets.REPO_PAT }}
+      run: |
+        git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/BrisklyDev/brisklydev.github.io.git
+        cd brisklydev.github.io
+        mkdir -p brisk/releases/aur
+
+    - name: Copy artifact to pages repo
+      run: |
+        cp Brisk-v${{ needs.version.outputs.version }}-linux-aur-x86_64.tar.xz brisklydev.github.io/brisk/releases/aur
+      
+    - name: Commit and push
+      run: |
+        cd brisklydev.github.io
+        git add .
+        git commit -m "Add AUR build for version ${{ needs.version.outputs.version }}"
+        git push origin main
+
+    - name: Wait for file to go live
+      run: sleep 60
+
+    - name: Setup SSH key for AUR
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.AUR_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
+
+    - name: Clone AUR repo via SSH
+      run: |
+        git clone ssh://aur@aur.archlinux.org/brisk.git aur-repo
+        cd aur-repo
+
+    - name: Update PKGBUILD version
+      run: |
+        cd aur-repo
+        sed -i "s/^pkgver=.*/pkgver=${{ needs.version.outputs.version }}/" PKGBUILD
+
+    - name: Update .SRCINFO
+      run: |
+        cd aur-repo
+        sed -i 's/^[[:space:]]*pkgver =.*/\tpkgver = ${{ needs.version.outputs.version }}/' .SRCINFO
+        sed -i 's/^[[:space:]]*source =.*/\tsource = https:\/\/brisklydev.github.io\/brisk\/releases\/aur\/Brisk-v${{ needs.version.outputs.version }}-linux-aur-x86_64.tar.xz/' .SRCINFO
+
+    - name: Commit and push changes
+      run: |
+        cd aur-repo
+        git config user.name "GitHub Action Bot"
+        git config user.email "actions@github.com"
+        git add PKGBUILD .SRCINFO
+        git commit -m "Update pkgver to ${{ needs.version.outputs.version }}"
+        git push origin master

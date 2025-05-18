@@ -1,5 +1,6 @@
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/util/platform.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class _AboutPageState extends State<AboutPage> {
                 ),
                 const SizedBox(width: 30),
                 Text(
-                  "${loc.settings_version}: ${SettingsCache.currentVersion}",
+                  "${loc.settings_version}: ${SettingsCache.currentVersion}$buildType",
                   style: TextStyle(color: theme.titleTextColor),
                 ),
               ],
@@ -234,5 +235,12 @@ class _AboutPageState extends State<AboutPage> {
         ],
       ),
     );
+  }
+
+  String get buildType {
+    if (isFlatpak) return "-flatpak";
+    if (isSnap) return "-snap";
+    if (isAur) return "-aur";
+    return "";
   }
 }
