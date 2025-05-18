@@ -44,7 +44,7 @@ class _AboutPageState extends State<AboutPage> {
                 ),
                 const SizedBox(width: 30),
                 Text(
-                  "${loc.settings_version}: ${SettingsCache.currentVersion} $buildType",
+                  "${loc.settings_version}: ${SettingsCache.currentVersion}$buildType",
                   style: TextStyle(color: theme.titleTextColor),
                 ),
               ],
@@ -238,8 +238,8 @@ class _AboutPageState extends State<AboutPage> {
   }
 
   String get buildType {
-    if (isFlatpak) return "Flatpak";
-    if (isSnap) return "Snap";
+    if (isFlatpak) return "-flatpak";
+    if (isSnap) return "-snap";
     return "";
   }
 }
