@@ -78,5 +78,5 @@ jobs:
       run: |
         cd brisklydev.github.io
         git add .
-        git commit -m "Add AUR build for version ${{ github.ref_name }}"
+        git commit -m "Add AUR build for version ${{ needs.version.outputs.version }}"
         git push origin main
