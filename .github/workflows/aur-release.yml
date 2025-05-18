@@ -80,6 +80,9 @@ jobs:
         git commit -m "Add AUR build for version ${{ needs.version.outputs.version }}"
         git push origin main
 
+    - name: Wait for file to go live
+      run: sleep 60
+
     - name: Setup SSH key for AUR
       run: |
         mkdir -p ~/.ssh
