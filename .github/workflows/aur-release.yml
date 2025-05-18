@@ -100,8 +100,8 @@ jobs:
     - name: Update .SRCINFO
       run: |
         cd aur-repo
-        sed -i "s/^pkgver = .*/pkgver = ${{ needs.version.outputs.version }}/" .SRCINFO
-        sed -i "s|^source = .*|source = https://github.com/BrisklyDev/brisk/releases/aur/Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz|" .SRCINFO
+        sed -i 's/^[[:space:]]*pkgver =.*/\tpkgver = v${{ needs.version.outputs.version }}/' .SRCINFO
+        sed -i 's/^[[:space:]]*source =.*/\tsource = https:\/\/github.com\/BrisklyDev\/brisk\/releases\/aur\/Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.tar.xz/' .SRCINFO
 
 
     - name: Commit and push changes
