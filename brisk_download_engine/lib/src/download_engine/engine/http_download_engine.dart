@@ -1157,6 +1157,8 @@ class HttpDownloadEngine {
   ) {
     if (success) {
       downloadProgress.assembleProgress = 1;
+      downloadProgress.downloadProgress = 1;
+      downloadProgress.downloadItem.progress = 1;
       downloadProgress.status = DownloadStatus.assembleComplete;
       downloadProgress.downloadItem.status = DownloadStatus.assembleComplete;
       downloadProgress.downloadItem.finishDate = DateTime.now();
