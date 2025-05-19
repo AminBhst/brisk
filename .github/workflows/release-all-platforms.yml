@@ -355,7 +355,7 @@ jobs:
         run: snapcraft upload brisk_${{ needs.version.outputs.version }}_amd64.snap --release=stable
 
 
-  Release_AUR:
+  Release-AUR:
     needs: [Build-Linux, Build-windows, Build-macos, Build-Snap, version]
     runs-on: ubuntu-latest
     steps:
