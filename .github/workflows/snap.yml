@@ -67,9 +67,6 @@ jobs:
       - name: Upload to Snap Store
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_CREDENTIALS }}
-        run: |
-          SNAP_FILE=$(find snap-artifact -name "brisk_${{ needs.version.outputs.version }}_amd64.snap")
-          echo "Uploading $SNAP_FILE"
-          snapcraft upload "$SNAP_FILE" --release=stable
+        run: snapcraft upload brisk_${{ needs.version.outputs.version }}_amd64.snap --release=stable
 
           
