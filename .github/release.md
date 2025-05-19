@@ -1,21 +1,7 @@
 # Change Log
 
-## :earth_asia: Localization Support
-Added localization for the following languages:
-- Persian
-- German
-- Italian by [bovirus](https://github.com/bovirus)
-  
-If you're interested in adding support for your language, please open an issue.
-
 ## :hammer_and_wrench: Bug Fixes and Improvements
-- New app logo and icon
-- Fixed a bug that caused files to be assembled incorrectly when some websites did not provide a proper file name
-- Download Engine bug fixes and improvements
-- Fixed failing to retrieve file info for multiple selected links from the browser
-- Added automatic URL update feature [#66](https://github.com/Brisk-Apps/brisk/issues/66)
-- Added browser extension installation guide in the UI
-- Minor UI fixes
-
-## :heart: Credits
-Thanks to [bovirus](https://github.com/bovirus) for contributing the Italian translations
+- Added custom download addition hotkey to settings
+- Added scope to download addition hotkey (scope=system will trigger the hotkey even when the app is not on screen)
+- Fixed some minor tray issues [#116](https://github.com/BrisklyDev/brisk/issues/116)
+- Fixed file rename not working using the text field [#118](https://github.com/BrisklyDev/brisk/issues/118)
