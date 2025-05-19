@@ -27,6 +27,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Update snapcraft.yaml version
+        run: |
+          cd snap
+          echo "Setting version to ${{ needs.version.outputs.version }}"
+          sed -i "s/^version: .*/version: ${{ needs.version.outputs.version }}/" snapcraft.yaml
+
       - uses: snapcore/action-build@v1
         id: build
 
@@ -51,7 +57,6 @@ jobs:
         uses: actions/download-artifact@v4.1.0
         with:
           name: brisk-package
-          path: snap-artifact
 
       - name: Extract downloaded artifact
         run: unzip snap-artifact/brisk-package.zip -d snap-artifact
