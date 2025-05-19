@@ -247,7 +247,7 @@ class FileUtil {
       for (int i = 1; i <= 9; i++) ...{'COM$i', 'LPT$i'},
     };
     final baseName = name.split('.').first.toUpperCase();
-    if (Platform.isWindows && reservedNames.contains(baseName)) return true;
+    if (reservedNames.contains(baseName)) return true;
     return false;
   }
 }
