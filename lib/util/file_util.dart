@@ -230,6 +230,7 @@ class FileUtil {
   }
 
   static bool isFilePathInvalid(String filePath) {
+    if (filePath.endsWith(separator)) return true;
     final segments = split(filePath)..removeAt(0);
     return segments.any(isFileNameInvalid);
   }
