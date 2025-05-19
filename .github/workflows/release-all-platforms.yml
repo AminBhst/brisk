@@ -333,7 +333,7 @@ jobs:
 
   Release-Snap:
     runs-on: ubuntu-22.04
-    needs: [Release-Binaries]
+    needs: [Build-Linux, Build-windows, Build-macos, Build-Snap, version]
     permissions:
       contents: write
     steps:
