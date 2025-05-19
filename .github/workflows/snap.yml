@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4.3.3
         with:
           name: brisk-package
-          path: ./brisk_2.2.3_amd64.snap
+          path: ./brisk_${{ needs.version.outputs.version }}_amd64.snap
           retention-days: 1
 
   Release:
@@ -52,6 +52,9 @@ jobs:
         with:
           name: brisk-package
           path: snap-artifact
+
+      - name: Extract downloaded artifact
+        run: unzip snap-artifact/brisk-package.zip -d snap-artifact
       
       - name: Install Snapcraft
         run: |
