@@ -680,10 +680,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get urlUpdateError_title => 'Errore aggiornamento URL';
 
   @override
-  String get urlUpdateError_description => 'L\'URL fornito non si riferisce allo stesso file!';
+  String get urlUpdateError_description => 'L\'URL fornita non si riferisce allo stesso file!';
 
   @override
-  String get urlUpdateSuccess => 'URL aggiornato correttamente!';
+  String get urlUpdateSuccess => 'URL aggiornata correttamente!';
 
   @override
   String packageManager_updateTitle(Object target) {

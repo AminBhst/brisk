@@ -28,7 +28,7 @@ class FileUtil {
     Directory tempDir =
         Platform.isLinux ? await linuxDefaultTempDir : await defaultTempDir;
     defaultTempFileDir = tempDir;
-    if (savePath != tempDir.path) {
+    if (savePath?.value != defaultTempFileDir.path) {
       completer.complete(tempDir);
       return completer.future;
     }
@@ -52,7 +52,7 @@ class FileUtil {
     final downloadDir = await getDownloadsDirectory();
     final savePath = await HiveUtil.getSetting(SettingOptions.savePath);
     defaultSaveDir = Directory(join(downloadDir!.path, 'Brisk'));
-    if (savePath != downloadDir.path) {
+    if (savePath?.value != defaultSaveDir.path) {
       completer.complete(defaultSaveDir);
       return completer.future;
     }
