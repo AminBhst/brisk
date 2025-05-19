@@ -58,12 +58,8 @@ jobs:
         with:
           name: brisk-package
 
-      - name: Extract downloaded artifact
-        run: unzip snap-artifact/brisk-package.zip -d snap-artifact
-      
       - name: Install Snapcraft
-        run: |
-          sudo snap install snapcraft --classic
+        run: sudo snap install snapcraft --classic
 
       - name: List contents
         run: ls -R snap-artifact
