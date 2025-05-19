@@ -207,7 +207,7 @@ class FileUtil {
     } else if (fileType == DLFileType.compressed.name) {
       return Colors.blue;
     } else if (fileType == DLFileType.documents.name) {
-      return  const Color(0xFF4CAF50);
+      return const Color(0xFF4CAF50);
     } else if (fileType == DLFileType.program.name) {
       return Colors.indigoAccent;
     } else {
@@ -227,6 +227,28 @@ class FileUtil {
     final subDir = _fileTypeToFolderName(detectFileType(fileName));
     final filePath = join(SettingsCache.saveDir.path, subDir, fileName);
     return File(filePath).existsSync();
+  }
+
+  static bool isFilePathInvalid(String filePath) {
+    final segments = split(filePath)..removeAt(0);
+    return segments.any(isFileNameInvalid);
+  }
+
+  static bool isFileNameInvalid(String name) {
+    if (name.trim().isEmpty) return true;
+    final invalidChars = RegExp(r'[<>:"/\\|?*\x00-\x1F]');
+    if (invalidChars.hasMatch(name)) return true;
+    if (name.endsWith(' ') || name.endsWith('.')) return true;
+    final reservedNames = <String>{
+      'CON',
+      'PRN',
+      'AUX',
+      'NUL',
+      for (int i = 1; i <= 9; i++) ...{'COM$i', 'LPT$i'},
+    };
+    final baseName = name.split('.').first.toUpperCase();
+    if (Platform.isWindows && reservedNames.contains(baseName)) return true;
+    return false;
   }
 }
 
