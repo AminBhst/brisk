@@ -23,6 +23,8 @@ import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/download/ask_duplication_action.dart';
+import 'package:window_manager/window_manager.dart';
+import 'package:window_to_front/window_to_front.dart';
 import 'file_util.dart';
 import 'http_util.dart';
 
@@ -53,6 +55,7 @@ class DownloadAdditionUiUtil {
   static void handleDownloadAddition(BuildContext context, String url,
       {bool updateDialog = false, int? downloadId, additionalPop = false}) {
     final loc = AppLocalizations.of(context)!;
+    windowManager.show().then((value) => WindowToFront.activate());
     if (!isUrlValid(url)) {
       showDialog(
         context: context,

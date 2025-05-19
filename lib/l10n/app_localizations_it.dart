@@ -700,4 +700,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get copiedToClipboard => 'Copiato negli appunti';
+
+  @override
+  String get addUrlFromClipboardHotkey => 'Hotkey: aggiungi URL dagli appunti';
 }

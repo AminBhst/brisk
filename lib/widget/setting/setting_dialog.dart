@@ -5,6 +5,7 @@ import 'package:brisk/provider/locale_provider.dart';
 import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/theme/application_theme_holder.dart';
+import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/setting/page/settings_page.dart';
@@ -227,6 +228,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
     ApplicationThemeHolder.setActiveTheme();
     Provider.of<LocaleProvider>(context, listen: false).setCurrentLocale();
     themeProvider?.updateActiveTheme();
+    HotKeyUtil.registerDownloadAdditionHotKey(context);
     Navigator.of(context).pop();
   }
 

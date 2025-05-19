@@ -14,6 +14,8 @@ import 'package:brisk/util/file_extensions.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
+import 'package:flutter/services.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'file_util.dart';
 
@@ -29,6 +31,10 @@ class SettingsCache {
   static late bool enableWindowToFront;
   static late bool loggerEnabled;
   static late String locale;
+  static late HotKeyModifier? downloadAdditionHotkeyModifierOne;
+  static late HotKeyModifier? downloadAdditionHotkeyModifierTwo;
+  static late LogicalKeyboardKey? downloadAdditionHotkeyLogicalKey;
+  static late HotKeyScope downloadAdditionHotkeyScope;
 
   /// File
   static late Directory temporaryDir;
@@ -69,6 +75,22 @@ class SettingsCache {
     SettingOptions.locale.name: [
       SettingType.general.name,
       "en",
+    ],
+    SettingOptions.downloadAdditionHotkeyModifierOne.name: [
+      SettingType.general.name,
+      Platform.isMacOS ? "meta" : "control"
+    ],
+    SettingOptions.downloadAdditionHotkeyModifierTwo.name: [
+      SettingType.general.name,
+      Platform.isMacOS ? "" : "alt"
+    ],
+    SettingOptions.downloadAdditionHotkeyLogicalKey.name: [
+      SettingType.general.name,
+      Platform.isMacOS ? "N" : "A"
+    ],
+    SettingOptions.downloadAdditionHotkeyScope.name: [
+      SettingType.general.name,
+      HotKeyScope.system.name,
     ],
     SettingOptions.notificationOnDownloadFailure.name: [
       SettingType.general.name,
@@ -187,6 +209,18 @@ class SettingsCache {
         case SettingOptions.locale:
           locale = value.toString();
           break;
+        case SettingOptions.downloadAdditionHotkeyModifierOne:
+          downloadAdditionHotkeyModifierOne = strToHotkeyModifier(value);
+          break;
+        case SettingOptions.downloadAdditionHotkeyModifierTwo:
+          downloadAdditionHotkeyModifierTwo = strToHotkeyModifier(value);
+          break;
+        case SettingOptions.downloadAdditionHotkeyLogicalKey:
+          downloadAdditionHotkeyLogicalKey = strToLogicalKey(value);
+          break;
+        case SettingOptions.downloadAdditionHotkeyScope:
+          downloadAdditionHotkeyScope = strToHotkeyScope(value);
+          break;
         case SettingOptions.notificationOnDownloadCompletion:
           notificationOnDownloadCompletion = parseBool(value);
           break;
@@ -285,6 +319,21 @@ class SettingsCache {
         case SettingOptions.notificationOnDownloadCompletion:
           setting.value =
               parseBoolStr(SettingsCache.notificationOnDownloadCompletion);
+          break;
+        case SettingOptions.downloadAdditionHotkeyModifierOne:
+          setting.value =
+              SettingsCache.downloadAdditionHotkeyModifierOne?.name ?? "";
+          break;
+        case SettingOptions.downloadAdditionHotkeyModifierTwo:
+          setting.value =
+              SettingsCache.downloadAdditionHotkeyModifierTwo?.name ?? "";
+          break;
+        case SettingOptions.downloadAdditionHotkeyLogicalKey:
+          setting.value =
+              logicalKeyToStr(SettingsCache.downloadAdditionHotkeyLogicalKey);
+          break;
+        case SettingOptions.downloadAdditionHotkeyScope:
+          setting.value = SettingsCache.downloadAdditionHotkeyScope.name;
           break;
         case SettingOptions.notificationOnDownloadFailure:
           setting.value =

@@ -256,5 +256,6 @@
     }
   },
   "packageManager_updateDescriptionHint": "Please use the following command to update the app",
-  "copiedToClipboard": "Copied to Clipboard"
+  "copiedToClipboard": "Copied to Clipboard",
+  "addUrlFromClipboardHotkey": "Add URL from Clipboard Hotkey"
 }

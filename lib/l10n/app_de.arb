@@ -254,5 +254,6 @@
     }
   },
   "packageManager_updateDescriptionHint": "Bitte verwenden Sie den folgenden Befehl, um die App zu aktualisieren",
-  "copiedToClipboard": "In die Zwischenablage kopiert"
+  "copiedToClipboard": "In die Zwischenablage kopiert",
+  "addUrlFromClipboardHotkey": "Hotkey: URL aus Zwischenablage einfügen"
 }

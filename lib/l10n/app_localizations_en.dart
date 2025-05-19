@@ -700,4 +700,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copiedToClipboard => 'Copied to Clipboard';
+
+  @override
+  String get addUrlFromClipboardHotkey => 'Add URL from Clipboard Hotkey';
 }

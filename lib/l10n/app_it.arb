@@ -256,5 +256,6 @@
     }
   },
   "packageManager_updateDescriptionHint": "Per aggiornare l'app usa il seguente comando",
-  "copiedToClipboard": "Copiato negli appunti"
+  "copiedToClipboard": "Copiato negli appunti",
+  "addUrlFromClipboardHotkey": "Hotkey: aggiungi URL dagli appunti"
 }

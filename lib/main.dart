@@ -216,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void didChangeDependencies() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      HotKeyUtil.registerDefaultDownloadAdditionHotKey(context);
+      HotKeyUtil.registerDownloadAdditionHotKey(context);
       if (Platform.isMacOS) {
         HotKeyUtil.registerMacOsDefaultWindowHotkeys();
       }

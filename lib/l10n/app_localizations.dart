@@ -1460,6 +1460,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copied to Clipboard'**
   String get copiedToClipboard;
+
+  /// No description provided for @addUrlFromClipboardHotkey.
+  ///
+  /// In en, this message translates to:
+  /// **'Add URL from Clipboard Hotkey'**
+  String get addUrlFromClipboardHotkey;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

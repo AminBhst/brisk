@@ -700,4 +700,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get copiedToClipboard => 'در کلیپ‌بورد کپی شد';
+
+  @override
+  String get addUrlFromClipboardHotkey => 'کلید میانبر اضافه کردن دانلود از کلیپبورد';
 }

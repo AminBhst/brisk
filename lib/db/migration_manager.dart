@@ -9,6 +9,7 @@ class MigrationManager {
     Migration(0, "Add proxy Settings"),
     Migration(1, "Add m3u8 connection number"),
     Migration(2, "Add i10n"),
+    Migration(3, "Add custom hotkey"),
   ];
 
   static runMigrations() async {
@@ -32,6 +33,9 @@ class MigrationManager {
         break;
       case 2:
         await runMigrationV2();
+        break;
+      case 3:
+        await runMigrationV3();
         break;
       default:
         break;
@@ -100,5 +104,39 @@ class MigrationManager {
           SettingsCache.defaultSettings[SettingOptions.locale.name]![0],
     );
     await HiveUtil.instance.settingBox.add(localeSetting);
+  }
+
+  static runMigrationV3() async {
+    final hotkeyModifierOne = Setting(
+      name: SettingOptions.downloadAdditionHotkeyModifierOne.name,
+      value: SettingsCache.defaultSettings[
+          SettingOptions.downloadAdditionHotkeyModifierOne.name]![1],
+      settingType: SettingsCache.defaultSettings[
+          SettingOptions.downloadAdditionHotkeyModifierOne.name]![0],
+    );
+    final hotkeyModifierTwo = Setting(
+      name: SettingOptions.downloadAdditionHotkeyModifierTwo.name,
+      value: SettingsCache.defaultSettings[
+          SettingOptions.downloadAdditionHotkeyModifierTwo.name]![1],
+      settingType: SettingsCache.defaultSettings[
+          SettingOptions.downloadAdditionHotkeyModifierTwo.name]![0],
+    );
+    final hotkeyLogicalKey = Setting(
+      name: SettingOptions.downloadAdditionHotkeyLogicalKey.name,
+      value: SettingsCache.defaultSettings[
+          SettingOptions.downloadAdditionHotkeyLogicalKey.name]![1],
+      settingType: SettingsCache.defaultSettings[
+          SettingOptions.downloadAdditionHotkeyLogicalKey.name]![0],
+    );
+    final hotkeyScope = Setting(
+      name: SettingOptions.downloadAdditionHotkeyScope.name,
+      value: SettingsCache
+          .defaultSettings[SettingOptions.downloadAdditionHotkeyScope.name]![1],
+      settingType: SettingsCache
+          .defaultSettings[SettingOptions.downloadAdditionHotkeyScope.name]![0],
+    );
+    await HiveUtil.instance.settingBox.addAll(
+      [hotkeyModifierOne, hotkeyModifierTwo, hotkeyLogicalKey, hotkeyScope],
+    );
   }
 }

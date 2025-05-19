@@ -256,5 +256,6 @@
   },
 
   "packageManager_updateDescriptionHint": "لطفاً برای به‌روزرسانی برنامه از دستور زیر استفاده کنید.",
-  "copiedToClipboard": "در کلیپ‌بورد کپی شد"
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد",
+  "addUrlFromClipboardHotkey": "کلید میانبر اضافه کردن دانلود از کلیپبورد"
 }
