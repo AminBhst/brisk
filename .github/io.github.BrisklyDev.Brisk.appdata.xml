@@ -33,25 +33,14 @@
   </screenshots>
 
   <releases>
-    <release version="2.2.3" date="2025-05-13">
+    <release version="2.2.4" date="2025-05-19">
     <description>
-      <p><em>🌏 Localization Support</em></p>
-      <ul>
-        <li>Added Persian</li>
-        <li>Added German</li>
-        <li>Added Italian</li>
-      </ul>
-
       <p><em>🔧 Bug Fixes and Improvements</em></p>
       <ul>
-        <li>New app logo and icon</li>
-        <li>Fixed incorrect file assembly when websites lacked proper filenames</li>
-        <li>Download Engine bug fixes and improvements</li>
-        <li>Fixed file info retrieval for multiple selected links from browser</li>
-        <li>Added automatic URL update feature</li>
-        <li>Fixed minimize to tray on Windows and Linux</li>
-        <li>Added browser extension installation guide in UI</li>
-        <li>Minor UI fixes</li>
+        <li>Added custom download addition hotkey to settings</li>
+        <li>Added scope to download addition hotkey (scope=system will trigger the hotkey even when the app is not on screen)</li>
+        <li>Fixed some minor tray issues</li>
+        <li>Fixed file rename not working using the text field</li>
       </ul>
     </description>
     </release>
