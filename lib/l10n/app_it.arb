@@ -241,8 +241,8 @@
   "awaitingUrl_description": "Sei stato reindirizzato al sito di riferimento di questo file.",
   "awaitingUrl_descriptionHint": "Clic sul collegamento download per catturare e aggiornare automaticamente l'URL download.",
   "urlUpdateError_title": "Errore aggiornamento URL",
-  "urlUpdateError_description": "L'URL fornito non si riferisce allo stesso file!",
-  "urlUpdateSuccess": "URL aggiornato correttamente!",
+  "urlUpdateError_description": "L'URL fornita non si riferisce allo stesso file!",
+  "urlUpdateSuccess": "URL aggiornata correttamente!",
   "packageManager_updateTitle": "Aggiornamento {target}",
   "@packageManager_updateTitle": {
     "placeholders": {
