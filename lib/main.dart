@@ -246,6 +246,10 @@ class _MyHomePageState extends State<MyHomePage>
       await windowManager.show();
       windowManager.focus();
     }
+    if ((Platform.isWindows || Platform.isLinux ) && !isVisible) {
+      await windowManager.show();
+      windowManager.focus();
+    }
     super.onTrayIconMouseDown();
   }
 
