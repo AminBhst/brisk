@@ -129,8 +129,14 @@ flutter build macos|windows|linux
 
 ## :money_with_wings: Donations
 You can support my work via:
-- ERC20: 0xcc506Cf21374B880B8eFA5294D8047C660DaD80D
-- TRC20: TDbP6HDUTtSzP1zRagEt27o5QYjB2oTFwE
+### ERC20
+```text
+0xcc506Cf21374B880B8eFA5294D8047C660DaD80D
+```
+### TRC20
+```text
+TDbP6HDUTtSzP1zRagEt27o5QYjB2oTFwE
+```
 
 ## :heart: Credits and Contributors
 Contributions are welcome and appreciated.
