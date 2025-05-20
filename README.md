@@ -42,7 +42,7 @@ To install the browser extension, please refer to the [brisk-browser-extension r
     </td>
   </tr>
     <tr>
-    <td>Flatpak (x86_64, aarch64)</td>
+    <td>Snap (amd64)</td>
     <td>
       <a href="https://snapcraft.io/brisk">
         <img width="220" alt="Download on Snap Store" src="https://github.com/BrisklyDev/brisk/blob/main/images/download-snap.png?raw=true">
