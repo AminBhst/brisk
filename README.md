@@ -121,7 +121,7 @@ https://github.com/user-attachments/assets/844c89a4-8aaa-49f0-9a4e-17fb8614bbc8
 
 ## :hammer_and_wrench: Build From Source
 
-Install the Flutter SDK v3.29.2
+Install the Flutter SDK v3.29.3
 
 ```bash
 flutter build macos|windows|linux
