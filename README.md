@@ -34,7 +34,6 @@ To install the browser extension, please refer to the [brisk-browser-extension r
     </td>
   </tr>
   <tr>
-  <tr>
     <td>Flatpak (x86_64, aarch64)</td>
     <td>
       <a href="https://flathub.org/apps/io.github.BrisklyDev.Brisk">
