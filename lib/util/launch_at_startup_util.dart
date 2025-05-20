@@ -7,6 +7,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../constants/setting_options.dart';
 import '../db/hive_util.dart';
 
+bool launchedAtStartup = false;
+const fromStartupArg = '--from-startup';
+
 Future<void> updateLaunchAtStartupSetting() async {
   final launchOnStartupEnabled = HiveUtil.instance.settingBox.values
       .where((val) =>
@@ -15,6 +18,12 @@ Future<void> updateLaunchAtStartupSetting() async {
 
   if (Platform.isMacOS) return;
   if (parseBool(launchOnStartupEnabled.value)) {
+    launchAtStartup.setup(
+      appName: "brisk",
+      appPath: Platform.resolvedExecutable,
+      args: [fromStartupArg],
+      /// TODO add package name when msix is supported
+    );
     await launchAtStartup.enable();
   } else {
     await launchAtStartup.disable();

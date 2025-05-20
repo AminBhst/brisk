@@ -40,7 +40,7 @@ import 'util/file_util.dart';
 import 'util/settings_cache.dart';
 
 // TODO Fix resizing the window when a row is selected
-void main() {
+void main(List<String> args) {
   runZonedGuarded<Future<void>>(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
@@ -67,6 +67,7 @@ void main() {
       await updateLaunchAtStartupSetting();
       LocaleProvider.instance.setCurrentLocale();
       ApplicationThemeHolder.setActiveTheme();
+      launchedAtStartup = args.contains(fromStartupArg);
 
       runApp(
         MultiProvider(
@@ -215,13 +216,22 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void didChangeDependencies() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       HotKeyUtil.registerDownloadAdditionHotKey(context);
       if (Platform.isMacOS) {
         HotKeyUtil.registerMacOsDefaultWindowHotkeys();
       }
       BrowserExtensionServer.setup(context);
       handleBriskUpdateCheck(context);
+      if (launchedAtStartup) {
+        Future.delayed(const Duration(milliseconds: 200), () {
+          windowManager.waitUntilReadyToShow(null, () {
+            windowManager.hide();
+            initTray();
+          });
+        });
+        launchedAtStartup = false;
+      }
     });
     super.didChangeDependencies();
   }
@@ -246,7 +256,7 @@ class _MyHomePageState extends State<MyHomePage>
       await windowManager.show();
       windowManager.focus();
     }
-    if ((Platform.isWindows || Platform.isLinux ) && !isVisible) {
+    if ((Platform.isWindows || Platform.isLinux) && !isVisible) {
       await windowManager.show();
       windowManager.focus();
     }
