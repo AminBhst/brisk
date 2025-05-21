@@ -257,5 +257,7 @@
 
   "packageManager_updateDescriptionHint": "لطفاً برای به‌روزرسانی برنامه از دستور زیر استفاده کنید.",
   "copiedToClipboard": "در کلیپ‌بورد کپی شد",
-  "addUrlFromClipboardHotkey": "کلید میانبر اضافه کردن دانلود از کلیپبورد"
+  "addUrlFromClipboardHotkey": "کلید میانبر اضافه کردن دانلود از کلیپبورد",
+  "tray_showWindow": "نمایش پنجره",
+  "tray_exitApp": "خروج از برنامه"
 }

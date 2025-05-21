@@ -16,7 +16,7 @@ class HotKeyUtil {
   static bool _isMacosWindowHotkeyRegistered = false;
   static HotKey? downloadAdditionHotkey;
 
-  static void registerMacOsDefaultWindowHotkeys() async {
+  static void registerMacOsDefaultWindowHotkeys(BuildContext context) async {
     if (_isMacosWindowHotkeyRegistered) return;
     //Show window thumbnail in dock, keep dock icon,
     // click window thumbnail or dock icon to restore window,
@@ -45,7 +45,7 @@ class HotKeyUtil {
     );
     await hotKeyManager.register(
       hideToTrayHotkey,
-      keyDownHandler: (_) => initTray().then((_) async {
+      keyDownHandler: (_) => initTray(context).then((_) async {
         await windowManager.hide();
         windowManager.setSkipTaskbar(true);
       }),

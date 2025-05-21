@@ -18,6 +18,7 @@ import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/notification_manager.dart';
+import 'package:brisk/util/single_instance_handler.dart';
 import 'package:brisk/util/tray_util.dart';
 import 'package:brisk/widget/base/app_exit_dialog.dart';
 import 'package:brisk/widget/base/global_context.dart';
@@ -40,76 +41,67 @@ import 'util/file_util.dart';
 import 'util/settings_cache.dart';
 
 // TODO Fix resizing the window when a row is selected
-void main(List<String> args) {
-  runZonedGuarded<Future<void>>(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
+Future<void> main(List<String> args) async {
+  if (!Platform.isWindows) {
+    await SingleInstanceHandler.tryConnectSocket();
+  }
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await SingleInstanceHandler.init();
+    await Logger.init();
+    await migrateDatabaseLocation();
+    await windowManager.ensureInitialized();
+    tz.initializeTimeZones();
+    await HiveUtil.instance.initHive();
+    await setupLaunchAtStartup();
+    await FileUtil.setDefaultTempDir();
+    await FileUtil.setDefaultSaveDir();
+    await HiveUtil.instance.putInitialBoxValues();
+    await MigrationManager.runMigrations();
+    await SettingsCache.setCachedSettings();
+    await updateLaunchAtStartupSetting();
+    LocaleProvider.instance.setCurrentLocale();
+    ApplicationThemeHolder.setActiveTheme();
+    launchedAtStartup = args.contains(fromStartupArg);
 
-      await Logger.init();
-      FlutterError.onError = (FlutterErrorDetails details) {
-        print('Flutter Error: ${details.exceptionAsString()}');
-        print(details.stack);
-        FlutterError.presentError(details);
-        Logger.log(details.exceptionAsString());
-        Logger.log(details.stack);
-        Logger.log(details.exception);
-      };
-      await migrateDatabaseLocation();
-      await windowManager.ensureInitialized();
-      tz.initializeTimeZones();
-      await HiveUtil.instance.initHive();
-      await setupLaunchAtStartup();
-      await FileUtil.setDefaultTempDir();
-      await FileUtil.setDefaultSaveDir();
-      await HiveUtil.instance.putInitialBoxValues();
-      await MigrationManager.runMigrations();
-      await SettingsCache.setCachedSettings();
-      await updateLaunchAtStartupSetting();
-      LocaleProvider.instance.setCurrentLocale();
-      ApplicationThemeHolder.setActiveTheme();
-      launchedAtStartup = args.contains(fromStartupArg);
-
-      runApp(
-        MultiProvider(
-          providers: [
-            ChangeNotifierProvider<SettingsProvider>(
-              create: (_) => SettingsProvider(),
-            ),
-            ChangeNotifierProvider<QueueProvider>(
-              create: (_) => QueueProvider(),
-            ),
-            ChangeNotifierProvider<ThemeProvider>(
-              create: (_) => ThemeProvider(),
-            ),
-            ChangeNotifierProvider<PlutoGridCheckRowProvider>(
-              create: (_) => PlutoGridCheckRowProvider(),
-            ),
-            ChangeNotifierProvider<LocaleProvider>(
-              create: (_) => LocaleProvider.instance,
-            ),
-            ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
-                DownloadRequestProvider>(
-              create: (_) =>
-                  DownloadRequestProvider(PlutoGridCheckRowProvider()),
-              update: (context, plutoProvider, downloadProvider) {
-                if (downloadProvider == null) {
-                  return DownloadRequestProvider(plutoProvider);
-                } else {
-                  downloadProvider.plutoProvider = plutoProvider;
-                  return downloadProvider;
-                }
-              },
-            ),
-          ],
-          child: const MyApp(),
-        ),
-      );
-    },
-    (error, stack) {
-      print('Unhandled error caught by runZonedGuarded: $error');
-      print(stack);
-    },
-  );
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<SettingsProvider>(
+            create: (_) => SettingsProvider(),
+          ),
+          ChangeNotifierProvider<QueueProvider>(
+            create: (_) => QueueProvider(),
+          ),
+          ChangeNotifierProvider<ThemeProvider>(
+            create: (_) => ThemeProvider(),
+          ),
+          ChangeNotifierProvider<PlutoGridCheckRowProvider>(
+            create: (_) => PlutoGridCheckRowProvider(),
+          ),
+          ChangeNotifierProvider<LocaleProvider>(
+            create: (_) => LocaleProvider.instance,
+          ),
+          ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
+              DownloadRequestProvider>(
+            create: (_) => DownloadRequestProvider(PlutoGridCheckRowProvider()),
+            update: (context, plutoProvider, downloadProvider) {
+              if (downloadProvider == null) {
+                return DownloadRequestProvider(plutoProvider);
+              } else {
+                downloadProvider.plutoProvider = plutoProvider;
+                return downloadProvider;
+              }
+            },
+          ),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  }, (error, stack) {
+    print('Unhandled error: $error');
+    print(stack);
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -132,7 +124,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Brisk',
       theme: ThemeData(
-        fontFamily: 'Segoe UI',
+        fontFamily: 'Inter',
         useMaterial3: false,
         dialogTheme: DialogThemeData(backgroundColor: Colors.transparent),
         colorScheme: ColorScheme.fromSeed(
@@ -163,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage>
         showAppClosureDialog();
         break;
       case AppClosureBehaviour.minimizeToTray:
-        initTray();
+        initTray(context);
         windowManager.hide();
         if (Platform.isMacOS) {
           windowManager.setSkipTaskbar(true);
@@ -190,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage>
           if (rememberChecked) {
             saveNewAppClosureBehaviour(AppClosureBehaviour.minimizeToTray);
           }
-          initTray();
+          initTray(context);
           windowManager.hide();
           if (Platform.isMacOS) {
             windowManager.setSkipTaskbar(true);
@@ -219,7 +211,7 @@ class _MyHomePageState extends State<MyHomePage>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       HotKeyUtil.registerDownloadAdditionHotKey(context);
       if (Platform.isMacOS) {
-        HotKeyUtil.registerMacOsDefaultWindowHotkeys();
+        HotKeyUtil.registerMacOsDefaultWindowHotkeys(context);
       }
       BrowserExtensionServer.setup(context);
       handleBriskUpdateCheck(context);
@@ -227,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage>
         Future.delayed(const Duration(milliseconds: 200), () {
           windowManager.waitUntilReadyToShow(null, () {
             windowManager.hide();
-            initTray();
+            initTray(context);
           });
         });
         launchedAtStartup = false;

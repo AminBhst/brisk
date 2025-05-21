@@ -105,10 +105,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get err_invalidUrl_title => 'لینک دانلود نامعتبر';
 
   @override
-  String get err_invalidUrl_description => ' آدرسی که وارد کرده‌اید نامعتبر است. لطفا فرمت آن را بررسی کرده و دوباره تلاش کنید';
+  String get err_invalidUrl_description =>
+      ' آدرسی که وارد کرده‌اید نامعتبر است. لطفا فرمت آن را بررسی کرده و دوباره تلاش کنید';
 
   @override
-  String get err_invalidUrl_descriptionHint => 'مطمئن شوید که آدرس:\n\t  • با http یا https شروع میشود\n\t • شامل دامنه معتبر است \n\t • شامل کارکتر های نامعتبر نباشد';
+  String get err_invalidUrl_descriptionHint =>
+      'مطمئن شوید که آدرس:\n\t  • با http یا https شروع میشود\n\t • شامل دامنه معتبر است \n\t • شامل کارکتر های نامعتبر نباشد';
 
   @override
   String get addNewDownload => 'افزودن دانلود جدید';
@@ -195,7 +197,8 @@ class AppLocalizationsFa extends AppLocalizations {
   String get duplicateDownload_title => 'دانلود تکراری';
 
   @override
-  String get duplicateDownload_description => 'این دانلود تکراری است! لطفاً یک اقدام را انتخاب کنید';
+  String get duplicateDownload_description =>
+      'این دانلود تکراری است! لطفاً یک اقدام را انتخاب کنید';
 
   @override
   String get btn_addNew => 'افزودن جدید';
@@ -210,10 +213,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get err_failedToRetrieveFileInfo_title => 'خطا در دریافت اطلاعات';
 
   @override
-  String get err_failedToRetrieveFileInfo_description => 'خطایی هنگام دریافت اطلاعات فایل رخ داد!';
+  String get err_failedToRetrieveFileInfo_description =>
+      'خطایی هنگام دریافت اطلاعات فایل رخ داد!';
 
   @override
-  String get err_failedToRetrieveFileInfo_descriptionHint => 'در برخی موارد، تلاش مجدد ممکن است مشکل را برطرف کند. در غیر این صورت، مطمئن شوید آدرسی که قصد دسترسی به آن را دارید معتبر است';
+  String get err_failedToRetrieveFileInfo_descriptionHint =>
+      'در برخی موارد، تلاش مجدد ممکن است مشکل را برطرف کند. در غیر این صورت، مطمئن شوید آدرسی که قصد دسترسی به آن را دارید معتبر است';
 
   @override
   String get retrievingFileInformation => 'در حال دریافت اطلاعات فایل...';
@@ -258,10 +263,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settings_behavior => 'رفتار';
 
   @override
-  String get settings_behavior_launchAtStartup => 'اجرای خودکار برنامه هنگام روشن شدن سیستم';
+  String get settings_behavior_launchAtStartup =>
+      'اجرای خودکار برنامه هنگام روشن شدن سیستم';
 
   @override
-  String get settings_behavior_showProgressOnNewDownload => 'نمایش پنجره پیشرفت دانلود هنگام شروع دانلود جدید';
+  String get settings_behavior_showProgressOnNewDownload =>
+      'نمایش پنجره پیشرفت دانلود هنگام شروع دانلود جدید';
 
   @override
   String get settings_behavior_appClosureBehavior => 'رفتار هنگام بستن برنامه';
@@ -273,19 +280,24 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settings_behavior_appClosureBehavior_exit => 'خروج از برنامه';
 
   @override
-  String get settings_behavior_appClosureBehavior_minimizeToTray => 'پنهان کردن پنجره به نوار وظیفه';
+  String get settings_behavior_appClosureBehavior_minimizeToTray =>
+      'پنهان کردن پنجره به نوار وظیفه';
 
   @override
-  String get settings_behavior_duplicateDownloadAction => 'اقدام در صورت دانلود تکراری';
+  String get settings_behavior_duplicateDownloadAction =>
+      'اقدام در صورت دانلود تکراری';
 
   @override
-  String get settings_behavior_duplicateDownloadAction_alwaysAsk => 'همیشه بپرس';
+  String get settings_behavior_duplicateDownloadAction_alwaysAsk =>
+      'همیشه بپرس';
 
   @override
-  String get settings_behavior_duplicateDownloadAction_skipDownload => 'رد کردن دانلود';
+  String get settings_behavior_duplicateDownloadAction_skipDownload =>
+      'رد کردن دانلود';
 
   @override
-  String get settings_behavior_duplicateDownloadAction_updateUrl => 'به‌روزرسانی لینک';
+  String get settings_behavior_duplicateDownloadAction_updateUrl =>
+      'به‌روزرسانی لینک';
 
   @override
   String get settings_behavior_duplicateDownloadAction_addNew => 'افزودن جدید';
@@ -294,7 +306,8 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settings_logging => 'لاگ';
 
   @override
-  String get settings_logging_enableDownloadEngineLogging => 'فعال سازی لاگ های موتور دانلود';
+  String get settings_logging_enableDownloadEngineLogging =>
+      'فعال سازی لاگ های موتور دانلود';
 
   @override
   String get settings_paths => 'مسیر ذخیره‌سازی';
@@ -309,10 +322,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settings_rules => 'قوانین';
 
   @override
-  String get settings_rules_extensionSkipCaptureRules => 'قوانین رد کردن دانلود از افزونه مرورگر';
+  String get settings_rules_extensionSkipCaptureRules =>
+      'قوانین رد کردن دانلود از افزونه مرورگر';
 
   @override
-  String get settings_rules_extensionSkipCaptureRules_tooltip => 'تعریف شرایطی که مشخص می‌کند برنامه چه زمانی باید دانلود های گرفته شده از طریق افزونه مرورگر را رد کند (دانلود نکند)';
+  String get settings_rules_extensionSkipCaptureRules_tooltip =>
+      'تعریف شرایطی که مشخص می‌کند برنامه چه زمانی باید دانلود های گرفته شده از طریق افزونه مرورگر را رد کند (دانلود نکند)';
 
   @override
   String get settings_rules_edit => 'ویرایش قوانین';
@@ -321,7 +336,8 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settings_rules_fileSavePathRules => 'قوانین مسیر ذخیره‌سازی فایل';
 
   @override
-  String get settings_rules_fileSavePathRules_tooltip => 'تعریف شرایطی که مشخص می‌کند برنامه چه زمانی باید از مسیرهای دلخواه مشخص‌شده به عنوان مسیر انتخابی برای ذخیره‌سازی فایل استفاده کند';
+  String get settings_rules_fileSavePathRules_tooltip =>
+      'تعریف شرایطی که مشخص می‌کند برنامه چه زمانی باید از مسیرهای دلخواه مشخص‌شده به عنوان مسیر انتخابی برای ذخیره‌سازی فایل استفاده کند';
 
   @override
   String get settings_fileCategory => 'دسته‌بندی فایل';
@@ -345,10 +361,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settings_connectionRetry => 'تلاش مجدد برای اتصال';
 
   @override
-  String get settings_connectionRetry_maxConnectionRetryCount => 'حداکثر تعداد تلاش‌های مجدد برای اتصال';
+  String get settings_connectionRetry_maxConnectionRetryCount =>
+      'حداکثر تعداد تلاش‌های مجدد برای اتصال';
 
   @override
-  String get settings_connectionRetry_connectionRetryTimeout => 'زمان ‌‌محدودیت تلاش مجدد برای اتصال';
+  String get settings_connectionRetry_connectionRetryTimeout =>
+      'زمان ‌‌محدودیت تلاش مجدد برای اتصال';
 
   @override
   String get infinite => 'بی‌نهایت';
@@ -378,10 +396,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settings_downloadConnections => 'اتصال های دانلود';
 
   @override
-  String get settings_downloadConnections_regularConnNum => 'تعداد اتصال ها برای دانلود';
+  String get settings_downloadConnections_regularConnNum =>
+      'تعداد اتصال ها برای دانلود';
 
   @override
-  String get settings_downloadConnections_videoStreamConnNum => 'تعداد اتصال ها برای دانلود استریم های ویدیویی';
+  String get settings_downloadConnections_videoStreamConnNum =>
+      'تعداد اتصال ها برای دانلود استریم های ویدیویی';
 
   @override
   String get settings_browserExtension => 'افزونه مرورگر';
@@ -390,13 +410,16 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settings_downloadBrowserExtension => 'دانلود افزونه مرورگر';
 
   @override
-  String get settings_downloadBrowserExtension_installExtension => 'برای نصب افزونه مرورگر کلیک کنید';
+  String get settings_downloadBrowserExtension_installExtension =>
+      'برای نصب افزونه مرورگر کلیک کنید';
 
   @override
-  String get settings_downloadBrowserExtension_bringWindowToFront => 'نمایش پنجره در جلو هنگام دانلود جدید';
+  String get settings_downloadBrowserExtension_bringWindowToFront =>
+      'نمایش پنجره در جلو هنگام دانلود جدید';
 
   @override
-  String get changesRequireRestart => 'برای اعمال تغییرات نیاز به راه‌اندازی مجدد است';
+  String get changesRequireRestart =>
+      'برای اعمال تغییرات نیاز به راه‌اندازی مجدد است';
 
   @override
   String get settings_info => 'اطلاعات';
@@ -420,10 +443,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settings_howToBugReport => 'نحوه گزارش اشکال';
 
   @override
-  String get settings_howToBugReport_clickToOpenIssue => 'برای گزارش اشکال کلیک کنید';
+  String get settings_howToBugReport_clickToOpenIssue =>
+      'برای گزارش اشکال کلیک کنید';
 
   @override
-  String get settings_howToBugReport_description => 'برای باز کردن یک اشکال جدید، در صفحه گیت هاب برنامه وارد شوید، لیبل های مربوطه را انتخاب کرده و مشکل خود را با جزئیات توضیح دهید.';
+  String get settings_howToBugReport_description =>
+      'برای باز کردن یک اشکال جدید، در صفحه گیت هاب برنامه وارد شوید، لیبل های مربوطه را انتخاب کرده و مشکل خود را با جزئیات توضیح دهید.';
 
   @override
   String get btn_saveChanges => 'اعمال تغییرات';
@@ -465,13 +490,16 @@ class AppLocalizationsFa extends AppLocalizations {
   String get err_invalidPath_title => 'مسیر ذخیره‌سازی غیرمجاز';
 
   @override
-  String get err_invalidPath_tempPath_description => 'مسیر ذخیره‌سازی انتخاب شده برای فایل‌های موقت غیرمجاز می‌باشد!';
+  String get err_invalidPath_tempPath_description =>
+      'مسیر ذخیره‌سازی انتخاب شده برای فایل‌های موقت غیرمجاز می‌باشد!';
 
   @override
-  String get err_invalidPath_savePath_description => 'مسیر ذخیره‌سازی انتخاب شده برای فایل‌های دانلودی غیرمجاز می‌باشد!';
+  String get err_invalidPath_savePath_description =>
+      'مسیر ذخیره‌سازی انتخاب شده برای فایل‌های دانلودی غیرمجاز می‌باشد!';
 
   @override
-  String get err_invalidPath_descriptionHint => 'لطفا از مجاز بودن مسیر انتخابی اطمینان حاصل کنید';
+  String get err_invalidPath_descriptionHint =>
+      'لطفا از مجاز بودن مسیر انتخابی اطمینان حاصل کنید';
 
   @override
   String get error => 'خطا';
@@ -495,10 +523,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get installBrowserExtension_title => 'نصب افزونه مرورگر';
 
   @override
-  String get installTheBrowserExtension_description => 'مرورگر خود را برای نصب افزونه انتخاب کنید';
+  String get installTheBrowserExtension_description =>
+      'مرورگر خود را برای نصب افزونه انتخاب کنید';
 
   @override
-  String get installTheBrowserExtension_description_subtitle => 'به علت تحریم ها، افزونه فقط برای مرورگر فایرفاکس به صورت رسمی منتشر شده است. برای دیگر مرورگرها نیاز به نصب دستی افزونه می‌باشد';
+  String get installTheBrowserExtension_description_subtitle =>
+      'به علت تحریم ها، افزونه فقط برای مرورگر فایرفاکس به صورت رسمی منتشر شده است. برای دیگر مرورگرها نیاز به نصب دستی افزونه می‌باشد';
 
   @override
   String get installBrowserExtensionGuide_title => 'آموزش نصب';
@@ -507,46 +537,56 @@ class AppLocalizationsFa extends AppLocalizations {
   String get downloadExtension => 'دانلود افزونه';
 
   @override
-  String get installBrowserExtension_chrome_step1_subtitle => 'برای دانلود افزونه کروم روی دکمه زیر کلیک کنید';
+  String get installBrowserExtension_chrome_step1_subtitle =>
+      'برای دانلود افزونه کروم روی دکمه زیر کلیک کنید';
 
   @override
-  String get installBrowserExtension_edge_step1_subtitle => 'برای دانلود افزونه اج روی دکمه زیر کلیک کنید';
+  String get installBrowserExtension_edge_step1_subtitle =>
+      'برای دانلود افزونه اج روی دکمه زیر کلیک کنید';
 
   @override
-  String get installBrowserExtension_opera_step1_subtitle => 'برای نصب افزونه اوپرا روی دکمه زیر کلیک کنید';
+  String get installBrowserExtension_opera_step1_subtitle =>
+      'برای نصب افزونه اوپرا روی دکمه زیر کلیک کنید';
 
   @override
   String get installBrowserExtension_step2_title => 'استخراج فایل‌ها';
 
   @override
-  String get installBrowserExtension_step2_subtitle => 'فایل دانلود شده را در مسیر دلخواه خود استخراج کنید';
+  String get installBrowserExtension_step2_subtitle =>
+      'فایل دانلود شده را در مسیر دلخواه خود استخراج کنید';
 
   @override
   String get installBrowserExtension_step3_title => 'فعال سازی Developer Mode';
 
   @override
-  String get installBrowserExtension_chrome_step3_subtitle => 'داخل سرچ بار کروم chrome://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید';
+  String get installBrowserExtension_chrome_step3_subtitle =>
+      'داخل سرچ بار کروم chrome://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید';
 
   @override
-  String get installBrowserExtension_opera_step3_subtitle => 'داخل سرچ بار اوپرا opera://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید';
+  String get installBrowserExtension_opera_step3_subtitle =>
+      'داخل سرچ بار اوپرا opera://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید';
 
   @override
-  String get installBrowserExtension_edge_step3_subtitle => 'داخل سرچ بار اج edge://extensions را تایپ کرده و گزینه Developer Mode را که در منوی سمت چپ واقع شده فعال کنید';
+  String get installBrowserExtension_edge_step3_subtitle =>
+      'داخل سرچ بار اج edge://extensions را تایپ کرده و گزینه Developer Mode را که در منوی سمت چپ واقع شده فعال کنید';
 
   @override
   String get installBrowserExtension_step4_title => 'لود کردن افزونه';
 
   @override
-  String get installBrowserExtension_step4_subtitle => 'بر روی گزینه \'Load unpacked\' کلیک کرده و پوشه حاوی فایل‌های استخراج شده را انتخاب کنید';
+  String get installBrowserExtension_step4_subtitle =>
+      'بر روی گزینه \'Load unpacked\' کلیک کرده و پوشه حاوی فایل‌های استخراج شده را انتخاب کنید';
 
   @override
   String get confirmAction => 'تایید عملیات';
 
   @override
-  String get downloadDeletionConfirmation => 'آیا از حذف دانلود های انتخاب شده اطمینان دارید؟';
+  String get downloadDeletionConfirmation =>
+      'آیا از حذف دانلود های انتخاب شده اطمینان دارید؟';
 
   @override
-  String get deletionFromQueueConfirmation => 'آیا از حذف دانلودهای انتخابی از صف اطمینان دارید؟';
+  String get deletionFromQueueConfirmation =>
+      'آیا از حذف دانلودهای انتخابی از صف اطمینان دارید؟';
 
   @override
   String get deleteDownloadedFiles => 'حذف فایل‌های دانلود شده';
@@ -610,7 +650,8 @@ class AppLocalizationsFa extends AppLocalizations {
   String get simultaneousDownloads => 'دانلود‌های همزمان';
 
   @override
-  String get shutdownAfterCompletion => 'خاموش کردن سیستم بعد از تکمیل دانلود صف';
+  String get shutdownAfterCompletion =>
+      'خاموش کردن سیستم بعد از تکمیل دانلود صف';
 
   @override
   String get btn_startNow => 'شروع دانلود';
@@ -619,7 +660,8 @@ class AppLocalizationsFa extends AppLocalizations {
   String get chooseAction => 'انتخاب عملیات';
 
   @override
-  String get appChooseActionDescription => 'لطفا عملیات مورد نظر را انتخاب کنید';
+  String get appChooseActionDescription =>
+      'لطفا عملیات مورد نظر را انتخاب کنید';
 
   @override
   String get btn_exitApplication => 'خروج از برنامه';
@@ -671,16 +713,19 @@ class AppLocalizationsFa extends AppLocalizations {
   String get awaitingUrl => 'در انتظار لینک';
 
   @override
-  String get awaitingUrl_description => 'شما به سایت مبدا این فایل منتقل شده‌اید';
+  String get awaitingUrl_description =>
+      'شما به سایت مبدا این فایل منتقل شده‌اید';
 
   @override
-  String get awaitingUrl_descriptionHint => 'برای به‌روزرسانی خودکار لینک، لطفا روی لینک دانلود فایل مورد نظر کلیک کنید';
+  String get awaitingUrl_descriptionHint =>
+      'برای به‌روزرسانی خودکار لینک، لطفا روی لینک دانلود فایل مورد نظر کلیک کنید';
 
   @override
   String get urlUpdateError_title => 'خطای به‌روزرسانی لینک دانلود';
 
   @override
-  String get urlUpdateError_description => 'لینک دانلود مورد نظر مربوط به این فایل نمی‌باشد!';
+  String get urlUpdateError_description =>
+      'لینک دانلود مورد نظر مربوط به این فایل نمی‌باشد!';
 
   @override
   String get urlUpdateSuccess => 'لینک دانلود با موفقیت به‌روزرسانی شد!';
@@ -696,11 +741,19 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get packageManager_updateDescriptionHint => 'لطفاً برای به‌روزرسانی برنامه از دستور زیر استفاده کنید.';
+  String get packageManager_updateDescriptionHint =>
+      'لطفاً برای به‌روزرسانی برنامه از دستور زیر استفاده کنید.';
 
   @override
   String get copiedToClipboard => 'در کلیپ‌بورد کپی شد';
 
   @override
-  String get addUrlFromClipboardHotkey => 'کلید میانبر اضافه کردن دانلود از کلیپبورد';
+  String get addUrlFromClipboardHotkey =>
+      'کلید میانبر اضافه کردن دانلود از کلیپبورد';
+
+  @override
+  String get tray_showWindow => 'نمایش پنجره';
+
+  @override
+  String get tray_exitApp => 'خروج از برنامه';
 }
