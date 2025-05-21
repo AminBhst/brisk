@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:flutter/material.dart';
@@ -50,11 +51,9 @@ class _ShutdownWarningDialogState extends State<ShutdownWarningDialog> {
   Widget build(BuildContext context) {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
-
+    final loc = AppLocalizations.of(context)!;
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       backgroundColor: theme.backgroundColor,
       title: Row(
         children: [
@@ -78,7 +77,7 @@ class _ShutdownWarningDialogState extends State<ShutdownWarningDialog> {
           ),
           const SizedBox(width: 10),
           Text(
-            "Shutdown Warning",
+            loc.shutdownWarning_title,
             style: TextStyle(
               color: theme.textColor,
               fontWeight: FontWeight.bold,
@@ -90,15 +89,14 @@ class _ShutdownWarningDialogState extends State<ShutdownWarningDialog> {
       content: SizedBox(
         width: 400,
         child: Text(
-          "Your PC will shutdown in $_secondsRemaining seconds",
+          loc.shutdownWarning_description(_secondsRemaining),
           style: const TextStyle(fontSize: 17),
         ),
       ),
       actions: [
         RoundedOutlinedButton.fromButtonColor(
           theme.deleteCancelColor,
-          text: "Cancel Shutdown",
-          width: 160,
+          text: loc.btn_cancelShutdown,
           onPressed: () {
             _countdownTimer.cancel();
             widget.onCancelShutdownPressed();
@@ -107,8 +105,7 @@ class _ShutdownWarningDialogState extends State<ShutdownWarningDialog> {
         ),
         RoundedOutlinedButton.fromButtonColor(
           theme.deleteConfirmColor,
-          text: "Shutdown Now",
-          width: 150,
+          text: loc.btn_shutdownNow,
           onPressed: () {
             _countdownTimer.cancel();
             widget.onShutdownNowPressed();

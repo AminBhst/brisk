@@ -25,7 +25,7 @@ class ScrollableDialog extends StatefulWidget {
     required this.scrollviewHeight,
     required this.backgroundColor,
     this.borderRadius = 10,
-    this.buttons,
+    this.buttons = const [],
     this.title,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.crossAxisAlignment = CrossAxisAlignment.start,

@@ -75,7 +75,6 @@ class AskDuplicationAction extends StatelessWidget {
             ),
             const SizedBox(width: 5),
             RoundedOutlinedButton.fromButtonColor(
-              // width: 100,
               theme.downloadInfoDialogTheme.addToListColor,
               text: loc.btn_updateUrl,
               onPressed: onUpdateUrlPressed,

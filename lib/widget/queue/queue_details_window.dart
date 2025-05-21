@@ -1,4 +1,5 @@
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/closable_window.dart';
@@ -33,6 +34,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
     final theme =
         Provider.of<ThemeProvider>(context).activeTheme.alertDialogTheme;
     final size = MediaQuery.of(context).size;
+    final loc = AppLocalizations.of(context)!;
     return AlertDialog(
       actionsPadding: EdgeInsets.all(0),
       contentPadding: EdgeInsets.all(0),
@@ -47,7 +49,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
           Padding(
             padding: const EdgeInsets.all(25),
             child: Text(
-              "Edit Queue Items",
+              loc.editQueueItems,
               style: TextStyle(
                   color: theme.textColor,
                   fontWeight: FontWeight.bold,
@@ -95,7 +97,7 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                "Queue Is Empty",
+                                loc.queueIsEmpty,
                                 style: TextStyle(
                                   color: theme.placeHolderIconColor,
                                   fontSize: 18,
@@ -205,15 +207,13 @@ class _QueueDetailsWindowState extends State<QueueDetailsWindow> {
                 RoundedOutlinedButton.fromButtonColor(
                   theme.cancelButtonColor,
                   onPressed: onCancelPressed,
-                  width: 95,
-                  text: "Cancel",
+                  text: loc.btn_cancel,
                 ),
                 const SizedBox(width: 10),
                 RoundedOutlinedButton.fromButtonColor(
                   theme.addButtonColor,
                   onPressed: onSavePressed,
-                  width: 120,
-                  text: "Save Changes",
+                  text: loc.btn_saveChanges,
                 )
               ],
             ),

@@ -26,15 +26,15 @@ class TopMenuButton extends StatelessWidget {
         hoverColor: onHoverColor,
         onTap: onTap,
         child: SizedBox(
-          width: 80,
-          height: 80,
+          // width: 80,
+          // height: 80,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               icon,
               SizedBox(
-                width: 90,
+                width: 100,
                 child: Padding(
                   padding: const EdgeInsets.all(5),
                   child: Text(

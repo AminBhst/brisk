@@ -175,17 +175,33 @@ Future<FileInfo?> sendFileInfoRequest(
   return completer.future;
 }
 
-Future<dynamic> checkLatestBriskRelease() async {
+Future<dynamic> getJson(String url) async {
   Completer<dynamic> completer = Completer();
-  final response = http.Client().get(
-    Uri.parse("https://api.github.com/repos/AminBhst/brisk/releases/latest"),
-  );
+  final response = http.Client().get(Uri.parse(url));
   response.asStream().listen((event) {
     final json = jsonDecode(String.fromCharCodes(event.bodyBytes));
     completer.complete(json);
     return;
   });
   return completer.future;
+}
+
+Future<String?> getBrowserExtensionDownloadLink(String browser) async {
+  final json = await getJson(
+    "https://api.github.com/repos/BrisklyDev/brisk-browser-extension/releases/latest",
+  );
+  if (json['message'].toString().contains("rate limit")) {
+    return null;
+  }
+  final assets = json['assets'] as List<dynamic>;
+  for (final asset in assets) {
+    final name = asset['name'] as String;
+    final url = asset['browser_download_url'] as String;
+    if (name.contains(browser.toLowerCase())) {
+      return url;
+    }
+  }
+  return null;
 }
 
 Future<Pair<bool, String>> isNewBriskVersionAvailable({
@@ -208,7 +224,9 @@ Future<Pair<bool, String>> isNewBriskVersionAvailable({
   lastUpdateCheck.value = DateTime.now().millisecondsSinceEpoch.toString();
   await lastUpdateCheck.save();
 
-  final json = await checkLatestBriskRelease();
+  final json = await getJson(
+    "https://api.github.com/repos/AminBhst/brisk/releases/latest",
+  );
   if (json["message"].toString().contains("rate limit")) {
     throw Exception("GitHub API rate limit exceeded. Please try again later.");
   }

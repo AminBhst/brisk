@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:brisk/browser_extension/browser_extension_server.dart';
 import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/l10n/app_localizations.dart';
@@ -22,6 +23,8 @@ import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/download_request_provider.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/download/ask_duplication_action.dart';
+import 'package:window_manager/window_manager.dart';
+import 'package:window_to_front/window_to_front.dart';
 import 'file_util.dart';
 import 'http_util.dart';
 
@@ -52,6 +55,7 @@ class DownloadAdditionUiUtil {
   static void handleDownloadAddition(BuildContext context, String url,
       {bool updateDialog = false, int? downloadId, additionalPop = false}) {
     final loc = AppLocalizations.of(context)!;
+    windowManager.show().then((value) => WindowToFront.activate());
     if (!isUrlValid(url)) {
       showDialog(
         context: context,
@@ -189,15 +193,16 @@ class DownloadAdditionUiUtil {
     if (dl.contentLength != fileInfo.contentLength) {
       showDialog(
         context: context,
-        builder: (context) => const ErrorDialog(
-          width: 400,
+        builder: (context) => ErrorDialog(
+          width: 450,
           height: 100,
-          title: "URL Update Error",
-          description: "The given URL does not refer to the same file!",
+          title: AppLocalizations.of(context)!.urlUpdateError_title,
+          description: AppLocalizations.of(context)!.urlUpdateError_description,
         ),
       );
     } else {
       updateUrl(context, fileInfo.url, dl, downloadId);
+      BrowserExtensionServer.awaitingUpdateUrlItem = null;
     }
   }
 
@@ -213,7 +218,7 @@ class DownloadAdditionUiUtil {
     showDialog(
       context: context,
       builder: (context) => InfoDialog(
-        titleText: "URL updated successfully!",
+        titleText: AppLocalizations.of(context)!.urlUpdateSuccess,
         titleIcon: Icon(Icons.done),
         titleIconBackgroundColor: Colors.lightGreen,
       ),

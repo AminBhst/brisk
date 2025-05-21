@@ -7,6 +7,7 @@ import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
+import 'package:brisk/widget/other/browser_extension/get_browser_extension_dialog.dart';
 import 'package:brisk/widget/top_menu/top_menu_util.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/responsive_util.dart';
@@ -157,8 +158,9 @@ class _TopMenuState extends State<TopMenu> {
               Icons.extension,
               color: topMenuTheme.extensionColor.iconColor,
             ),
-            onTap: () => launchUrlString(
-              'https://github.com/AminBhst/brisk-browser-extension',
+            onTap: () => showDialog(
+              context: context,
+              builder: (context) => GetBrowserExtensionDialog(),
             ),
             onHoverColor: topMenuTheme.extensionColor.hoverBackgroundColor,
             textColor: topMenuTheme.extensionColor.textColor,

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:brisk/util/parse_util.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/util/tray_util.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,6 +14,7 @@ import 'download_addition_ui_util.dart';
 class HotKeyUtil {
   static bool _isDownloadHotkeyRegistered = false;
   static bool _isMacosWindowHotkeyRegistered = false;
+  static HotKey? downloadAdditionHotkey;
 
   static void registerMacOsDefaultWindowHotkeys() async {
     if (_isMacosWindowHotkeyRegistered) return;
@@ -53,24 +56,25 @@ class HotKeyUtil {
     );
     _isMacosWindowHotkeyRegistered = true;
   }
-  static void registerDefaultDownloadAdditionHotKey(BuildContext context) {
-    /*
-      Command + N for MacOS
-      Control + Alt + A for Windows/Linux
-    */
-    var modifiers = Platform.isMacOS
-        ? [HotKeyModifier.meta]
-        : [HotKeyModifier.control, HotKeyModifier.alt];
-    var key =
-        Platform.isMacOS ? LogicalKeyboardKey.keyN : LogicalKeyboardKey.keyA;
+
+  static void registerDownloadAdditionHotKey(BuildContext context) async {
     if (_isDownloadHotkeyRegistered) return;
-    final _hotkey = HotKey(
-      key: key,
-      modifiers: modifiers,
-      scope: HotKeyScope.inapp,
+    if (SettingsCache.downloadAdditionHotkeyLogicalKey == null ||
+        (SettingsCache.downloadAdditionHotkeyModifierOne == null &&
+            SettingsCache.downloadAdditionHotkeyModifierTwo == null)) {
+      return;
+    }
+    List<HotKeyModifier?> modifiers = [
+      SettingsCache.downloadAdditionHotkeyModifierOne,
+      SettingsCache.downloadAdditionHotkeyModifierTwo
+    ]..removeWhere((element) => element == null);
+    downloadAdditionHotkey = HotKey(
+      key: SettingsCache.downloadAdditionHotkeyLogicalKey!,
+      modifiers: [...modifiers.map((e) => e!)],
+      scope: SettingsCache.downloadAdditionHotkeyScope,
     );
     hotKeyManager.register(
-      _hotkey,
+      downloadAdditionHotkey!,
       keyDownHandler: (hotKey) async {
         String url = await FlutterClipboard.paste();
         DownloadAdditionUiUtil.handleDownloadAddition(context, url);

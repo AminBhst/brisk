@@ -1,0 +1,57 @@
+name: brisk
+version: 2.2.3
+summary: Ultra-fast, modern download manager
+description: Brisk is a fast, modern download manager with browser integration support.
+
+base: core22
+confinement: strict
+grade: stable
+
+slots:
+  dbus-brisk:
+    interface: dbus
+    bus: session
+    name: io.github.BrisklyDev.brisk
+
+apps:
+  brisk:
+    command: brisk
+    extensions: [gnome]
+    plugs:
+      - network
+    slots:
+      - dbus-brisk
+
+parts:
+  brisk:
+    plugin: flutter
+    source: .
+    flutter-target: lib/main.dart
+    build-packages:
+      - clang
+      - cmake
+      - curl
+      - gcc
+      - git
+      - libgtk-3-dev
+      - libkeybinder-3.0-dev
+      - libayatana-appindicator3-dev
+      - make
+      - ninja-build
+      - unzip
+      - pkg-config
+
+    stage-packages:
+      - libgtk-3-0
+      - libkeybinder-3.0-0
+      - libayatana-appindicator3-1
+
+    build-environment:
+      - PKG_CONFIG_PATH: /usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig
+      - CMAKE_PREFIX_PATH: /usr/lib/x86_64-linux-gnu/cmake:/usr/share/cmake
+      - LD_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu
+      - LIBRARY_PATH: /usr/lib/x86_64-linux-gnu
+
+    build-attributes:
+      - enable-patchelf
+

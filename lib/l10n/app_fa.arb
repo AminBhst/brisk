@@ -1,6 +1,7 @@
 {
   "@@locale": "fa",
   "language": "زبان",
+  "noUpdateAvailable": "هنوز نسخه جدیدی منتشر نشده است",
   "addUrl": "اضافه کردن لینک",
   "download": "دانلود",
   "stop": "توقف",
@@ -157,5 +158,104 @@
   "err_emptyValue": "مقدار خالی!",
   "err_unsupportedCharacter": "کارکتر غیرمجاز",
   "err_invalidSavePath": "مسیر مسیر ذخیره\u200Cسازی نامعتبر",
-  "availableDownloads": "فایل های قابل دانلود"
+  "availableDownloads": "فایل های قابل دانلود",
+  "installBrowserExtension_title": "نصب افزونه مرورگر",
+  "installTheBrowserExtension_description": "مرورگر خود را برای نصب افزونه انتخاب کنید",
+  "installTheBrowserExtension_description_subtitle": "به علت تحریم ها، افزونه فقط برای مرورگر فایرفاکس به صورت رسمی منتشر شده است. برای دیگر مرورگرها نیاز به نصب دستی افزونه می‌باشد",
+  "installBrowserExtensionGuide_title": "آموزش نصب",
+  "downloadExtension": "دانلود افزونه",
+  "installBrowserExtension_chrome_step1_subtitle": "برای دانلود افزونه کروم روی دکمه زیر کلیک کنید",
+  "installBrowserExtension_edge_step1_subtitle": "برای دانلود افزونه اج روی دکمه زیر کلیک کنید",
+  "installBrowserExtension_opera_step1_subtitle": "برای نصب افزونه اوپرا روی دکمه زیر کلیک کنید",
+  "installBrowserExtension_step2_title": "استخراج فایل\u200Cها",
+  "installBrowserExtension_step2_subtitle": "فایل دانلود شده را در مسیر دلخواه خود استخراج کنید",
+  "installBrowserExtension_step3_title": "فعال سازی Developer Mode",
+  "installBrowserExtension_chrome_step3_subtitle": "داخل سرچ بار کروم chrome://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید",
+  "installBrowserExtension_opera_step3_subtitle": "داخل سرچ بار اوپرا opera://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید",
+  "installBrowserExtension_edge_step3_subtitle": "داخل سرچ بار اج edge://extensions را تایپ کرده و گزینه Developer Mode را که در منوی سمت چپ واقع شده فعال کنید",
+  "installBrowserExtension_step4_title": "لود کردن افزونه",
+  "installBrowserExtension_step4_subtitle": "بر روی گزینه 'Load unpacked' کلیک کرده و پوشه حاوی فایل\u200Cهای استخراج شده را انتخاب کنید",
+  "confirmAction": "تایید عملیات",
+  "downloadDeletionConfirmation": "آیا از حذف دانلود های انتخاب شده اطمینان دارید؟",
+  "deletionFromQueueConfirmation": "آیا از حذف دانلودهای انتخابی از صف اطمینان دارید؟",
+  "deleteDownloadedFiles": "حذف فایل\u200Cهای دانلود شده",
+  "btn_deleteConfirm": "حذف",
+  "downloadsInQueue": "{number} دانلود در صف",
+  "@downloadsInQueue": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "btn_createQueue": "ساخت صف",
+  "createNewQueue": "ساخت صف جدید",
+  "queueName": "نام صف",
+  "mainQueue": "صف اصلی",
+  "editQueueItems": "ویرایش صف",
+  "queueIsEmpty": "صف خالی است",
+  "addDownloadToQueue": "اضافه کردن دانلود به صف",
+  "selectQueue": "انتخاب صف",
+  "btn_addToQueue": "اضافه کردن به صف",
+  "deleteQueueConfirmation": "آیا از حذف صف {queue} اطمینان دارید؟",
+  "@deleteQueueConfirmation": {
+    "placeholders": {
+      "queue": {}
+    }
+  },
+  "btn_schedule": "برنامه ریزی",
+  "btn_stopQueue": "توقف صف",
+  "scheduleDownload": "برنامه ریزی دانلود",
+  "startDownloadAt": "شروع دانلود از",
+  "stopDownloadAt": "توقف دانلود",
+  "simultaneousDownloads": "دانلود\u200Cهای همزمان",
+  "shutdownAfterCompletion": "خاموش کردن سیستم بعد از تکمیل دانلود صف",
+  "btn_startNow": "شروع دانلود",
+  "chooseAction": "انتخاب عملیات",
+  "appChooseActionDescription": "لطفا عملیات مورد نظر را انتخاب کنید",
+  "btn_exitApplication": "خروج از برنامه",
+  "btn_minimizeToTray": "پنهان کردن پنجره به نوار وظیفه",
+  "rememberThisDecision": "این تصمیم را به خاطر بسپار",
+  "shutdownWarning_title": "اخطار خاموشی سیستم",
+  "shutdownWarning_description": "سیستم شما تا {seconds} ثانیه دیگر خاموش میشود",
+  "btn_cancelShutdown": "لغو خاموشی",
+  "btn_shutdownNow": "الان خاموش کن",
+  "@shutdownWarning": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "extensionUpdateAvailable": "ورژن جدید افزونه مرورگر در دسترس است",
+  "updateAvailable": "ورژن جدید در دسترس است",
+  "updateAvailable_description": "ورژن جدید {target} در دسترس است.\n\"آیا می\u200Cخواهید اکنون به\u200Cروزرسانی کنید؟",
+  "@updateAvailable_description": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "whatsNew": "ویژگی\u200Cهای جدید:",
+  "btn_later": "بعدا",
+  "btn_update": "به\u200Cروزرسانی",
+  "automaticUrlUpdate": "به\u200Cروزرسانی خودکار لینک دانلود",
+  "awaitingUrl": "در انتظار لینک",
+  "awaitingUrl_description": "شما به سایت مبدا این فایل منتقل شده\u200Cاید",
+  "awaitingUrl_descriptionHint": "برای به\u200Cروزرسانی خودکار لینک، لطفا روی لینک دانلود فایل مورد نظر کلیک کنید",
+  "urlUpdateError_title": "خطای به\u200Cروزرسانی لینک دانلود",
+  "urlUpdateError_description": "لینک دانلود مورد نظر مربوط به این فایل نمی\u200Cباشد!",
+  "urlUpdateSuccess": "لینک دانلود با موفقیت به\u200Cروزرسانی شد!",
+
+  "packageManager_updateTitle": "به\u200Cروزرسانی {target}",
+  "@packageManager_updateTitle": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "packageManager_updateDescription": "به\u200Cروزرسانی خودکار درون\u200Cبرنامه\u200Cای برای {target} غیرفعال است.",
+  "@packageManager_updateDescription": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+
+  "packageManager_updateDescriptionHint": "لطفاً برای به‌روزرسانی برنامه از دستور زیر استفاده کنید.",
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد",
+  "addUrlFromClipboardHotkey": "کلید میانبر اضافه کردن دانلود از کلیپبورد"
 }

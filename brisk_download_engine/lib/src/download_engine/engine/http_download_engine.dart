@@ -994,12 +994,14 @@ class HttpDownloadEngine {
       final end = getEndByteFromTempFile(file);
       final start = getStartByteFromTempFile(file);
       if (end - start + 1 != file.lengthSync()) {
-        logger?.info("Found bad length :: ${basename(file.path)}");
+        logger?.info(
+          "Found bad length :: ${basename(file.path)} :: size ${file.lengthSync()}",
+        );
         tempFilesToDelete.add(file);
       }
       if (start > downloadItem.fileSize || end > downloadItem.fileSize) {
         logger?.info(
-          "Found byte range exceeding contentLength :: ${basename(file.path)}",
+          "Found byte range exceeding contentLength :: ${basename(file.path)} :: size ${file.length()}",
         );
         tempFilesToDelete.add(file);
       }
@@ -1019,7 +1021,7 @@ class HttpDownloadEngine {
       }
       if (checkForMissingTempFile && startNext - 1 != end) {
         logger?.info(
-          "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)}",
+          "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)} :: size ${file.lengthSync()} == ${nextFile.lengthSync()}",
         );
       }
       final badTempFiles =
@@ -1039,7 +1041,7 @@ class HttpDownloadEngine {
 
             if (fileOverlapsWithCurrent || currentOverlapsWithFile) {
               logger?.info(
-                "Found overlapping temp files : ${basename(file.path)} === ${basename(f.path)}",
+                "Found overlapping temp files : ${basename(file.path)} === ${basename(f.path)} :: size ${file.lengthSync()}",
               );
               return true;
             }
@@ -1157,6 +1159,8 @@ class HttpDownloadEngine {
   ) {
     if (success) {
       downloadProgress.assembleProgress = 1;
+      downloadProgress.downloadProgress = 1;
+      downloadProgress.downloadItem.progress = 1;
       downloadProgress.status = DownloadStatus.assembleComplete;
       downloadProgress.downloadItem.status = DownloadStatus.assembleComplete;
       downloadProgress.downloadItem.finishDate = DateTime.now();

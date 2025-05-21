@@ -1,6 +1,8 @@
 {
   "@@locale": "en",
+  "application": "application",
   "language": "Language",
+  "noUpdateAvailable": "No new update is available yet",
   "addUrl": "Add URL",
   "download": "Download",
   "stop": "Stop",
@@ -157,5 +159,103 @@
   "err_emptyValue": "Empty Value!",
   "err_unsupportedCharacter": "Unsupported Character",
   "err_invalidSavePath": "Invalid Save Path!",
-  "availableDownloads": "Available Downloads"
+  "availableDownloads": "Available Downloads",
+  "installationGuide": "Installation Guide",
+  "installBrowserExtension_title": "Install Browser Extension",
+  "installTheBrowserExtension_description": "Choose your browser to install Brisk's browser extension to capture downloads from the browser",
+  "installTheBrowserExtension_description_subtitle": "Due to restrictions, the extension is only available in the official store for Firefox. For other browsers, manual installation is required. This will hopefully change in the future and the extension will be available for all browsers in their official websites.",
+  "installBrowserExtensionGuide_title": "Installation Guide",
+  "downloadExtension": "Download Extension",
+  "installBrowserExtension_chrome_step1_subtitle": "Click the button below to download the extension package for Chrome",
+  "installBrowserExtension_edge_step1_subtitle": "Click the button below to download the extension package for Edge",
+  "installBrowserExtension_opera_step1_subtitle": "Click the button below to download the extension package for Opera",
+  "installBrowserExtension_step2_title": "Extract The Package",
+  "installBrowserExtension_step2_subtitle": "Extract downloaded package in your desired destination",
+  "installBrowserExtension_step3_title": "Enable Developer Mode",
+  "installBrowserExtension_chrome_step3_subtitle": "Type chrome://extensions in the navigation bar and enable developer mode right next to the search bar",
+  "installBrowserExtension_opera_step3_subtitle": "Type opera://extensions in the navigation bar and enable developer mode right next to the search bar",
+  "installBrowserExtension_edge_step3_subtitle": "Type edge://extensions in the navigation bar and enable developer mode in the left menu",
+  "installBrowserExtension_step4_title": "Load Extension",
+  "installBrowserExtension_step4_subtitle": "Click on the 'Load unpacked' button and select the folder in which the package was extracted",
+  "confirmAction": "Confirm Action",
+  "downloadDeletionConfirmation": "Are you sure you want to delete the selected downloads?",
+  "deletionFromQueueConfirmation": "Are you sure you want to remove the selected downloads from the queue?",
+  "deleteDownloadedFiles": "Delete downloaded files",
+  "btn_deleteConfirm": "Yes, Delete",
+  "downloadsInQueue": "{number} Downloads in queue",
+  "@downloadsInQueue": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "btn_createQueue": "Create Queue",
+  "createNewQueue": "Create New Queue",
+  "queueName": "Queue Name",
+  "mainQueue": "Main Queue",
+  "editQueueItems": "Edit Queue Items",
+  "queueIsEmpty": "Queue is empty",
+  "addDownloadToQueue": "Add Download To Queue",
+  "selectQueue": "Select Queue",
+  "btn_addToQueue": "Add To Queue",
+  "deleteQueueConfirmation": "Are you sure you want to delete {queue} queue?",
+  "@deleteQueueConfirmation": {
+    "placeholders": {
+      "queue": {}
+    }
+  },
+  "btn_schedule": "Schedule",
+  "btn_stopQueue": "Stop Queue",
+  "scheduleDownload": "Schedule Download",
+  "startDownloadAt": "Start download at",
+  "stopDownloadAt": "Stop download at",
+  "simultaneousDownloads": "Simultaneous Downloads",
+  "shutdownAfterCompletion": "Shutdown after completion",
+  "btn_startNow": "Start Now",
+  "chooseAction": "Choose Action",
+  "appChooseActionDescription": "Choose what you'd like to do with the application",
+  "btn_exitApplication": "Exit Application",
+  "btn_minimizeToTray": "Minimize To Tray",
+  "rememberThisDecision": "Remember this decision",
+  "shutdownWarning_title": "Shutdown Warning",
+  "shutdownWarning_description": "Your PC will shutdown in {seconds} seconds",
+  "btn_cancelShutdown": "Cancel Shutdown",
+  "btn_shutdownNow": "Shutdown Now",
+  "@shutdownWarning": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "extensionUpdateAvailable": "Extension Update Available",
+  "updateAvailable": "Update Available",
+  "updateAvailable_description": "A new version of the {target} is available.\nWould you like to update now?",
+  "@updateAvailable_description": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "whatsNew": "What's New:",
+  "btn_later": "Later",
+  "btn_update": "Update",
+  "automaticUrlUpdate": "Automatic URL Update",
+  "awaitingUrl": "Awaiting URL",
+  "awaitingUrl_description": "You've been redirected to the referer website of this file.",
+  "awaitingUrl_descriptionHint": "Please click the download link for the download URL to be captured and updated automatically.",
+  "urlUpdateError_title": "URL Update Error",
+  "urlUpdateError_description": "The given URL does not refer to the same file!",
+  "urlUpdateSuccess": "URL updated successfully!",
+  "packageManager_updateTitle": "{target} Update",
+  "@packageManager_updateTitle": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "packageManager_updateDescription": "Brisk was installed via {target} and therefore, in-app automatic update is disabled.",
+  "@packageManager_updateDescription": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "packageManager_updateDescriptionHint": "Please use the following command to update the app",
+  "copiedToClipboard": "Copied to Clipboard",
+  "addUrlFromClipboardHotkey": "Add URL from Clipboard Hotkey"
 }

@@ -41,7 +41,6 @@ class FileInfoLoader extends StatelessWidget {
           textColor: Colors.red,
           borderColor: Colors.red,
           onPressed: onCancelPressed,
-          width: 80,
         )
       ],
     );

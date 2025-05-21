@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/responsive_util.dart';
 import 'package:brisk/widget/queue/create_queue_window.dart';
@@ -15,6 +16,7 @@ class QueueTopMenu extends StatelessWidget {
     provider = Provider.of<DownloadRequestProvider>(context, listen: false);
     final topMenuTheme =
         Provider.of<ThemeProvider>(context).activeTheme.topMenuTheme;
+    final loc = AppLocalizations.of(context)!;
     final size = MediaQuery.of(context).size;
     return Container(
       width: resolveWindowWidth(size),
@@ -28,7 +30,7 @@ class QueueTopMenu extends StatelessWidget {
             padding: const EdgeInsets.only(left: 20),
             child: TopMenuButton(
               onTap: () => onCreateQueuePressed(context),
-              title: 'Create Queue',
+              title: loc.btn_createQueue,
               fontSize: 11.5,
               icon: Icon(
                 Icons.add_rounded,

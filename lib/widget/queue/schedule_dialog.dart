@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
@@ -110,11 +111,12 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
     selectedQueueId =
         Provider.of<QueueProvider>(context, listen: false).selectedQueueId!;
     final size = MediaQuery.of(context).size;
+    final loc = AppLocalizations.of(context)!;
     return ScrollableDialog(
       title: Padding(
         padding: const EdgeInsets.all(15),
         child: Text(
-          "Schedule Download",
+          loc.scheduleDownload,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -123,7 +125,7 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
       ),
       height: 400,
       scrollviewHeight: 300,
-      backgroundColor: theme.queuePageTheme.backgroundColor,
+      backgroundColor: theme.alertDialogTheme.backgroundColor,
       borderRadius: 10,
       width: 400,
       content: Padding(
@@ -133,7 +135,7 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildDateRow(
-              label: "Start download at",
+              label: loc.startDownloadAt,
               enabled: startDateEnabled,
               controller: startDateController,
               focusNode: _startDateFocusNode,
@@ -141,7 +143,7 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
             ),
             SizedBox(height: 20),
             _buildDateRow(
-              label: "Stop download at",
+              label: loc.stopDownloadAt,
               enabled: endDateEnabled,
               controller: endDateController,
               focusNode: _endDateFocusNode,
@@ -152,7 +154,7 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Simultaneous downloads",
+                  loc.simultaneousDownloads,
                   style: TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 5),
@@ -187,7 +189,7 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
                       setState(() => shutdownEnabled = value!),
                 ),
                 Text(
-                  "Shutdown after completion",
+                  loc.shutdownAfterCompletion,
                   style: TextStyle(color: Colors.white),
                 )
               ],
@@ -198,15 +200,13 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
       buttons: [
         RoundedOutlinedButton.fromButtonColor(
           theme.alertDialogTheme.cancelButtonColor,
-          text: "Cancel",
-          width: 80,
+          text: loc.btn_cancel,
           onPressed: () => Navigator.of(context).pop(),
         ),
         const SizedBox(width: 10),
         RoundedOutlinedButton.fromButtonColor(
           theme.alertDialogTheme.addButtonColor,
-          text: startDateEnabled ? "Schedule" : "Start Now",
-          width: 110,
+          text: startDateEnabled ? loc.btn_schedule : loc.btn_startNow,
           onPressed: () {
             widget.onAcceptClicked(
               shutdownAfterCompletion: shutdownEnabled,

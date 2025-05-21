@@ -4,6 +4,8 @@ import 'package:brisk/widget/setting/page/general/notification_settings_group.da
 import 'package:brisk/widget/setting/page/general/ui_setting_group.dart';
 import 'package:flutter/material.dart';
 
+import 'download_hotkey_settings_group.dart';
+
 class GeneralSettingsPage extends StatelessWidget {
   const GeneralSettingsPage({super.key});
 
@@ -16,6 +18,7 @@ class GeneralSettingsPage extends StatelessWidget {
         children: const [
           NotificationSettingsGroup(),
           UISettingGroup(),
+          DownloadHotkeySettingsGroup(),
           BehaviourSettingsGroup(),
           LoggingGroup(),
         ],

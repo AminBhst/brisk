@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.BrisklyDev.Brisk</id>
+  <name>Brisk</name>
+  <summary>Ultra-fast, modern download manager</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <description>
+    <p>
+      Brisk is a high-speed desktop download manager designed for efficiency and integration with the browser
+    </p>
+    <p>
+      Features:
+    </p>
+    <ul>
+      <li>Powerful, Custom-Built Download Engine</li>
+      <li>Browser Integration</li>
+      <li>Downloading video streams from the browser</li>
+      <li>Download Queues and Scheduling</li>
+      <li>Advanced rules to automatically define file save path based on custom patterns</li>
+      <li>Customizable Hotkey for adding a URL from clipboard</li>
+    </ul>
+  </description>
+
+  <url type="homepage">https://github.com/BrisklyDev/brisk</url>
+  <url type="bugtracker">https://github.com/BrisklyDev/brisk/issues</url>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/BrisklyDev/brisk/refs/heads/main/assets/brisk-header.png</image>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="2.2.4" date="2025-05-19">
+    <description>
+      <p><em>🔧 Bug Fixes and Improvements</em></p>
+      <ul>
+        <li>Added custom download addition hotkey to settings</li>
+        <li>Added scope to download addition hotkey (scope=system will trigger the hotkey even when the app is not on screen)</li>
+        <li>Fixed some minor tray issues</li>
+        <li>Fixed file rename not working using the text field</li>
+      </ul>
+    </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.1" />
+
+  <developer id="io.github.aminbhst">
+    <name>Amin Beheshti</name>
+  </developer>
+
+  <categories>
+    <category>Network</category>
+    <category>FileTransfer</category>
+    <category>Utility</category>
+  </categories>
+
+  <launchable type="desktop-id">io.github.BrisklyDev.Brisk.desktop</launchable>
+</component>
+

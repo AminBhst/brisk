@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
 import 'app_localizations_fa.dart';
 import 'app_localizations_it.dart';
@@ -93,17 +94,30 @@ abstract class AppLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('de'),
     Locale('en'),
     Locale('fa'),
     Locale('it'),
     Locale('zh')
   ];
 
+  /// No description provided for @application.
+  ///
+  /// In en, this message translates to:
+  /// **'application'**
+  String get application;
+
   /// No description provided for @language.
   ///
   /// In en, this message translates to:
   /// **'Language'**
   String get language;
+
+  /// No description provided for @noUpdateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No new update is available yet'**
+  String get noUpdateAvailable;
 
   /// No description provided for @addUrl.
   ///
@@ -1046,6 +1060,414 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available Downloads'**
   String get availableDownloads;
+
+  /// No description provided for @installationGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation Guide'**
+  String get installationGuide;
+
+  /// No description provided for @installBrowserExtension_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Install Browser Extension'**
+  String get installBrowserExtension_title;
+
+  /// No description provided for @installTheBrowserExtension_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your browser to install Brisk\'s browser extension to capture downloads from the browser'**
+  String get installTheBrowserExtension_description;
+
+  /// No description provided for @installTheBrowserExtension_description_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Due to restrictions, the extension is only available in the official store for Firefox. For other browsers, manual installation is required. This will hopefully change in the future and the extension will be available for all browsers in their official websites.'**
+  String get installTheBrowserExtension_description_subtitle;
+
+  /// No description provided for @installBrowserExtensionGuide_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation Guide'**
+  String get installBrowserExtensionGuide_title;
+
+  /// No description provided for @downloadExtension.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Extension'**
+  String get downloadExtension;
+
+  /// No description provided for @installBrowserExtension_chrome_step1_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Click the button below to download the extension package for Chrome'**
+  String get installBrowserExtension_chrome_step1_subtitle;
+
+  /// No description provided for @installBrowserExtension_edge_step1_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Click the button below to download the extension package for Edge'**
+  String get installBrowserExtension_edge_step1_subtitle;
+
+  /// No description provided for @installBrowserExtension_opera_step1_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Click the button below to download the extension package for Opera'**
+  String get installBrowserExtension_opera_step1_subtitle;
+
+  /// No description provided for @installBrowserExtension_step2_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract The Package'**
+  String get installBrowserExtension_step2_title;
+
+  /// No description provided for @installBrowserExtension_step2_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract downloaded package in your desired destination'**
+  String get installBrowserExtension_step2_subtitle;
+
+  /// No description provided for @installBrowserExtension_step3_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Developer Mode'**
+  String get installBrowserExtension_step3_title;
+
+  /// No description provided for @installBrowserExtension_chrome_step3_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Type chrome://extensions in the navigation bar and enable developer mode right next to the search bar'**
+  String get installBrowserExtension_chrome_step3_subtitle;
+
+  /// No description provided for @installBrowserExtension_opera_step3_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Type opera://extensions in the navigation bar and enable developer mode right next to the search bar'**
+  String get installBrowserExtension_opera_step3_subtitle;
+
+  /// No description provided for @installBrowserExtension_edge_step3_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Type edge://extensions in the navigation bar and enable developer mode in the left menu'**
+  String get installBrowserExtension_edge_step3_subtitle;
+
+  /// No description provided for @installBrowserExtension_step4_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Load Extension'**
+  String get installBrowserExtension_step4_title;
+
+  /// No description provided for @installBrowserExtension_step4_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Click on the \'Load unpacked\' button and select the folder in which the package was extracted'**
+  String get installBrowserExtension_step4_subtitle;
+
+  /// No description provided for @confirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Action'**
+  String get confirmAction;
+
+  /// No description provided for @downloadDeletionConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the selected downloads?'**
+  String get downloadDeletionConfirmation;
+
+  /// No description provided for @deletionFromQueueConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove the selected downloads from the queue?'**
+  String get deletionFromQueueConfirmation;
+
+  /// No description provided for @deleteDownloadedFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete downloaded files'**
+  String get deleteDownloadedFiles;
+
+  /// No description provided for @btn_deleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, Delete'**
+  String get btn_deleteConfirm;
+
+  /// No description provided for @downloadsInQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'{number} Downloads in queue'**
+  String downloadsInQueue(Object number);
+
+  /// No description provided for @btn_createQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Queue'**
+  String get btn_createQueue;
+
+  /// No description provided for @createNewQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Queue'**
+  String get createNewQueue;
+
+  /// No description provided for @queueName.
+  ///
+  /// In en, this message translates to:
+  /// **'Queue Name'**
+  String get queueName;
+
+  /// No description provided for @mainQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Queue'**
+  String get mainQueue;
+
+  /// No description provided for @editQueueItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Queue Items'**
+  String get editQueueItems;
+
+  /// No description provided for @queueIsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Queue is empty'**
+  String get queueIsEmpty;
+
+  /// No description provided for @addDownloadToQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Download To Queue'**
+  String get addDownloadToQueue;
+
+  /// No description provided for @selectQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Queue'**
+  String get selectQueue;
+
+  /// No description provided for @btn_addToQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Add To Queue'**
+  String get btn_addToQueue;
+
+  /// No description provided for @deleteQueueConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {queue} queue?'**
+  String deleteQueueConfirmation(Object queue);
+
+  /// No description provided for @btn_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get btn_schedule;
+
+  /// No description provided for @btn_stopQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Queue'**
+  String get btn_stopQueue;
+
+  /// No description provided for @scheduleDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule Download'**
+  String get scheduleDownload;
+
+  /// No description provided for @startDownloadAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Start download at'**
+  String get startDownloadAt;
+
+  /// No description provided for @stopDownloadAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop download at'**
+  String get stopDownloadAt;
+
+  /// No description provided for @simultaneousDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Simultaneous Downloads'**
+  String get simultaneousDownloads;
+
+  /// No description provided for @shutdownAfterCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Shutdown after completion'**
+  String get shutdownAfterCompletion;
+
+  /// No description provided for @btn_startNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Now'**
+  String get btn_startNow;
+
+  /// No description provided for @chooseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Action'**
+  String get chooseAction;
+
+  /// No description provided for @appChooseActionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what you\'d like to do with the application'**
+  String get appChooseActionDescription;
+
+  /// No description provided for @btn_exitApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Application'**
+  String get btn_exitApplication;
+
+  /// No description provided for @btn_minimizeToTray.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimize To Tray'**
+  String get btn_minimizeToTray;
+
+  /// No description provided for @rememberThisDecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember this decision'**
+  String get rememberThisDecision;
+
+  /// No description provided for @shutdownWarning_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Shutdown Warning'**
+  String get shutdownWarning_title;
+
+  /// No description provided for @shutdownWarning_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Your PC will shutdown in {seconds} seconds'**
+  String shutdownWarning_description(Object seconds);
+
+  /// No description provided for @btn_cancelShutdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Shutdown'**
+  String get btn_cancelShutdown;
+
+  /// No description provided for @btn_shutdownNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Shutdown Now'**
+  String get btn_shutdownNow;
+
+  /// No description provided for @extensionUpdateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Extension Update Available'**
+  String get extensionUpdateAvailable;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Available'**
+  String get updateAvailable;
+
+  /// No description provided for @updateAvailable_description.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of the {target} is available.\nWould you like to update now?'**
+  String updateAvailable_description(Object target);
+
+  /// No description provided for @whatsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s New:'**
+  String get whatsNew;
+
+  /// No description provided for @btn_later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get btn_later;
+
+  /// No description provided for @btn_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get btn_update;
+
+  /// No description provided for @automaticUrlUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic URL Update'**
+  String get automaticUrlUpdate;
+
+  /// No description provided for @awaitingUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting URL'**
+  String get awaitingUrl;
+
+  /// No description provided for @awaitingUrl_description.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been redirected to the referer website of this file.'**
+  String get awaitingUrl_description;
+
+  /// No description provided for @awaitingUrl_descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please click the download link for the download URL to be captured and updated automatically.'**
+  String get awaitingUrl_descriptionHint;
+
+  /// No description provided for @urlUpdateError_title.
+  ///
+  /// In en, this message translates to:
+  /// **'URL Update Error'**
+  String get urlUpdateError_title;
+
+  /// No description provided for @urlUpdateError_description.
+  ///
+  /// In en, this message translates to:
+  /// **'The given URL does not refer to the same file!'**
+  String get urlUpdateError_description;
+
+  /// No description provided for @urlUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'URL updated successfully!'**
+  String get urlUpdateSuccess;
+
+  /// No description provided for @packageManager_updateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{target} Update'**
+  String packageManager_updateTitle(Object target);
+
+  /// No description provided for @packageManager_updateDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Brisk was installed via {target} and therefore, in-app automatic update is disabled.'**
+  String packageManager_updateDescription(Object target);
+
+  /// No description provided for @packageManager_updateDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please use the following command to update the app'**
+  String get packageManager_updateDescriptionHint;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to Clipboard'**
+  String get copiedToClipboard;
+
+  /// No description provided for @addUrlFromClipboardHotkey.
+  ///
+  /// In en, this message translates to:
+  /// **'Add URL from Clipboard Hotkey'**
+  String get addUrlFromClipboardHotkey;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -1057,7 +1479,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'fa', 'it', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['de', 'en', 'fa', 'it', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1068,6 +1490,7 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
 
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'de': return AppLocalizationsDe();
     case 'en': return AppLocalizationsEn();
     case 'fa': return AppLocalizationsFa();
     case 'it': return AppLocalizationsIt();

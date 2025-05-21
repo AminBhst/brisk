@@ -1,0 +1,43 @@
+name: Build Snap Package
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-snap:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+
+      - name: Enable Linux Desktop
+        run: flutter config --enable-linux-desktop
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Install Linux build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libkeybinder-3.0-dev
+
+      - name: Build Flutter Linux app
+        run: flutter build linux
+
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@v2
+
+      - name: Build Snap package
+        run: snapcraft
+
+      - name: Upload Snap artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-snap
+          path: linux/*.snap

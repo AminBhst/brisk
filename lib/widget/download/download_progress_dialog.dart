@@ -110,7 +110,6 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
                   showDetails = !showDetails;
                 });
               },
-              width: 220,
               backgroundColor: Colors.black12,
               borderColor: Colors.transparent,
               textColor: Colors.blue,
@@ -223,26 +222,23 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
         }
         if (buttonEnabled.pauseButtonEnabled) {
           return RoundedOutlinedButton.fromButtonColor(
-            width: 103,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            contentPadding: EdgeInsetsDirectional.only(end: 6),
             theme.downloadProgressDialogTheme.pauseColor,
             onPressed: onPausePressed,
-            icon: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: SizedBox(
-                width: 20,
-                child: Icon(
-                  Icons.pause_rounded,
-                  color: Colors.white60,
-                ),
+            icon: SizedBox(
+              width: 20,
+              child: Icon(
+                Icons.pause_rounded,
+                color: Colors.white60,
               ),
             ),
             text: loc.btn_pause,
           );
         } else if (buttonEnabled.startButtonEnabled) {
           return RoundedOutlinedButton.fromButtonColor(
-            width: 103,
             mainAxisAlignment: MainAxisAlignment.start,
+            contentPadding: EdgeInsetsDirectional.only(end: 6),
             theme.downloadProgressDialogTheme.resumeColor,
             onPressed: () => provider.startDownload(widget.downloadId),
             icon: SizedBox(
@@ -256,16 +252,13 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
           );
         } else {
           return RoundedOutlinedButton(
-            width: 120,
             borderColor: Colors.transparent,
             backgroundColor: Colors.black12,
+            contentPadding: EdgeInsetsDirectional.only(end: 6),
             onPressed: null,
-            icon: Padding(
-              padding: const EdgeInsets.all(0),
-              child: Icon(
-                Icons.hourglass_bottom_rounded,
-                color: Colors.white70,
-              ),
+            icon: Icon(
+              Icons.hourglass_bottom_rounded,
+              color: Colors.white70,
             ),
             text: loc.btn_wait,
             textColor: Colors.white70,

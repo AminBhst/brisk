@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/l10n/app_localizations.dart';
@@ -8,6 +10,7 @@ import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/default_tooltip.dart';
+import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:brisk/widget/base/outlined_text_field.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/scrollable_dialog.dart';
@@ -19,6 +22,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:brisk/model/download_item.dart';
+import 'package:path/path.dart' as path;
 
 class DownloadInfoDialog extends StatefulWidget {
   final DownloadItem downloadItem;
@@ -46,6 +50,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
   late DownloadRequestProvider provider;
   late AnimationController controller;
   late Animation<double> scaleAnimation;
+  late AppLocalizations loc;
 
   @override
   void initState() {
@@ -69,7 +74,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
     final theme = Provider.of<ThemeProvider>(context).activeTheme;
     final size = MediaQuery.of(context).size;
     final alertDialogTheme = theme.alertDialogTheme;
-    final loc = AppLocalizations.of(context)!;
+    loc = AppLocalizations.of(context)!;
     return ScaleTransition(
       scale: scaleAnimation,
       child: ScrollableDialog(
@@ -288,7 +293,6 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                 RoundedOutlinedButton.fromButtonColor(
                   theme.downloadInfoDialogTheme.downloadColor,
                   text: loc.btn_download,
-                  width: 100,
                   onPressed: () => _onDownloadPressed(context),
                 ),
               ],
@@ -301,7 +305,6 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                 RoundedOutlinedButton.fromButtonColor(
                   theme.downloadInfoDialogTheme.openFileLocationColor,
                   text: loc.btn_openFileLocation,
-                  width: 151,
                   onPressed: () {
                     openFileLocation(widget.downloadItem);
                     Navigator.of(context).pop();
@@ -309,7 +312,6 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                 ),
                 const SizedBox(width: 10),
                 RoundedOutlinedButton(
-                  width: 110,
                   text: loc.btn_openFile,
                   onPressed: () {
                     launchUrlString("file:${widget.downloadItem.filePath}");
@@ -389,6 +391,7 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
 
   /// TODO fix download id bug
   void addToList() async {
+    setDownloadItemFileName(context);
     final request = widget.downloadItem;
     await HiveUtil.instance.addDownloadItem(request);
     final downloadItemModel = buildFromDownloadItem(request);
@@ -413,7 +416,37 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
     }
   }
 
+  void setDownloadItemFileName(BuildContext context) {
+    final savePath = txtController.text;
+    if (FileUtil.isFilePathInvalid(savePath)) {
+      showDialog(
+        context: context,
+        builder: (context) => ErrorDialog(
+          title: loc.err_invalidPath_title,
+          description: loc.err_invalidPath_savePath_description,
+          height: 120,
+          width: 380,
+        ),
+      );
+      throw Exception();
+    }
+    var fileName = savePath.substring(savePath.lastIndexOf(path.separator) + 1);
+    if (path.extension(fileName) !=
+        path.extension(widget.downloadItem.fileName)) {
+      final baseFileName = fileName.contains(".")
+          ? fileName.substring(0, fileName.lastIndexOf("."))
+          : fileName;
+      fileName = baseFileName + path.extension(widget.downloadItem.fileName);
+    }
+    widget.downloadItem.fileName = fileName;
+    widget.downloadItem.filePath = path.join(
+      File(txtController.text).parent.path,
+      fileName,
+    );
+  }
+
   void _onDownloadPressed(BuildContext context) async {
+    setDownloadItemFileName(context);
     await HiveUtil.instance.addDownloadItem(widget.downloadItem);
     if (!mounted) return;
     final provider =

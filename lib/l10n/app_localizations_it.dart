@@ -9,7 +9,13 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get application => 'applicazione';
+
+  @override
   String get language => 'Lingua';
+
+  @override
+  String get noUpdateAvailable => 'Nessun nuovo aggiornamento disponibile al momento';
 
   @override
   String get addUrl => 'Aggiungi URL';
@@ -481,4 +487,220 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get availableDownloads => 'Download disponibili';
+
+  @override
+  String get installationGuide => 'Guida all\'installazione';
+
+  @override
+  String get installBrowserExtension_title => 'Installa l\'estensione del browser';
+
+  @override
+  String get installTheBrowserExtension_description => 'Scegli il tuo browser per installare l\'estensione di Brisk e catturare i download dal browser';
+
+  @override
+  String get installTheBrowserExtension_description_subtitle => 'A causa di restrizioni, l\'estensione è disponibile solo nello store ufficiale per Firefox. Per altri browser è necessaria l\'installazione manuale. Speriamo che in futuro l\'estensione sarà disponibile per tutti i browser nei rispettivi siti ufficiali.';
+
+  @override
+  String get installBrowserExtensionGuide_title => 'Guida all\'installazione';
+
+  @override
+  String get downloadExtension => 'Scarica estensione';
+
+  @override
+  String get installBrowserExtension_chrome_step1_subtitle => 'Clicca sul pulsante qui sotto per scaricare il pacchetto dell\'estensione per Chrome';
+
+  @override
+  String get installBrowserExtension_edge_step1_subtitle => 'Clicca sul pulsante qui sotto per scaricare il pacchetto dell\'estensione per Edge';
+
+  @override
+  String get installBrowserExtension_opera_step1_subtitle => 'Clicca sul pulsante qui sotto per scaricare il pacchetto dell\'estensione per Opera';
+
+  @override
+  String get installBrowserExtension_step2_title => 'Estrai il pacchetto';
+
+  @override
+  String get installBrowserExtension_step2_subtitle => 'Estrai il pacchetto scaricato nella destinazione desiderata';
+
+  @override
+  String get installBrowserExtension_step3_title => 'Abilita la modalità sviluppatore';
+
+  @override
+  String get installBrowserExtension_chrome_step3_subtitle => 'Digita chrome://extensions nella barra degli indirizzi e abilita la modalità sviluppatore accanto alla barra di ricerca';
+
+  @override
+  String get installBrowserExtension_opera_step3_subtitle => 'Digita opera://extensions nella barra degli indirizzi e abilita la modalità sviluppatore accanto alla barra di ricerca';
+
+  @override
+  String get installBrowserExtension_edge_step3_subtitle => 'Digita edge://extensions nella barra degli indirizzi e abilita la modalità sviluppatore nel menu a sinistra';
+
+  @override
+  String get installBrowserExtension_step4_title => 'Carica estensione';
+
+  @override
+  String get installBrowserExtension_step4_subtitle => 'Clicca sul pulsante \'Carica estensione non pacchettizzata\' e seleziona la cartella dove hai estratto il pacchetto';
+
+  @override
+  String get confirmAction => 'Conferma azione';
+
+  @override
+  String get downloadDeletionConfirmation => 'Sei sicuro di voler eliminare i download selezionati?';
+
+  @override
+  String get deletionFromQueueConfirmation => 'Sei sicuro di voler rimuovere i download selezionati dalla coda?';
+
+  @override
+  String get deleteDownloadedFiles => 'Elimina i file scaricati';
+
+  @override
+  String get btn_deleteConfirm => 'Sì, elimina';
+
+  @override
+  String downloadsInQueue(Object number) {
+    return '$number download in coda';
+  }
+
+  @override
+  String get btn_createQueue => 'Crea coda';
+
+  @override
+  String get createNewQueue => 'Crea nuova coda';
+
+  @override
+  String get queueName => 'Nome coda';
+
+  @override
+  String get mainQueue => 'Coda principale';
+
+  @override
+  String get editQueueItems => 'Modifica elementi coda';
+
+  @override
+  String get queueIsEmpty => 'La coda è vuota';
+
+  @override
+  String get addDownloadToQueue => 'Aggiungi download alla coda';
+
+  @override
+  String get selectQueue => 'Seleziona coda';
+
+  @override
+  String get btn_addToQueue => 'Aggiungi alla coda';
+
+  @override
+  String deleteQueueConfirmation(Object queue) {
+    return 'Vuoi eliminare la coda $queue?';
+  }
+
+  @override
+  String get btn_schedule => 'Pianifica';
+
+  @override
+  String get btn_stopQueue => 'Ferma coda';
+
+  @override
+  String get scheduleDownload => 'Pianifica download';
+
+  @override
+  String get startDownloadAt => 'Inizia download alle';
+
+  @override
+  String get stopDownloadAt => 'Ferma download alle';
+
+  @override
+  String get simultaneousDownloads => 'Download simultanei';
+
+  @override
+  String get shutdownAfterCompletion => 'Spegni dopo il completamento';
+
+  @override
+  String get btn_startNow => 'Avvia';
+
+  @override
+  String get chooseAction => 'Scegli azione';
+
+  @override
+  String get appChooseActionDescription => 'Scegli cosa vuoi fare con l\'applicazione';
+
+  @override
+  String get btn_exitApplication => 'Esci dall\'applicazione';
+
+  @override
+  String get btn_minimizeToTray => 'Minimizza nella barra sistema';
+
+  @override
+  String get rememberThisDecision => 'Ricorda questa decisione';
+
+  @override
+  String get shutdownWarning_title => 'Avviso spegnimento';
+
+  @override
+  String shutdownWarning_description(Object seconds) {
+    return 'Il PC si spegnerà tra $seconds secondi';
+  }
+
+  @override
+  String get btn_cancelShutdown => 'Annulla spegnimento';
+
+  @override
+  String get btn_shutdownNow => 'Spegni';
+
+  @override
+  String get extensionUpdateAvailable => 'Disponibile aggiornamento estensione';
+
+  @override
+  String get updateAvailable => 'Disponibile aggiornamento';
+
+  @override
+  String updateAvailable_description(Object target) {
+    return 'È disponibile una nuova versione di $target.\nVuoi aggiornare ora?';
+  }
+
+  @override
+  String get whatsNew => 'Novità:';
+
+  @override
+  String get btn_later => 'Più tardi';
+
+  @override
+  String get btn_update => 'Aggiorna';
+
+  @override
+  String get automaticUrlUpdate => 'Aggiornamento automatico URL';
+
+  @override
+  String get awaitingUrl => 'In attesa dell\'URL';
+
+  @override
+  String get awaitingUrl_description => 'Sei stato reindirizzato al sito di riferimento di questo file.';
+
+  @override
+  String get awaitingUrl_descriptionHint => 'Clic sul collegamento download per catturare e aggiornare automaticamente l\'URL download.';
+
+  @override
+  String get urlUpdateError_title => 'Errore aggiornamento URL';
+
+  @override
+  String get urlUpdateError_description => 'L\'URL fornita non si riferisce allo stesso file!';
+
+  @override
+  String get urlUpdateSuccess => 'URL aggiornata correttamente!';
+
+  @override
+  String packageManager_updateTitle(Object target) {
+    return 'Aggiornamento $target';
+  }
+
+  @override
+  String packageManager_updateDescription(Object target) {
+    return 'Brisk è stato installato tramite $target, quindi l\'aggiornamento automatico in-app è disabilitato.';
+  }
+
+  @override
+  String get packageManager_updateDescriptionHint => 'Per aggiornare l\'app usa il seguente comando';
+
+  @override
+  String get copiedToClipboard => 'Copiato negli appunti';
+
+  @override
+  String get addUrlFromClipboardHotkey => 'Hotkey: aggiungi URL dagli appunti';
 }

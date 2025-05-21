@@ -9,7 +9,13 @@ class AppLocalizationsFa extends AppLocalizations {
   AppLocalizationsFa([String locale = 'fa']) : super(locale);
 
   @override
+  String get application => 'application';
+
+  @override
   String get language => 'زبان';
+
+  @override
+  String get noUpdateAvailable => 'هنوز نسخه جدیدی منتشر نشده است';
 
   @override
   String get addUrl => 'اضافه کردن لینک';
@@ -481,4 +487,220 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get availableDownloads => 'فایل های قابل دانلود';
+
+  @override
+  String get installationGuide => 'Installation Guide';
+
+  @override
+  String get installBrowserExtension_title => 'نصب افزونه مرورگر';
+
+  @override
+  String get installTheBrowserExtension_description => 'مرورگر خود را برای نصب افزونه انتخاب کنید';
+
+  @override
+  String get installTheBrowserExtension_description_subtitle => 'به علت تحریم ها، افزونه فقط برای مرورگر فایرفاکس به صورت رسمی منتشر شده است. برای دیگر مرورگرها نیاز به نصب دستی افزونه می‌باشد';
+
+  @override
+  String get installBrowserExtensionGuide_title => 'آموزش نصب';
+
+  @override
+  String get downloadExtension => 'دانلود افزونه';
+
+  @override
+  String get installBrowserExtension_chrome_step1_subtitle => 'برای دانلود افزونه کروم روی دکمه زیر کلیک کنید';
+
+  @override
+  String get installBrowserExtension_edge_step1_subtitle => 'برای دانلود افزونه اج روی دکمه زیر کلیک کنید';
+
+  @override
+  String get installBrowserExtension_opera_step1_subtitle => 'برای نصب افزونه اوپرا روی دکمه زیر کلیک کنید';
+
+  @override
+  String get installBrowserExtension_step2_title => 'استخراج فایل‌ها';
+
+  @override
+  String get installBrowserExtension_step2_subtitle => 'فایل دانلود شده را در مسیر دلخواه خود استخراج کنید';
+
+  @override
+  String get installBrowserExtension_step3_title => 'فعال سازی Developer Mode';
+
+  @override
+  String get installBrowserExtension_chrome_step3_subtitle => 'داخل سرچ بار کروم chrome://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید';
+
+  @override
+  String get installBrowserExtension_opera_step3_subtitle => 'داخل سرچ بار اوپرا opera://extensions را تایپ کرده و گزینه Developer Mode را که در سمت راست سرچ بار قرار دارد فعال کنید';
+
+  @override
+  String get installBrowserExtension_edge_step3_subtitle => 'داخل سرچ بار اج edge://extensions را تایپ کرده و گزینه Developer Mode را که در منوی سمت چپ واقع شده فعال کنید';
+
+  @override
+  String get installBrowserExtension_step4_title => 'لود کردن افزونه';
+
+  @override
+  String get installBrowserExtension_step4_subtitle => 'بر روی گزینه \'Load unpacked\' کلیک کرده و پوشه حاوی فایل‌های استخراج شده را انتخاب کنید';
+
+  @override
+  String get confirmAction => 'تایید عملیات';
+
+  @override
+  String get downloadDeletionConfirmation => 'آیا از حذف دانلود های انتخاب شده اطمینان دارید؟';
+
+  @override
+  String get deletionFromQueueConfirmation => 'آیا از حذف دانلودهای انتخابی از صف اطمینان دارید؟';
+
+  @override
+  String get deleteDownloadedFiles => 'حذف فایل‌های دانلود شده';
+
+  @override
+  String get btn_deleteConfirm => 'حذف';
+
+  @override
+  String downloadsInQueue(Object number) {
+    return '$number دانلود در صف';
+  }
+
+  @override
+  String get btn_createQueue => 'ساخت صف';
+
+  @override
+  String get createNewQueue => 'ساخت صف جدید';
+
+  @override
+  String get queueName => 'نام صف';
+
+  @override
+  String get mainQueue => 'صف اصلی';
+
+  @override
+  String get editQueueItems => 'ویرایش صف';
+
+  @override
+  String get queueIsEmpty => 'صف خالی است';
+
+  @override
+  String get addDownloadToQueue => 'اضافه کردن دانلود به صف';
+
+  @override
+  String get selectQueue => 'انتخاب صف';
+
+  @override
+  String get btn_addToQueue => 'اضافه کردن به صف';
+
+  @override
+  String deleteQueueConfirmation(Object queue) {
+    return 'آیا از حذف صف $queue اطمینان دارید؟';
+  }
+
+  @override
+  String get btn_schedule => 'برنامه ریزی';
+
+  @override
+  String get btn_stopQueue => 'توقف صف';
+
+  @override
+  String get scheduleDownload => 'برنامه ریزی دانلود';
+
+  @override
+  String get startDownloadAt => 'شروع دانلود از';
+
+  @override
+  String get stopDownloadAt => 'توقف دانلود';
+
+  @override
+  String get simultaneousDownloads => 'دانلود‌های همزمان';
+
+  @override
+  String get shutdownAfterCompletion => 'خاموش کردن سیستم بعد از تکمیل دانلود صف';
+
+  @override
+  String get btn_startNow => 'شروع دانلود';
+
+  @override
+  String get chooseAction => 'انتخاب عملیات';
+
+  @override
+  String get appChooseActionDescription => 'لطفا عملیات مورد نظر را انتخاب کنید';
+
+  @override
+  String get btn_exitApplication => 'خروج از برنامه';
+
+  @override
+  String get btn_minimizeToTray => 'پنهان کردن پنجره به نوار وظیفه';
+
+  @override
+  String get rememberThisDecision => 'این تصمیم را به خاطر بسپار';
+
+  @override
+  String get shutdownWarning_title => 'اخطار خاموشی سیستم';
+
+  @override
+  String shutdownWarning_description(Object seconds) {
+    return 'سیستم شما تا $seconds ثانیه دیگر خاموش میشود';
+  }
+
+  @override
+  String get btn_cancelShutdown => 'لغو خاموشی';
+
+  @override
+  String get btn_shutdownNow => 'الان خاموش کن';
+
+  @override
+  String get extensionUpdateAvailable => 'ورژن جدید افزونه مرورگر در دسترس است';
+
+  @override
+  String get updateAvailable => 'ورژن جدید در دسترس است';
+
+  @override
+  String updateAvailable_description(Object target) {
+    return 'ورژن جدید $target در دسترس است.\n\"آیا می‌خواهید اکنون به‌روزرسانی کنید؟';
+  }
+
+  @override
+  String get whatsNew => 'ویژگی‌های جدید:';
+
+  @override
+  String get btn_later => 'بعدا';
+
+  @override
+  String get btn_update => 'به‌روزرسانی';
+
+  @override
+  String get automaticUrlUpdate => 'به‌روزرسانی خودکار لینک دانلود';
+
+  @override
+  String get awaitingUrl => 'در انتظار لینک';
+
+  @override
+  String get awaitingUrl_description => 'شما به سایت مبدا این فایل منتقل شده‌اید';
+
+  @override
+  String get awaitingUrl_descriptionHint => 'برای به‌روزرسانی خودکار لینک، لطفا روی لینک دانلود فایل مورد نظر کلیک کنید';
+
+  @override
+  String get urlUpdateError_title => 'خطای به‌روزرسانی لینک دانلود';
+
+  @override
+  String get urlUpdateError_description => 'لینک دانلود مورد نظر مربوط به این فایل نمی‌باشد!';
+
+  @override
+  String get urlUpdateSuccess => 'لینک دانلود با موفقیت به‌روزرسانی شد!';
+
+  @override
+  String packageManager_updateTitle(Object target) {
+    return 'به‌روزرسانی $target';
+  }
+
+  @override
+  String packageManager_updateDescription(Object target) {
+    return 'به‌روزرسانی خودکار درون‌برنامه‌ای برای $target غیرفعال است.';
+  }
+
+  @override
+  String get packageManager_updateDescriptionHint => 'لطفاً برای به‌روزرسانی برنامه از دستور زیر استفاده کنید.';
+
+  @override
+  String get copiedToClipboard => 'در کلیپ‌بورد کپی شد';
+
+  @override
+  String get addUrlFromClipboardHotkey => 'کلید میانبر اضافه کردن دانلود از کلیپبورد';
 }

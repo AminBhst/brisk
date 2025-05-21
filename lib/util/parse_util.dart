@@ -7,6 +7,8 @@ import 'package:brisk/setting/rule/file_save_path_rule.dart';
 import 'package:brisk/setting/rule/file_rule.dart';
 import 'package:csv/csv.dart';
 import 'package:dartx/dartx.dart';
+import 'package:flutter/services.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 
 bool parseBool(String val) {
   return val.toLowerCase() == "true" ? true : false;
@@ -73,4 +75,46 @@ List<FileRule> parseCsvToFileRuleList(String csv) {
 List<String> parseCsvToList(String csv) {
   if (csv.isNullOrBlank) return [];
   return csv.isEmpty ? [] : const CsvToListConverter().convert(csv)[0].cast();
+}
+
+HotKeyModifier? strToHotkeyModifier(String modifier) {
+  if (modifier.isEmpty) return null;
+  return HotKeyModifier.values
+      .where((m) => m.name == modifier)
+      .firstOrNull;
+}
+
+HotKeyScope strToHotkeyScope(String scope) {
+  return HotKeyScope.values.where((m) => m.name == scope).first;
+}
+
+LogicalKeyboardKey? strToLogicalKey(String keyLabel) {
+  if (keyLabel.isEmpty || keyLabel.length != 1) return null;
+
+  final upper = keyLabel.toUpperCase();
+
+  // Letters A-Z
+  final codeUnit = upper.codeUnitAt(0);
+  if (codeUnit >= 0x41 && codeUnit <= 0x5A) {
+    return LogicalKeyboardKey(
+      0x00000000061 + (codeUnit - 0x41),
+    );
+  }
+
+  // Digits 0-9
+  if (codeUnit >= 0x30 && codeUnit <= 0x39) {
+    return LogicalKeyboardKey(
+      0x00000000030 + (codeUnit - 0x30),
+    );
+  }
+  return null;
+}
+
+String logicalKeyToStr(LogicalKeyboardKey? key) {
+  if (key == null) return "";
+  final keyLabel = key.keyLabel;
+  if (keyLabel.length == 1 && RegExp(r'[A-Z0-9]').hasMatch(keyLabel)) {
+    return keyLabel.toUpperCase();
+  }
+  return "";
 }

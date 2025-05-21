@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/file_util.dart';
@@ -316,8 +317,8 @@ class PlutoGridUtil {
           });
           stateManager.notifyListeners();
         },
-        title: "Are you sure you want to delete the selected downloads?",
-        checkBoxTitle: 'Delete downloaded files',
+        title: AppLocalizations.of(context)!.downloadDeletionConfirmation,
+        checkBoxTitle: AppLocalizations.of(context)!.deleteDownloadedFiles,
       ),
     );
   }

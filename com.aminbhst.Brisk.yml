@@ -1,0 +1,85 @@
+id: com.new.Brisk
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: brisk
+finish-args:
+  - --socket=wayland
+  - --socket=x11
+  - --share=network
+  - --filesystem=home
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=org.kde.StatusNotifierItem
+finish:
+  dbus:
+    - org.freedesktop.StatusNotifierItem
+
+build-options:
+  env:
+    LD_LIBRARY_PATH: /app/lib
+
+modules:
+  - shared-modules/libayatana-appindicator/libayatana-appindicator-gtk3.json
+
+  - name: gnome-common
+    sources:
+      - type: archive
+        url: https://download.gnome.org/sources/gnome-common/3.18/gnome-common-3.18.0.tar.xz
+        sha256: 22569e370ae755e04527b76328befc4c73b62bfd4a572499fde116b8318af8cf
+
+  # - name: libdbusmenu
+  #   buildsystem: autotools
+  #   builddir: true
+  #   build-dependencies:
+  #     - type: dependency
+  #       name: intltool
+  #   sources:
+  #     - type: archive
+  #       url: https://dbus.freedesktop.org/releases/dbus-glib/dbus-glib-0.112.tar.gz
+  #       sha256: 7d550dccdfcd286e33895501829ed971eeb65c614e73aadb4a08aeef719b143a
+  #   config-opts:
+  #    - --disable-static
+  #    - --disable-gtk-doc
+
+
+  - name: libkeybinder
+    build-commands:
+      - ./autogen.sh --prefix=/app
+      - make
+      - make install
+    sources:
+      - type: git
+        url: https://github.com/kupferlauncher/keybinder.git
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+      - /share/gtk-doc
+      - '*.la'
+
+  # - name: appindicator
+  #   buildsystem: cmake
+  #   build-commands:
+  #     - mkdir build
+  #     - cd build
+  #     - cmake .. -DENABLE_GTKDOC=ON
+  #     - make 
+  #     - make install
+  #   sources:
+  #     - type: git
+  #       url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
+  #       branch: main
+  #   cleanup:
+  #     - /include
+  #     - /lib/pkgconfig
+  #     - /share/gtk-doc
+  #     - '*.la'
+
+  - name: brisk
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/bin
+      - cp -r bundle/* /app/bin/
+    sources:
+      - type: dir
+        path: .
+

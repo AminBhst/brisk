@@ -1,3 +1,4 @@
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
@@ -31,6 +32,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
     final topMenuTheme =
         Provider.of<ThemeProvider>(context).activeTheme.topMenuTheme;
     final size = MediaQuery.of(context).size;
+    final loc = AppLocalizations.of(context)!;
     return Container(
       width: resolveWindowWidth(size),
       height: 70,
@@ -43,7 +45,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
             padding: const EdgeInsets.only(left: 20),
             child: TopMenuButton(
               onTap: () => onSchedulePressed(context),
-              title: 'Schedule',
+              title: loc.btn_schedule,
               fontSize: 12,
               icon: Icon(
                 Icons.schedule_rounded,
@@ -54,7 +56,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
           ),
           TopMenuButton(
             onTap: onStopAllPressed,
-            title: 'Stop Queue',
+            title: loc.btn_stopQueue,
             fontSize: 12,
             icon: Icon(
               Icons.stop_circle_rounded,
@@ -64,7 +66,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
           ),
           TopMenuButton(
             onTap: isDownloadButtonEnabled(provider) ? onDownloadPressed : null,
-            title: 'Download',
+            title: loc.download,
             icon: Icon(
               Icons.download_rounded,
               color: isDownloadButtonEnabled(provider)
@@ -78,7 +80,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
           ),
           TopMenuButton(
             onTap: isPauseButtonEnabled(provider) ? onStopPressed : null,
-            title: 'Stop',
+            title: loc.stop,
             icon: Icon(
               Icons.stop_rounded,
               color: isPauseButtonEnabled(provider)
@@ -92,7 +94,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
           ),
           TopMenuButton(
             onTap: () => onRemovePressed(context),
-            title: 'Remove',
+            title: loc.remove,
             icon: Icon(
               Icons.delete,
               color: topMenuTheme.removeColor.iconColor,
@@ -171,8 +173,7 @@ class DownloadQueueTopMenu extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => DeleteConfirmationDialog(
-        title:
-            "Are you sure you want to remove the selected downloads from the queue?",
+        title: AppLocalizations.of(context)!.deletionFromQueueConfirmation,
         onConfirmPressed: () async {
           final queue = HiveUtil.instance.downloadQueueBox
               .get(queueProvider.selectedQueueId)!;

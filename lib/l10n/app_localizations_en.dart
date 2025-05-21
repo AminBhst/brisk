@@ -9,7 +9,13 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get application => 'application';
+
+  @override
   String get language => 'Language';
+
+  @override
+  String get noUpdateAvailable => 'No new update is available yet';
 
   @override
   String get addUrl => 'Add URL';
@@ -481,4 +487,220 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get availableDownloads => 'Available Downloads';
+
+  @override
+  String get installationGuide => 'Installation Guide';
+
+  @override
+  String get installBrowserExtension_title => 'Install Browser Extension';
+
+  @override
+  String get installTheBrowserExtension_description => 'Choose your browser to install Brisk\'s browser extension to capture downloads from the browser';
+
+  @override
+  String get installTheBrowserExtension_description_subtitle => 'Due to restrictions, the extension is only available in the official store for Firefox. For other browsers, manual installation is required. This will hopefully change in the future and the extension will be available for all browsers in their official websites.';
+
+  @override
+  String get installBrowserExtensionGuide_title => 'Installation Guide';
+
+  @override
+  String get downloadExtension => 'Download Extension';
+
+  @override
+  String get installBrowserExtension_chrome_step1_subtitle => 'Click the button below to download the extension package for Chrome';
+
+  @override
+  String get installBrowserExtension_edge_step1_subtitle => 'Click the button below to download the extension package for Edge';
+
+  @override
+  String get installBrowserExtension_opera_step1_subtitle => 'Click the button below to download the extension package for Opera';
+
+  @override
+  String get installBrowserExtension_step2_title => 'Extract The Package';
+
+  @override
+  String get installBrowserExtension_step2_subtitle => 'Extract downloaded package in your desired destination';
+
+  @override
+  String get installBrowserExtension_step3_title => 'Enable Developer Mode';
+
+  @override
+  String get installBrowserExtension_chrome_step3_subtitle => 'Type chrome://extensions in the navigation bar and enable developer mode right next to the search bar';
+
+  @override
+  String get installBrowserExtension_opera_step3_subtitle => 'Type opera://extensions in the navigation bar and enable developer mode right next to the search bar';
+
+  @override
+  String get installBrowserExtension_edge_step3_subtitle => 'Type edge://extensions in the navigation bar and enable developer mode in the left menu';
+
+  @override
+  String get installBrowserExtension_step4_title => 'Load Extension';
+
+  @override
+  String get installBrowserExtension_step4_subtitle => 'Click on the \'Load unpacked\' button and select the folder in which the package was extracted';
+
+  @override
+  String get confirmAction => 'Confirm Action';
+
+  @override
+  String get downloadDeletionConfirmation => 'Are you sure you want to delete the selected downloads?';
+
+  @override
+  String get deletionFromQueueConfirmation => 'Are you sure you want to remove the selected downloads from the queue?';
+
+  @override
+  String get deleteDownloadedFiles => 'Delete downloaded files';
+
+  @override
+  String get btn_deleteConfirm => 'Yes, Delete';
+
+  @override
+  String downloadsInQueue(Object number) {
+    return '$number Downloads in queue';
+  }
+
+  @override
+  String get btn_createQueue => 'Create Queue';
+
+  @override
+  String get createNewQueue => 'Create New Queue';
+
+  @override
+  String get queueName => 'Queue Name';
+
+  @override
+  String get mainQueue => 'Main Queue';
+
+  @override
+  String get editQueueItems => 'Edit Queue Items';
+
+  @override
+  String get queueIsEmpty => 'Queue is empty';
+
+  @override
+  String get addDownloadToQueue => 'Add Download To Queue';
+
+  @override
+  String get selectQueue => 'Select Queue';
+
+  @override
+  String get btn_addToQueue => 'Add To Queue';
+
+  @override
+  String deleteQueueConfirmation(Object queue) {
+    return 'Are you sure you want to delete $queue queue?';
+  }
+
+  @override
+  String get btn_schedule => 'Schedule';
+
+  @override
+  String get btn_stopQueue => 'Stop Queue';
+
+  @override
+  String get scheduleDownload => 'Schedule Download';
+
+  @override
+  String get startDownloadAt => 'Start download at';
+
+  @override
+  String get stopDownloadAt => 'Stop download at';
+
+  @override
+  String get simultaneousDownloads => 'Simultaneous Downloads';
+
+  @override
+  String get shutdownAfterCompletion => 'Shutdown after completion';
+
+  @override
+  String get btn_startNow => 'Start Now';
+
+  @override
+  String get chooseAction => 'Choose Action';
+
+  @override
+  String get appChooseActionDescription => 'Choose what you\'d like to do with the application';
+
+  @override
+  String get btn_exitApplication => 'Exit Application';
+
+  @override
+  String get btn_minimizeToTray => 'Minimize To Tray';
+
+  @override
+  String get rememberThisDecision => 'Remember this decision';
+
+  @override
+  String get shutdownWarning_title => 'Shutdown Warning';
+
+  @override
+  String shutdownWarning_description(Object seconds) {
+    return 'Your PC will shutdown in $seconds seconds';
+  }
+
+  @override
+  String get btn_cancelShutdown => 'Cancel Shutdown';
+
+  @override
+  String get btn_shutdownNow => 'Shutdown Now';
+
+  @override
+  String get extensionUpdateAvailable => 'Extension Update Available';
+
+  @override
+  String get updateAvailable => 'Update Available';
+
+  @override
+  String updateAvailable_description(Object target) {
+    return 'A new version of the $target is available.\nWould you like to update now?';
+  }
+
+  @override
+  String get whatsNew => 'What\'s New:';
+
+  @override
+  String get btn_later => 'Later';
+
+  @override
+  String get btn_update => 'Update';
+
+  @override
+  String get automaticUrlUpdate => 'Automatic URL Update';
+
+  @override
+  String get awaitingUrl => 'Awaiting URL';
+
+  @override
+  String get awaitingUrl_description => 'You\'ve been redirected to the referer website of this file.';
+
+  @override
+  String get awaitingUrl_descriptionHint => 'Please click the download link for the download URL to be captured and updated automatically.';
+
+  @override
+  String get urlUpdateError_title => 'URL Update Error';
+
+  @override
+  String get urlUpdateError_description => 'The given URL does not refer to the same file!';
+
+  @override
+  String get urlUpdateSuccess => 'URL updated successfully!';
+
+  @override
+  String packageManager_updateTitle(Object target) {
+    return '$target Update';
+  }
+
+  @override
+  String packageManager_updateDescription(Object target) {
+    return 'Brisk was installed via $target and therefore, in-app automatic update is disabled.';
+  }
+
+  @override
+  String get packageManager_updateDescriptionHint => 'Please use the following command to update the app';
+
+  @override
+  String get copiedToClipboard => 'Copied to Clipboard';
+
+  @override
+  String get addUrlFromClipboardHotkey => 'Add URL from Clipboard Hotkey';
 }

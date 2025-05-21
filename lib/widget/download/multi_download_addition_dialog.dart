@@ -157,14 +157,12 @@ class _MultiDownloadAdditionDialogState
       buttons: [
         RoundedOutlinedButton.fromButtonColor(
           theme.cancelButtonColor,
-          width: 100,
           onPressed: () => Navigator.of(context).pop(),
           text: loc.btn_cancel,
         ),
         const SizedBox(width: 10),
         RoundedOutlinedButton.fromButtonColor(
           theme.addButtonColor,
-          width: 100,
           onPressed: onAddPressed,
           text: loc.btn_add,
         ),

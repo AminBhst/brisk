@@ -1,24 +1,73 @@
 [![license](https://img.shields.io/github/license/AminBhst/brisk?style=flat-square)](https://github.com/AminBhst/brisk/blob/main/LICENSE)
-[![release](https://img.shields.io/github/v/release/AminBhst/brisk?style=flat-square)](https://github.com/AminBhst/brisk/releases)
+[![brisk](https://snapcraft.io/brisk/badge.svg)](https://snapcraft.io/brisk)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/AminBhst/brisk/total?style=flat-square)
 <a href="https://discord.gg/hGBDWNDHG3"><img alt="Discord Chat" src="https://img.shields.io/discord/1298990692000989225?color=5865F2&label=discord&style=flat-square"></a>
 [![Telegram Channel](https://img.shields.io/badge/Channel-Telegram-blue.svg?logo=telegram&style=flat-square)](https://t.me/ryedev)
 
 [//]: # (![Static Badge]&#40;https://img.shields.io/badge/Channel-Youtube-red?style=flat-square&logo=youtube&link=https%3A%2F%2Fwww.youtube.com%2F%40ryedev&#41;)
-![brisk-header](https://github.com/user-attachments/assets/0bc0036d-1c5d-4378-8906-1ac943948fd4)
+![brisk-header](https://raw.githubusercontent.com/BrisklyDev/brisk/refs/heads/main/assets/brisk-header.png)
 
 
 ## :package: Installation
 
-Installation files for Windows, Linux, and MacOS are available at [Github Releases](https://github.com/AminBhst/brisk/releases/latest).
-
-Brisk is also available on the [Arch AUR](https://aur.archlinux.org/packages/brisk-bin).
-
 To install the browser extension, please refer to the [brisk-browser-extension repository](https://github.com/AminBhst/brisk-browser-extension).
 
+<table>
+  <tr>
+    <th>Platform</th>
+    <th>Package/Installation Method</th>
+  </tr>
+  <tr>
+    <td>Windows (x86_64)</td>
+    <td>
+      <a href="https://github.com/BrisklyDev/brisk/releases/latest">
+        <img width="220" alt="Windows Download" src="https://github.com/BrisklyDev/brisk/blob/main/images/windows-download.png?raw=true">
+      </a>
+  </tr>
+  <tr>
+    <td>MacOS (x86_64, arm64)</td>
+    <td>
+      <a href="https://github.com/BrisklyDev/brisk/releases/latest">
+        <img width="220" alt="MacOS Download" src="https://github.com/BrisklyDev/brisk/blob/main/images/macos-download.png?raw=true">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>Flatpak (x86_64, aarch64)</td>
+    <td>
+      <a href="https://flathub.org/apps/io.github.BrisklyDev.Brisk">
+        <img width="220" alt="Download on Flathub" src="https://github.com/BrisklyDev/brisk/blob/main/images/flathub-download.png?raw=true">
+      </a>
+    </td>
+  </tr>
+    <tr>
+    <td>Snap (amd64)</td>
+    <td>
+      <a href="https://snapcraft.io/brisk">
+        <img width="220" alt="Download on Snap Store" src="https://github.com/BrisklyDev/brisk/blob/main/images/download-snap.png?raw=true">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>Arch (x86_64)</td>
+    <td>
+      <a href="https://aur.archlinux.org/packages/brisk">
+        <img width="220" alt="Download on AUR" src="https://github.com/BrisklyDev/brisk/blob/main/images/download-aur.png?raw=true">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>Linux (x86_64)</td>
+    <td>
+      <a href="https://github.com/BrisklyDev/brisk/releases/latest">
+        <img width="220" alt="Tarball Download" src="https://github.com/BrisklyDev/brisk/blob/main/images/download-linux.png?raw=true">
+      </a>
+    </td>
+  </tr>
+</table>
 
 > [!IMPORTANT]
-> For Linux, make sure to check the [Linux Prerequisites](#key-linux-prerequisites)
+> For Linux, make sure to check the [Linux Prerequisites](#key-linux-prerequisites) (for tarball only)
 > 
 > On Windows, if you encountered a "Windows Protected your PC" warning, click `more info -> run anyway`
 >
@@ -72,7 +121,7 @@ https://github.com/user-attachments/assets/844c89a4-8aaa-49f0-9a4e-17fb8614bbc8
 
 ## :hammer_and_wrench: Build From Source
 
-Install the Flutter SDK v3.29.2
+Install the Flutter SDK v3.29.3
 
 ```bash
 flutter build macos|windows|linux
@@ -80,8 +129,14 @@ flutter build macos|windows|linux
 
 ## :money_with_wings: Donations
 You can support my work via:
-- ERC20: 0xcc506Cf21374B880B8eFA5294D8047C660DaD80D
-- TRC20: TDbP6HDUTtSzP1zRagEt27o5QYjB2oTFwE
+### ERC20
+```text
+0xcc506Cf21374B880B8eFA5294D8047C660DaD80D
+```
+### TRC20
+```text
+TDbP6HDUTtSzP1zRagEt27o5QYjB2oTFwE
+```
 
 ## :heart: Credits and Contributors
 Contributions are welcome and appreciated.

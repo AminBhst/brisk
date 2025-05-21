@@ -1,4 +1,5 @@
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/download_queue.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/delete_confirmation_dialog.dart';
@@ -16,6 +17,7 @@ class QueueListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final queueTheme =
         Provider.of<ThemeProvider>(context).activeTheme.queuePageTheme;
+    final loc = AppLocalizations.of(context)!;
     return Material(
       type: MaterialType.transparency,
       child: ListTile(
@@ -28,9 +30,14 @@ class QueueListItem extends StatelessWidget {
             color: queueTheme.queueItemIconColor,
           ),
         ),
-        title: Text(queue.name, style: TextStyle(color: Colors.white)),
+        title: Text(
+          queue.name == "Main" ? loc.mainQueue : queue.name,
+          style: TextStyle(color: Colors.white),
+        ),
         subtitle: Text(
-          "${queue.downloadItemsIds == null ? 0 : queue.downloadItemsIds!.length} Downloads in queue",
+          loc.downloadsInQueue(
+            queue.downloadItemsIds == null ? 0 : queue.downloadItemsIds!.length,
+          ),
           style: TextStyle(color: queueTheme.queueItemTitleDetailsTextColor),
         ),
         trailing: SizedBox(
@@ -62,8 +69,10 @@ class QueueListItem extends StatelessWidget {
       barrierDismissible: false,
       context: context,
       builder: (context) => DeleteConfirmationDialog(
-          onConfirmPressed: () async => await provider.deleteQueue(queue),
-          title: "Are you sure you want to delete ${queue.name} queue?"),
+        onConfirmPressed: () async => await provider.deleteQueue(queue),
+        title:
+            AppLocalizations.of(context)!.deleteQueueConfirmation(queue.name),
+      ),
     );
   }
 

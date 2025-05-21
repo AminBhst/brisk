@@ -32,7 +32,8 @@ import '../widget/download/multi_download_addition_dialog.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.2.2";
+  static const String extensionVersion = "1.2.3";
+  static DownloadItem? awaitingUpdateUrlItem;
 
   static void setup(BuildContext context) async {
     if (_isServerRunning) return;
@@ -227,11 +228,13 @@ class BrowserExtensionServer {
 
   static void _handleMultiDownloadRequest(jsonBody, context, request) {
     List downloadHrefs = jsonBody["data"]["downloadHrefs"];
+    final referer = jsonBody['data']['referer'];
     if (downloadHrefs.isEmpty) return;
     downloadHrefs = downloadHrefs.toSet().toList() // removes duplicates
       ..removeWhere((url) => !isUrlValid(url));
     final downloadItems =
         downloadHrefs.map((e) => DownloadItem.fromUrl(e)).toList();
+    downloadItems.forEach((item) => item.referer = referer);
     _cancelClicked = false;
     _showLoadingDialog(context);
     requestFileInfoBatch(
@@ -293,8 +296,22 @@ class BrowserExtensionServer {
   static Future<bool> _handleSingleDownloadRequest(
       jsonBody, context, request) async {
     final url = jsonBody['data']['url'];
+    final referer = jsonBody['data']['referer'];
     Completer<bool> completer = Completer();
+    if (awaitingUpdateUrlItem != null) {
+      final id = awaitingUpdateUrlItem!.key;
+      DownloadAdditionUiUtil.handleDownloadAddition(
+        downloadId: id,
+        context,
+        url,
+        updateDialog: true,
+        additionalPop: true,
+      );
+      completer.complete(true);
+      return completer.future;
+    }
     final downloadItem = DownloadItem.fromUrl(url);
+    downloadItem.referer = referer;
     if (!isUrlValid(url)) {
       completer.complete(false);
     }

@@ -1,11 +1,7 @@
 # Change Log
 
 ## :hammer_and_wrench: Bug Fixes and Improvements
-- Fixed an edge case bug in the download engine
-- Added an engine panic and restart mechanism to automatically recover from critical download failures
-- Optimized the download engine's connection reuse mechanism
-- Fixed failing to delete downloaded temp files for unfinished downloads 
-- Minor UI fixes
-
-## :heart: Credits
-Special thanks to [Norman-w](https://github.com/Norman-w) for his contributions to macOS support
+- Added custom download addition hotkey to settings
+- Added scope to download addition hotkey (scope=system will trigger the hotkey even when the app is not on screen)
+- Fixed some minor tray issues [#116](https://github.com/BrisklyDev/brisk/issues/116)
+- Fixed file rename not working using the text field [#118](https://github.com/BrisklyDev/brisk/issues/118)
