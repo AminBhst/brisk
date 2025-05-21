@@ -2,17 +2,29 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:window_manager/window_manager.dart';
+import 'package:windows_single_instance/windows_single_instance.dart';
 
-class SingleInstanceIpcHandler {
+class SingleInstanceHandler {
   static const socketPath = '/tmp/brisk_ipc_socket';
   static final socketFile = File(socketPath);
   static ServerSocket? _serverSocket;
 
   static init() async {
-    await tryClearSocket();
-    await bindToSocket();
-    handleProcessTerminationSignals();
-    listenToActivateSignal();
+    if (Platform.isWindows) {
+      await WindowsSingleInstance.ensureSingleInstance(
+        [],
+        "brisk_single_instance",
+      );
+      return;
+    }
+    await _initUnix();
+  }
+
+  static _initUnix() async {
+    _tryClearSocket();
+    await _bindToSocket();
+    _handleProcessTerminationSignals();
+    _listenToActivateSignal();
   }
 
   /// Connect to unix socket. If it fails, it means that it's no instance has been created
@@ -32,13 +44,13 @@ class SingleInstanceIpcHandler {
     } catch (_) {}
   }
 
-  static tryClearSocket() async {
-    if (await socketFile.exists()) {
-      await socketFile.delete();
+  static void _tryClearSocket() {
+    if (socketFile.existsSync()) {
+      socketFile.deleteSync();
     }
   }
 
-  static void handleProcessTerminationSignals() {
+  static void _handleProcessTerminationSignals() {
     ProcessSignal.sigint.watch().listen((_) async {
       await socketFile.delete();
       exit(0);
@@ -49,7 +61,7 @@ class SingleInstanceIpcHandler {
     });
   }
 
-  static void listenToActivateSignal() {
+  static void _listenToActivateSignal() {
     _serverSocket?.listen((client) {
       client.listen((data) async {
         final message = utf8.decode(data);
@@ -61,7 +73,7 @@ class SingleInstanceIpcHandler {
     });
   }
 
-  static bindToSocket() async {
+  static _bindToSocket() async {
     _serverSocket = await ServerSocket.bind(
       InternetAddress(socketPath, type: InternetAddressType.unix),
       0,

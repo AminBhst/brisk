@@ -18,7 +18,7 @@ import 'package:brisk/util/download_addition_ui_util.dart';
 import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/notification_manager.dart';
-import 'package:brisk/util/single_instance_ipc_handler.dart';
+import 'package:brisk/util/single_instance_handler.dart';
 import 'package:brisk/util/tray_util.dart';
 import 'package:brisk/widget/base/app_exit_dialog.dart';
 import 'package:brisk/widget/base/global_context.dart';
@@ -43,14 +43,11 @@ import 'util/settings_cache.dart';
 // TODO Fix resizing the window when a row is selected
 Future<void> main(List<String> args) async {
   if (!Platform.isWindows) {
-    await SingleInstanceIpcHandler.tryConnectSocket();
+    await SingleInstanceHandler.tryConnectSocket();
   }
-
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    if (!Platform.isWindows) {
-      await SingleInstanceIpcHandler.init();
-    }
+    await SingleInstanceHandler.init();
     await Logger.init();
     await migrateDatabaseLocation();
     await windowManager.ensureInitialized();
