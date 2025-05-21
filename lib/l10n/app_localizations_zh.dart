@@ -9,7 +9,13 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get application => '应用程序';
+
+  @override
   String get language => '语言';
+
+  @override
+  String get noUpdateAvailable => '暂无可用更新';
 
   @override
   String get addUrl => '添加 URL';
@@ -481,4 +487,220 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get availableDownloads => '可用下载';
+
+  @override
+  String get installationGuide => '安装指南';
+
+  @override
+  String get installBrowserExtension_title => '安装浏览器扩展';
+
+  @override
+  String get installTheBrowserExtension_description => '选择您的浏览器来安装 Brisk 浏览器扩展以捕获来自浏览器的下载';
+
+  @override
+  String get installTheBrowserExtension_description_subtitle => '由于限制，该扩展仅在 Firefox 的官方商店中提供。对于其他浏览器，需要手动安装。希望将来这种情况会有所改变，该扩展将在其官方网站上适用于所有浏览器。';
+
+  @override
+  String get installBrowserExtensionGuide_title => '安装指南';
+
+  @override
+  String get downloadExtension => '下载扩展';
+
+  @override
+  String get installBrowserExtension_chrome_step1_subtitle => '点击下面的按钮下载 Chrome 扩展包';
+
+  @override
+  String get installBrowserExtension_edge_step1_subtitle => '点击下面的按钮下载 Edge 扩展包';
+
+  @override
+  String get installBrowserExtension_opera_step1_subtitle => '点击下面的按钮下载 Opera 扩展包';
+
+  @override
+  String get installBrowserExtension_step2_title => '解压扩展包';
+
+  @override
+  String get installBrowserExtension_step2_subtitle => '在您期望的目标位置解压下载的扩展包';
+
+  @override
+  String get installBrowserExtension_step3_title => '启用开发者模式';
+
+  @override
+  String get installBrowserExtension_chrome_step3_subtitle => '在地址栏输入 chrome://extensions 并启用搜索栏旁边的开发者模式';
+
+  @override
+  String get installBrowserExtension_opera_step3_subtitle => '在地址栏输入 opera://extensions 并启用搜索栏旁边的开发者模式';
+
+  @override
+  String get installBrowserExtension_edge_step3_subtitle => '在地址栏输入 edge://extensions 并在左侧菜单中启用开发者模式';
+
+  @override
+  String get installBrowserExtension_step4_title => '加载扩展';
+
+  @override
+  String get installBrowserExtension_step4_subtitle => '点击\"加载已解压的扩展程序\"按钮，然后选择解压扩展包的文件夹';
+
+  @override
+  String get confirmAction => '确认操作';
+
+  @override
+  String get downloadDeletionConfirmation => '您确定要删除选定的下载吗？';
+
+  @override
+  String get deletionFromQueueConfirmation => '您确定要从队列中移除选定的下载吗？';
+
+  @override
+  String get deleteDownloadedFiles => '删除已下载的文件';
+
+  @override
+  String get btn_deleteConfirm => '是的，删除';
+
+  @override
+  String downloadsInQueue(Object number) {
+    return '队列中有 $number 个下载';
+  }
+
+  @override
+  String get btn_createQueue => '创建队列';
+
+  @override
+  String get createNewQueue => '创建新队列';
+
+  @override
+  String get queueName => '队列名称';
+
+  @override
+  String get mainQueue => '主队列';
+
+  @override
+  String get editQueueItems => '编辑队列项目';
+
+  @override
+  String get queueIsEmpty => '队列为空';
+
+  @override
+  String get addDownloadToQueue => '将下载添加到队列';
+
+  @override
+  String get selectQueue => '选择队列';
+
+  @override
+  String get btn_addToQueue => '添加到队列';
+
+  @override
+  String deleteQueueConfirmation(Object queue) {
+    return '您确定要删除 $queue 队列吗？';
+  }
+
+  @override
+  String get btn_schedule => '计划';
+
+  @override
+  String get btn_stopQueue => '停止队列';
+
+  @override
+  String get scheduleDownload => '计划下载';
+
+  @override
+  String get startDownloadAt => '开始下载于';
+
+  @override
+  String get stopDownloadAt => '停止下载于';
+
+  @override
+  String get simultaneousDownloads => '同时下载数';
+
+  @override
+  String get shutdownAfterCompletion => '完成后关机';
+
+  @override
+  String get btn_startNow => '立即开始';
+
+  @override
+  String get chooseAction => '选择操作';
+
+  @override
+  String get appChooseActionDescription => '选择您希望如何处理此应用程序';
+
+  @override
+  String get btn_exitApplication => '退出应用程序';
+
+  @override
+  String get btn_minimizeToTray => '最小化到托盘';
+
+  @override
+  String get rememberThisDecision => '记住此决定';
+
+  @override
+  String get shutdownWarning_title => '关机警告';
+
+  @override
+  String shutdownWarning_description(Object seconds) {
+    return '您的电脑将在 $seconds 秒后关机';
+  }
+
+  @override
+  String get btn_cancelShutdown => '取消关机';
+
+  @override
+  String get btn_shutdownNow => '立即关机';
+
+  @override
+  String get extensionUpdateAvailable => '扩展程序有可用更新';
+
+  @override
+  String get updateAvailable => '有可用更新';
+
+  @override
+  String updateAvailable_description(Object target) {
+    return '$target 的新版本可用。\n您想现在更新吗？';
+  }
+
+  @override
+  String get whatsNew => '更新内容：';
+
+  @override
+  String get btn_later => '稍后';
+
+  @override
+  String get btn_update => '更新';
+
+  @override
+  String get automaticUrlUpdate => '自动 URL 更新';
+
+  @override
+  String get awaitingUrl => '等待 URL';
+
+  @override
+  String get awaitingUrl_description => '您已被重定向到此文件的引用来源网站。';
+
+  @override
+  String get awaitingUrl_descriptionHint => '请点击下载链接，以便自动捕获和更新下载 URL。';
+
+  @override
+  String get urlUpdateError_title => 'URL 更新错误';
+
+  @override
+  String get urlUpdateError_description => '给定的 URL 未指向相同的文件！';
+
+  @override
+  String get urlUpdateSuccess => 'URL 更新成功！';
+
+  @override
+  String packageManager_updateTitle(Object target) {
+    return '$target 更新';
+  }
+
+  @override
+  String packageManager_updateDescription(Object target) {
+    return 'Brisk 是通过 $target 安装的，因此禁用了应用内自动更新。';
+  }
+
+  @override
+  String get packageManager_updateDescriptionHint => '请使用以下命令更新应用';
+
+  @override
+  String get copiedToClipboard => '已复制到剪贴板';
+
+  @override
+  String get addUrlFromClipboardHotkey => '从剪贴板添加 URL 快捷键';
 }
