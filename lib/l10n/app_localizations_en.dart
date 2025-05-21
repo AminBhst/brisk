@@ -105,10 +105,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get err_invalidUrl_title => 'Invalid URL';
 
   @override
-  String get err_invalidUrl_description => 'The URL you\'ve entered appears to be invalid.\nPlease check the format and try again.';
+  String get err_invalidUrl_description =>
+      'The URL you\'ve entered appears to be invalid.\nPlease check the format and try again.';
 
   @override
-  String get err_invalidUrl_descriptionHint => 'Make sure the URL:\n\t • Starts with https:// or http://\n\t • Contains a valid domain name\n\t • Contains no invalid characters';
+  String get err_invalidUrl_descriptionHint =>
+      'Make sure the URL:\n\t • Starts with https:// or http://\n\t • Contains a valid domain name\n\t • Contains no invalid characters';
 
   @override
   String get addNewDownload => 'Add New Download';
@@ -195,7 +197,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duplicateDownload_title => 'Duplicate Download';
 
   @override
-  String get duplicateDownload_description => 'This download already exists!\nPlease choose an action.';
+  String get duplicateDownload_description =>
+      'This download already exists!\nPlease choose an action.';
 
   @override
   String get btn_addNew => 'Add New';
@@ -207,13 +210,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get popupMenu_properties => 'Properties';
 
   @override
-  String get err_failedToRetrieveFileInfo_title => 'Failed to retrieve file info';
+  String get err_failedToRetrieveFileInfo_title =>
+      'Failed to retrieve file info';
 
   @override
-  String get err_failedToRetrieveFileInfo_description => 'Something went wrong when trying to retrieve file information from this URL.';
+  String get err_failedToRetrieveFileInfo_description =>
+      'Something went wrong when trying to retrieve file information from this URL.';
 
   @override
-  String get err_failedToRetrieveFileInfo_descriptionHint => 'In some cases, retrying a few times may solve the issue. Otherwise, make sure the resource you\'re to reach is valid.';
+  String get err_failedToRetrieveFileInfo_descriptionHint =>
+      'In some cases, retrying a few times may solve the issue. Otherwise, make sure the resource you\'re to reach is valid.';
 
   @override
   String get retrievingFileInformation => 'Retrieving file information...';
@@ -243,10 +249,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_notification => 'Notification';
 
   @override
-  String get settings_notification_onDownloadCompletion => 'Notification on download completion';
+  String get settings_notification_onDownloadCompletion =>
+      'Notification on download completion';
 
   @override
-  String get settings_notification_onDownloadFailure => 'Notification on download failure';
+  String get settings_notification_onDownloadFailure =>
+      'Notification on download failure';
 
   @override
   String get settings_userInterface => 'User Interface';
@@ -261,7 +269,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_behavior_launchAtStartup => 'Launch At Startup';
 
   @override
-  String get settings_behavior_showProgressOnNewDownload => 'Show progress window when a new download starts';
+  String get settings_behavior_showProgressOnNewDownload =>
+      'Show progress window when a new download starts';
 
   @override
   String get settings_behavior_appClosureBehavior => 'App Closure Behavior';
@@ -273,19 +282,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_behavior_appClosureBehavior_exit => 'Exit';
 
   @override
-  String get settings_behavior_appClosureBehavior_minimizeToTray => 'Minimize To Tray';
+  String get settings_behavior_appClosureBehavior_minimizeToTray =>
+      'Minimize To Tray';
 
   @override
-  String get settings_behavior_duplicateDownloadAction => 'Duplicate Download Action';
+  String get settings_behavior_duplicateDownloadAction =>
+      'Duplicate Download Action';
 
   @override
-  String get settings_behavior_duplicateDownloadAction_alwaysAsk => 'Always Ask';
+  String get settings_behavior_duplicateDownloadAction_alwaysAsk =>
+      'Always Ask';
 
   @override
-  String get settings_behavior_duplicateDownloadAction_skipDownload => 'Skip Download';
+  String get settings_behavior_duplicateDownloadAction_skipDownload =>
+      'Skip Download';
 
   @override
-  String get settings_behavior_duplicateDownloadAction_updateUrl => 'Update URL';
+  String get settings_behavior_duplicateDownloadAction_updateUrl =>
+      'Update URL';
 
   @override
   String get settings_behavior_duplicateDownloadAction_addNew => 'Add New';
@@ -294,7 +308,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_logging => 'Logging';
 
   @override
-  String get settings_logging_enableDownloadEngineLogging => 'Enable Download Engine Logging';
+  String get settings_logging_enableDownloadEngineLogging =>
+      'Enable Download Engine Logging';
 
   @override
   String get settings_paths => 'Paths';
@@ -309,10 +324,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_rules => 'Rules';
 
   @override
-  String get settings_rules_extensionSkipCaptureRules => 'Extension Skip Capture Rules';
+  String get settings_rules_extensionSkipCaptureRules =>
+      'Extension Skip Capture Rules';
 
   @override
-  String get settings_rules_extensionSkipCaptureRules_tooltip => 'Defines conditions which determine when a file should not be captures via browser extension';
+  String get settings_rules_extensionSkipCaptureRules_tooltip =>
+      'Defines conditions which determine when a file should not be captures via browser extension';
 
   @override
   String get settings_rules_edit => 'Edit Rules';
@@ -321,7 +338,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_rules_fileSavePathRules => 'File Save Path Rules';
 
   @override
-  String get settings_rules_fileSavePathRules_tooltip => 'Defines conditions which determine when a file should be saved in the specified location';
+  String get settings_rules_fileSavePathRules_tooltip =>
+      'Defines conditions which determine when a file should be saved in the specified location';
 
   @override
   String get settings_fileCategory => 'File Category';
@@ -345,10 +363,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_connectionRetry => 'Connection Retry';
 
   @override
-  String get settings_connectionRetry_maxConnectionRetryCount => 'Max Connection Retry Count';
+  String get settings_connectionRetry_maxConnectionRetryCount =>
+      'Max Connection Retry Count';
 
   @override
-  String get settings_connectionRetry_connectionRetryTimeout => 'Connection Retry Timeout';
+  String get settings_connectionRetry_connectionRetryTimeout =>
+      'Connection Retry Timeout';
 
   @override
   String get infinite => 'infinite';
@@ -378,10 +398,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_downloadConnections => 'Download Connections';
 
   @override
-  String get settings_downloadConnections_regularConnNum => 'Number of Regular Download Connections';
+  String get settings_downloadConnections_regularConnNum =>
+      'Number of Regular Download Connections';
 
   @override
-  String get settings_downloadConnections_videoStreamConnNum => 'Number of Video Stream Download Connections';
+  String get settings_downloadConnections_videoStreamConnNum =>
+      'Number of Video Stream Download Connections';
 
   @override
   String get settings_browserExtension => 'Browser Extension';
@@ -390,10 +412,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_downloadBrowserExtension => 'Download Browser Extension';
 
   @override
-  String get settings_downloadBrowserExtension_installExtension => 'Click to install the browser extension';
+  String get settings_downloadBrowserExtension_installExtension =>
+      'Click to install the browser extension';
 
   @override
-  String get settings_downloadBrowserExtension_bringWindowToFront => 'Bring window to front on new download';
+  String get settings_downloadBrowserExtension_bringWindowToFront =>
+      'Bring window to front on new download';
 
   @override
   String get changesRequireRestart => 'Changes require a restart';
@@ -420,10 +444,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_howToBugReport => 'How To Bug Report';
 
   @override
-  String get settings_howToBugReport_clickToOpenIssue => 'Click to open an issue';
+  String get settings_howToBugReport_clickToOpenIssue =>
+      'Click to open an issue';
 
   @override
-  String get settings_howToBugReport_description => 'In order to report a bug or request a feature, open a new issue in the project GitHub repo and add the proper labels.';
+  String get settings_howToBugReport_description =>
+      'In order to report a bug or request a feature, open a new issue in the project GitHub repo and add the proper labels.';
 
   @override
   String get btn_saveChanges => 'Save Changes';
@@ -465,13 +491,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get err_invalidPath_title => 'Invalid Path';
 
   @override
-  String get err_invalidPath_tempPath_description => 'The path you\'ve selected for the temp path appears to be invalid!';
+  String get err_invalidPath_tempPath_description =>
+      'The path you\'ve selected for the temp path appears to be invalid!';
 
   @override
-  String get err_invalidPath_savePath_description => 'The path you\'ve selected for the save path appears to be invalid!';
+  String get err_invalidPath_savePath_description =>
+      'The path you\'ve selected for the save path appears to be invalid!';
 
   @override
-  String get err_invalidPath_descriptionHint => 'Please make sure that all folders in the path exist';
+  String get err_invalidPath_descriptionHint =>
+      'Please make sure that all folders in the path exist';
 
   @override
   String get error => 'Error';
@@ -495,10 +524,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get installBrowserExtension_title => 'Install Browser Extension';
 
   @override
-  String get installTheBrowserExtension_description => 'Choose your browser to install Brisk\'s browser extension to capture downloads from the browser';
+  String get installTheBrowserExtension_description =>
+      'Choose your browser to install Brisk\'s browser extension to capture downloads from the browser';
 
   @override
-  String get installTheBrowserExtension_description_subtitle => 'Due to restrictions, the extension is only available in the official store for Firefox. For other browsers, manual installation is required. This will hopefully change in the future and the extension will be available for all browsers in their official websites.';
+  String get installTheBrowserExtension_description_subtitle =>
+      'Due to restrictions, the extension is only available in the official store for Firefox. For other browsers, manual installation is required. This will hopefully change in the future and the extension will be available for all browsers in their official websites.';
 
   @override
   String get installBrowserExtensionGuide_title => 'Installation Guide';
@@ -507,46 +538,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadExtension => 'Download Extension';
 
   @override
-  String get installBrowserExtension_chrome_step1_subtitle => 'Click the button below to download the extension package for Chrome';
+  String get installBrowserExtension_chrome_step1_subtitle =>
+      'Click the button below to download the extension package for Chrome';
 
   @override
-  String get installBrowserExtension_edge_step1_subtitle => 'Click the button below to download the extension package for Edge';
+  String get installBrowserExtension_edge_step1_subtitle =>
+      'Click the button below to download the extension package for Edge';
 
   @override
-  String get installBrowserExtension_opera_step1_subtitle => 'Click the button below to download the extension package for Opera';
+  String get installBrowserExtension_opera_step1_subtitle =>
+      'Click the button below to download the extension package for Opera';
 
   @override
   String get installBrowserExtension_step2_title => 'Extract The Package';
 
   @override
-  String get installBrowserExtension_step2_subtitle => 'Extract downloaded package in your desired destination';
+  String get installBrowserExtension_step2_subtitle =>
+      'Extract downloaded package in your desired destination';
 
   @override
   String get installBrowserExtension_step3_title => 'Enable Developer Mode';
 
   @override
-  String get installBrowserExtension_chrome_step3_subtitle => 'Type chrome://extensions in the navigation bar and enable developer mode right next to the search bar';
+  String get installBrowserExtension_chrome_step3_subtitle =>
+      'Type chrome://extensions in the navigation bar and enable developer mode right next to the search bar';
 
   @override
-  String get installBrowserExtension_opera_step3_subtitle => 'Type opera://extensions in the navigation bar and enable developer mode right next to the search bar';
+  String get installBrowserExtension_opera_step3_subtitle =>
+      'Type opera://extensions in the navigation bar and enable developer mode right next to the search bar';
 
   @override
-  String get installBrowserExtension_edge_step3_subtitle => 'Type edge://extensions in the navigation bar and enable developer mode in the left menu';
+  String get installBrowserExtension_edge_step3_subtitle =>
+      'Type edge://extensions in the navigation bar and enable developer mode in the left menu';
 
   @override
   String get installBrowserExtension_step4_title => 'Load Extension';
 
   @override
-  String get installBrowserExtension_step4_subtitle => 'Click on the \'Load unpacked\' button and select the folder in which the package was extracted';
+  String get installBrowserExtension_step4_subtitle =>
+      'Click on the \'Load unpacked\' button and select the folder in which the package was extracted';
 
   @override
   String get confirmAction => 'Confirm Action';
 
   @override
-  String get downloadDeletionConfirmation => 'Are you sure you want to delete the selected downloads?';
+  String get downloadDeletionConfirmation =>
+      'Are you sure you want to delete the selected downloads?';
 
   @override
-  String get deletionFromQueueConfirmation => 'Are you sure you want to remove the selected downloads from the queue?';
+  String get deletionFromQueueConfirmation =>
+      'Are you sure you want to remove the selected downloads from the queue?';
 
   @override
   String get deleteDownloadedFiles => 'Delete downloaded files';
@@ -619,7 +660,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseAction => 'Choose Action';
 
   @override
-  String get appChooseActionDescription => 'Choose what you\'d like to do with the application';
+  String get appChooseActionDescription =>
+      'Choose what you\'d like to do with the application';
 
   @override
   String get btn_exitApplication => 'Exit Application';
@@ -671,16 +713,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get awaitingUrl => 'Awaiting URL';
 
   @override
-  String get awaitingUrl_description => 'You\'ve been redirected to the referer website of this file.';
+  String get awaitingUrl_description =>
+      'You\'ve been redirected to the referer website of this file.';
 
   @override
-  String get awaitingUrl_descriptionHint => 'Please click the download link for the download URL to be captured and updated automatically.';
+  String get awaitingUrl_descriptionHint =>
+      'Please click the download link for the download URL to be captured and updated automatically.';
 
   @override
   String get urlUpdateError_title => 'URL Update Error';
 
   @override
-  String get urlUpdateError_description => 'The given URL does not refer to the same file!';
+  String get urlUpdateError_description =>
+      'The given URL does not refer to the same file!';
 
   @override
   String get urlUpdateSuccess => 'URL updated successfully!';
@@ -696,11 +741,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get packageManager_updateDescriptionHint => 'Please use the following command to update the app';
+  String get packageManager_updateDescriptionHint =>
+      'Please use the following command to update the app';
 
   @override
   String get copiedToClipboard => 'Copied to Clipboard';
 
   @override
   String get addUrlFromClipboardHotkey => 'Add URL from Clipboard Hotkey';
+
+  @override
+  String get tray_showWindow => 'Show Window';
+
+  @override
+  String get tray_exitApp => 'Exit App';
 }

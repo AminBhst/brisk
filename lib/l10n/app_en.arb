@@ -257,5 +257,7 @@
   },
   "packageManager_updateDescriptionHint": "Please use the following command to update the app",
   "copiedToClipboard": "Copied to Clipboard",
-  "addUrlFromClipboardHotkey": "Add URL from Clipboard Hotkey"
+  "addUrlFromClipboardHotkey": "Add URL from Clipboard Hotkey",
+  "tray_showWindow": "Show Window",
+  "tray_exitApp": "Exit App"
 }

@@ -255,5 +255,7 @@
   },
   "packageManager_updateDescriptionHint": "Bitte verwenden Sie den folgenden Befehl, um die App zu aktualisieren",
   "copiedToClipboard": "In die Zwischenablage kopiert",
-  "addUrlFromClipboardHotkey": "Hotkey: URL aus Zwischenablage einfügen"
+  "addUrlFromClipboardHotkey": "Hotkey: URL aus Zwischenablage einfügen",
+  "tray_showWindow": "Fenster anzeigen",
+  "tray_exitApp": "App beenden"
 }

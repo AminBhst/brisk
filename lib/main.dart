@@ -158,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage>
         showAppClosureDialog();
         break;
       case AppClosureBehaviour.minimizeToTray:
-        initTray();
+        initTray(context);
         windowManager.hide();
         if (Platform.isMacOS) {
           windowManager.setSkipTaskbar(true);
@@ -185,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage>
           if (rememberChecked) {
             saveNewAppClosureBehaviour(AppClosureBehaviour.minimizeToTray);
           }
-          initTray();
+          initTray(context);
           windowManager.hide();
           if (Platform.isMacOS) {
             windowManager.setSkipTaskbar(true);
@@ -214,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       HotKeyUtil.registerDownloadAdditionHotKey(context);
       if (Platform.isMacOS) {
-        HotKeyUtil.registerMacOsDefaultWindowHotkeys();
+        HotKeyUtil.registerMacOsDefaultWindowHotkeys(context);
       }
       BrowserExtensionServer.setup(context);
       handleBriskUpdateCheck(context);
@@ -222,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage>
         Future.delayed(const Duration(milliseconds: 200), () {
           windowManager.waitUntilReadyToShow(null, () {
             windowManager.hide();
-            initTray();
+            initTray(context);
           });
         });
         launchedAtStartup = false;

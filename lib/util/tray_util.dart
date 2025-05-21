@@ -1,14 +1,17 @@
 import 'dart:io';
 
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/util/platform.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:tray_manager/tray_manager.dart';
 
-Future<void> initTray() async {
+Future<void> initTray(BuildContext context) async {
+  final loc = AppLocalizations.of(context)!;
   Menu menu = Menu(
     items: [
-      MenuItem(key: 'show_window', label: 'Show Window'),
+      MenuItem(key: 'show_window', label: loc.tray_showWindow),
       MenuItem.separator(),
-      MenuItem(key: 'exit_app', label: 'Exit App'),
+      MenuItem(key: 'exit_app', label: loc.tray_exitApp),
     ],
   );
   if (isFlatpak) {
