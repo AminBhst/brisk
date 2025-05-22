@@ -89,7 +89,7 @@ jobs:
           git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/AminBhst/flathub-test.git
           cd flathub-test
           git checkout -B release-${{ needs.version.outputs.version }}
-          find . -maxdepth 1 -type f -exec rm -f {} +
+          find . -maxdepth 1 -type f -exec rm -rf {} +
           ls -ltrh ../flatpak-flutter/brisk/*
           cat ../flatpak-flutter/brisk/flatpak-flutter.yml
           find ../flatpak-flutter/brisk -maxdepth 1 -type f -exec cp {} . \;
