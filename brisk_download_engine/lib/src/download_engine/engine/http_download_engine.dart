@@ -1054,8 +1054,10 @@ class HttpDownloadEngine {
         logger?.info("Bad file :: ${basename(badFile.path)}");
       }
     }
+    bool badTempFilesExisted = false;
     if (deleteCorruptedTempFiles) {
-      tempFilesToDelete.toSet().forEach((file) {
+      for (final file in tempFilesToDelete) {
+        badTempFilesExisted = true;
         logger?.info("Deleting bad temp file ${basename(file.path)}...");
         try {
           file.deleteSync();
@@ -1065,9 +1067,9 @@ class HttpDownloadEngine {
           );
           _terminateAndRestartEngine(downloadItem);
         }
-      });
+      }
     }
-    if (restartEngineOnBadTempFiles) {
+    if (restartEngineOnBadTempFiles && badTempFilesExisted) {
       logger?.warn(
         "restartEngineOnBadTempFiles = true. Terminating the engine...",
       );
