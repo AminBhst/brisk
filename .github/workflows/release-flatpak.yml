@@ -92,7 +92,7 @@ jobs:
           find . -maxdepth 1 -type f -exec rm -f {} +
           ls -ltrh ../flatpak-flutter/brisk/*
           cat ../flatpak-flutter/brisk/flatpak-flutter.yml
-          cp ../flatpak-flutter/brisk/* .
+          find ../flatpak-flutter/brisk -maxdepth 1 -type f -exec cp {} . \;
           ls -la
           git add .
           git commit -m "Release ${{ needs.version.outputs.version }}"
