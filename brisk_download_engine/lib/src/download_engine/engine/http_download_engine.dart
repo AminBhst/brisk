@@ -1023,6 +1023,8 @@ class HttpDownloadEngine {
         logger?.info(
           "Found inconsistent temp file :: ${basename(file.path)} == ${basename(nextFile.path)} :: size ${file.lengthSync()} == ${nextFile.lengthSync()}",
         );
+        tempFilesToDelete.add(file);
+        tempFilesToDelete.add(nextFile);
       }
       final badTempFiles =
           tempFiles.where((f) => f != file).where((f) {
@@ -1053,10 +1055,6 @@ class HttpDownloadEngine {
       }
     }
     if (deleteCorruptedTempFiles) {
-      if (restartEngineOnBadTempFiles) {
-        _terminateAndRestartEngine(downloadItem);
-        return;
-      }
       tempFilesToDelete.toSet().forEach((file) {
         logger?.info("Deleting bad temp file ${basename(file.path)}...");
         try {
@@ -1066,6 +1064,13 @@ class HttpDownloadEngine {
             "Failed to delete file ${basename(file.path)}! $e \nSending engine panic!",
           );
           _terminateAndRestartEngine(downloadItem);
+        }
+        if (restartEngineOnBadTempFiles) {
+          logger?.warn(
+            "restartEngineOnBadTempFiles = true. Terminating the engine...",
+          );
+          _terminateAndRestartEngine(downloadItem);
+          return;
         }
       });
     }

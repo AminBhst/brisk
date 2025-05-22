@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
-import 'package:brisk_download_engine/src/download_engine/client/http_client_builder.dart';
-import 'package:brisk_download_engine/src/download_engine/download_status.dart';
 import 'package:brisk_download_engine/src/download_engine/engine/http_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/message/connection_segment_message.dart';
 import 'package:brisk_download_engine/src/download_engine/message/engine_panic_message.dart';
@@ -417,13 +414,14 @@ class HttpDownloadConnection {
     updateDownloadProgress();
     if (receivedBytesExceededEndByte) {
       _onByteExceeded();
-      notifyProgress();
       return;
     }
     if (receivedBytesMatchEndByte && endByte != downloadItem.fileSize) {
-      _onByteExactMatch();
-      notifyProgress();
-      return;
+      // _onByteExactMatch();
+      logger?.info(
+        "Received bytes match endByte! But we're doing NOTHING about it!",
+      );
+      // return;
     }
     if (tempReceivedBytes > dynamicFlushThreshold) {
       flushBuffer();
@@ -528,13 +526,17 @@ class HttpDownloadConnection {
       final tempStartByte = getStartByteFromTempFileName(fileName);
       final tempEndByte = getEndByteFromTempFileName(fileName);
       if (endByte < tempStartByte) {
-        logger?.info("Temp file to delete: ${basename(file.path)}");
+        logger?.info(
+          "Temp file to delete: ${basename(file.path)} ${file.lengthSync()}",
+        );
         tempFilesToDelete.add(file);
         continue;
       }
 
       if (endByte < tempEndByte) {
-        logger?.info("File to cut: ${basename(file.path)}");
+        logger?.info(
+          "File to cut: ${basename(file.path)} :: ${file.lengthSync()}",
+        );
         newBufferStartByte = tempStartByte;
         final bufferCutLength = endByte - tempStartByte + 1;
         newBufferToWrite = file.safeReadSync(bufferCutLength);
@@ -561,6 +563,7 @@ class HttpDownloadConnection {
       connectionCachedTempFiles.add(file);
       totalConnectionReceivedBytes += newBufferToWrite.lengthInBytes;
       totalRequestWrittenBytes = segment.length;
+      logger?.info("Final file size ${file.lengthSync()}");
     }
     totalDownloadProgress =
         totalConnectionReceivedBytes / downloadItem.fileSize;
