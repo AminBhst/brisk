@@ -72,7 +72,7 @@ jobs:
 
       - name: Run flatpak-flutter
         run: |
-          cp linux/packaging/flatpak/flatpak-flutter.yml flatpak-flutter/brisk/flatpak-flutter.yml
+          cp linux/packaging/flatpak/flatpak-flutter.yml flatpak-flutter/brisk/
           cd flatpak-flutter/brisk/
           ../flatpak-flutter.py flatpak-flutter.yml
           ls -la
