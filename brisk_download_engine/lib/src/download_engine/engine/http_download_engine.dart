@@ -1074,7 +1074,6 @@ class HttpDownloadEngine {
         "restartEngineOnBadTempFiles = true. Terminating the engine...",
       );
       _terminateAndRestartEngine(downloadItem);
-      return;
     }
   }
 
