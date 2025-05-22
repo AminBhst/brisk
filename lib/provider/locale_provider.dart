@@ -15,6 +15,7 @@ class LocaleProvider with ChangeNotifier {
     "de": "Deutsch",
     "it": "Italiano",
     "fa": "فارسی",
+    "zh": "中文",
   };
 
   void setCurrentLocale() {
