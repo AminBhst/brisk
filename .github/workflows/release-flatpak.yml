@@ -68,5 +68,5 @@ jobs:
           cd flathub-test
           git checkout -b release-${{ needs.version.outputs.version }}
           find . -maxdepth 1 -type f -exec rm -rf {} \;
-          find ../ -maxdepth 1 -type f -exec cp {} . \;
+          find ../flatpak-flutter/brisk -maxdepth 1 -type f -exec cp {} . \;
           ls -la
