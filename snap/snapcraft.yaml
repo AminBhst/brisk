@@ -19,7 +19,6 @@ plugs:
     interface: personal-files
     write:
       - $HOME/.config/autostart
-    label: Write access to user autostart config
 
 
 apps:
