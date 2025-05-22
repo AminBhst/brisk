@@ -88,6 +88,8 @@ jobs:
         run: |
           git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/AminBhst/flathub-test.git
           cd flathub-test
+          echo "HERE IS:::::::::::::"
+          pwd
           git checkout -B release-${{ needs.version.outputs.version }}
           find . -maxdepth 1 -type f -exec rm -rf {} +
           ls -ltrh ../flatpak-flutter/brisk/*
