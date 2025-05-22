@@ -56,6 +56,7 @@ jobs:
 
       - name: Update flatpak-flutter.yml
         run: |
+          pwd
           ./linux/packaging/flatpak/update-flatpak-flutter.py ./linux/packaging/flatpak/flatpak-flutter.yml --tag v${{ needs.version.outputs.version }} --commit ${{ steps.get_commit.outputs.commit_hash }}
           cat linux/packaging/flatpak/flatpak-flutter.yml
 
