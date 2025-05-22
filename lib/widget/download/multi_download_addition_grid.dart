@@ -89,7 +89,7 @@ class _DownloadGridState extends State<MultiDownloadAdditionGrid> {
         width: resolveWindowWidth(size),
         decoration: const BoxDecoration(color: Colors.black26),
         child: PlutoGrid(
-          key: UniqueKey(),
+          key: const ValueKey('multi-download-addition-grid'),
           mode: PlutoGridMode.selectWithOneTap,
           configuration: PlutoGridConfiguration(
             style: PlutoGridStyleConfig.dark(
