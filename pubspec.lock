@@ -596,10 +596,11 @@ packages:
   launch_at_startup:
     dependency: "direct main"
     description:
-      name: launch_at_startup
-      sha256: "7db33398b76ec0ed9e27f9f4640553e239977437564046625e215be89c91f084"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: main
+      resolved-ref: "6f56fa689c943e88e52156f04261a90c06381d3b"
+      url: "https://github.com/AminBhst/launch_at_startup.git"
+    source: git
     version: "0.5.1"
   leak_tracker:
     dependency: transitive
