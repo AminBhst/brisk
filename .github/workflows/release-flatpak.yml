@@ -86,62 +86,19 @@ jobs:
         env:
           PAGES_REPO_PAT: ${{ secrets.REPO_PAT }}
         run: |
-          # --- Debugging: Initial state ---
-          echo "Current directory before cloning: $(pwd)"
-
-          # Clone the flathub-test repository
           git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/AminBhst/flathub-test.git
           cd flathub-test
-
-          echo "Current directory after cloning and entering flathub-test: $(pwd)"
-          echo "Content of flathub-test before cleanup:"
-          ls -la
-
-          # --- Step 1: Create and checkout the release branch ---
+          echo "HERE IS:::::::::::::"
+          pwd
           git checkout -B release-${{ needs.version.outputs.version }}
-
-          # --- Step 2: Delete everything except .git and shared-modules ---
-          # Use find to list items that are NOT .git and NOT shared-modules
-          # This helps in debugging what will be deleted
-          echo "Items to be deleted (excluding .git and shared-modules):"
-          find . -maxdepth 1 -mindepth 1 -not -name ".git" -not -name "shared-modules"
-
-          # Perform the deletion
-          # We use xargs for safer handling of file names with spaces/special chars
-          find . -maxdepth 1 -mindepth 1 -not -name ".git" -not -name "shared-modules" -print0 | xargs -0 rm -rf
-
-          echo "Content of flathub-test after cleanup:"
+          find . -maxdepth 1 -type f -exec rm -rf {} +
+          ls -ltrh ../flatpak-flutter/brisk/*
+          cat ../flatpak-flutter/brisk/flatpak-flutter.yml
+          find ../flatpak-flutter/brisk -maxdepth 1 -type f -exec cp {} . \;
           ls -la
-
-          # --- Debugging: Source directory content ---
-          echo "Content of source directory (../flatpak-flutter/brisk/):"
-          ls -la ../flatpak-flutter/brisk/
-
-          # --- Step 3: Copy everything from source into the current directory ---
-          # Use 'cp -r' to copy directories recursively and '.' to copy into the current directory
-          # The '*' ensures that the *contents* of brisk are copied, not brisk itself as a subdirectory
-          cp -r ../flatpak-flutter/brisk/* .
-
-          echo "Content of flathub-test after copying new files:"
-          ls -la
-
-          # --- Step 4: Commit and Push ---
-          echo "Git status before add/commit:"
-          git status
-          echo "Git diff before add/commit:"
-          git diff
-
-          # Only proceed with commit if there are actual changes
-          if ! git diff --quiet --exit-code; then
-          echo "Changes detected, proceeding with commit."
           git add .
-          git commit -m "Release ${{ needs.version.outputs.version }}"
+          git commit -m "Release"
           git push origin release-${{ needs.version.outputs.version }}
-          else
-          echo "No changes detected in flathub-test. Skipping commit and push."
-          fi
-
-
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
