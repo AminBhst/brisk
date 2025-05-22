@@ -58,3 +58,4 @@ jobs:
           cp linux/packaging/flatpak/flatpak-flutter.yml flatpak-flutter/brisk/flatpak-flutter.yml
           cd flatpak-flutter/brisk/
           ../flatpak-flutter.py flatpak-flutter.yml
+          ls -la
