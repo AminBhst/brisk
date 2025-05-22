@@ -71,9 +71,10 @@ jobs:
         run: |
           git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/AminBhst/flathub-test.git
           cd flathub-test
-          git checkout -b release-${{ needs.version.outputs.version }}
+          git checkout -B release-${{ needs.version.outputs.version }}
           find . -maxdepth 1 -type f -exec rm -rf {} \;
           find ../flatpak-flutter/brisk -maxdepth 1 -type f -exec cp {} . \;
           ls -la
           git add .
-          git commit -m "Add AUR build for version ${{ needs.version.outputs.version }}"
+          git commit -m "Release ${{ needs.version.outputs.version }}"
+          git push origin release-${{ needs.version.outputs.version }}
