@@ -60,7 +60,12 @@ jobs:
           ../flatpak-flutter.py flatpak-flutter.yml
           ls -la
 
-      - name: clone flathub repo
+      - name: Set up Git
+        run: |
+          git config user.name "Flathub Bot"
+          git config user.email "bot@flathub.org"
+
+      - name: Push update to flathub release branch
         env:
           PAGES_REPO_PAT: ${{ secrets.REPO_PAT }}
         run: |
@@ -70,3 +75,5 @@ jobs:
           find . -maxdepth 1 -type f -exec rm -rf {} \;
           find ../flatpak-flutter/brisk -maxdepth 1 -type f -exec cp {} . \;
           ls -la
+          git add .
+          git commit -m "Add AUR build for version ${{ needs.version.outputs.version }}"
