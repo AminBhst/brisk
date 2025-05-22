@@ -59,3 +59,14 @@ jobs:
           cd flatpak-flutter/brisk/
           ../flatpak-flutter.py flatpak-flutter.yml
           ls -la
+
+      - name: clone flathub repo
+        env:
+          PAGES_REPO_PAT: ${{ secrets.REPO_PAT }}
+        run: |
+          git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/AminBhst/flathub-test.git
+          cd flathub-test
+          git checkout -b release-${{ needs.version.outputs.version }}
+          find . -maxdepth 1 -type f -exec rm -rf {} \;
+          find ../ -maxdepth 1 -type f -exec cp {} . \;
+          ls -la
