@@ -227,5 +227,7 @@
   "packageManager_updateDescription": "Brisk 是通过 {target} 安装的，因此禁用了应用内自动更新。",
   "packageManager_updateDescriptionHint": "请使用以下命令更新应用",
   "copiedToClipboard": "已复制到剪贴板",
-  "addUrlFromClipboardHotkey": "从剪贴板添加 URL 快捷键"
+  "addUrlFromClipboardHotkey": "从剪贴板添加 URL 快捷键",
+  "tray_showWindow": "显示窗口",
+  "tray_exitApp": "退出"
 } 

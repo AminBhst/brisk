@@ -703,4 +703,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get addUrlFromClipboardHotkey => '从剪贴板添加 URL 快捷键';
+
+  @override
+  String get tray_showWindow => '显示窗口';
+
+  @override
+  String get tray_exitApp => '退出';
 }
