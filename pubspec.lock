@@ -596,11 +596,9 @@ packages:
   launch_at_startup:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: "6f56fa689c943e88e52156f04261a90c06381d3b"
-      url: "https://github.com/AminBhst/launch_at_startup.git"
-    source: git
+      path: launch_at_startup
+      relative: true
+    source: path
     version: "0.5.1"
   leak_tracker:
     dependency: transitive

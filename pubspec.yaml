@@ -58,9 +58,7 @@ dependencies:
   package_info_plus: ^8.3.0
   tray_manager: ^0.4.0
   launch_at_startup:
-    git:
-      url: git@github.com/AminBhst/launch_at_startup.git
-      ref: main
+    path: ./launch_at_startup
   dartx: ^1.2.0
   encrypt: ^5.0.3
   omni_datetime_picker: ^2.1.1
