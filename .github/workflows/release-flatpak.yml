@@ -62,8 +62,8 @@ jobs:
 
       - name: Set up Git
         run: |
-          git config user.name "Flathub Bot"
-          git config user.email "bot@flathub.org"
+          git config --global user.name "Flathub Bot"
+          git config --global user.email "bot@flathub.org"
 
       - name: Push update to flathub release branch
         env:
