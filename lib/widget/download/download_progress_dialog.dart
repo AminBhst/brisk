@@ -36,12 +36,12 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
     final downloadProgress = provider.downloads[widget.downloadId]!;
     loc = AppLocalizations.of(context)!;
     return ScrollableDialog(
-      width: 500,
+      width: 550,
       height: showDetails
           ? resolveDialogHeight(size) + 200
           : resolveDialogHeight(size),
       scrollButtonVisible: size.height < (showDetails ? 550 : 365),
-      scrollViewWidth: 500,
+      scrollViewWidth: 550,
       scrollviewHeight: 300,
       title: Padding(
         padding: const EdgeInsets.all(15),
@@ -136,7 +136,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
     return Visibility(
       visible: showDetails,
       child: Container(
-        width: 500,
+        width: 550,
         height: 200,
         decoration: BoxDecoration(
           color: theme.alertDialogTheme.itemContainerBackgroundColor,
@@ -189,7 +189,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
                       builder: (context, progress, child) {
                         return SizedBox(
                           height: 10,
-                          width: 450,
+                          width: 550,
                           child: LinearProgressIndicator(
                             backgroundColor: theme.downloadProgressDialogTheme
                                 .connectionProgressColor.backgroundColor,
@@ -376,7 +376,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog> {
   Widget textContainer({required String title, required String value}) {
     return Container(
       height: 80,
-      width: 150,
+      width: 160,
       decoration: BoxDecoration(
         color: theme.alertDialogTheme.itemContainerBackgroundColor,
         borderRadius: BorderRadius.circular(10),
