@@ -32,6 +32,15 @@ jobs:
           repository: BrisklyDev/brisk
           fetch-depth: 0
 
+
+      - name: Get commit of tag
+        id: get_commit
+        run: |
+          TAG_NAME="v${{ needs.version.outputs.version }}"
+          COMMIT_HASH=$(git rev-list -n 1 "$TAG_NAME")
+          echo "Commit for $TAG_NAME is $COMMIT_HASH"
+          echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
+
       - name: Clone flatpak-flutter
         run: |
           git clone https://github.com/TheAppgineer/flatpak-flutter.git
