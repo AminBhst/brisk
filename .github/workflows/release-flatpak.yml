@@ -1,0 +1,57 @@
+name: Release Flatpak
+
+on:
+  workflow_dispatch:
+
+jobs:
+  version:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4.1.5
+
+      - name: Extract Version from pubspec.yaml
+        id: extract_version
+        run: |
+          $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "^\s*version:\s*(\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
+          echo version=$VERSION >> $env:GITHUB_OUTPUT
+
+  Build-package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: version
+    steps:
+
+      - name: Checkout the code
+        uses: actions/checkout@v4.1.5
+
+      - name: Clone flatpak-flutter
+        run: |
+          git clone https://github.com/TheAppgineer/flatpak-flutter.git
+          mkdir flatpak-flutter/brisk
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.3'  # You can specify e.g., '3.11'
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: pip install aiohttp pyyaml toml
+
+      - name: Install flatpak
+        run: |
+          sudo apt install -y flatpak
+          flatpak install -y flathub org.flatpak.Builder
+
+      - name: Run flatpak-flutter
+        run: |
+          cd flatpak-flutter/brisk
+          cp linux/packaging/flatpak/flatpak-flutter.yml .
+          ../flatpak-flutter.py flatpak-flutter.yml
