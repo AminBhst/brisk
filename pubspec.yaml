@@ -57,7 +57,10 @@ dependencies:
   window_to_front: ^0.0.3
   package_info_plus: ^8.3.0
   tray_manager: ^0.4.0
-  launch_at_startup: ^0.5.1
+  launch_at_startup:
+    git:
+      url: https://github.com/AminBhst/launch_at_startup.git
+      ref: main
   dartx: ^1.2.0
   encrypt: ^5.0.3
   omni_datetime_picker: ^2.1.1
