@@ -6,6 +6,7 @@
 
 ## :hammer_and_wrench: Bug Fixes and Improvements
 - Download engine bug fixes and improvements
+- Fixed download items flickering on window resize
 - Fixed launch at startup for flatpak and snap packages
 - **Added single instance mechanism:** The app now only runs on a single instance on all platforms. Opening the app a second time results in the already open instance to show
 - **Launch at startup improvement:** The app now silently launches at startup in system tray
