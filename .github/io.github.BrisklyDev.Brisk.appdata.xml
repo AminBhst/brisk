@@ -33,14 +33,17 @@
   </screenshots>
 
   <releases>
-    <release version="2.2.4" date="2025-05-19">
+    <release version="2.2.5" date="2025-05-22">
     <description>
       <p><em>🔧 Bug Fixes and Improvements</em></p>
       <ul>
-        <li>Added custom download addition hotkey to settings</li>
-        <li>Added scope to download addition hotkey (scope=system will trigger the hotkey even when the app is not on screen)</li>
-        <li>Fixed some minor tray issues</li>
-        <li>Fixed file rename not working using the text field</li>
+        <li>Download engine bug fixes and improvements</li>
+        <li>Fixed launch at startup for flatpak and snap packages</li>
+        <li>Fixed download items flickering on window resize</li>
+        <li>Added single instance mechanism: The app now only runs on a single instance on all platforms. Opening the app a second time results in the already open instance to show</li>
+        <li>Launch at startup improvement: The app now silently launches at startup in system tray</li>
+        <li>Fixed queue not opening when finished or unfinished download grid filters were set</li>
+        <li>Minor UI improvements</li>
       </ul>
     </description>
     </release>
