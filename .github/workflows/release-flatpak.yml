@@ -89,8 +89,8 @@ jobs:
           git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/AminBhst/flathub-test.git
           cd flathub-test
           git checkout -B release-${{ needs.version.outputs.version }}
-          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
-          cp -r ../flatpak-flutter/brisk/* .
+          find . -maxdepth 1 -type f -exec rm -f {} +
+          cp ../* .
           ls -la
           git add .
           git commit -m "Release ${{ needs.version.outputs.version }}"
