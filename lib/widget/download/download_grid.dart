@@ -185,7 +185,7 @@ class _DownloadGridState extends State<DownloadGrid> {
         width: resolveWindowWidth(size),
         decoration: const BoxDecoration(color: Colors.black26),
         child: PlutoGrid(
-          key: UniqueKey(),
+          key: ValueKey(queueProvider?.selectedQueueId ?? 'download-grid'),
           mode: PlutoGridMode.selectWithOneTap,
           configuration: PlutoGridConfiguration(
             style: PlutoGridStyleConfig.dark(
