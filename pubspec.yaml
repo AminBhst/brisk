@@ -59,7 +59,7 @@ dependencies:
   tray_manager: ^0.4.0
   launch_at_startup:
     git:
-      url: https://github.com/AminBhst/launch_at_startup.git
+      url: git@github.com/AminBhst/launch_at_startup.git
       ref: main
   dartx: ^1.2.0
   encrypt: ^5.0.3
