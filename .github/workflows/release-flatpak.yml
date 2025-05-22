@@ -90,7 +90,9 @@ jobs:
           cd flathub-test
           git checkout -B release-${{ needs.version.outputs.version }}
           find . -maxdepth 1 -type f -exec rm -f {} +
-          cp ../* .
+          ls -ltrh ../flatpak-flutter/brisk/*
+          cat ../flatpak-flutter/brisk/flatpak-flutter.yml
+          cp ../flatpak-flutter/brisk/* .
           ls -la
           git add .
           git commit -m "Release ${{ needs.version.outputs.version }}"
