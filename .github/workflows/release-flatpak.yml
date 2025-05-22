@@ -11,17 +11,7 @@ jobs:
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
     steps:
-
-      - name: Checkout the code
-        uses: actions/checkout@v4.1.5
-
-      - name: Get commit of tag
-        id: get_commit
-        run: |
-          TAG_NAME="v2.2.5"
-          COMMIT_HASH=$(git rev-list -n 1 "v${{ needs.version.outputs.version }}")
-          echo "Commit for tag is $COMMIT_HASH"
-          echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4.1.5
 
       - name: Extract Version from pubspec.yaml
         id: extract_version
@@ -62,9 +52,6 @@ jobs:
           flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
           flatpak remote-ls flathub > /dev/null
           flatpak install -y --user flathub org.flatpak.Builder
-
-      - name: Update flatpak-flutter.yml
-        run:
 
       - name: Run flatpak-flutter
         run: |
