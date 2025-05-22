@@ -13,3 +13,4 @@
 - Fixed queue not opening when finished or unfinished download grid filters were set
 - Change app font to Inter
 - Minor UI improvements
+- Upgrade to Flutter 3.32.0
