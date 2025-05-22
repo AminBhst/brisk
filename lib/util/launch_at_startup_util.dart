@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:brisk/util/parse_util.dart';
+import 'package:brisk/util/platform.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -20,14 +21,34 @@ Future<void> updateLaunchAtStartupSetting() async {
   if (parseBool(launchOnStartupEnabled.value)) {
     launchAtStartup.setup(
       appName: "brisk",
-      appPath: Platform.resolvedExecutable,
-      args: [fromStartupArg],
+      appPath: launchCommand,
+      args: launchArgs,
       /// TODO add package name when msix is supported
     );
     await launchAtStartup.enable();
   } else {
     await launchAtStartup.disable();
   }
+}
+
+String get launchCommand {
+  if (isFlatpak) {
+    return 'flatpak';
+  }
+  if (isSnap) {
+    return "snap";
+  }
+  return Platform.resolvedExecutable;
+}
+
+List<String> get launchArgs {
+  if (isFlatpak) {
+    return ['run', 'io.github.BrisklyDev.Brisk', fromStartupArg];
+  }
+  if (isSnap) {
+    return ['run', 'brisk', fromStartupArg];
+  }
+  return [fromStartupArg];
 }
 
 Future<void> setupLaunchAtStartup() async {
