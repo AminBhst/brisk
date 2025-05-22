@@ -1,6 +1,7 @@
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/download_queue.dart';
+import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/widget/base/delete_confirmation_dialog.dart';
 import 'package:brisk/widget/queue/queue_details_window.dart';
@@ -78,6 +79,7 @@ class QueueListItem extends StatelessWidget {
 
   void onQueueTap(BuildContext context) {
     final provider = Provider.of<QueueProvider>(context, listen: false);
+    PlutoGridUtil.removeFilters();
     provider.setQueueTopMenu(false);
     provider.setDownloadQueueTopMenu(true);
     provider.setQueueTabSelected(false);
