@@ -1065,14 +1065,14 @@ class HttpDownloadEngine {
           );
           _terminateAndRestartEngine(downloadItem);
         }
-        if (restartEngineOnBadTempFiles) {
-          logger?.warn(
-            "restartEngineOnBadTempFiles = true. Terminating the engine...",
-          );
-          _terminateAndRestartEngine(downloadItem);
-          return;
-        }
       });
+    }
+    if (restartEngineOnBadTempFiles) {
+      logger?.warn(
+        "restartEngineOnBadTempFiles = true. Terminating the engine...",
+      );
+      _terminateAndRestartEngine(downloadItem);
+      return;
     }
   }
 
