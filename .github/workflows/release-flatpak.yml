@@ -11,10 +11,9 @@ jobs:
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
     steps:
-      - name: Checkout code
+
+      - name: Checkout the code
         uses: actions/checkout@v4.1.5
-        with:
-          fetch-depth: 0
 
       - name: Get commit of tag
         id: get_commit
