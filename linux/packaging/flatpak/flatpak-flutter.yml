@@ -51,7 +51,7 @@ modules:
   - install -Dm644 linux/brisk.desktop /app/share/applications/io.github.BrisklyDev.Brisk.desktop
   sources:
   - type: git
-    url: https://github.com/BrisklyDev/brisk.git
+    url: https://github.com/AminBhst/brisk-dev.git
     tag: v2.2.5
     commit: e2ab38321b923e726909a23e4055861f74386080
   - type: git
