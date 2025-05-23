@@ -21,30 +21,34 @@ Future<void> updateLaunchAtStartupSetting() async {
   if (Platform.isMacOS) return;
   if (parseBool(launchOnStartupEnabled.value)) {
     if (isFlatpak) {
-      flatpakAutostart();
+      flatpakAutostart(true);
       return;
     }
     launchAtStartup.setup(
       appName: "brisk",
       appPath: launchCommand,
       args: launchArgs,
+
       /// TODO add package name when msix is supported
     );
     await launchAtStartup.enable();
   } else {
+    if (isFlatpak) {
+      flatpakAutostart(false);
+      return;
+    }
     await launchAtStartup.disable();
   }
 }
 
-void flatpakAutostart() async {
+void flatpakAutostart(bool autoStart) async {
   var client = XdgDesktopPortalClient();
   final reason = 'Allow your application to autostart.';
-  var result = await client.background.requestBackground(
+  await client.background.requestBackground(
     reason: reason,
-    autostart: true,
+    autostart: autoStart,
     commandLine: ["brisk", fromStartupArg],
-  ).first;
-  print('$result');
+  );
   await client.close();
 }
 
