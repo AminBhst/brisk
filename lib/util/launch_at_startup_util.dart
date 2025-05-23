@@ -4,6 +4,7 @@ import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/util/platform.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:xdg_desktop_portal/xdg_desktop_portal.dart';
 
 import '../constants/setting_options.dart';
 import '../db/hive_util.dart';
@@ -19,6 +20,10 @@ Future<void> updateLaunchAtStartupSetting() async {
 
   if (Platform.isMacOS) return;
   if (parseBool(launchOnStartupEnabled.value)) {
+    if (isFlatpak) {
+      flatpakAutostart();
+      return;
+    }
     launchAtStartup.setup(
       appName: "brisk",
       appPath: launchCommand,
@@ -29,6 +34,18 @@ Future<void> updateLaunchAtStartupSetting() async {
   } else {
     await launchAtStartup.disable();
   }
+}
+
+void flatpakAutostart() async {
+  var client = XdgDesktopPortalClient();
+  final reason = 'Allow your application to autostart.';
+  var result = await client.background.requestBackground(
+    reason: reason,
+    autostart: true,
+    commandLine: ["brisk", fromStartupArg],
+  ).first;
+  print('$result');
+  await client.close();
 }
 
 String get launchCommand {
