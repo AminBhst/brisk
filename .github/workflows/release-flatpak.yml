@@ -78,7 +78,7 @@ jobs:
           ls -la
 
       - name: Upload artifact
-        run: tar -cJf Brisk.xz -C ../brisk .
+        run: tar -cJf Brisk.xz -C flatpak-flutter/brisk .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.3
