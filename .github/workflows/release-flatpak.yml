@@ -76,7 +76,9 @@ jobs:
           cd flatpak-flutter/brisk/
           ../flatpak-flutter.py flatpak-flutter.yml
           ls -la
-          tar -cJf Brisk.xz -C ../brisk .
+
+      - name: Upload artifact
+        run: tar -cJf Brisk.xz -C ../brisk .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.3
