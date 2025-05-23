@@ -12,7 +12,6 @@ finish-args:
 - --share=ipc
 - --device=dri
 - --filesystem=xdg-download
-- --filesystem=~/.config/autostart:create
 - --talk-name=org.freedesktop.Notifications
 - --talk-name=org.kde.StatusNotifierWatcher
 cleanup:
