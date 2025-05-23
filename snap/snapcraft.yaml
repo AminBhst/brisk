@@ -14,20 +14,12 @@ slots:
     name: io.github.BrisklyDev.brisk
 
 
-plugs:
-  autostart-config:
-    interface: personal-files
-    write:
-      - $HOME/.config/autostart
-
-
 apps:
   brisk:
     command: brisk
     extensions: [gnome]
     plugs:
       - network
-      - autostart-config
     slots:
       - dbus-brisk
 
