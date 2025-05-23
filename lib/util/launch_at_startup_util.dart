@@ -20,25 +20,33 @@ Future<void> updateLaunchAtStartupSetting() async {
 
   if (Platform.isMacOS) return;
   if (parseBool(launchOnStartupEnabled.value)) {
-    if (isFlatpak) {
-      flatpakAutostart(true);
-      return;
-    }
-    launchAtStartup.setup(
-      appName: "brisk",
-      appPath: launchCommand,
-      args: launchArgs,
-
-      /// TODO add package name when msix is supported
-    );
-    await launchAtStartup.enable();
+    enableLaunchAtStartup();
   } else {
-    if (isFlatpak) {
-      flatpakAutostart(false);
-      return;
-    }
-    await launchAtStartup.disable();
+    disableLaunchAtStartup();
   }
+}
+
+void disableLaunchAtStartup() {
+  if (isFlatpak) {
+    flatpakAutostart(false);
+    return;
+  }
+  launchAtStartup.disable();
+}
+
+void enableLaunchAtStartup() async {
+  if (isFlatpak) {
+    flatpakAutostart(true);
+    return;
+  }
+  launchAtStartup.setup(
+    appName: "brisk",
+    appPath: launchCommand,
+    args: launchArgs,
+
+    /// TODO add package name when msix is supported
+  );
+  launchAtStartup.enable();
 }
 
 void flatpakAutostart(bool autoStart) async {
