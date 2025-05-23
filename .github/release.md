@@ -1,4 +1,4 @@
-# Change Log
+# Changelog
 
 ## :earth_asia: Internationalization
 - Added chinese translations by [Norman-W](https://github.com/Norman-w)
