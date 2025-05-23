@@ -43,7 +43,7 @@ Future<void> updateLaunchAtStartupSetting() async {
 
 void flatpakAutostart(bool autoStart) async {
   var client = XdgDesktopPortalClient();
-  final reason = 'Allow your application to autostart.';
+  final reason = 'Allow Brisk to autostart';
   await client.background.requestBackground(
     reason: reason,
     autostart: autoStart,
