@@ -15,48 +15,35 @@ const fromStartupArg = '--from-startup';
 Future<void> updateLaunchAtStartupSetting() async {
   final launchOnStartupEnabled = HiveUtil.instance.settingBox.values
       .where((val) =>
-          parseSettingOptions(val.name) == SettingOptions.launchOnStartUp)
+  parseSettingOptions(val.name) == SettingOptions.launchOnStartUp)
       .first;
 
   if (Platform.isMacOS) return;
   if (parseBool(launchOnStartupEnabled.value)) {
-    enableLaunchAtStartup();
+    if (isFlatpak) {
+      flatpakAutostart();
+      return;
+    }
+    launchAtStartup.setup(
+      appName: "brisk",
+      appPath: launchCommand,
+      args: launchArgs,
+      /// TODO add package name when msix is supported
+    );
+    await launchAtStartup.enable();
   } else {
-    disableLaunchAtStartup();
+    await launchAtStartup.disable();
   }
 }
 
-void disableLaunchAtStartup() {
-  if (isFlatpak) {
-    flatpakAutostart(false);
-    return;
-  }
-  launchAtStartup.disable();
-}
-
-void enableLaunchAtStartup() async {
-  if (isFlatpak) {
-    flatpakAutostart(true);
-    return;
-  }
-  launchAtStartup.setup(
-    appName: "brisk",
-    appPath: launchCommand,
-    args: launchArgs,
-
-    /// TODO add package name when msix is supported
-  );
-  launchAtStartup.enable();
-}
-
-void flatpakAutostart(bool autoStart) async {
+void flatpakAutostart() async {
   var client = XdgDesktopPortalClient();
-  final reason = 'Allow Brisk to autostart';
-  await client.background.requestBackground(
+  final reason = 'Allow your application to autostart.';
+  var result = await client.background.requestBackground(
     reason: reason,
-    autostart: autoStart,
+    autostart: true,
     commandLine: ["brisk", fromStartupArg],
-  );
+  ).first;
   await client.close();
 }
 
