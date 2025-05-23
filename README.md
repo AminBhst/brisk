@@ -146,6 +146,7 @@ Contributions are welcome and appreciated.
 - [Zorin FOSS](https://github.com/ZorinFoss)
 - [Norman Wang](https://github.com/Norman-w)
 - [bovirus](https://github.com/bovirus)
+- [mikropsoft](https://github.com/mikropsoft)
 
 
 ## :busts_in_silhouette: Community
