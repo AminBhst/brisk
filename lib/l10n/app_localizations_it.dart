@@ -756,10 +756,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get copiedToClipboard => 'Copiato negli appunti';
 
   @override
-  String get addUrlFromClipboardHotkey => 'Hotkey: aggiungi URL dagli appunti';
+  String get addUrlFromClipboardHotkey =>
+      'Tasto rapido: aggiungi URL dagli appunti';
 
   @override
-  String get tray_showWindow => 'Mostra finestra';
+  String get tray_showWindow => 'Visualizza finestra';
 
   @override
   String get tray_exitApp => 'Esci dall\'app';

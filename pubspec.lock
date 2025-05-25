@@ -596,9 +596,10 @@ packages:
   launch_at_startup:
     dependency: "direct main"
     description:
-      path: launch_at_startup
-      relative: true
-    source: path
+      name: launch_at_startup
+      sha256: "7db33398b76ec0ed9e27f9f4640553e239977437564046625e215be89c91f084"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.5.1"
   leak_tracker:
     dependency: transitive

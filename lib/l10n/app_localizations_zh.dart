@@ -108,7 +108,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get err_invalidUrl_description => '您输入的 URL 似乎无效。\n请检查格式并重试。';
 
   @override
-  String get err_invalidUrl_descriptionHint => '请确保 URL：\n\t • 以 https:// 或 http:// 开头\n\t • 包含有效的域名\n\t • 不包含无效字符';
+  String get err_invalidUrl_descriptionHint =>
+      '请确保 URL：\n\t • 以 https:// 或 http:// 开头\n\t • 包含有效的域名\n\t • 不包含无效字符';
 
   @override
   String get addNewDownload => '添加新下载';
@@ -213,7 +214,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get err_failedToRetrieveFileInfo_description => '尝试从此 URL 获取文件信息时出错。';
 
   @override
-  String get err_failedToRetrieveFileInfo_descriptionHint => '在某些情况下，重试几次可能会解决问题。否则，请确保您要访问的资源有效。';
+  String get err_failedToRetrieveFileInfo_descriptionHint =>
+      '在某些情况下，重试几次可能会解决问题。否则，请确保您要访问的资源有效。';
 
   @override
   String get retrievingFileInformation => '正在获取文件信息...';
@@ -312,7 +314,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_rules_extensionSkipCaptureRules => '扩展跳过捕获规则';
 
   @override
-  String get settings_rules_extensionSkipCaptureRules_tooltip => '定义何时不应通过浏览器扩展捕获文件的条件';
+  String get settings_rules_extensionSkipCaptureRules_tooltip =>
+      '定义何时不应通过浏览器扩展捕获文件的条件';
 
   @override
   String get settings_rules_edit => '编辑规则';
@@ -393,7 +396,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_downloadBrowserExtension_installExtension => '点击安装浏览器扩展';
 
   @override
-  String get settings_downloadBrowserExtension_bringWindowToFront => '新下载时将窗口置于最前';
+  String get settings_downloadBrowserExtension_bringWindowToFront =>
+      '新下载时将窗口置于最前';
 
   @override
   String get changesRequireRestart => '更改需要重启';
@@ -423,7 +427,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_howToBugReport_clickToOpenIssue => '点击打开 issue';
 
   @override
-  String get settings_howToBugReport_description => '要报告错误或请求功能，请在项目 GitHub 仓库中打开一个新的 issue 并添加适当的标签。';
+  String get settings_howToBugReport_description =>
+      '要报告错误或请求功能，请在项目 GitHub 仓库中打开一个新的 issue 并添加适当的标签。';
 
   @override
   String get btn_saveChanges => '保存更改';
@@ -495,10 +500,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get installBrowserExtension_title => '安装浏览器扩展';
 
   @override
-  String get installTheBrowserExtension_description => '选择您的浏览器来安装 Brisk 浏览器扩展以捕获来自浏览器的下载';
+  String get installTheBrowserExtension_description =>
+      '选择您的浏览器来安装 Brisk 浏览器扩展以捕获来自浏览器的下载';
 
   @override
-  String get installTheBrowserExtension_description_subtitle => '由于限制，该扩展仅在 Firefox 的官方商店中提供。对于其他浏览器，需要手动安装。希望将来这种情况会有所改变，该扩展将在其官方网站上适用于所有浏览器。';
+  String get installTheBrowserExtension_description_subtitle =>
+      '由于限制，该扩展仅在 Firefox 的官方商店中提供。对于其他浏览器，需要手动安装。希望将来这种情况会有所改变，该扩展将在其官方网站上适用于所有浏览器。';
 
   @override
   String get installBrowserExtensionGuide_title => '安装指南';
@@ -507,13 +514,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadExtension => '下载扩展';
 
   @override
-  String get installBrowserExtension_chrome_step1_subtitle => '点击下面的按钮下载 Chrome 扩展包';
+  String get installBrowserExtension_chrome_step1_subtitle =>
+      '点击下面的按钮下载 Chrome 扩展包';
 
   @override
-  String get installBrowserExtension_edge_step1_subtitle => '点击下面的按钮下载 Edge 扩展包';
+  String get installBrowserExtension_edge_step1_subtitle =>
+      '点击下面的按钮下载 Edge 扩展包';
 
   @override
-  String get installBrowserExtension_opera_step1_subtitle => '点击下面的按钮下载 Opera 扩展包';
+  String get installBrowserExtension_opera_step1_subtitle =>
+      '点击下面的按钮下载 Opera 扩展包';
 
   @override
   String get installBrowserExtension_step2_title => '解压扩展包';
@@ -525,19 +535,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get installBrowserExtension_step3_title => '启用开发者模式';
 
   @override
-  String get installBrowserExtension_chrome_step3_subtitle => '在地址栏输入 chrome://extensions 并启用搜索栏旁边的开发者模式';
+  String get installBrowserExtension_chrome_step3_subtitle =>
+      '在地址栏输入 chrome://extensions 并启用搜索栏旁边的开发者模式';
 
   @override
-  String get installBrowserExtension_opera_step3_subtitle => '在地址栏输入 opera://extensions 并启用搜索栏旁边的开发者模式';
+  String get installBrowserExtension_opera_step3_subtitle =>
+      '在地址栏输入 opera://extensions 并启用搜索栏旁边的开发者模式';
 
   @override
-  String get installBrowserExtension_edge_step3_subtitle => '在地址栏输入 edge://extensions 并在左侧菜单中启用开发者模式';
+  String get installBrowserExtension_edge_step3_subtitle =>
+      '在地址栏输入 edge://extensions 并在左侧菜单中启用开发者模式';
 
   @override
   String get installBrowserExtension_step4_title => '加载扩展';
 
   @override
-  String get installBrowserExtension_step4_subtitle => '点击\"加载已解压的扩展程序\"按钮，然后选择解压扩展包的文件夹';
+  String get installBrowserExtension_step4_subtitle =>
+      '点击\"加载已解压的扩展程序\"按钮，然后选择解压扩展包的文件夹';
 
   @override
   String get confirmAction => '确认操作';
