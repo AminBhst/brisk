@@ -79,7 +79,7 @@ To install the browser extension, please refer to the [brisk-browser-extension r
 - [Browser Integration](#globe_with_meridians-browser-integration)
 - Downloading video streams from the browser
 - Download Queues and Scheduling
-- Hotkey (ctrl+alt+A) to quickly add a download URL from the clipboard
+- Custom Hotkey to add a download URL from the clipboard
 
 ## :gear: Brisk's Download Engine
 Brisk is powered by a custom-built, high-performance engine that delivers the maximum download speed throughout the entire download process. The engine is built entirely from scratch only using Dart's [http](https://github.com/dart-lang/http), without relying on external libraries or download utilities like aria2.
