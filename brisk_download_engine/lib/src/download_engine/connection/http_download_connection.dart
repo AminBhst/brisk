@@ -65,8 +65,6 @@ class HttpDownloadConnection {
 
   double bytesTransferRate = 0;
 
-  String estimatedRemaining = "";
-
   bool paused = false;
 
   bool reset = false;

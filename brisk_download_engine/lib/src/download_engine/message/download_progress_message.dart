@@ -15,6 +15,7 @@ class DownloadProgressMessage {
   double bytesTransferRate;
   String status;
   String estimatedRemaining;
+  int estimatedSecondsRemaining;
   bool paused;
   double integrityValidationProgress;
   double totalConnectionWriteProgress;
@@ -38,6 +39,7 @@ class DownloadProgressMessage {
     this.transferRate = "",
     this.status = "",
     this.estimatedRemaining = "",
+    this.estimatedSecondsRemaining = 0,
     this.paused = false,
     this.totalConnectionWriteProgress = 0,
     this.integrityValidationProgress = 0,
@@ -62,7 +64,6 @@ class DownloadProgressMessage {
       downloadProgress: connection.downloadProgress,
       transferRate: connection.transferRate,
       status: connection.overallStatus,
-      estimatedRemaining: connection.estimatedRemaining,
       paused: connection.paused,
       totalConnectionWriteProgress: connection.totalConnectionWriteProgress,
       totalRequestWriteProgress: connection.totalRequestWriteProgress,

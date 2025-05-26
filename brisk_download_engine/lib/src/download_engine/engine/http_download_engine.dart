@@ -63,9 +63,6 @@ class HttpDownloadEngine {
   /// TODO move to download channels
   static final Map<String, Map<int, Isolate>> _connectionIsolates = {};
 
-  // TODO redundant
-  static final Map<String, String> completionEstimations = {};
-
   /// The list of download IDs that should be ignored for dynamic connection spawn.
   /// This is used to prevent adding new connections when the user has stopped
   /// the download before all download connections have been spawned. In the
@@ -649,7 +646,13 @@ class HttpDownloadEngine {
       totalDownloadProgress: totalProgress,
       transferRate: convertByteTransferRateToReadableStr(totalByteTransferRate),
     );
-    _setEstimation(downloadProgress, totalProgress);
+    if (_downloadProgresses[downloadUid] != null) {
+      downloadProgress.estimatedSecondsRemaining =
+          _downloadProgresses[downloadUid]!.estimatedSecondsRemaining;
+      downloadProgress.estimatedRemaining =
+          _downloadProgresses[downloadUid]!.estimatedRemaining;
+    }
+
     if (progress.status == DownloadStatus.downloading) {
       engineChannel
           .connectionChannels[progress.connectionNumber]
@@ -672,6 +675,8 @@ class HttpDownloadEngine {
       return;
     }
     if (isTempWriteComplete && isAssembleEligible(downloadItem)) {
+      downloadProgress.estimatedSecondsRemaining = 0;
+      downloadProgress.estimatedRemaining = "";
       engineChannel.sendMessage(downloadProgress);
       final success = assembleFile(
         progress.downloadItem,
@@ -1178,16 +1183,6 @@ class HttpDownloadEngine {
     downloadProgress.transferRate = "";
   }
 
-  static void _setEstimation(
-    DownloadProgressMessage downloadProgress,
-    double totalProgress,
-  ) {
-    final uid = downloadProgress.downloadItem.uid;
-    if (completionEstimations[uid] == null) return;
-    downloadProgress.estimatedRemaining =
-        totalProgress >= 1 ? "" : completionEstimations[uid]!;
-  }
-
   static int _tempTime = _nowMillis;
 
   static void _calculateEstimatedRemaining(
@@ -1198,8 +1193,9 @@ class HttpDownloadEngine {
     final nowMillis = _nowMillis;
     if (progresses == null ||
         _tempTime + 1000 > nowMillis ||
-        bytesTransferRate == 0)
+        bytesTransferRate == 0) {
       return;
+    }
 
     int totalBytes = 0;
     final contentLength = progresses.values.first.downloadItem.fileSize;
@@ -1233,7 +1229,8 @@ class HttpDownloadEngine {
       estimatedRemaining = formatUnit(remainingSec.toInt(), 'Second');
     }
     _tempTime = _nowMillis;
-    completionEstimations[uid] = estimatedRemaining;
+    _downloadProgresses[uid]?.estimatedRemaining = estimatedRemaining;
+    _downloadProgresses[uid]?.estimatedSecondsRemaining = remainingSec.toInt();
   }
 
   static void _setStatus(String uid, DownloadProgressMessage downloadProgress) {
