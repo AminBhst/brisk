@@ -130,7 +130,6 @@ class BrowserExtensionServer {
   static Future<bool> _handleDownloadAddition(
       jsonBody, context, request) async {
     final type = jsonBody["type"] as String;
-    windowManager.show().then((_) => WindowToFront.activate());
     switch (type.toLowerCase()) {
       case "single":
         return _handleSingleDownloadRequest(jsonBody, context, request);
