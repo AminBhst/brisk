@@ -124,7 +124,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Brisk',
       theme: ThemeData(
-        fontFamily: 'Inter',
+        fontFamily: Platform.isWindows ? 'Segoe UI' : "Inter",
         useMaterial3: false,
         dialogTheme: DialogThemeData(backgroundColor: Colors.transparent),
         colorScheme: ColorScheme.fromSeed(
