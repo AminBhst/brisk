@@ -1,13 +1,8 @@
-import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/l10n/app_localizations.dart';
-import 'package:brisk/model/download_item.dart';
-import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/auto_updater_util.dart';
-import 'package:brisk/util/download_addition_ui_util.dart';
-import 'package:brisk/widget/other/browser_extension/get_browser_extension_dialog.dart';
 import 'package:brisk/widget/top_menu/top_menu_util.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
 import 'package:brisk/util/responsive_util.dart';
@@ -15,9 +10,9 @@ import 'package:brisk/widget/download/add_url_dialog.dart';
 import 'package:brisk/widget/top_menu/top_menu_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../provider/download_request_provider.dart';
+import '../browser_extension/get_browser_extension_dialog.dart';
 import '../queue/add_to_queue_window.dart';
 
 class TopMenu extends StatefulWidget {

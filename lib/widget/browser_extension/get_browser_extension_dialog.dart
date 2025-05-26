@@ -1,14 +1,14 @@
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/http_util.dart';
-import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/scrollable_dialog.dart';
-import 'package:brisk/widget/other/browser_extension/browser_extension_installation_guide_dialog.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+
+import 'browser_extension_installation_guide_dialog.dart';
 
 class GetBrowserExtensionDialog extends StatelessWidget {
   const GetBrowserExtensionDialog({super.key});

@@ -1,5 +1,6 @@
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/model/general_data.dart';
 import 'package:brisk/model/migration.dart';
 import 'package:brisk/model/setting.dart';
 import 'package:brisk/util/settings_cache.dart';
@@ -10,6 +11,7 @@ class MigrationManager {
     Migration(1, "Add m3u8 connection number"),
     Migration(2, "Add i10n"),
     Migration(3, "Add custom hotkey"),
+    Migration(4, "Add github star checker"),
   ];
 
   static runMigrations() async {
@@ -36,6 +38,9 @@ class MigrationManager {
         break;
       case 3:
         await runMigrationV3();
+        break;
+      case 4:
+        await runMigrationV4();
         break;
       default:
         break;
@@ -138,5 +143,13 @@ class MigrationManager {
     await HiveUtil.instance.settingBox.addAll(
       [hotkeyModifierOne, hotkeyModifierTwo, hotkeyLogicalKey, hotkeyScope],
     );
+  }
+
+  static runMigrationV4() async {
+    final githubStarNeverShowAgain = GeneralData(
+      fieldName: "githubStar_neverShowAgain",
+      value: false,
+    );
+    await HiveUtil.instance.generalDataBox.add(githubStarNeverShowAgain);
   }
 }
