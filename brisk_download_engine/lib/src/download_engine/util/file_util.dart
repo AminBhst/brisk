@@ -40,6 +40,11 @@ class FileUtil {
             ? fileName.lastIndexOf('.') - 4
             : fileName.lastIndexOf('.'));
   }
+
+  static bool isFileName(String str) {
+    final fileNameRegex = RegExp(r'^[^<>:"/\\|?*\n]+(\.[a-zA-Z0-9]{1,10})$');
+    return fileNameRegex.hasMatch(str.trim());
+  }
 }
 
 extension Util on File {
