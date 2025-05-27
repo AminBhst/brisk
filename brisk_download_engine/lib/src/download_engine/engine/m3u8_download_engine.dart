@@ -23,12 +23,12 @@ class M3U8DownloadEngine {
   static const buttonAvailabilityWaitSec = 4;
   static final Map<String, Map<int, Isolate>> _connectionIsolates = {};
   static final Map<String, EngineChannel<M3u8DownloadConnectionChannel>>
-      _engineChannels = {};
+  _engineChannels = {};
 
   static final Map<String, M3U8> _m3u8Map = {};
 
   static final Map<String, Map<int, DownloadProgressMessage>>
-      _connectionProgresses = {};
+  _connectionProgresses = {};
 
   static final Map<String, DownloadProgressMessage> _downloadProgresses = {};
 
@@ -53,7 +53,8 @@ class M3U8DownloadEngine {
 
       /// TODO show error for unsupported encryption
       if (m3u8 == null) {
-        var progress = _downloadProgresses[downloadItem.uid] ??
+        var progress =
+            _downloadProgresses[downloadItem.uid] ??
             DownloadProgressMessage(downloadItem: downloadItem);
         progress
           ..downloadItem = downloadItem
@@ -62,10 +63,10 @@ class M3U8DownloadEngine {
         engineChannel.sendMessage(progress);
         engineChannel.logger?.info("Creating the m3u8 file...");
         m3u8 = await M3U8.fromString(
-          downloadItem.m3u8Content!,
-          downloadItem.downloadUrl,
-          proxySetting: downloadSettings.proxySetting,
-        )
+            downloadItem.m3u8Content!,
+            downloadItem.downloadUrl,
+            proxySetting: downloadSettings.proxySetting,
+          )
           ?..refererHeader = downloadItem.refererHeader;
         _m3u8Map[uid] = m3u8!;
         engineChannel.logger?.info("Successfully created the m3u8 file.");
@@ -90,22 +91,26 @@ class M3U8DownloadEngine {
           progress == 1) {
         return;
       }
-      final connectionsToReset = engineChannel.connectionChannels.values
-          .where((conn) =>
-              conn.detailsStatus != DownloadStatus.paused &&
-              conn.detailsStatus != DownloadStatus.canceled &&
-              conn.detailsStatus != DownloadStatus.connectionComplete)
-          .toList()
-          .where(
-            (conn) =>
-                (conn.resetCount < downloadSettings.maxConnectionRetryCount ||
-                    downloadSettings.maxConnectionRetryCount == -1) &&
-                conn.lastResponseTime +
-                        downloadSettings.connectionRetryTimeoutMillis +
-                        2000 <
-                    DateTime.now().millisecondsSinceEpoch,
-          )
-          .toList();
+      final connectionsToReset =
+          engineChannel.connectionChannels.values
+              .where(
+                (conn) =>
+                    conn.detailsStatus != DownloadStatus.paused &&
+                    conn.detailsStatus != DownloadStatus.canceled &&
+                    conn.detailsStatus != DownloadStatus.connectionComplete,
+              )
+              .toList()
+              .where(
+                (conn) =>
+                    (conn.resetCount <
+                            downloadSettings.maxConnectionRetryCount ||
+                        downloadSettings.maxConnectionRetryCount == -1) &&
+                    conn.lastResponseTime +
+                            downloadSettings.connectionRetryTimeoutMillis +
+                            2000 <
+                        DateTime.now().millisecondsSinceEpoch,
+              )
+              .toList();
 
       for (final connection in connectionsToReset) {
         final message = M3u8DownloadIsolateMessage(
@@ -114,7 +119,8 @@ class M3U8DownloadEngine {
           settings: downloadSettings,
           connectionNumber: connection.connectionNumber,
         );
-        engineChannel.connectionChannels[connection.connectionNumber]
+        engineChannel
+            .connectionChannels[connection.connectionNumber]
             ?.awaitingResetResponse = true;
         connection.sendMessage(message);
         connection.resetCount++;
@@ -129,9 +135,10 @@ class M3U8DownloadEngine {
     if (engineChannel.paused) return;
     final m3u8 = _m3u8Map[uid];
     if (m3u8 == null) return;
-    final segmentToAssign = m3u8.segments
-        .where((segment) => segment.segmentStatus == SegmentStatus.initial)
-        .first;
+    final segmentToAssign =
+        m3u8.segments
+            .where((segment) => segment.segmentStatus == SegmentStatus.initial)
+            .first;
     segmentToAssign.segmentStatus = SegmentStatus.inUse;
     final conn = engineChannel.connectionChannels[progress.connectionNumber]!;
     segmentToAssign.connectionNumber = conn.connectionNumber;
@@ -181,25 +188,26 @@ class M3U8DownloadEngine {
   static void _runButtonAvailabilityNotifier() {
     _engineChannels.forEach((downloadId, engineChannel) {
       final progress = _calculateTotalDownloadProgress(downloadId);
-      final allConnectionsPaused =
-          engineChannel.connectionChannels.values.every(
-        (conn) => conn.detailsStatus == DownloadStatus.paused,
-      );
+      final allConnectionsPaused = engineChannel.connectionChannels.values
+          .every((conn) => conn.detailsStatus == DownloadStatus.paused);
       if (engineChannel.downloadItem == null ||
           !engineChannel.paused ||
           progress == 1) {
         return;
       }
-      final connectionsPauseWaitComplete =
-          engineChannel.connectionChannels.values.every(
-        (conn) =>
-            conn.lastResponseTime + 3000 <
-            DateTime.now().millisecondsSinceEpoch,
-      );
+      final connectionsPauseWaitComplete = engineChannel
+          .connectionChannels
+          .values
+          .every(
+            (conn) =>
+                conn.lastResponseTime + 3000 <
+                DateTime.now().millisecondsSinceEpoch,
+          );
       final message = ButtonAvailabilityMessage(
         downloadItem: engineChannel.downloadItem!,
         pauseButtonEnabled: false,
-        startButtonEnabled: connectionsPauseWaitComplete &&
+        startButtonEnabled:
+            connectionsPauseWaitComplete &&
             engineChannel.isStartButtonWaitComplete &&
             allConnectionsPaused,
       );
@@ -232,7 +240,8 @@ class M3U8DownloadEngine {
       transferRate: convertByteTransferRateToReadableStr(totalByteTransferRate),
     );
     if (progress.status == DownloadStatus.downloading) {
-      engineChannel.connectionChannels[progress.connectionNumber]
+      engineChannel
+          .connectionChannels[progress.connectionNumber]
           ?.awaitingResetResponse = false;
     }
     _setButtonAvailability(downloadProgress, totalProgress);
@@ -260,11 +269,11 @@ class M3U8DownloadEngine {
   }
 
   static double _calculateTotalDownloadProgress(String uid) {
-    final completeCount = _m3u8Map[uid]!
-        .segments
-        .where((s) => s.segmentStatus == SegmentStatus.complete)
-        .toList()
-        .length;
+    final completeCount =
+        _m3u8Map[uid]!.segments
+            .where((s) => s.segmentStatus == SegmentStatus.complete)
+            .toList()
+            .length;
     return completeCount / _m3u8Map[uid]!.segments.length;
   }
 
@@ -299,10 +308,9 @@ class M3U8DownloadEngine {
       return -1;
     }
     final engineChannel = _engineChannels[downloadItem.uid]!;
-    final progress = _downloadProgresses[downloadItem.uid] ??
-        DownloadProgressMessage(
-          downloadItem: downloadItem,
-        );
+    final progress =
+        _downloadProgresses[downloadItem.uid] ??
+        DownloadProgressMessage(downloadItem: downloadItem);
     progress
       ..downloadItem.status = DownloadStatus.assembling
       ..totalDownloadProgress = 1
@@ -350,7 +358,7 @@ class M3U8DownloadEngine {
     _connectionIsolates[downloadItem.uid]?.values.forEach((isolate) {
       isolate.kill();
     });
-    tempDir.deleteSync(recursive: true);
+    // tempDir.deleteSync(recursive: true);
     if (notifyProgress) {
       _setCompletionStatuses(progress, fileToWrite.lengthSync());
       engineChannel.sendMessage(progress);
@@ -374,7 +382,9 @@ class M3U8DownloadEngine {
   }
 
   static void _setCompletionStatuses(
-      DownloadProgressMessage downloadProgress, int fileSize) {
+    DownloadProgressMessage downloadProgress,
+    int fileSize,
+  ) {
     downloadProgress.assembleProgress = 1;
     downloadProgress.status = DownloadStatus.assembleComplete;
     downloadProgress.downloadItem.status = DownloadStatus.assembleComplete;
@@ -409,14 +419,12 @@ class M3U8DownloadEngine {
     final firstProgress = _connectionProgresses[uid]!.values.first;
     String status = firstProgress.status;
     final totalProgress = _calculateTotalDownloadProgress(uid);
-    final allConnecting = _engineChannels[uid]!
-        .connectionChannels
-        .values
-        .every((p) => p.detailsStatus == DownloadStatus.connecting);
-    final anyDownloading = _engineChannels[uid]!
-        .connectionChannels
-        .values
-        .any((p) => p.status == DownloadStatus.downloading);
+    final allConnecting = _engineChannels[uid]!.connectionChannels.values.every(
+      (p) => p.detailsStatus == DownloadStatus.connecting,
+    );
+    final anyDownloading = _engineChannels[uid]!.connectionChannels.values.any(
+      (p) => p.status == DownloadStatus.downloading,
+    );
     if (allConnecting) {
       status = DownloadStatus.connecting;
     }
@@ -442,22 +450,29 @@ class M3U8DownloadEngine {
       progress.buttonAvailability = ButtonAvailability(false, false);
       return;
     }
-    final unfinishedConnections = progresses
-        .where((p) => p.connectionStatus != DownloadStatus.connectionComplete)
-        .toList();
+    final unfinishedConnections =
+        progresses
+            .where(
+              (p) => p.connectionStatus != DownloadStatus.connectionComplete,
+            )
+            .toList();
 
-    final pauseButtonEnabled = unfinishedConnections.every(
+    final pauseButtonEnabled =
+        unfinishedConnections.every(
           (c) => c.buttonAvailability.pauseButtonEnabled,
         ) &&
         engineChannel!.isPauseButtonWaitComplete;
 
-    final startButtonEnabled = unfinishedConnections.every(
+    final startButtonEnabled =
+        unfinishedConnections.every(
           (c) => c.buttonAvailability.startButtonEnabled,
         ) &&
         engineChannel!.isStartButtonWaitComplete;
 
-    progress.buttonAvailability =
-        ButtonAvailability(pauseButtonEnabled, startButtonEnabled);
+    progress.buttonAvailability = ButtonAvailability(
+      pauseButtonEnabled,
+      startButtonEnabled,
+    );
   }
 
   // TODO fix bug
@@ -484,8 +499,10 @@ class M3U8DownloadEngine {
     } else {
       _engineChannels[uid]?.connectionChannels.forEach((connNum, connection) {
         final newData = data.clone()..connectionNumber = connNum;
-        logger?.info("Sent Command ${data.command} with "
-            "segment ${data.segment} to connection $connNum");
+        logger?.info(
+          "Sent Command ${data.command} with "
+          "segment ${data.segment} to connection $connNum",
+        );
         connection.sendMessage(newData);
       });
     }
@@ -500,16 +517,16 @@ class M3U8DownloadEngine {
     );
     final tempDir = Directory(segmentsPath);
     if (!tempDir.existsSync()) return;
-    final tempDirectoriesSorter = tempDir
-        .listSync()
-        .whereType<Directory>()
-        .toList()
-      ..sort((a, b) =>
-          basename(a.path).toInt().compareTo(basename(b.path).toInt()));
+    final tempDirectoriesSorter =
+        tempDir.listSync().whereType<Directory>().toList()..sort(
+          (a, b) =>
+              basename(a.path).toInt().compareTo(basename(b.path).toInt()),
+        );
     for (final dir in tempDirectoriesSorter) {
       final finalSegmentPath = join(dir.path, "final-segment.ts");
       if (File(finalSegmentPath).existsSync()) {
-        m3u8.segments
+        m3u8
+            .segments
             .where((s) => s.sequenceNumber == basename(dir.path).toInt())
             .first
             .segmentStatus = SegmentStatus.complete;
@@ -519,13 +536,17 @@ class M3U8DownloadEngine {
 
   static _spawnDownloadIsolates(M3u8DownloadIsolateMessage data) async {
     final m3u8 = _m3u8Map[data.downloadItem.uid]!;
-    final incompleteSegments = m3u8.segments
-        .where((s) => s.segmentStatus != SegmentStatus.complete)
-        .toList();
-    final segments = incompleteSegments.length >
-            downloadSettings.totalM3u8Connections
-        ? incompleteSegments.sublist(0, downloadSettings.totalM3u8Connections)
-        : incompleteSegments.sublist(0);
+    final incompleteSegments =
+        m3u8.segments
+            .where((s) => s.segmentStatus != SegmentStatus.complete)
+            .toList();
+    final segments =
+        incompleteSegments.length > downloadSettings.totalM3u8Connections
+            ? incompleteSegments.sublist(
+              0,
+              downloadSettings.totalM3u8Connections,
+            )
+            : incompleteSegments.sublist(0);
     for (int i = 0; i < segments.length; i++) {
       final segment = segments[i];
       segment.connectionNumber = i;
@@ -559,9 +580,7 @@ class M3U8DownloadEngine {
       rPort.sendPort,
       errorsAreFatal: false,
     );
-    logger?.info(
-      "Spawned connection $connNum with segment ${data.segment}",
-    );
+    logger?.info("Spawned connection $connNum with segment ${data.segment}");
     channel.sink.add(data);
     _connectionIsolates[uid] ??= {};
     _connectionIsolates[uid]![connNum] = isolate;
@@ -605,9 +624,16 @@ class M3U8DownloadEngine {
 
   static bool isAssembledFileInvalid(DownloadItemModel downloadItem) {
     final tempPath = join(downloadSettings.baseTempDir.path, downloadItem.uid);
-    return _downloadProgresses[downloadItem.uid] == null &&
-        Directory(tempPath).existsSync() &&
-        File(downloadItem.filePath).existsSync();
+    return (_downloadProgresses[downloadItem.uid] == null &&
+            Directory(tempPath).existsSync() &&
+            File(downloadItem.filePath).existsSync()) ||
+        (!File(downloadItem.filePath).existsSync() &&
+            Directory(tempPath).existsSync() &&
+            Directory(tempPath).listSync().length ==
+                _m3u8Map[downloadItem.uid]!.segments.length &&
+            Directory(tempPath).listSync().every(
+              (dir) => File(join(dir.path, 'final-segment.ts')).existsSync(),
+            ));
   }
 
   static DownloadProgressMessage reassembleFile(

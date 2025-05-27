@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:brisk/db/migration_manager.dart';
+import 'package:brisk/provider/ffmpeg_installation_provider.dart';
 import 'package:brisk/provider/locale_provider.dart';
 import 'package:brisk/util/app_logger.dart';
 import 'package:brisk/util/auto_updater_util.dart';
@@ -82,6 +83,9 @@ Future<void> main(List<String> args) async {
           ),
           ChangeNotifierProvider<LocaleProvider>(
             create: (_) => LocaleProvider.instance,
+          ),
+          ChangeNotifierProvider<FFmpegInstallationProvider>(
+            create: (_) => FFmpegInstallationProvider(),
           ),
           ChangeNotifierProxyProvider<PlutoGridCheckRowProvider,
               DownloadRequestProvider>(

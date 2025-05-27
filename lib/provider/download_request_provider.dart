@@ -5,10 +5,12 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
+import 'package:brisk/util/ffmpeg.dart';
 import 'package:brisk/util/notification_manager.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import '../util/download_engine_util.dart';
 import 'package:stream_channel/stream_channel.dart';
@@ -128,7 +130,7 @@ class DownloadRequestProvider with ChangeNotifier {
     plutoProvider.notifyListeners();
   }
 
-  void _handleDownloadProgressMessage(DownloadProgressMessage progress) {
+  void _handleDownloadProgressMessage(DownloadProgressMessage progress) async {
     final id = progress.downloadItem.id!;
     downloads[id] = progress;
     _handleNotification(progress);
@@ -143,10 +145,37 @@ class DownloadRequestProvider with ChangeNotifier {
       PlutoGridUtil.removeCachedRow(id);
     }
     _updateDownloadRequest(progress, dl);
+    print(dl.subtitles.length);
     if (progress.status == DownloadStatus.failed) {
       _killIsolateConnection(id);
     }
+    if (progress.status == DownloadStatus.assembleComplete) {
+      if (await FFmpeg.isInstalled()) {
+        await _addSoftSubsToVideo(dl);
+      }
+    }
     notifyAllListeners(progress);
+  }
+
+  Future<void> _addSoftSubsToVideo(DownloadItem dl) async {
+    final tempDirPath = (await getTemporaryDirectory()).path;
+    final subDirPath = join(
+      tempDirPath,
+      "${basenameWithoutExtension(dl.fileName)}_subs",
+    );
+    final subsDir = Directory(subDirPath);
+    subsDir.createSync(recursive: true);
+    List<File> subtitles = [];
+    for (final subObj in dl.subtitles) {
+      final url = subObj['url'];
+      if (url == null) continue;
+      final subName = url.substring(url.lastIndexOf("/") + 1);
+      final subFile = File(join(subDirPath, subName));
+      subFile.writeAsStringSync(subObj['content']!);
+      subtitles.add(subFile);
+    }
+    await FFmpeg.addSoftsubsToVideo(File(dl.filePath), subtitles);
+    subsDir.deleteSync();
   }
 
   void _handleNotification(DownloadProgressMessage progress) {

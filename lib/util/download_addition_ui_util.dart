@@ -13,6 +13,7 @@ import 'package:brisk/widget/download/download_info_dialog.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -101,7 +102,11 @@ class DownloadAdditionUiUtil {
     });
   }
 
-  static void handleM3u8Addition(M3U8 m3u8, BuildContext context) {
+  static void handleM3u8Addition(
+    M3U8 m3u8,
+    BuildContext context,
+    List<Map<String, String>> subtitles,
+  ) {
     if (m3u8.encryptionDetails.encryptionMethod ==
         M3U8EncryptionMethod.sampleAes) {
       showDialog(
@@ -133,6 +138,7 @@ class DownloadAdditionUiUtil {
         "m3u8Content": m3u8.stringContent,
         "refererHeader": m3u8.refererHeader,
       },
+      subtitles: subtitles,
     );
     showDialog(
       context: context,
@@ -346,4 +352,46 @@ class DownloadAdditionUiUtil {
 Future<void> requestFileInfoIsolate(IsolateArgsPair args) async {
   final result = await requestFileInfo(args.firstObject, args.secondObject);
   args.sendPort.send(result);
+}
+
+Future<void> _fetchUrlsIsolate(SendPort initialSendPort) async {
+  final port = ReceivePort();
+  initialSendPort.send(port.sendPort);
+  await for (final message in port) {
+    if (message is List<Map<String, String>>) {
+      final results = <Map<String, String>>[];
+      for (final urlMap in message) {
+        try {
+          final response = await http.get(
+            Uri.parse(urlMap['url']!),
+            headers: {'referer': urlMap['referer'] ?? ''},
+          );
+          if (response.statusCode == 200) {
+            results.add({'url': urlMap['url']!, 'content': response.body});
+          }
+        } catch (_) {}
+      }
+      initialSendPort.send(results);
+      break;
+    }
+  }
+}
+
+Future<List<Map<String, String>>> fetchSubtitlesIsolate(
+  List<Map<String, String>> urls,
+) async {
+  final receivePort = ReceivePort();
+  await Isolate.spawn(_fetchUrlsIsolate, receivePort.sendPort);
+  final completer = Completer<List<Map<String, String>>>();
+  late SendPort isolateSendPort;
+  receivePort.listen((message) {
+    if (message is SendPort) {
+      isolateSendPort = message;
+      isolateSendPort.send(urls);
+    } else if (message is List<Map<String, String>>) {
+      completer.complete(message);
+      receivePort.close();
+    }
+  });
+  return completer.future;
 }

@@ -17,10 +17,12 @@ import 'package:provider/provider.dart';
 class M3u8MasterPlaylistDialog extends StatelessWidget {
   final M3U8 m3u8;
   late AppLocalizations loc;
+  List<Map<String, String>> subtitles;
 
   M3u8MasterPlaylistDialog({
     super.key,
     required this.m3u8,
+    required this.subtitles,
   });
 
   @override
@@ -236,6 +238,10 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
       return;
     }
     Navigator.of(context).pop();
-    DownloadAdditionUiUtil.handleM3u8Addition(streamInf.m3u8!, context);
+    DownloadAdditionUiUtil.handleM3u8Addition(
+      streamInf.m3u8!,
+      context,
+      subtitles,
+    );
   }
 }

@@ -64,6 +64,7 @@ dependencies:
   intl: ^0.20.2
   windows_single_instance: ^1.0.1
   xdg_desktop_portal: ^0.1.13
+  archive: ^3.6.1
 
 
   # The following adds the Cupertino Icons font to your application.
