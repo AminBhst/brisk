@@ -67,6 +67,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get duration => 'Durata';
 
   @override
+  String get subtitles => 'Subtitles';
+
+  @override
   String get progress => 'Progresso';
 
   @override

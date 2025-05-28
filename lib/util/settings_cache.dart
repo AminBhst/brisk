@@ -35,6 +35,7 @@ class SettingsCache {
   static late HotKeyModifier? downloadAdditionHotkeyModifierTwo;
   static late LogicalKeyboardKey? downloadAdditionHotkeyLogicalKey;
   static late HotKeyScope downloadAdditionHotkeyScope;
+  static late String ffmpegPath;
 
   /// File
   static late Directory temporaryDir;
@@ -91,6 +92,10 @@ class SettingsCache {
     SettingOptions.downloadAdditionHotkeyScope.name: [
       SettingType.general.name,
       HotKeyScope.system.name,
+    ],
+    SettingOptions.ffmpegPath.name: [
+      SettingType.general.name,
+      "ffmpeg",
     ],
     SettingOptions.notificationOnDownloadFailure.name: [
       SettingType.general.name,
@@ -221,6 +226,9 @@ class SettingsCache {
         case SettingOptions.downloadAdditionHotkeyScope:
           downloadAdditionHotkeyScope = strToHotkeyScope(value);
           break;
+        case SettingOptions.ffmpegPath:
+          ffmpegPath = value;
+          break;
         case SettingOptions.notificationOnDownloadCompletion:
           notificationOnDownloadCompletion = parseBool(value);
           break;
@@ -334,6 +342,9 @@ class SettingsCache {
           break;
         case SettingOptions.downloadAdditionHotkeyScope:
           setting.value = SettingsCache.downloadAdditionHotkeyScope.name;
+          break;
+        case SettingOptions.ffmpegPath:
+          setting.value = SettingsCache.ffmpegPath;
           break;
         case SettingOptions.notificationOnDownloadFailure:
           setting.value =

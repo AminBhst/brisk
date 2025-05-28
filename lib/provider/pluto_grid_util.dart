@@ -108,6 +108,7 @@ class PlutoGridUtil {
     DownloadProgressMessage progress,
     DownloadItemModel downloadItem,
   ) {
+    cells["file_name"]?.value = progress.downloadItem.fileName;
     cells["time_left"]?.value = progress.estimatedRemaining;
     cells["progress"]?.value =
         convertPercentageNumberToReadableStr(progress.downloadProgress * 100);

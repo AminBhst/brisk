@@ -66,6 +66,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get duration => 'مدت زمان';
 
   @override
+  String get subtitles => 'Subtitles';
+
+  @override
   String get progress => 'پیشرفت دانلود';
 
   @override

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:brisk/db/hive_util.dart';
+import 'package:path/path.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/pluto_grid_util.dart';
@@ -145,13 +146,24 @@ class DownloadRequestProvider with ChangeNotifier {
       PlutoGridUtil.removeCachedRow(id);
     }
     _updateDownloadRequest(progress, dl);
-    print(dl.subtitles.length);
     if (progress.status == DownloadStatus.failed) {
       _killIsolateConnection(id);
     }
     if (progress.status == DownloadStatus.assembleComplete) {
       if (await FFmpeg.isInstalled()) {
         await _addSoftSubsToVideo(dl);
+        File(downloadItem.filePath).deleteSync();
+        var newFileName = basenameWithoutExtension(downloadItem.filePath);
+        newFileName += '.mkv';
+        final newPath =
+            join(File(downloadItem.filePath).parent.path, newFileName);
+        downloadItem.filePath = newPath;
+        downloadItem.fileName = newFileName;
+        dl.filePath = newPath;
+        dl.fileName = newFileName;
+        _updateDownloadRequest(progress, dl);
+        downloads[id] = progress;
+        notifyAllListeners(progress);
       }
     }
     notifyAllListeners(progress);
@@ -174,8 +186,8 @@ class DownloadRequestProvider with ChangeNotifier {
       subFile.writeAsStringSync(subObj['content']!);
       subtitles.add(subFile);
     }
-    await FFmpeg.addSoftsubsToVideo(File(dl.filePath), subtitles);
-    subsDir.deleteSync();
+    await FFmpeg.addSoftSubsToVideo(File(dl.filePath), subtitles);
+    subsDir.deleteSync(recursive: true);
   }
 
   void _handleNotification(DownloadProgressMessage progress) {

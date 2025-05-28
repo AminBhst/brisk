@@ -23,7 +23,7 @@ class _BehaviourSettingsGroupState extends State<BehaviourSettingsGroup> {
     final size = MediaQuery.of(context).size;
     loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 300,
+      height: 270,
       title: loc.settings_behavior,
       children: [
         SwitchSetting(

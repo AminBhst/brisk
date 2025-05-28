@@ -66,6 +66,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get duration => '时长';
 
   @override
+  String get subtitles => 'Subtitles';
+
+  @override
   String get progress => '进度';
 
   @override

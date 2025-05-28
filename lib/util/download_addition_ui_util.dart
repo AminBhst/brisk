@@ -7,9 +7,11 @@ import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/isolate/isolate_args.dart';
+import 'package:brisk/util/ffmpeg.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/info_dialog.dart';
 import 'package:brisk/widget/download/download_info_dialog.dart';
+import 'package:brisk/widget/download/ffmpeg_not_found_dialog.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
@@ -106,7 +108,7 @@ class DownloadAdditionUiUtil {
     M3U8 m3u8,
     BuildContext context,
     List<Map<String, String>> subtitles,
-  ) {
+  ) async {
     if (m3u8.encryptionDetails.encryptionMethod ==
         M3U8EncryptionMethod.sampleAes) {
       showDialog(
@@ -149,6 +151,15 @@ class DownloadAdditionUiUtil {
       ),
       barrierDismissible: false,
     );
+    if (subtitles.isNotEmpty &&
+        !(await FFmpeg.isInstalled()) &&
+        !FFmpeg.ignoreWarning) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => FFmpegNotFoundDialog(),
+      );
+    }
   }
 
   static void addDownload(
@@ -357,19 +368,27 @@ Future<void> requestFileInfoIsolate(IsolateArgsPair args) async {
 Future<void> _fetchUrlsIsolate(SendPort initialSendPort) async {
   final port = ReceivePort();
   initialSendPort.send(port.sendPort);
+  ProxySetting? proxySetting;
   await for (final message in port) {
+    if (message is ProxySetting?) {
+      proxySetting = message;
+      continue;
+    }
     if (message is List<Map<String, String>>) {
       final results = <Map<String, String>>[];
       for (final urlMap in message) {
         try {
-          final response = await http.get(
+          final client = HttpClientBuilder.buildClient(proxySetting);
+          final response = await client.get(
             Uri.parse(urlMap['url']!),
             headers: {'referer': urlMap['referer'] ?? ''},
           );
           if (response.statusCode == 200) {
             results.add({'url': urlMap['url']!, 'content': response.body});
           }
-        } catch (_) {}
+        } catch (e) {
+          print(e);
+        }
       }
       initialSendPort.send(results);
       break;
@@ -379,6 +398,7 @@ Future<void> _fetchUrlsIsolate(SendPort initialSendPort) async {
 
 Future<List<Map<String, String>>> fetchSubtitlesIsolate(
   List<Map<String, String>> urls,
+  ProxySetting? proxySettings,
 ) async {
   final receivePort = ReceivePort();
   await Isolate.spawn(_fetchUrlsIsolate, receivePort.sendPort);
@@ -387,6 +407,7 @@ Future<List<Map<String, String>>> fetchSubtitlesIsolate(
   receivePort.listen((message) {
     if (message is SendPort) {
       isolateSendPort = message;
+      isolateSendPort.send(proxySettings);
       isolateSendPort.send(urls);
     } else if (message is List<Map<String, String>>) {
       completer.complete(message);

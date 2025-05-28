@@ -7,6 +7,7 @@ class SettingsProvider with ChangeNotifier {
   int? selectedTabId = 0;
   String? tempPath = SettingsCache.temporaryDir.path;
   String? savePath = SettingsCache.saveDir.path;
+  String? ffmpegPath = SettingsCache.ffmpegPath;
 
   void setSavePath(String path) {
     savePath = path;

@@ -149,6 +149,7 @@ class BrowserExtensionServer {
     bool canceled = false;
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => FileInfoLoader(
         onCancelPressed: () {
           canceled = true;
@@ -156,7 +157,20 @@ class BrowserExtensionServer {
         },
       ),
     );
+    final List<Map<String, String>> vttUrls = (jsonBody['vttUrls'] as List)
+        .map((item) => (item as Map).map<String, String>(
+              (key, value) => MapEntry(key.toString(), value?.toString() ?? ""),
+            ))
+        .toList();
+    final subtitles = await fetchSubtitlesIsolate(
+      vttUrls,
+      SettingsCache.proxySetting,
+    );
     final url = jsonBody["m3u8Url"] as String;
+    var suggestedName = jsonBody["suggestedName"] as String?;
+    if (suggestedName != null) {
+      suggestedName += '.ts';
+    }
     final refererHeader = jsonBody["refererHeader"] as String?;
     M3U8 m3u8;
     try {
@@ -174,6 +188,7 @@ class BrowserExtensionServer {
         url,
         proxySetting: SettingsCache.proxySetting,
         refererHeader: refererHeader,
+        suggestedFileName: suggestedName,
       ))!;
     } catch (e) {
       print(e);
@@ -196,10 +211,6 @@ class BrowserExtensionServer {
     }
     Navigator.of(context).pop();
     handleWindowToFront();
-    final List<Map<String, String>> vttUrls = (jsonBody['vttUrls'] as List)
-        .map((item) => Map<String, String>.from(item as Map))
-        .toList();
-    final subtitles = await fetchSubtitlesIsolate(vttUrls);
     if (m3u8.isMasterPlaylist) {
       _handleMasterPlaylist(m3u8, context, subtitles);
       return;

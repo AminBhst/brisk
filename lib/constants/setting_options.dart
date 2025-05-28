@@ -8,6 +8,7 @@ enum SettingOptions {
   downloadAdditionHotkeyModifierTwo,
   downloadAdditionHotkeyLogicalKey,
   downloadAdditionHotkeyScope,
+  ffmpegPath,
   openDownloadProgressWindow,
   enableWindowToFront,
   extensionPort,
