@@ -25,8 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:window_to_front/window_to_front.dart';
 import 'package:window_manager/window_manager.dart';
-
-import '../widget/download/multi_download_addition_dialog.dart';
+import 'package:brisk/widget/download/multi_download_addition_dialog.dart';
 
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
