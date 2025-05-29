@@ -25,6 +25,7 @@ class BrowserExtensionRulesGroup extends StatelessWidget {
           width: resolveLinkWidth(size),
           titleWidth: resolveTitleWidth(size),
           linkText: loc.settings_rules_edit,
+          customIcon: Icon(Icons.edit_note_rounded),
           onLinkPressed: () => showDialog(
             builder: (context) => RuleEditorWindow<FileRule>(
               ruleType: loc.settings_rules_extensionSkipCaptureRules,

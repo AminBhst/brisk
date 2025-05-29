@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:path/path.dart';
 import 'package:brisk/constants/file_type.dart';
 import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/l10n/app_localizations.dart';
@@ -8,6 +9,7 @@ import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
 import 'package:brisk/provider/queue_provider.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/readability_util.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/checkbox_confirmation_dialog.dart';
 import 'package:brisk/widget/base/delete_confirmation_dialog.dart';
 import 'package:brisk/widget/download/queue_schedule_handler.dart';
@@ -337,6 +339,14 @@ class PlutoGridUtil {
       if (file.existsSync()) {
         file.delete();
       }
+    }
+    final logPath = join(
+      SettingsCache.temporaryDir.path,
+      "Logs",
+      "${downloadItem.uid}_logs.log",
+    );
+    if (File(logPath).existsSync()) {
+      File(logPath).deleteSync();
     }
     HiveUtil.instance.downloadItemsBox.delete(id);
     HiveUtil.instance.removeDownloadFromQueues(id);

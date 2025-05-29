@@ -1,4 +1,5 @@
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
 import 'package:brisk/util/ffmpeg.dart';
 import 'package:brisk/widget/base/rounded_outlined_button.dart';
@@ -11,9 +12,8 @@ class FFmpegNotFoundDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider
-        .of<ThemeProvider>(context)
-        .activeTheme;
+    final theme = Provider.of<ThemeProvider>(context).activeTheme;
+    final loc = AppLocalizations.of(context)!;
     return ScrollableDialog(
       width: 550,
       height: 240,
@@ -44,7 +44,7 @@ class FFmpegNotFoundDialog extends StatelessWidget {
             ),
             SizedBox(width: 10),
             Text(
-              "FFmpeg Not Found!",
+              loc.ffmpeg_notFound_title,
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -60,11 +60,8 @@ class FFmpegNotFoundDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
-                "Subtitles were found for this video stream, however, FFmpeg was not found on your system."
-                    "\nFFmpeg is required to add the detected subtitles to the video file.\n"),
-            Text(
-              "You can:\n\t• Let Brisk handle the installation for you\n\t• Install FFmpeg via a package manager (choco, brew, pacman, etc.)\n\t• Download the binaries and add FFmpeg to your system’s PATH.\n\nYou can always set the FFmpeg's path in Settings -> General -> FFmpeg",
+            Text(loc.ffmpeg_notFound_description),
+            Text(loc.ffmpeg_notFound_descriptionHint,
               style: TextStyle(color: Colors.white60),
             ),
           ],
@@ -77,13 +74,13 @@ class FFmpegNotFoundDialog extends StatelessWidget {
             final warningIgnore = HiveUtil.instance.generalDataBox.values
                 .where(
                   (element) => element.fieldName == 'ffmpegWarningIgnore',
-            )
+                )
                 .first;
             warningIgnore.value = true;
             warningIgnore.save();
             Navigator.of(context).pop();
           },
-          text: "I'll Install Later",
+          text: loc.btn_installLater,
         ),
         const SizedBox(width: 10),
         RoundedOutlinedButton.fromButtonColor(
@@ -92,7 +89,7 @@ class FFmpegNotFoundDialog extends StatelessWidget {
             Navigator.of(context).pop();
             FFmpeg.install(context);
           },
-          text: "Install Automatically",
+          text: loc.btn_installAutomatically,
         ),
       ],
     );

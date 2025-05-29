@@ -12,6 +12,7 @@ import 'package:brisk/provider/locale_provider.dart';
 import 'package:brisk/util/app_logger.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
+import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/util/settings_cache.dart';
@@ -168,8 +169,9 @@ class BrowserExtensionServer {
     );
     final url = jsonBody["m3u8Url"] as String;
     var suggestedName = jsonBody["suggestedName"] as String?;
-    if (suggestedName != null) {
-      suggestedName += '.ts';
+    if (FileUtil.isFileNameInvalid(suggestedName) ||
+        suggestedName != null && suggestedName.isEmpty) {
+      suggestedName = null;
     }
     final refererHeader = jsonBody["refererHeader"] as String?;
     M3U8 m3u8;

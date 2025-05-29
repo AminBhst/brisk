@@ -70,7 +70,7 @@ Future<void> main(List<String> args) async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider<SettingsProvider>(
-            create: (_) => SettingsProvider(),
+            create: (_) => SettingsProvider.instance,
           ),
           ChangeNotifierProvider<QueueProvider>(
             create: (_) => QueueProvider(),

@@ -381,7 +381,8 @@ Future<void> _fetchUrlsIsolate(SendPort initialSendPort) async {
           final client = HttpClientBuilder.buildClient(proxySetting);
           final response = await client.get(
             Uri.parse(urlMap['url']!),
-            headers: {'referer': urlMap['referer'] ?? ''},
+            headers: {'referer': urlMap['referer'] ?? ''}
+              ..addAll(userAgentHeader),
           );
           if (response.statusCode == 200) {
             results.add({'url': urlMap['url']!, 'content': response.body});

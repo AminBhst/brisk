@@ -21,18 +21,19 @@ class FFmpegSettingsGroup extends StatefulWidget {
 class _FFmpegSettingsGroupState extends State<FFmpegSettingsGroup> {
   TextEditingController ffmpegPathController =
       TextEditingController(text: SettingsCache.ffmpegPath);
+  late AppLocalizations loc;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final provider = Provider.of<SettingsProvider>(context);
-    var loc = AppLocalizations.of(context)!;
+    loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 200,
+      height: 250,
       title: "FFmpeg",
       children: [
         TextFieldSetting(
-          text: "FFmpeg Path",
+          text: loc.settings_ffmpegPath,
           width: resolveTextFieldWidth(size),
           txtController: ffmpegPathController,
           onChanged: (value) {
@@ -54,21 +55,46 @@ class _FFmpegSettingsGroupState extends State<FFmpegSettingsGroup> {
         ),
         const SizedBox(height: 10),
         ExternalLinkSetting(
-            title: "Test FFmpeg Integration",
-            titleWidth: 180,
-            // width: resolveLinkWidth(size),
-            // titleWidth: resolveTitleWidth(size),
-            customIcon: Icon(
-              Icons.build_circle_rounded,
-              color: Colors.white70,
-              size: 28,
-            ),
-            linkText: "",
-            onLinkPressed: testFFmpeg
-            // tooltipMessage: loc.settings_rules_extensionSkipCaptureRules_tooltip,
-            )
+          title: loc.settings_testFFmpeg,
+          tooltipMessage: loc.settings_ffmpeg_tooltip,
+          titleWidth: 100,
+          customIcon: Icon(
+            Icons.build_circle_rounded,
+            color: Colors.white70,
+            size: 28,
+          ),
+          linkText: "",
+          onLinkPressed: testFFmpeg,
+        ),
+        const SizedBox(height: 10),
+        ExternalLinkSetting(
+          title: loc.settings_ffmpeg_installAutomatically,
+          titleWidth: 250,
+          customIcon: Icon(
+            Icons.install_desktop_rounded,
+            color: Colors.white70,
+            size: 28,
+          ),
+          linkText: "",
+          onLinkPressed: () => installFFmpeg(context),
+        )
       ],
     );
+  }
+
+  void installFFmpeg(BuildContext context) async {
+    if (await FFmpeg.isInstalled()) {
+      showDialog(
+        context: context,
+        builder: (context) => InfoDialog(
+          titleText: loc.ffmpeg_alreadyInstalled,
+          titleIcon: Icon(Icons.done),
+          titleIconBackgroundColor: Colors.lightGreen,
+        ),
+      );
+      return;
+    }
+    await FFmpeg.install(context);
   }
 
   void testFFmpeg() async {
@@ -77,25 +103,24 @@ class _FFmpegSettingsGroupState extends State<FFmpegSettingsGroup> {
       showDialog(
         context: context,
         builder: (context) => InfoDialog(
-          titleText: "FFmpeg integrated successfully",
+          titleText: loc.ffmpeg_integrationSuccess,
           titleIcon: Icon(Icons.done),
           titleIconBackgroundColor: Colors.lightGreen,
         ),
       );
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => ErrorDialog(
-          width: 400,
-          height: 140,
-          textHeight: 70,
-          title: "FFmpeg Test Failed!",
-          description: "Failed to run FFmpeg commands!",
-          descriptionHint:
-              "Make sure the selected path contains the FFmpeg binary (usually the bin directory)",
-        ),
-      );
+      return;
     }
+    showDialog(
+      context: context,
+      builder: (context) => ErrorDialog(
+        width: 400,
+        height: 140,
+        textHeight: 70,
+        title: loc.ffmpeg_testFailed_title,
+        description: loc.ffmpeg_testFailed_description,
+        descriptionHint: loc.ffmpeg_testFailed_descriptionHint,
+      ),
+    );
   }
 
   double resolveTextFieldWidth(Size size) {

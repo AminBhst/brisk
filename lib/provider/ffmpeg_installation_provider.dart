@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:archive/archive.dart';
+import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/util/download_engine_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/platform.dart';
@@ -9,42 +10,38 @@ import 'package:path/path.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/util/ffmpeg.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
+import 'package:provider/provider.dart';
 
 Future<void> extractFFmpegArchiveIsolate(
-    String filePath, String outputDir) async {
-  try {
-    final file = File(filePath);
-    final inputBytes = await file.readAsBytes();
-    Archive archive;
-    if (Platform.isLinux) {
-      final tarBytes = XZDecoder().decodeBytes(inputBytes);
-      archive = TarDecoder().decodeBytes(tarBytes);
-    } else {
-      archive = ZipDecoder().decodeBytes(inputBytes);
-    }
-    print("started extracting...");
-    for (final archiveFile in archive) {
-      print("extracting...");
-      if (archiveFile.name.trim().isEmpty) continue;
-
-      final unixParts = archiveFile.name.split('/');
-      final strippedPath = unixParts.length > 1
-          ? unixParts.sublist(1).join(Platform.pathSeparator)
-          : unixParts.first;
-      final outPath = join(outputDir, strippedPath);
-
-      if (archiveFile.isFile) {
-        final outFile = File(outPath);
-        await outFile.create(recursive: true);
-        await outFile.writeAsBytes(archiveFile.content as List<int>);
-      } else {
-        await Directory(outPath).create(recursive: true);
-      }
-    }
-  } catch (e) {
-    print(e);
+  String filePath,
+  String outputDir,
+) async {
+  final file = File(filePath);
+  final inputBytes = await file.readAsBytes();
+  Archive archive;
+  if (Platform.isLinux) {
+    final tarBytes = XZDecoder().decodeBytes(inputBytes);
+    archive = TarDecoder().decodeBytes(tarBytes);
+  } else {
+    archive = ZipDecoder().decodeBytes(inputBytes);
   }
-  print("Finished extracting...");
+  for (final archiveFile in archive) {
+    if (archiveFile.name.trim().isEmpty) continue;
+
+    final unixParts = archiveFile.name.split('/');
+    final strippedPath = unixParts.length > 1
+        ? unixParts.sublist(1).join(Platform.pathSeparator)
+        : unixParts.first;
+    final outPath = join(outputDir, strippedPath);
+
+    if (archiveFile.isFile) {
+      final outFile = File(outPath);
+      await outFile.create(recursive: true);
+      await outFile.writeAsBytes(archiveFile.content as List<int>);
+    } else {
+      await Directory(outPath).create(recursive: true);
+    }
+  }
 }
 
 Future<void> extractArchiveIsolate(Map<String, String> args) async {
@@ -87,12 +84,7 @@ class FFmpegInstallationProvider with ChangeNotifier {
           this.progress!.status = "Finalizing...";
           await extractFFmpegCompute(downloadItem);
           File(downloadItem.filePath).deleteSync();
-          final ffmpegPath = join(
-            File(Platform.resolvedExecutable).parent.path,
-            "ffmpeg",
-            "bin",
-          );
-          SettingsCache.ffmpegPath = ffmpegPath;
+          SettingsCache.ffmpegPath = await FFmpeg.downloadedFFmpegPath;
           await SettingsCache.saveCachedSettingsToDB();
           onComplete?.call();
         } else {
@@ -108,10 +100,7 @@ class FFmpegInstallationProvider with ChangeNotifier {
       extractArchiveIsolate,
       {
         'filePath': downloadItem.filePath,
-        'outputDir': join(
-          File(Platform.resolvedExecutable).parent.path,
-          "ffmpeg",
-        ),
+        'outputDir': join(await FFmpeg.ffmpegBaseInstallationPath, "ffmpeg")
       },
     );
   }

@@ -11,14 +11,11 @@ import 'package:brisk/util/notification_manager.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-import '../util/download_engine_util.dart';
+import 'package:brisk/util/download_engine_util.dart';
 import 'package:stream_channel/stream_channel.dart';
-import 'package:path/path.dart';
-
-import '../util/readability_util.dart';
-import '../util/settings_cache.dart';
+import 'package:brisk/util/readability_util.dart';
+import 'package:brisk/util/settings_cache.dart';
 
 class DownloadRequestProvider with ChangeNotifier {
   Map<int, DownloadProgressMessage> downloads = {};
@@ -76,51 +73,6 @@ class DownloadRequestProvider with ChangeNotifier {
     return tempDir.existsSync() ? tempDir.listSync().length : null;
   }
 
-  // Future<StreamChannel> _spawnDownloadEngineIsolate(
-  //   int id,
-  //   DownloadType downloadType,
-  // ) async {
-  //   final rPort = ReceivePort();
-  //   final channel = IsolateChannel.connectReceive(rPort);
-  //   final isolate = await Isolate.spawn(
-  //     getEngineStartMethod(downloadType),
-  //     IsolateSingleArg(rPort.sendPort, id),
-  //     errorsAreFatal: false,
-  //   );
-  //   engineIsolates[id] = isolate;
-  //   engineChannels[id] = channel;
-  //   return channel;
-  // }
-
-  // getEngineStartMethod(DownloadType downloadType) {
-  //   if (downloadType == DownloadType.M3U8) {
-  //     return M3U8DownloadEngine.start;
-  //   }
-  //   return HttpDownloadEngine.start;
-  // }
-
-  // void _handleDownloadEngineMessage(message) {
-  //   if (message is DownloadProgressMessage) {
-  //     _handleDownloadProgressMessage(message);
-  //   }
-  //   if (message is ButtonAvailabilityMessage) {
-  //     _handleButtonAvailabilityMessage(message);
-  //   }
-  //   // if (message is ConnectionsClearedMessage) {
-  //   //   _handleConnectionsClearedMessage(message);
-  //   // }
-  // }
-
-  // void _handleConnectionsClearedMessage(ConnectionsClearedMessage message) {
-  //   final id = message.downloadItem.id;
-  //   downloads[id]!.downloadItem.status = DownloadStatus.paused;
-  //   downloads[id]!.status = DownloadStatus.paused;
-  //   engineIsolates[id]?.kill(priority: 0);
-  //   engineChannels.remove(id);
-  //   downloads[id]!.buttonAvailability = ButtonAvailability(false, true);
-  //   notifyAllListeners(downloads[id]!);
-  // }
-
   void _handleButtonAvailabilityMessage(ButtonAvailabilityMessage message) {
     final download = downloads[message.downloadItem.id];
     download?.buttonAvailability = ButtonAvailability(
@@ -146,49 +98,30 @@ class DownloadRequestProvider with ChangeNotifier {
       PlutoGridUtil.removeCachedRow(id);
     }
     _updateDownloadRequest(progress, dl);
-    if (progress.status == DownloadStatus.failed) {
-      _killIsolateConnection(id);
-    }
     if (progress.status == DownloadStatus.assembleComplete) {
-      if (await FFmpeg.isInstalled()) {
-        await _addSoftSubsToVideo(dl);
-        File(downloadItem.filePath).deleteSync();
-        var newFileName = basenameWithoutExtension(downloadItem.filePath);
-        newFileName += '.mkv';
-        final newPath =
-            join(File(downloadItem.filePath).parent.path, newFileName);
-        downloadItem.filePath = newPath;
-        downloadItem.fileName = newFileName;
-        dl.filePath = newPath;
-        dl.fileName = newFileName;
-        _updateDownloadRequest(progress, dl);
-        downloads[id] = progress;
-        notifyAllListeners(progress);
+      if (await FFmpeg.isInstalled() && dl.subtitles.isNotEmpty) {
+        await FFmpeg.addSoftSubsToDownloadedFile(dl);
+        _setNewMkvFilePath(dl, progress);
       }
     }
     notifyAllListeners(progress);
   }
 
-  Future<void> _addSoftSubsToVideo(DownloadItem dl) async {
-    final tempDirPath = (await getTemporaryDirectory()).path;
-    final subDirPath = join(
-      tempDirPath,
-      "${basenameWithoutExtension(dl.fileName)}_subs",
-    );
-    final subsDir = Directory(subDirPath);
-    subsDir.createSync(recursive: true);
-    List<File> subtitles = [];
-    for (final subObj in dl.subtitles) {
-      final url = subObj['url'];
-      if (url == null) continue;
-      final subName = url.substring(url.lastIndexOf("/") + 1);
-      final subFile = File(join(subDirPath, subName));
-      subFile.writeAsStringSync(subObj['content']!);
-      subtitles.add(subFile);
-    }
-    await FFmpeg.addSoftSubsToVideo(File(dl.filePath), subtitles);
-    subsDir.deleteSync(recursive: true);
+  void _setNewMkvFilePath(DownloadItem dl, DownloadProgressMessage progress) {
+    final downloadItem = progress.downloadItem;
+    File(downloadItem.filePath).deleteSync();
+    var newFileName = basenameWithoutExtension(downloadItem.filePath);
+    newFileName += '.mkv';
+    final newPath = join(File(downloadItem.filePath).parent.path, newFileName);
+    downloadItem.filePath = newPath;
+    downloadItem.fileName = newFileName;
+    dl.filePath = newPath;
+    dl.fileName = newFileName;
+    _updateDownloadRequest(progress, dl);
+    downloads[dl.key] = progress;
+    notifyAllListeners(progress);
   }
+
 
   void _handleNotification(DownloadProgressMessage progress) {
     if (progress.assembleProgress == 1 &&
@@ -218,12 +151,6 @@ class DownloadRequestProvider with ChangeNotifier {
     return DownloadProgressMessage(
       downloadItem: buildFromDownloadItem(downloadItem),
     );
-  }
-
-  void _killIsolateConnection(int id) {
-    // engineChannels[id] = null;
-    // engineIsolates[id]?.kill();
-    // engineIsolates[id] = null;
   }
 
   /// Updates the download request based on the incoming progress from handler isolate every 6 seconds

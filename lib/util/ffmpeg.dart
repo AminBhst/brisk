@@ -1,14 +1,18 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/l10n/app_localizations.dart';
+import 'package:brisk/model/download_item.dart';
 import 'package:brisk/provider/ffmpeg_installation_provider.dart';
 import 'package:brisk/util/app_logger.dart';
+import 'package:brisk/util/platform.dart';
 import 'package:brisk/util/settings_cache.dart';
 import 'package:brisk/widget/base/error_dialog.dart';
 import 'package:path/path.dart';
 import 'package:brisk/widget/base/info_dialog.dart';
 import 'package:brisk/widget/download/ffmpg_installation_progress_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class FFmpeg {
@@ -22,8 +26,14 @@ class FFmpeg {
   static const String windowsInstallationUrl =
       "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2025-05-28-14-06/ffmpeg-n7.1.1-20-g9373b442a6-win64-gpl-7.1.zip";
 
-  static final downloadedFFmpegPath =
-      '${File(Platform.resolvedExecutable).parent.path}/ffmpeg/bin/ffmpeg';
+  static Future<String> get downloadedFFmpegPath async =>
+      '${await ffmpegBaseInstallationPath}'
+      '${Platform.pathSeparator}'
+      'ffmpeg'
+      '${Platform.pathSeparator}'
+      'bin'
+      '${Platform.pathSeparator}'
+      'ffmpeg';
 
   static bool get ignoreWarning {
     return HiveUtil.instance.generalDataBox.values
@@ -36,7 +46,10 @@ class FFmpeg {
     if (Platform.isWindows || SettingsCache.ffmpegPath == 'ffmpeg') {
       return;
     }
-    final result = await Process.run('chmod', ['+x', downloadedFFmpegPath]);
+    final result = await Process.run(
+      'chmod',
+      ['+x', await downloadedFFmpegPath],
+    );
     if (result.exitCode != 0) {
       Logger.log('chmod failed: ${result.stderr}');
     }
@@ -64,6 +77,7 @@ class FFmpeg {
   }
 
   static Future<void> install(BuildContext context) async {
+    final loc = AppLocalizations.of(context)!;
     if (Platform.isMacOS) {
       showDialog(
         context: context,
@@ -71,10 +85,9 @@ class FFmpeg {
           width: 500,
           height: 140,
           textHeight: 70,
-          title: "Automatic Installation not supported",
-          description: "Automatic installation is not supported for macOS.",
-          descriptionHint:
-          "Please install FFmpeg using Homebrew or any other package manager that offers it.",
+          title: loc.ffmpeg_installationNotSupported_title,
+          description: loc.ffmpeg_installationNotSupported_description,
+          descriptionHint: loc.ffmpeg_installationNotSupported_descriptionHint,
         ),
       );
       return;
@@ -101,7 +114,7 @@ class FFmpeg {
       showDialog(
         context: context,
         builder: (context) => InfoDialog(
-          titleText: "FFmpeg was successfully installed",
+          titleText: loc.ffmpegInstalled,
           titleIcon: Icon(Icons.done),
           titleIconBackgroundColor: Colors.lightGreen,
         ),
@@ -137,5 +150,39 @@ class FFmpeg {
     final outputFileName = basenameWithoutExtension(video.path) + ".mkv";
     arguments.add('${join(video.parent.path, outputFileName)}');
     await Process.run(ffmpegPath, arguments);
+  }
+
+  static Future<void> addSoftSubsToDownloadedFile(DownloadItem dl) async {
+    final subDirPath = join(
+      await tempSubtitlesPath,
+      "${basenameWithoutExtension(dl.fileName)}_subs",
+    );
+    final subsDir = Directory(subDirPath);
+    subsDir.createSync(recursive: true);
+    List<File> subtitles = [];
+    for (final subObj in dl.subtitles) {
+      final url = subObj['url'];
+      if (url == null) continue;
+      final subName = url.substring(url.lastIndexOf("/") + 1);
+      final subFile = File(join(subDirPath, subName));
+      subFile.writeAsStringSync(subObj['content']!);
+      subtitles.add(subFile);
+    }
+    await addSoftSubsToVideo(File(dl.filePath), subtitles);
+    subsDir.deleteSync(recursive: true);
+  }
+
+  static Future<String> get ffmpegBaseInstallationPath async {
+    if (isFlatpak || isSnap) {
+      return (await getDownloadsDirectory())!.path;
+    }
+    return File(Platform.resolvedExecutable).parent.path;
+  }
+
+  static Future<String> get tempSubtitlesPath async {
+    if (isFlatpak || isSnap) {
+      return (await getDownloadsDirectory())!.path;
+    }
+    return (await getTemporaryDirectory()).path;
   }
 }

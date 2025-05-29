@@ -103,14 +103,18 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
     ApplicationTheme theme,
   ) {
     final duration = streamInf.m3u8!.totalDuration;
-    final rawName = streamInf.m3u8?.fileName
-        .substring(0, streamInf.m3u8?.fileName.lastIndexOf(".ts"));
-    if (streamInf.resolution == '1920x1080') {
-      streamInf.m3u8?.fileName = '${rawName}.1080p.ts';
-    } else if (streamInf.resolution == '1280x720') {
-      streamInf.m3u8?.fileName = '${rawName}.720p.ts';
-    } else if (streamInf.resolution == '640x360') {
-      streamInf.m3u8?.fileName = '${rawName}.640x360.ts';
+    if (streamInf.m3u8 != null && streamInf.m3u8!.fileName.contains(".ts")) {
+      final rawName = streamInf.m3u8?.fileName.substring(
+        0,
+        streamInf.m3u8?.fileName.lastIndexOf(".ts"),
+      );
+      if (streamInf.resolution == '1920x1080') {
+        streamInf.m3u8?.fileName = '${rawName}.1080p.ts';
+      } else if (streamInf.resolution == '1280x720') {
+        streamInf.m3u8?.fileName = '${rawName}.720p.ts';
+      } else {
+        streamInf.m3u8?.fileName = '${rawName}.${streamInf.resolution}.ts';
+      }
     }
     final fileName = streamInf.m3u8?.fileName ?? streamInf.fileName;
     return Padding(
