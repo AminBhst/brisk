@@ -8,7 +8,6 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/setting.dart';
-import 'package:brisk/provider/locale_provider.dart';
 import 'package:brisk/util/app_logger.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
@@ -23,7 +22,6 @@ import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:window_to_front/window_to_front.dart';
 import 'package:window_manager/window_manager.dart';
@@ -33,7 +31,7 @@ import '../widget/download/multi_download_addition_dialog.dart';
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.2.3";
+  static const String extensionVersion = "1.3.0";
   static DownloadItem? awaitingUpdateUrlItem;
 
   static void setup(BuildContext context) async {
