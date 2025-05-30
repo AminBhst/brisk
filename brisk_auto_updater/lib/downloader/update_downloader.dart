@@ -42,7 +42,6 @@ class UpdateDownloader {
     final latestTag = await getJsonResponse(
       "https://api.github.com/repos/BrisklyDev/brisk/releases/latest",
     );
-    print("god json response");
     final version = latestTag["tag_name"];
     for (final asset in latestTag["assets"]) {
       if (Platform.isWindows &&
@@ -245,7 +244,6 @@ class UpdateDownloader {
       completer.complete(json);
       return;
     }).onError((e) {
-      print(e);
       completer.completeError(e);
     });
     return completer.future;

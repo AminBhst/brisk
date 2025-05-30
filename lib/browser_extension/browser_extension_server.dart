@@ -8,10 +8,10 @@ import 'package:brisk/db/hive_util.dart';
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/model/setting.dart';
-import 'package:brisk/provider/locale_provider.dart';
 import 'package:brisk/util/app_logger.dart';
 import 'package:brisk/util/auto_updater_util.dart';
 import 'package:brisk/util/download_addition_ui_util.dart';
+import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/util/settings_cache.dart';
@@ -22,17 +22,15 @@ import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:window_to_front/window_to_front.dart';
 import 'package:window_manager/window_manager.dart';
-
-import '../widget/download/multi_download_addition_dialog.dart';
+import 'package:brisk/widget/download/multi_download_addition_dialog.dart';
 
 class BrowserExtensionServer {
   static bool _isServerRunning = false;
   static bool _cancelClicked = false;
-  static const String extensionVersion = "1.2.3";
+  static const String extensionVersion = "1.3.0";
   static DownloadItem? awaitingUpdateUrlItem;
 
   static void setup(BuildContext context) async {
@@ -149,6 +147,7 @@ class BrowserExtensionServer {
     bool canceled = false;
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => FileInfoLoader(
         onCancelPressed: () {
           canceled = true;
@@ -156,7 +155,21 @@ class BrowserExtensionServer {
         },
       ),
     );
+    final List<Map<String, String>> vttUrls = (jsonBody['vttUrls'] as List)
+        .map((item) => (item as Map).map<String, String>(
+              (key, value) => MapEntry(key.toString(), value?.toString() ?? ""),
+            ))
+        .toList();
+    final subtitles = await fetchSubtitlesIsolate(
+      vttUrls,
+      SettingsCache.proxySetting,
+    );
     final url = jsonBody["m3u8Url"] as String;
+    var suggestedName = jsonBody["suggestedName"] as String?;
+    if (FileUtil.isFileNameInvalid(suggestedName) ||
+        suggestedName != null && suggestedName.isEmpty) {
+      suggestedName = null;
+    }
     final refererHeader = jsonBody["refererHeader"] as String?;
     M3U8 m3u8;
     try {
@@ -174,6 +187,7 @@ class BrowserExtensionServer {
         url,
         proxySetting: SettingsCache.proxySetting,
         refererHeader: refererHeader,
+        suggestedFileName: suggestedName,
       ))!;
     } catch (e) {
       print(e);
@@ -197,16 +211,27 @@ class BrowserExtensionServer {
     Navigator.of(context).pop();
     handleWindowToFront();
     if (m3u8.isMasterPlaylist) {
-      _handleMasterPlaylist(m3u8, context);
+      _handleMasterPlaylist(m3u8, context, subtitles);
       return;
     }
-    DownloadAdditionUiUtil.handleM3u8Addition(m3u8, context);
+    DownloadAdditionUiUtil.handleM3u8Addition(
+      m3u8,
+      context,
+      subtitles,
+    );
   }
 
-  static void _handleMasterPlaylist(M3U8 m3u8, BuildContext context) {
+  static void _handleMasterPlaylist(
+    M3U8 m3u8,
+    BuildContext context,
+    List<Map<String, String>> subtitles,
+  ) {
     showDialog(
       context: context,
-      builder: (context) => M3u8MasterPlaylistDialog(m3u8: m3u8),
+      builder: (context) => M3u8MasterPlaylistDialog(
+        m3u8: m3u8,
+        subtitles: subtitles,
+      ),
       barrierDismissible: false,
     );
   }
@@ -352,7 +377,7 @@ class BrowserExtensionServer {
             height: 130,
             textHeight: 70,
             title: "Port ${port} is already in use by another process!",
-            text:
+            description:
                 "\nFor optimal browser integration, please change the extension port in [Settings->Extension->Port] then restart the app."
                 " Finally, set the same port number for the browser extension by clicking on its icon."));
   }

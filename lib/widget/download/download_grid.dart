@@ -234,9 +234,6 @@ class _DownloadGridState extends State<DownloadGrid> {
         : (!downloadComplete || status == DownloadStatus.paused);
     final automaticUrlUpdateEnabled = updateUrlEnabled &&
         HiveUtil.instance.downloadItemsBox.get(id)?.referer != null;
-    print(event.offset.dx);
-    print("Size width ${size.width}");
-
     showMenu(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5),

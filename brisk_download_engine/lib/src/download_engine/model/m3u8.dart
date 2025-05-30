@@ -15,13 +15,7 @@ class M3U8 {
   final int totalDuration;
   String stringContent;
   String? refererHeader;
-
-  String get fileName {
-    if (url.contains("/")) {
-      return url.substring(url.lastIndexOf('/') + 1);
-    }
-    return url;
-  }
+  String fileName;
 
   M3U8({
     required this.url,
@@ -31,6 +25,7 @@ class M3U8 {
     required this.streamInfos,
     required this.totalDuration,
     required this.stringContent,
+    required this.fileName,
     this.refererHeader,
   });
 
@@ -41,6 +36,7 @@ class M3U8 {
     ProxySetting? proxySetting,
     bool isSubPlaylist = false,
     String? refererHeader,
+    String? suggestedFileName,
   }) async {
     final client = HttpClientBuilder.buildClient(proxySetting);
     try {
@@ -54,7 +50,12 @@ class M3U8 {
       final response = await client.get(Uri.parse(url), headers: headers);
       if (response.statusCode == 200) {
         final body = response.body;
-        return await M3U8.fromString(body, url, isSubPlaylist: isSubPlaylist)
+        return await M3U8.fromString(
+            body,
+            url,
+            isSubPlaylist: isSubPlaylist,
+            suggestedFileName: suggestedFileName,
+          )
           ?..refererHeader = refererHeader;
       } else {
         print("Failed to fetch m3u8... status code ${response.statusCode}");
@@ -73,6 +74,7 @@ class M3U8 {
     bool fetchKeys = true,
     bool isSubPlaylist = false,
     String? refererHeader,
+    String? suggestedFileName,
   }) async {
     final lines = content.split("\n");
     StringBuffer modifierStringContent = StringBuffer("");
@@ -142,7 +144,7 @@ class M3U8 {
         segments[currSegmentNum] =
             (segments[currSegmentNum] ?? M3U8Segment())..url = line;
       } else if (!line.startsWith("http") &&
-          isSubPlaylist &&
+          (isSubPlaylist || line.endsWith(".ts")) &&
           FileUtil.isFileName(line)) {
         final completeUrl =
             "${url.substring(0, url.lastIndexOf("/"))}/${line.trim()}";
@@ -166,6 +168,9 @@ class M3U8 {
       totalDuration: totalDuration,
       stringContent: content,
       url: url,
+      fileName:
+          suggestedFileName ??
+          (url.contains('/') ? url.substring(url.lastIndexOf('/') + 1) : url),
     );
     if (m3u8.isMasterPlaylist) {
       for (var streamInf in m3u8.streamInfos) {
@@ -178,6 +183,7 @@ class M3U8 {
             isSubPlaylist: true,
             proxySetting: proxySetting,
             refererHeader: refererHeader,
+            suggestedFileName: suggestedFileName
           );
         }
       }

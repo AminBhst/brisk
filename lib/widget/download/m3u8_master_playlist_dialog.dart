@@ -17,10 +17,12 @@ import 'package:provider/provider.dart';
 class M3u8MasterPlaylistDialog extends StatelessWidget {
   final M3U8 m3u8;
   late AppLocalizations loc;
+  List<Map<String, String>> subtitles;
 
   M3u8MasterPlaylistDialog({
     super.key,
     required this.m3u8,
+    required this.subtitles,
   });
 
   @override
@@ -101,6 +103,20 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
     ApplicationTheme theme,
   ) {
     final duration = streamInf.m3u8!.totalDuration;
+    if (streamInf.m3u8 != null && streamInf.m3u8!.fileName.contains(".ts")) {
+      final rawName = streamInf.m3u8?.fileName.substring(
+        0,
+        streamInf.m3u8?.fileName.lastIndexOf(".ts"),
+      );
+      if (streamInf.resolution == '1920x1080') {
+        streamInf.m3u8?.fileName = '${rawName}.1080p.ts';
+      } else if (streamInf.resolution == '1280x720') {
+        streamInf.m3u8?.fileName = '${rawName}.720p.ts';
+      } else {
+        streamInf.m3u8?.fileName = '${rawName}.${streamInf.resolution}.ts';
+      }
+    }
+    final fileName = streamInf.m3u8?.fileName ?? streamInf.fileName;
     return Padding(
       padding: EdgeInsets.only(top: 10),
       child: Container(
@@ -138,7 +154,7 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
                       SizedBox(
                         width: 250,
                         child: Text(
-                          streamInf.fileName,
+                          fileName,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(color: Colors.white),
                         ),
@@ -146,7 +162,7 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
                       SizedBox(height: 5),
                       DefaultTooltip(
                         message: ""
-                            "Title: ${streamInf.fileName}"
+                            "Title: ${fileName}"
                             "\nResolution: ${streamInf.resolution}"
                             "\nFramerate: ${streamInf.frameRate}"
                             "\nDuration: ${durationSecondsToReadableStr(duration)}",
@@ -236,6 +252,10 @@ class M3u8MasterPlaylistDialog extends StatelessWidget {
       return;
     }
     Navigator.of(context).pop();
-    DownloadAdditionUiUtil.handleM3u8Addition(streamInf.m3u8!, context);
+    DownloadAdditionUiUtil.handleM3u8Addition(
+      streamInf.m3u8!,
+      context,
+      subtitles,
+    );
   }
 }

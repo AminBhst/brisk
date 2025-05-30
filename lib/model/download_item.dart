@@ -51,6 +51,9 @@ class DownloadItem extends HiveObject {
   @HiveField(14)
   String? referer;
 
+  @HiveField(15, defaultValue: [])
+  List<Map<String, String>> subtitles;
+
   DownloadItem({
     required this.uid,
     required this.fileName,
@@ -65,6 +68,7 @@ class DownloadItem extends HiveObject {
     this.status = "In Queue",
     this.extraInfo = const {},
     this.downloadType = "HTTP",
+    this.subtitles = const [],
   });
 
   void setM3u8Content(String m3u8Content) {

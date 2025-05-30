@@ -110,6 +110,23 @@ Future<FileInfo?> requestFileInfo(
   });
 }
 
+Future<String> fetchStringContent(
+  String url, {
+  ProxySetting? proxySetting,
+  Map<String, String>? headers,
+}) async {
+  final client = HttpClientBuilder.buildClient(proxySetting);
+  final request = http.Request('GET', Uri.parse(url));
+  request.headers.addAll(userAgentHeader);
+  request.headers.addAll(headers ?? {});
+  final response = await client.get(Uri.parse(url), headers: headers);
+  if (response.statusCode == 200) {
+    return response.body;
+  } else {
+    throw Exception('Failed to fetch m3u8!');
+  }
+}
+
 /// Sends a HEAD request to the url given in the [downloadItem] object.
 /// Determines pause/resume functionality support by the server,
 /// total file size and the content-type of the request.

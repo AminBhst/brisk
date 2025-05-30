@@ -76,9 +76,9 @@ class DownloadEngine {
     required Function(ButtonAvailabilityMessage) onButtonAvailability,
     required Function(DownloadProgressMessage) onDownloadProgress,
   }) async {
-    if (checkDownloadCompletion(downloadItem)) {
-      return;
-    }
+    // if (checkDownloadCompletion(downloadItem)) {
+    //   return;
+    // }
     if (engineChannels[downloadItem.uid] != null) {
       resume(downloadItem.uid);
       return;

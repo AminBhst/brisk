@@ -12,6 +12,8 @@ class MigrationManager {
     Migration(2, "Add i10n"),
     Migration(3, "Add custom hotkey"),
     Migration(4, "Add github star checker"),
+    Migration(5, "Add FFmpeg path"),
+    Migration(6, "Add FFmpeg warning ignore"),
   ];
 
   static runMigrations() async {
@@ -41,6 +43,12 @@ class MigrationManager {
         break;
       case 4:
         await runMigrationV4();
+        break;
+      case 5:
+        await runMigrationV5();
+        break;
+      case 6:
+        await runMigrationV6();
         break;
       default:
         break;
@@ -151,5 +159,23 @@ class MigrationManager {
       value: false,
     );
     await HiveUtil.instance.generalDataBox.add(githubStarNeverShowAgain);
+  }
+
+  static runMigrationV5() async {
+    final ffmpegPath = Setting(
+      name: SettingOptions.ffmpegPath.name,
+      value: SettingsCache.defaultSettings[SettingOptions.ffmpegPath.name]![1],
+      settingType:
+          SettingsCache.defaultSettings[SettingOptions.ffmpegPath.name]![0],
+    );
+    await HiveUtil.instance.settingBox.add(ffmpegPath);
+  }
+
+  static Future<void> runMigrationV6() async {
+    final ffmpegWarningIgnore = GeneralData(
+      fieldName: "ffmpegWarningIgnore",
+      value: false,
+    );
+    await HiveUtil.instance.generalDataBox.add(ffmpegWarningIgnore);
   }
 }

@@ -220,6 +220,12 @@ abstract class AppLocalizations {
   /// **'Duration'**
   String get duration;
 
+  /// No description provided for @subtitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitles'**
+  String get subtitles;
+
   /// No description provided for @progress.
   ///
   /// In en, this message translates to:
@@ -607,7 +613,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_behavior_launchAtStartup.
   ///
   /// In en, this message translates to:
-  /// **'Launch At Startup'**
+  /// **'Launch at startup'**
   String get settings_behavior_launchAtStartup;
 
   /// No description provided for @settings_behavior_showProgressOnNewDownload.
@@ -1485,6 +1491,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exit App'**
   String get tray_exitApp;
+
+  /// No description provided for @settings_ffmpegPath.
+  ///
+  /// In en, this message translates to:
+  /// **'FFmpeg Path'**
+  String get settings_ffmpegPath;
+
+  /// No description provided for @settings_testFFmpeg.
+  ///
+  /// In en, this message translates to:
+  /// **'Test FFmpeg'**
+  String get settings_testFFmpeg;
+
+  /// No description provided for @settings_ffmpeg_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'FFmpeg path should point to a directory that contains the ffmpeg binary (ffmpeg.exe on windows)\nIf ffmpeg is available in the system path, setting the value as \'ffmpeg\' is enough.'**
+  String get settings_ffmpeg_tooltip;
+
+  /// No description provided for @settings_ffmpeg_installAutomatically.
+  ///
+  /// In en, this message translates to:
+  /// **'Install FFmpeg Automatically'**
+  String get settings_ffmpeg_installAutomatically;
+
+  /// No description provided for @ffmpeg_alreadyInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'FFmpeg is already installed'**
+  String get ffmpeg_alreadyInstalled;
+
+  /// No description provided for @ffmpeg_notFound_title.
+  ///
+  /// In en, this message translates to:
+  /// **'FFmpeg Not Found!'**
+  String get ffmpeg_notFound_title;
+
+  /// No description provided for @ffmpeg_notFound_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitles were found for this video stream, however, FFmpeg was not found on your system.\nFFmpeg is required to add the detected subtitles to the video file.\n'**
+  String get ffmpeg_notFound_description;
+
+  /// No description provided for @ffmpeg_notFound_descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can:\n\t• Let Brisk handle the installation for you\n\t• Install FFmpeg via a package manager (choco, brew, pacman, etc.)\n\t• Download the binaries and add FFmpeg to your system’s PATH.\n\nYou can always set the FFmpeg\'s path in Settings -> General -> FFmpeg'**
+  String get ffmpeg_notFound_descriptionHint;
+
+  /// No description provided for @ffmpeg_integrationSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'FFmpeg integrated successfully'**
+  String get ffmpeg_integrationSuccess;
+
+  /// No description provided for @ffmpeg_testFailed_title.
+  ///
+  /// In en, this message translates to:
+  /// **'FFmpeg Test Failed!'**
+  String get ffmpeg_testFailed_title;
+
+  /// No description provided for @ffmpeg_testFailed_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to run FFmpeg commands!'**
+  String get ffmpeg_testFailed_description;
+
+  /// No description provided for @ffmpeg_testFailed_descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure the selected path contains the FFmpeg binary (usually the bin directory)'**
+  String get ffmpeg_testFailed_descriptionHint;
+
+  /// No description provided for @ffmpegInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'FFmpeg was successfully installed'**
+  String get ffmpegInstalled;
+
+  /// No description provided for @ffmpeg_installationNotSupported_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic Installation not supported'**
+  String get ffmpeg_installationNotSupported_title;
+
+  /// No description provided for @ffmpeg_installationNotSupported_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic installation is not supported for macOS.'**
+  String get ffmpeg_installationNotSupported_description;
+
+  /// No description provided for @ffmpeg_installationNotSupported_descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please install FFmpeg using Homebrew or any other package manager that offers it.'**
+  String get ffmpeg_installationNotSupported_descriptionHint;
+
+  /// No description provided for @btn_installLater.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ll Install Later'**
+  String get btn_installLater;
+
+  /// No description provided for @btn_installAutomatically.
+  ///
+  /// In en, this message translates to:
+  /// **'Install Automatically'**
+  String get btn_installAutomatically;
 }
 
 class _AppLocalizationsDelegate

@@ -176,7 +176,25 @@ class _DownloadInfoDialogState extends State<DownloadInfoDialog>
                                     fontSize: 13,
                                     color: Colors.white60,
                                   ),
-                                )
+                                ),
+                                const SizedBox(width: 10),
+                                Visibility(
+                                  visible: widget.isM3u8,
+                                  child: DefaultTooltip(
+                                    message: widget.downloadItem.subtitles
+                                        .map((map) => map['url'])
+                                        .map((e) => e
+                                            ?.substring(e.lastIndexOf('/') + 1))
+                                        .join('\n'),
+                                    child: Text(
+                                      "${loc.subtitles}: ${widget.downloadItem.subtitles.length}",
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.white60,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ],

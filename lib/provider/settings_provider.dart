@@ -3,10 +3,17 @@ import 'package:flutter/material.dart';
 import '../util/settings_cache.dart';
 
 class SettingsProvider with ChangeNotifier {
+  static final SettingsProvider instance = SettingsProvider._internal();
+
+  SettingsProvider._internal();
+
+  factory SettingsProvider() => instance;
+
   final PageController settingsPageController = PageController(initialPage: 0);
   int? selectedTabId = 0;
   String? tempPath = SettingsCache.temporaryDir.path;
   String? savePath = SettingsCache.saveDir.path;
+  String? ffmpegPath = SettingsCache.ffmpegPath;
 
   void setSavePath(String path) {
     savePath = path;

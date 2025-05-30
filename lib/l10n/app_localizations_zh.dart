@@ -66,6 +66,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get duration => '时长';
 
   @override
+  String get subtitles => 'Subtitles';
+
+  @override
   String get progress => '进度';
 
   @override
@@ -723,4 +726,66 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tray_exitApp => '退出';
+
+  @override
+  String get settings_ffmpegPath => 'FFmpeg Path';
+
+  @override
+  String get settings_testFFmpeg => 'Test FFmpeg';
+
+  @override
+  String get settings_ffmpeg_tooltip =>
+      'FFmpeg path should point to a directory that contains the ffmpeg binary (ffmpeg.exe on windows)\nIf ffmpeg is available in the system path, setting the value as \'ffmpeg\' is enough.';
+
+  @override
+  String get settings_ffmpeg_installAutomatically =>
+      'Install FFmpeg Automatically';
+
+  @override
+  String get ffmpeg_alreadyInstalled => 'FFmpeg is already installed';
+
+  @override
+  String get ffmpeg_notFound_title => 'FFmpeg Not Found!';
+
+  @override
+  String get ffmpeg_notFound_description =>
+      'Subtitles were found for this video stream, however, FFmpeg was not found on your system.\nFFmpeg is required to add the detected subtitles to the video file.\n';
+
+  @override
+  String get ffmpeg_notFound_descriptionHint =>
+      'You can:\n\t• Let Brisk handle the installation for you\n\t• Install FFmpeg via a package manager (choco, brew, pacman, etc.)\n\t• Download the binaries and add FFmpeg to your system’s PATH.\n\nYou can always set the FFmpeg\'s path in Settings -> General -> FFmpeg';
+
+  @override
+  String get ffmpeg_integrationSuccess => 'FFmpeg integrated successfully';
+
+  @override
+  String get ffmpeg_testFailed_title => 'FFmpeg Test Failed!';
+
+  @override
+  String get ffmpeg_testFailed_description => 'Failed to run FFmpeg commands!';
+
+  @override
+  String get ffmpeg_testFailed_descriptionHint =>
+      'Make sure the selected path contains the FFmpeg binary (usually the bin directory)';
+
+  @override
+  String get ffmpegInstalled => 'FFmpeg was successfully installed';
+
+  @override
+  String get ffmpeg_installationNotSupported_title =>
+      'Automatic Installation not supported';
+
+  @override
+  String get ffmpeg_installationNotSupported_description =>
+      'Automatic installation is not supported for macOS.';
+
+  @override
+  String get ffmpeg_installationNotSupported_descriptionHint =>
+      'Please install FFmpeg using Homebrew or any other package manager that offers it.';
+
+  @override
+  String get btn_installLater => 'I\'ll Install Later';
+
+  @override
+  String get btn_installAutomatically => 'Install Automatically';
 }

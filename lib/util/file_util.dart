@@ -235,8 +235,8 @@ class FileUtil {
     return segments.any(isFileNameInvalid);
   }
 
-  static bool isFileNameInvalid(String name) {
-    if (name.trim().isEmpty) return true;
+  static bool isFileNameInvalid(String? name) {
+    if (name == null || name.trim().isEmpty) return true;
     final invalidChars = RegExp(r'[<>:"/\\|?*\x00-\x1F]');
     if (invalidChars.hasMatch(name)) return true;
     if (name.endsWith(' ') || name.endsWith('.')) return true;
