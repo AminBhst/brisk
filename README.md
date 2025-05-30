@@ -141,12 +141,9 @@ TDbP6HDUTtSzP1zRagEt27o5QYjB2oTFwE
 ## :heart: Credits and Contributors
 Contributions are welcome and appreciated.
 
-#### :trophy: Special thanks to all contributors:
-- [AliML111](https://github.com/AliML111)
-- [Zorin FOSS](https://github.com/ZorinFoss)
-- [Norman Wang](https://github.com/Norman-w)
-- [bovirus](https://github.com/bovirus)
-- [mikropsoft](https://github.com/mikropsoft)
+<a href="https://github.com/BrisklyDev/Brisk/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=BrisklyDev/Brisk" />
+</a>
 
 
 ## :busts_in_silhouette: Community
