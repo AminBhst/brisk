@@ -136,7 +136,7 @@ Future<String> getLatestVersionChangeLog({
   final changeLog = utf8.decode(response.bodyBytes);
   if (removeChangeLogHeader) {
     final lines = changeLog.split('\n');
-    if (lines.isNotEmpty && lines.first.contains("Change Log")) {
+    if (lines.isNotEmpty && lines.first.contains("Changelog")) {
       lines.removeAt(0);
     }
     return lines.join('\n');
