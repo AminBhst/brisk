@@ -1,5 +1,6 @@
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/provider/theme_provider.dart';
+import 'package:brisk/widget/browser_extension/get_browser_extension_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,18 +25,19 @@ class WebExtensionSettingsDownloadGroup extends StatelessWidget {
               width: textWidth,
               child: Text(
                 loc.settings_downloadBrowserExtension_installExtension,
-                style: TextStyle(color: theme.titleTextColor),
+                style: TextStyle(color: theme.titleTextColor, fontSize: 14),
               ),
             ),
             const Spacer(),
             IconButton(
-              onPressed: () => launchUrl(
-                Uri.parse(
-                    'https://github.com/AminBhst/brisk-browser-extension'),
+              onPressed: () => showDialog(
+                context: context,
+                builder: (context) => GetBrowserExtensionDialog(),
               ),
               icon: Icon(
-                Icons.launch,
-                color: theme.widgetColor.launchIconColor,
+                Icons.install_desktop_rounded,
+                color: Colors.white70,
+                size: 28,
               ),
             )
           ],

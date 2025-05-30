@@ -38,6 +38,7 @@ class ExternalLinkSetting extends StatelessWidget {
                 style: TextStyle(
                   overflow: TextOverflow.clip,
                   color: theme.titleTextColor,
+                  fontSize: 14,
                 ),
               ),
             ),

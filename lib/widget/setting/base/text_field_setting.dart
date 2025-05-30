@@ -42,7 +42,10 @@ class TextFieldSetting extends StatelessWidget {
           width: textWidth,
           child: Text(
             text,
-            style: TextStyle(color: theme.titleTextColor),
+            style: TextStyle(
+              color: theme.titleTextColor,
+              fontSize: 14,
+            ),
           ),
         ),
         const Spacer(),

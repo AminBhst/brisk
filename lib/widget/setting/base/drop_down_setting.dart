@@ -33,7 +33,10 @@ class DropDownSetting extends StatelessWidget {
           width: textWidth ?? resolveTextWidth(size),
           child: Text(
             text,
-            style: TextStyle(color: theme.titleTextColor),
+            style: TextStyle(
+              color: theme.titleTextColor,
+              fontSize: 14,
+            ),
           ),
         ),
         const Spacer(),

@@ -90,7 +90,7 @@ class _DownloadHotkeySettingsGroupState
         Center(
           child: Text(
             '* ${loc.changesRequireRestart}',
-            style: TextStyle(color: Colors.white70),
+            style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
         )
       ],

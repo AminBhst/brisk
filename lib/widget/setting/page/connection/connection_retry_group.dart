@@ -17,10 +17,8 @@ class ConnectionRetryGroup extends StatefulWidget {
 class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context)
-        .activeTheme
-        .settingTheme
-        .pageTheme;
+    final theme =
+        Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
     final size = MediaQuery.of(context).size;
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
@@ -35,7 +33,7 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
           textWidth: size.width * 0.6 * 0.32,
           icon: Text(
             "-1 = ${loc.infinite}",
-            style: TextStyle(color: theme.titleTextColor),
+            style: TextStyle(color: theme.titleTextColor, fontSize: 14),
           ),
           text: loc.settings_connectionRetry_maxConnectionRetryCount,
           keyboardType: const TextInputType.numberWithOptions(
@@ -56,7 +54,7 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
           text: loc.settings_connectionRetry_connectionRetryTimeout,
           icon: Text(
             loc.seconds,
-            style: TextStyle(color: theme.titleTextColor),
+            style: TextStyle(color: theme.titleTextColor, fontSize: 14),
           ),
           txtController: TextEditingController(
               text: SettingsCache.connectionRetryTimeout.toString()),
