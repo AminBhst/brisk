@@ -190,7 +190,9 @@ class BrowserExtensionServer {
         suggestedFileName: suggestedName,
       ))!;
     } catch (e) {
-      print(e);
+      if (canceled) {
+        return;
+      }
       Navigator.of(context).pop();
       showDialog(
         context: context,
