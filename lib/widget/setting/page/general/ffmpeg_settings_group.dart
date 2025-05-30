@@ -29,7 +29,6 @@ class _FFmpegSettingsGroupState extends State<FFmpegSettingsGroup> {
     final provider = Provider.of<SettingsProvider>(context);
     loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 250,
       title: "FFmpeg",
       children: [
         TextFieldSetting(

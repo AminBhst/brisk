@@ -24,7 +24,6 @@ class _ConnectionRetryGroupState extends State<ConnectionRetryGroup> {
     final size = MediaQuery.of(context).size;
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 200,
       title: loc.settings_connectionRetry,
       children: [
         TextFieldSetting(

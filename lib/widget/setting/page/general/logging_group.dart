@@ -16,7 +16,6 @@ class _LoggingGroupState extends State<LoggingGroup> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 150,
       title: loc.settings_logging,
       children: [
         SwitchSetting(

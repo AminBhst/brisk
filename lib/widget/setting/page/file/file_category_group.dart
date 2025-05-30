@@ -14,7 +14,6 @@ class FileCategoryGroup extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 380,
       title: loc.settings_fileCategory,
       children: [
         TextFieldSetting(

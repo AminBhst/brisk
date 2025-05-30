@@ -32,7 +32,6 @@ class _ProxyGroupState extends State<ProxyGroup> {
     final size = MediaQuery.of(context).size;
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 350,
       title: loc.settings_proxy,
       children: [
         SwitchSetting(

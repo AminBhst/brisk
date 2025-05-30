@@ -20,7 +20,6 @@ class BugReportPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SettingsGroup(
-            height: 180,
             title: loc.settings_howToBugReport,
             children: [
               SizedBox(

@@ -16,7 +16,6 @@ class WebExtensionSettingsDownloadGroup extends StatelessWidget {
         Provider.of<ThemeProvider>(context).activeTheme.settingTheme.pageTheme;
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 130,
       title: loc.settings_downloadBrowserExtension,
       children: [
         Row(

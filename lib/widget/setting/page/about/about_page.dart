@@ -31,7 +31,7 @@ class _AboutPageState extends State<AboutPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SettingsGroup(title: loc.settings_info, height: 100, children: [
+          SettingsGroup(title: loc.settings_info, children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,8 +50,8 @@ class _AboutPageState extends State<AboutPage> {
               ],
             )
           ]),
+          const SizedBox(height: 15),
           SettingsGroup(
-            height: 450,
             title: loc.settings_developer,
             children: [
               Row(

@@ -17,7 +17,6 @@ class BrowserExtensionRulesGroup extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 130,
       title: loc.settings_rules,
       children: [
         ExternalLinkSetting(

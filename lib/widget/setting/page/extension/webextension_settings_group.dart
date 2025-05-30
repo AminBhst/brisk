@@ -1,10 +1,9 @@
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/widget/setting/base/switch_setting.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../util/settings_cache.dart';
-import '../../base/settings_group.dart';
-import '../../base/text_field_setting.dart';
+import 'package:brisk/util/settings_cache.dart';
+import 'package:brisk/widget/setting/base/settings_group.dart';
+import 'package:brisk/widget/setting/base/text_field_setting.dart';
 
 class PortSettingsGroup extends StatefulWidget {
   const PortSettingsGroup({super.key});
@@ -19,7 +18,6 @@ class _WebExtensionSettingsGroupState extends State<PortSettingsGroup> {
     final loc = AppLocalizations.of(context)!;
     final size = MediaQuery.of(context).size;
     return SettingsGroup(
-      height: 175,
       title: loc.settings_browserExtension,
       children: [
         TextFieldSetting(
@@ -39,6 +37,12 @@ class _WebExtensionSettingsGroupState extends State<PortSettingsGroup> {
           onChanged: (val) =>
               setState(() => SettingsCache.enableWindowToFront = val),
         ),
+        Center(
+          child: Text(
+            '* ${loc.changesRequireRestart}',
+            style: TextStyle(color: Colors.white70),
+          ),
+        )
       ],
     );
   }

@@ -19,7 +19,6 @@ class _ConnectionNumberGroupState extends State<ConnectionNumberGroup> {
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
       title: loc.settings_downloadConnections,
-      height: 170,
       children: [
         DropDownSetting(
           onChanged: (value) {

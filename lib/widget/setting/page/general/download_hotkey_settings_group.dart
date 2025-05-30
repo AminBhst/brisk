@@ -22,7 +22,6 @@ class _DownloadHotkeySettingsGroupState
     final size = MediaQuery.of(context).size;
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 310,
       title: loc.addUrlFromClipboardHotkey,
       children: [
         DropDownSetting(
@@ -91,7 +90,7 @@ class _DownloadHotkeySettingsGroupState
         Center(
           child: Text(
             '* ${loc.changesRequireRestart}',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white70),
           ),
         )
       ],

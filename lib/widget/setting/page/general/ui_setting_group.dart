@@ -19,7 +19,6 @@ class _UISettingGroupState extends State<UISettingGroup> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 190,
       title: loc.settings_userInterface,
       children: [
         DropDownSetting(

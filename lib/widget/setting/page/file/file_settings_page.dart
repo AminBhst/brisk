@@ -16,7 +16,9 @@ class FileSettingsPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
           PathSettingsGroup(),
+          const SizedBox(height: 15),
           FileRulesGroup(),
+          const SizedBox(height: 15),
           FileCategoryGroup(),
         ],
       ),

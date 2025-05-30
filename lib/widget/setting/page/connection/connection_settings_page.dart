@@ -14,7 +14,9 @@ class ConnectionSettingsPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
           ConnectionRetryGroup(),
+          const SizedBox(height: 15),
           ProxyGroup(),
+          const SizedBox(height: 15),
           ConnectionNumberGroup(),
         ],
       ),

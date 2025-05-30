@@ -18,7 +18,6 @@ class _NotificationSettingsGroupState extends State<NotificationSettingsGroup> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     return SettingsGroup(
-      height: 170,
       title: loc.settings_notification,
       children: [
         SwitchSetting(
