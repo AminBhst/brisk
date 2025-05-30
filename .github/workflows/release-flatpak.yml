@@ -19,7 +19,7 @@ jobs:
           $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "^\s*version:\s*(\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
           echo version=$VERSION >> $env:GITHUB_OUTPUT
 
-  Build-package:
+  Release-flatpak:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -86,9 +86,8 @@ jobs:
         env:
           PAGES_REPO_PAT: ${{ secrets.REPO_PAT }}
         run: |
-          git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/AminBhst/flathub-test.git
-          cd flathub-test
-          echo "HERE IS:::::::::::::"
+          git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/flathub/io.github.BrisklyDev.Brisk.git
+          cd io.github.BrisklyDev.Brisk
           pwd
           git checkout -B release-${{ needs.version.outputs.version }}
           find . -maxdepth 1 -type f -exec rm -rf {} +
@@ -101,3 +100,15 @@ jobs:
           git push origin release-${{ needs.version.outputs.version }}
 
 
+      - name: Install GitHub CLI
+        run: sudo apt install -y gh
+
+      - name: Create Pull Request with gh CLI
+        env:
+          GH_TOKEN: ${{ secrets.REPO_PAT }}
+        run: |
+          gh pr create --repo flathub/io.github.BrisklyDev.Brisk \
+            --title "Release v${{ needs.version.outputs.version }}" \
+            --body "Automated release PR for version v${{ needs.version.outputs.version }}" \
+            --head "release-${{ needs.version.outputs.version }}" \
+            --base master

@@ -20,7 +20,7 @@ jobs:
           $VERSION = Select-String  -Path ".\pubspec.yaml" -Pattern "^\s*version:\s*(\d+\.\d+\.\d+)" -CaseSensitive | ForEach-Object{ $_.Matches.Groups[1].Value }
           echo version=$VERSION >> $env:GITHUB_OUTPUT
 
-  Build-windows:
+  Build-Windows:
     runs-on: windows-latest
     permissions:
       contents: read
@@ -179,7 +179,7 @@ jobs:
           path: ./Brisk-v${{ needs.version.outputs.version }}-linux-x86_64.*
           retention-days: 1
 
-  Build-macos:
+  Build-macOS:
     runs-on: macos-latest
     permissions:
       contents: read
@@ -290,7 +290,7 @@ jobs:
 
   Release-Binaries:
     runs-on: ubuntu-22.04
-    needs: [Build-Linux, Build-windows, Build-macos, Build-Snap, version]
+    needs: [Build-Linux, Build-Windows, Build-macOS, Build-Snap, version]
     permissions:
       contents: write
     steps:
@@ -333,7 +333,7 @@ jobs:
 
   Release-Snap:
     runs-on: ubuntu-22.04
-    needs: [Build-Linux, Build-windows, Build-macos, Build-Snap, version]
+    needs: [Build-Linux, Build-Windows, Build-macOS, Build-Snap, version]
     permissions:
       contents: write
     steps:
@@ -356,7 +356,7 @@ jobs:
 
 
   Release-AUR:
-    needs: [Build-Linux, Build-windows, Build-macos, Build-Snap, version]
+    needs: [Build-Linux, Build-Windows, Build-macOS, Build-Snap, version]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main repo
@@ -450,3 +450,98 @@ jobs:
           git add PKGBUILD .SRCINFO
           git commit -m "Update pkgver to ${{ needs.version.outputs.version }}"
           git push origin master
+
+
+  Release-flatpak:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: [Release-Binaries]
+    steps:
+
+      - name: Checkout the code
+        uses: actions/checkout@v4.1.5
+        with:
+          fetch-depth: 0
+
+
+      - name: Get commit of tag
+        id: get_commit
+        run: |
+          TAG_NAME="v${{ needs.version.outputs.version }}"
+          COMMIT_HASH=$(git rev-list -n 1 "$TAG_NAME")
+          echo "Commit for $TAG_NAME is $COMMIT_HASH"
+          echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
+
+      - name: Clone flatpak-flutter
+        run: |
+          git clone https://github.com/TheAppgineer/flatpak-flutter.git
+          mkdir flatpak-flutter/brisk
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.3'
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Update flatpak-flutter.yml
+        run: |
+          pip install pyyaml
+          ./linux/packaging/flatpak/update-flatpak-flutter.py linux/packaging/flatpak/flatpak-flutter.yml --tag v${{ needs.version.outputs.version }} --commit ${{ steps.get_commit.outputs.commit_hash }}
+          cat linux/packaging/flatpak/flatpak-flutter.yml
+
+      - name: Install dependencies
+        run: pip install aiohttp pyyaml toml
+
+      - name: Install flatpak
+        run: |
+          sudo apt update
+          sudo apt install -y flatpak
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak remote-ls flathub > /dev/null
+          flatpak install -y --user flathub org.flatpak.Builder
+
+      - name: Run flatpak-flutter
+        run: |
+          cp linux/packaging/flatpak/flatpak-flutter.yml flatpak-flutter/brisk/
+          cd flatpak-flutter/brisk/
+          ../flatpak-flutter.py flatpak-flutter.yml
+          ls -la
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Push update to flathub release branch
+        env:
+          PAGES_REPO_PAT: ${{ secrets.REPO_PAT }}
+        run: |
+          git clone https://x-access-token:${PAGES_REPO_PAT}@github.com/flathub/io.github.BrisklyDev.Brisk.git
+          cd io.github.BrisklyDev.Brisk
+          pwd
+          git checkout -B release-${{ needs.version.outputs.version }}
+          find . -maxdepth 1 -type f -exec rm -rf {} +
+          ls -ltrh ../flatpak-flutter/brisk/*
+          cat ../flatpak-flutter/brisk/flatpak-flutter.yml
+          find ../flatpak-flutter/brisk -maxdepth 1 -type f -exec cp {} . \;
+          ls -la
+          git add .
+          git commit -m "Release"
+          git push origin release-${{ needs.version.outputs.version }}
+
+
+      - name: Install GitHub CLI
+        run: sudo apt install -y gh
+
+      - name: Create Pull Request with gh CLI
+        env:
+          GH_TOKEN: ${{ secrets.REPO_PAT }}
+        run: |
+          gh pr create --repo flathub/io.github.BrisklyDev.Brisk \
+            --title "Release v${{ needs.version.outputs.version }}" \
+            --body "Automated release PR for version v${{ needs.version.outputs.version }}" \
+            --head "release-${{ needs.version.outputs.version }}" \
+            --base master
