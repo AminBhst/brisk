@@ -33,8 +33,13 @@
   <url type="bugtracker">https://github.com/BrisklyDev/brisk/issues</url>
 
   <screenshots>
-    <screenshot type="default">
-      <image>https://raw.githubusercontent.com/BrisklyDev/brisk/refs/heads/main/assets/brisk-header.png</image>
+    <screenshot type="default" xml:lang="en">
+      <caption>Main Screen</caption>
+      <image>https://raw.githubusercontent.com/BrisklyDev/brisk/refs/heads/main/images/mainscreen.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Downloading Screen</caption>
+      <image>https://raw.githubusercontent.com/BrisklyDev/brisk/refs/heads/main/images/downloading-screen.png</image>
     </screenshot>
   </screenshots>
 
