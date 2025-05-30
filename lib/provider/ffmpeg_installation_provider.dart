@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:archive/archive.dart';
-import 'package:brisk/provider/settings_provider.dart';
 import 'package:brisk/util/download_engine_util.dart';
 import 'package:brisk/util/http_util.dart';
 import 'package:brisk/util/platform.dart';
@@ -10,7 +9,6 @@ import 'package:path/path.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/util/ffmpeg.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
-import 'package:provider/provider.dart';
 
 Future<void> extractFFmpegArchiveIsolate(
   String filePath,
@@ -53,11 +51,10 @@ class FFmpegInstallationProvider with ChangeNotifier {
 
   void start({Function? onComplete}) async {
     final downloadItem = DownloadItem.fromUrl(await installationUrl);
-    Directory ffmpegDir = Directory(
-      join(File(Platform.resolvedExecutable).parent.path, "ffmpeg"),
-    );
+    final baseInstallationPath = await FFmpeg.ffmpegBaseInstallationPath;
+    Directory ffmpegDir = Directory(join(baseInstallationPath, "ffmpeg"));
     downloadItem.filePath = join(
-      File(Platform.resolvedExecutable).parent.path,
+      baseInstallationPath,
       Platform.isWindows ? "ffmpeg.zip" : "ffmpeg.tar.xz",
     );
     if (File(downloadItem.filePath).existsSync()) {
