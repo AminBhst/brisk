@@ -6,6 +6,11 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
 
+  <branding>
+    <color type="primary" scheme_preference="light">#2d65b7</color>
+    <color type="primary" scheme_preference="dark">#171717</color>
+  </branding>
+
   <description>
     <p>
       Brisk is a high-speed desktop download manager designed for efficiency and integration with the browser
@@ -17,6 +22,7 @@
       <li>Powerful, Custom-Built Download Engine</li>
       <li>Browser Integration</li>
       <li>Downloading video streams from the browser</li>
+      <li>Soft-subbing video files downloaded from streaming websites</li>
       <li>Download Queues and Scheduling</li>
       <li>Advanced rules to automatically define file save path based on custom patterns</li>
       <li>Customizable Hotkey for adding a URL from clipboard</li>
