@@ -1,1 +1,5 @@
-- Updated icon matching Brisk v2.2.3
+Added smart video name resolving for the following websites:
+  - aniwatchtv.to
+  - hianimez.to
+  - aniplaynow.live
+  - openani.me
