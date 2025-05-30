@@ -263,7 +263,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void onTrayIconRightMouseDown() {
-    trayManager.popUpContextMenu();
+    trayManager.popUpContextMenu(bringAppToFront: true);
     super.onTrayIconRightMouseDown();
   }
 
