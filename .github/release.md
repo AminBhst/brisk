@@ -1,16 +1,26 @@
 # Changelog
 
-## :earth_asia: Internationalization
-- Added chinese translations by [Norman-W](https://github.com/Norman-w)
-- Minor italian translation fixes by [bovirus](https://github.com/bovirus)
+## :rocket: Improvements on downloading video streams
+### Soft-Subbing video files
+Brisk can now retrieve all available subtitles from streaming websites and soft-sub them into downloaded video files.
+
+This feature requires FFmpeg:
+- It's generally recommended to have FFmpeg installed via a proper package manager
+- On Windows and Linux, Brisk can automatically download and integrate FFmpeg for you
+- You can check FFmpeg integration status and set a custom FFmpeg path in Settings → General → FFmpeg
+
+### Smart Naming for Video Stream Files
+The browser extension is now able to automatically assign a proper name for video files from the following websites (extension v1.3.0):
+  - aniwatchtv.to
+  - hianimez.to
+  - aniplaynow.live
+  - openani.me
 
 ## :hammer_and_wrench: Bug Fixes and Improvements
-- Download engine bug fixes and improvements
-- Fixed download items flickering on window resize
-- Fixed launch at startup for flatpak and snap packages
-- **Added single instance mechanism:** The app now only runs on a single instance on all platforms. Opening the app a second time results in the already open instance to show
-- **Launch at startup improvement:** The app now silently launches at startup in system tray
-- Fixed queue not opening when finished or unfinished download grid filters were set
-- Change app font to Inter
-- Minor UI improvements
-- Upgrade to Flutter 3.32.0
+- Fixed tray menu not dismissing on Windows [#116](https://github.com/BrisklyDev/brisk/issues/116)
+- Minor UI bug fixes and improvements
+- Fixed an issue where Brisk’s window opened even if the download was skipped due to extension capture rules
+- Fixed downloading video streams not working on some websites for Chrome
+
+## :earth_asia: Internationalization
+- Added Turkish translations by [Holi](https://github.com/mikropsoft)
