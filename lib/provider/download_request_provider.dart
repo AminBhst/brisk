@@ -99,7 +99,7 @@ class DownloadRequestProvider with ChangeNotifier {
     }
     _updateDownloadRequest(progress, dl);
     if (progress.status == DownloadStatus.assembleComplete) {
-      if (await FFmpeg.isInstalled() && dl.subtitles.isNotEmpty) {
+      if (dl.subtitles.isNotEmpty && await FFmpeg.isInstalled()) {
         await FFmpeg.addSoftSubsToDownloadedFile(dl);
         _setNewMkvFilePath(dl, progress);
       }

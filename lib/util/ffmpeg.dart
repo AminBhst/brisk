@@ -60,7 +60,7 @@ class FFmpeg {
       await _ensureExecutable();
       final result = await Process.run(ffmpegPath, ['-version']);
       return result.exitCode == 0;
-    } on ProcessException {
+    } catch(_) {
       return false;
     }
   }
