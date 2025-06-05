@@ -7,17 +7,14 @@ import 'package:flutter/material.dart';
 import '../widget/other/github_star_dialog.dart';
 
 class GitHubStarHandler {
-  static Timer? timer;
-
   static void handleShowDialog(BuildContext context) {
     if (neverShowAgainGeneralData.value) return;
-    timer = Timer.periodic(Duration(minutes: 5), (_) {
+    Future.delayed(Duration(minutes: 5), () {
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => GithubStarDialog(),
       );
-      timer?.cancel();
     });
   }
 
