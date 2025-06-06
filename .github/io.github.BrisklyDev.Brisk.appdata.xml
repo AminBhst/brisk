@@ -24,7 +24,6 @@
       <li>Downloading video streams from the browser</li>
       <li>Soft-subbing video files downloaded from streaming websites</li>
       <li>Download Queues and Scheduling</li>
-      <li>Advanced rules to automatically define file save path based on custom patterns</li>
       <li>Customizable Hotkey for adding a URL from clipboard</li>
     </ul>
   </description>
