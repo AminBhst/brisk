@@ -90,7 +90,7 @@ jobs:
           cd io.github.BrisklyDev.Brisk
           pwd
           git checkout -B release-${{ needs.version.outputs.version }}
-          find . -maxdepth 1 -type f -exec rm -rf {} +
+          find . -maxdepth 1 -type f ! -name '.gitmodules' -exec rm -rf {} +
           ls -ltrh ../flatpak-flutter/brisk/*
           cat ../flatpak-flutter/brisk/flatpak-flutter.yml
           find ../flatpak-flutter/brisk -maxdepth 1 -type f -exec cp {} . \;
