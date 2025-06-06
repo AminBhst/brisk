@@ -30,6 +30,8 @@ parts:
     source: .
     flutter-target: lib/main.dart
     build-packages:
+      - rustc
+      - cargo
       - clang
       - cmake
       - curl
