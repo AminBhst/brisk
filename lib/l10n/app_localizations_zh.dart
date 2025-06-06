@@ -803,5 +803,5 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_engine_clientType_standard => 'Standard';
 
   @override
-  String get settings_engine_clientType_performance => 'Performance';
+  String get settings_engine_clientType_performance => 'Performance (Beta)';
 }

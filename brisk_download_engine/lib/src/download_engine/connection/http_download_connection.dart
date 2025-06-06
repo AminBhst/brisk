@@ -380,13 +380,13 @@ class HttpDownloadConnection {
     return getEndByteFromTempFileName(lastFileName) + 1;
   }
 
-  void _processChunk(List<int> chunk) {
+  void _processChunk(List<int> chunk) async {
     try {
       doProcessChunk(chunk);
     } catch (e) {
       if (e is http.ClientException && paused) return;
       logger?.error("process chunk error! $e");
-      terminateConnection();
+      await terminateConnection();
       clearBuffer();
     }
   }
@@ -395,7 +395,7 @@ class HttpDownloadConnection {
   /// Once the [tempReceivedBytes] hits the [dynamicFlushThreshold], the buffer is
   /// flushed to the disk. This process continues until the download has been
   /// finished. The buffer will be emptied after each flush
-  void doProcessChunk(List<int> chunk) {
+  void doProcessChunk(List<int> chunk) async {
     if (chunk.isEmpty) return;
     updateStatus(DownloadStatus.downloading);
     lastResponseTimeMillis = _nowMillis;
@@ -407,7 +407,7 @@ class HttpDownloadConnection {
     _updateReceivedBytes(chunk);
     updateDownloadProgress();
     if (receivedBytesExceededEndByte) {
-      _onByteExceeded();
+      await _onByteExceeded();
       return;
     }
     if (receivedBytesMatchEndByte && endByte != downloadItem.fileSize) {
@@ -423,7 +423,7 @@ class HttpDownloadConnection {
     notifyProgress();
   }
 
-  void _onByteExactMatch() {
+  void _onByteExactMatch() async {
     logger?.info(
       "Received bytes match endByte! "
       "closing the connection and flushing the buffer...",
@@ -435,14 +435,14 @@ class HttpDownloadConnection {
       totalDownloadProgress =
           totalConnectionReceivedBytes / downloadItem.fileSize;
     }
-    terminateConnection();
+    await terminateConnection();
     flushBuffer();
     _setDownloadComplete();
     terminatedOnCompletion = true;
     notifyProgress(completionSignal: true);
   }
 
-  void _onByteExceeded() async {
+  Future<void> _onByteExceeded() async {
     logger?.info("Received bytes exceeded endByte");
     await terminateConnection();
     flushBuffer();

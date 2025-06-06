@@ -1627,7 +1627,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_engine_clientType_performance.
   ///
   /// In en, this message translates to:
-  /// **'Performance'**
+  /// **'Performance (Beta)'**
   String get settings_engine_clientType_performance;
 }
 
