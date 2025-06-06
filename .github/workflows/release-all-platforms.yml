@@ -459,11 +459,13 @@ jobs:
     needs: [Release-Binaries]
     steps:
 
+      - name: Wait
+        run: sleep 60
+
       - name: Checkout the code
         uses: actions/checkout@v4.1.5
         with:
           fetch-depth: 0
-
 
       - name: Get commit of tag
         id: get_commit
@@ -523,7 +525,7 @@ jobs:
           cd io.github.BrisklyDev.Brisk
           pwd
           git checkout -B release-${{ needs.version.outputs.version }}
-          find . -maxdepth 1 -type f -exec rm -rf {} +
+          find . -maxdepth 1 -type f ! -name '.gitmodules' -exec rm -rf {} +
           ls -ltrh ../flatpak-flutter/brisk/*
           cat ../flatpak-flutter/brisk/flatpak-flutter.yml
           find ../flatpak-flutter/brisk -maxdepth 1 -type f -exec cp {} . \;
