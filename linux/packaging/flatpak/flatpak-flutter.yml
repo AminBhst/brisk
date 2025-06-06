@@ -4,6 +4,7 @@ runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
 - org.freedesktop.Sdk.Extension.llvm19
+- org.freedesktop.Sdk.Extension.rust-stable
 command: brisk
 finish-args:
 - --socket=fallback-x11
