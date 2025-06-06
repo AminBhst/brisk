@@ -32,7 +32,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
     DownloadProgressCallback progressCallback, {
     bool connectionReset = false,
     bool reuseConnection = false,
-  }) {
+  }) async {
     tempDirectory.createSync(recursive: true);
     startLogFlushTimer();
     logger?.info(
@@ -44,7 +44,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
     for (final file in tempDirectory.listSync()) {
       file.deleteSync(recursive: true);
     }
-    init(connectionReset, progressCallback, reuseConnection);
+    await init(connectionReset, progressCallback, reuseConnection);
     if (connectionReset) {
       resetStatus();
     }
@@ -77,7 +77,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
   }
 
   @override
-  void init(connectionReset, progressCallback, _) async {
+  init(connectionReset, progressCallback, _) async {
     await terminateConnection();
     connectionStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
