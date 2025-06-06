@@ -1,26 +1,16 @@
 # Changelog
 
-## :rocket: Improvements on downloading video streams
-### Soft-Subbing video files
-Brisk can now retrieve all available subtitles from streaming websites and soft-sub them into downloaded video files.
+## :rocket: New Rust-based Http Client
+A new option is now available: rhttp, a Rust-based HTTP client to boost download performance compared to the default Dart HTTP client.
 
-This feature requires FFmpeg:
-- It's generally recommended to have FFmpeg installed via a proper package manager
-- On Windows and Linux, Brisk can automatically download and integrate FFmpeg for you
-- You can check FFmpeg integration status and set a custom FFmpeg path in Settings → General → FFmpeg
+Since rhttp uses FFI, it requires additional system resources, as it spawns extra threads to allow for communication between the Rust layer and the Dart app.
 
-### Smart Naming for Video Stream Files
-The browser extension is now able to automatically assign a proper name for video files from the following websites (extension v1.3.0):
-  - aniwatchtv.to
-  - hianimez.to
-  - aniplaynow.live
-  - openani.me
+You can enable this client via:
+
+`Settings → Connection → Download Engine → HTTP Client Type → Performance (Experimental).`
+
+Because this feature is still new, it remains opt-in and is not enabled by default. The default client remains the Dart-based HTTP client due to its proven stability and compatibility with the download engine.
 
 ## :hammer_and_wrench: Bug Fixes and Improvements
-- Fixed tray menu not dismissing on Windows [#116](https://github.com/BrisklyDev/brisk/issues/116)
-- Minor UI bug fixes and improvements
-- Fixed an issue where Brisk’s window opened even if the download was skipped due to extension capture rules
-- Fixed downloading video streams not working on some websites for Chrome
-
-## :earth_asia: Internationalization
-- Added Turkish translations by [Holi](https://github.com/mikropsoft)
+- Fixed a Github dialog reappearing issue.
+- Fixed app crashing on macOS
