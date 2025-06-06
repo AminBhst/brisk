@@ -11,7 +11,10 @@ DownloadSettings downloadSettingsFromCache() {
     connectionRetryTimeoutMillis: SettingsCache.connectionRetryTimeout * 1000,
     maxConnectionRetryCount: SettingsCache.connectionRetryCount,
     loggerEnabled: SettingsCache.loggerEnabled,
-    proxySetting: SettingsCache.proxySetting,
+    clientSettings: HttpClientSettings(
+      proxySetting: SettingsCache.proxySetting,
+      clientType: SettingsCache.httpClientType,
+    ),
   );
 }
 

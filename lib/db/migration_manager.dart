@@ -14,6 +14,7 @@ class MigrationManager {
     Migration(4, "Add github star checker"),
     Migration(5, "Add FFmpeg path"),
     Migration(6, "Add FFmpeg warning ignore"),
+    Migration(7, "Add http client type"),
   ];
 
   static runMigrations() async {
@@ -49,6 +50,9 @@ class MigrationManager {
         break;
       case 6:
         await runMigrationV6();
+        break;
+      case 7:
+        await runMigrationV7();
         break;
       default:
         break;
@@ -177,5 +181,15 @@ class MigrationManager {
       value: false,
     );
     await HiveUtil.instance.generalDataBox.add(ffmpegWarningIgnore);
+  }
+
+  static Future<void> runMigrationV7() async {
+    final httpClientType = Setting(
+      name: SettingOptions.httpClientType.name,
+      value: SettingsCache.defaultSettings[SettingOptions.httpClientType.name]![1],
+      settingType:
+      SettingsCache.defaultSettings[SettingOptions.httpClientType.name]![0],
+    );
+    await HiveUtil.instance.settingBox.add(httpClientType);
   }
 }

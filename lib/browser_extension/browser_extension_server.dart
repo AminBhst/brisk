@@ -162,7 +162,7 @@ class BrowserExtensionServer {
         .toList();
     final subtitles = await fetchSubtitlesIsolate(
       vttUrls,
-      SettingsCache.proxySetting,
+      SettingsCache.clientSettings,
     );
     final url = jsonBody["m3u8Url"] as String;
     var suggestedName = jsonBody["suggestedName"] as String?;
@@ -175,7 +175,7 @@ class BrowserExtensionServer {
     try {
       String m3u8Content = await fetchBodyString(
         url,
-        proxySetting: SettingsCache.proxySetting,
+        clientSettings: SettingsCache.clientSettings,
         headers: refererHeader != null
             ? {
                 HttpHeaders.refererHeader: refererHeader,
@@ -185,7 +185,7 @@ class BrowserExtensionServer {
       m3u8 = (await M3U8.fromString(
         m3u8Content,
         url,
-        proxySetting: SettingsCache.proxySetting,
+        clientSettings: SettingsCache.clientSettings,
         refererHeader: refererHeader,
         suggestedFileName: suggestedName,
       ))!;
@@ -265,7 +265,7 @@ class BrowserExtensionServer {
     _showLoadingDialog(context);
     requestFileInfoBatch(
       downloadItems.toList(),
-      proxySetting: SettingsCache.proxySetting,
+      clientSettings: SettingsCache.clientSettings,
     ).then((fileInfos) {
       if (_cancelClicked) {
         return;

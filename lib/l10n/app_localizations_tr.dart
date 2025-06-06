@@ -763,64 +763,81 @@ class AppLocalizationsTr extends AppLocalizations {
   String get tray_exitApp => 'Uygulamadan Çık';
 
   @override
-  String get settings_ffmpegPath => 'FFmpeg Path';
+  String get settings_ffmpegPath => 'FFmpeg Konumu';
 
   @override
-  String get settings_testFFmpeg => 'Test FFmpeg';
+  String get settings_testFFmpeg => 'FFmpeg\'i Test Et';
 
   @override
   String get settings_ffmpeg_tooltip =>
-      'FFmpeg path should point to a directory that contains the ffmpeg binary (ffmpeg.exe on windows)\nIf ffmpeg is available in the system path, setting the value as \'ffmpeg\' is enough.';
+      'FFmpeg\'in bulunduğu klasörü seçmelisiniz (Windows için ffmpeg.exe\'nin bulunduğu klasör).\nEğer FFmpeg sistem PATH\'ine ekliyse,\nherhangi bir şey seçmenize gerek yok, sadece \'ffmpeg\' olarak ayarlamanız yeterli.';
 
   @override
   String get settings_ffmpeg_installAutomatically =>
-      'Install FFmpeg Automatically';
+      'FFmpeg\'i Otomatik Olarak Yükle';
 
   @override
-  String get ffmpeg_alreadyInstalled => 'FFmpeg is already installed';
+  String get ffmpeg_alreadyInstalled => 'FFmpeg Zaten Yüklü';
 
   @override
-  String get ffmpeg_notFound_title => 'FFmpeg Not Found!';
+  String get ffmpeg_notFound_title => 'FFmpeg Bulunamadı!';
 
   @override
   String get ffmpeg_notFound_description =>
-      'Subtitles were found for this video stream, however, FFmpeg was not found on your system.\nFFmpeg is required to add the detected subtitles to the video file.\n';
+      'Bu video için altyazı bulundu, ancak sisteminizde FFmpeg yüklü değil.\nFFmpeg, algılanan altyazıları video dosyasına eklemek için gereklidir.';
 
   @override
   String get ffmpeg_notFound_descriptionHint =>
-      'You can:\n\t• Let Brisk handle the installation for you\n\t• Install FFmpeg via a package manager (choco, brew, pacman, etc.)\n\t• Download the binaries and add FFmpeg to your system’s PATH.\n\nYou can always set the FFmpeg\'s path in Settings -> General -> FFmpeg';
+      'Şunları yapabilirsiniz:\n\t• Brisk\'in kurulumu sizin için yapmasına izin verin\n\t• FFmpeg\'i bir paket yöneticisi (choco, brew, pacman vb.) ile kurun\n\t• Derlenmiş FFmpeg dosyalarını indirip konumunu manuel olarak ayarlayın\n\nFFmpeg\'in konumunu Ayarlar -> Genel -> FFmpeg kısmından ayarlayabilirsiniz.';
 
   @override
-  String get ffmpeg_integrationSuccess => 'FFmpeg integrated successfully';
+  String get ffmpeg_integrationSuccess => 'FFmpeg Başarıyla Entegre Edildi';
 
   @override
-  String get ffmpeg_testFailed_title => 'FFmpeg Test Failed!';
+  String get ffmpeg_testFailed_title => 'FFmpeg Testi Başarısız!';
 
   @override
-  String get ffmpeg_testFailed_description => 'Failed to run FFmpeg commands!';
+  String get ffmpeg_testFailed_description =>
+      'FFmpeg komutları çalıştırılamadı!';
 
   @override
   String get ffmpeg_testFailed_descriptionHint =>
-      'Make sure the selected path contains the FFmpeg binary (usually the bin directory)';
+      'Seçilen klasörde FFmpeg\'in bulunduğundan emin olun (genellikle \'bin\' klasörü seçilmelidir).';
 
   @override
-  String get ffmpegInstalled => 'FFmpeg was successfully installed';
+  String get ffmpegInstalled => 'FFmpeg Başarıyla Yüklendi';
 
   @override
   String get ffmpeg_installationNotSupported_title =>
-      'Automatic Installation not supported';
+      'Otomatik Kurulum Desteklenmiyor';
 
   @override
   String get ffmpeg_installationNotSupported_description =>
-      'Automatic installation is not supported for macOS.';
+      'Otomatik kurulum macOS için desteklenmiyor.';
 
   @override
   String get ffmpeg_installationNotSupported_descriptionHint =>
-      'Please install FFmpeg using Homebrew or any other package manager that offers it.';
+      'Lütfen Homebrew veya başka bir paket yöneticisi kullanarak FFmpeg\'i yükleyin.';
 
   @override
-  String get btn_installLater => 'I\'ll Install Later';
+  String get btn_installLater => 'Daha Sonra Yükleyeceğim';
 
   @override
-  String get btn_installAutomatically => 'Install Automatically';
+  String get btn_installAutomatically => 'Otomatik Olarak Yükle';
+
+  @override
+  String get settings_engine => 'Download Engine';
+
+  @override
+  String get settings_engine_clientType => 'HTTP Client Type';
+
+  @override
+  String get settings_engine_clientType_tooltip =>
+      'The client type used for downloads:\n\nStandard – Balanced and stable\nPerformance – Faster but uses more CPU';
+
+  @override
+  String get settings_engine_clientType_standard => 'Standard';
+
+  @override
+  String get settings_engine_clientType_performance => 'Performance';
 }

@@ -853,13 +853,13 @@ abstract class AppLocalizations {
   /// No description provided for @settings_downloadConnections_regularConnNum.
   ///
   /// In en, this message translates to:
-  /// **'Number of Regular Download Connections'**
+  /// **'Number of regular download connections'**
   String get settings_downloadConnections_regularConnNum;
 
   /// No description provided for @settings_downloadConnections_videoStreamConnNum.
   ///
   /// In en, this message translates to:
-  /// **'Number of Video Stream Download Connections'**
+  /// **'Number of video stream download connections'**
   String get settings_downloadConnections_videoStreamConnNum;
 
   /// No description provided for @settings_browserExtension.
@@ -1599,6 +1599,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Install Automatically'**
   String get btn_installAutomatically;
+
+  /// No description provided for @settings_engine.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Engine'**
+  String get settings_engine;
+
+  /// No description provided for @settings_engine_clientType.
+  ///
+  /// In en, this message translates to:
+  /// **'HTTP Client Type'**
+  String get settings_engine_clientType;
+
+  /// No description provided for @settings_engine_clientType_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'The client type used for downloads:\n\nStandard – Balanced and stable\nPerformance – Faster but uses more CPU'**
+  String get settings_engine_clientType_tooltip;
+
+  /// No description provided for @settings_engine_clientType_standard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get settings_engine_clientType_standard;
+
+  /// No description provided for @settings_engine_clientType_performance.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get settings_engine_clientType_performance;
 }
 
 class _AppLocalizationsDelegate

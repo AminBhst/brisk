@@ -17,6 +17,7 @@ import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:flutter/services.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:rhttp/rhttp.dart';
 import 'file_util.dart';
 
 class SettingsCache {
@@ -54,6 +55,7 @@ class SettingsCache {
   static late int m3u8ConnectionNumber;
   static late int connectionRetryCount;
   static late int connectionRetryTimeout;
+  static late ClientType httpClientType;
   static late bool proxyEnabled = false;
   static late String proxyAddress = "";
   static late String proxyPort = "";
@@ -168,6 +170,10 @@ class SettingsCache {
     SettingOptions.connectionRetryTimeout.name: [
       SettingType.connection.name,
       "10",
+    ],
+    SettingOptions.httpClientType.name: [
+      SettingType.connection.name,
+      ClientType.dartHttp.name,
     ],
     SettingOptions.proxyEnabled.name: [
       SettingType.connection.name,
@@ -289,6 +295,9 @@ class SettingsCache {
         case SettingOptions.connectionRetryTimeout:
           connectionRetryTimeout = int.parse(value);
           break;
+        case SettingOptions.httpClientType:
+          httpClientType = resolveClientType(value);
+          break;
         case SettingOptions.proxyEnabled:
           proxyEnabled = bool.parse(value);
           break;
@@ -404,6 +413,9 @@ class SettingsCache {
         case SettingOptions.connectionRetryCount:
           setting.value = SettingsCache.connectionRetryCount.toString();
           break;
+        case SettingOptions.httpClientType:
+          setting.value = SettingsCache.httpClientType.name;
+          break;
         case SettingOptions.proxyEnabled:
           setting.value = SettingsCache.proxyEnabled.toString();
           break;
@@ -460,6 +472,11 @@ class SettingsCache {
       await HiveUtil.instance.settingBox.put(i, setting);
     }
   }
+
+  static HttpClientSettings get clientSettings => HttpClientSettings(
+        proxySetting: SettingsCache.proxySetting,
+        clientType: SettingsCache.httpClientType,
+      );
 
   static ProxySetting get proxySetting => ProxySetting(
         proxyEnabled: proxyEnabled,

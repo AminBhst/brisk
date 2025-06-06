@@ -243,12 +243,13 @@ class DownloadAdditionUiUtil {
   }
 
   static Future<ReceivePort> _spawnFileInfoRetrieverIsolate(
-      DownloadItem item) async {
+    DownloadItem item,
+  ) async {
     final ReceivePort receivePort = ReceivePort();
     fileInfoExtractorIsolate =
-        await Isolate.spawn<IsolateArgsPair<DownloadItem, ProxySetting>>(
+        await Isolate.spawn<IsolateArgsPair<DownloadItem, HttpClientSettings>>(
       requestFileInfoIsolate,
-      IsolateArgsPair(receivePort.sendPort, item, SettingsCache.proxySetting),
+      IsolateArgsPair(receivePort.sendPort, item, SettingsCache.clientSettings),
       paused: true,
     );
     fileInfoExtractorIsolate?.addErrorListener(receivePort.sendPort);
@@ -368,17 +369,17 @@ Future<void> requestFileInfoIsolate(IsolateArgsPair args) async {
 Future<void> _fetchUrlsIsolate(SendPort initialSendPort) async {
   final port = ReceivePort();
   initialSendPort.send(port.sendPort);
-  ProxySetting? proxySetting;
+  HttpClientSettings? clientSettings;
   await for (final message in port) {
-    if (message is ProxySetting?) {
-      proxySetting = message;
+    if (message is HttpClientSettings?) {
+      clientSettings = message;
       continue;
     }
     if (message is List<Map<String, String>>) {
       final results = <Map<String, String>>[];
       for (final urlMap in message) {
         try {
-          final client = HttpClientBuilder.buildClient(proxySetting);
+          final client = await HttpClientBuilder.buildClient(clientSettings);
           final response = await client.get(
             Uri.parse(urlMap['url']!),
             headers: {'referer': urlMap['referer'] ?? ''}
@@ -399,7 +400,7 @@ Future<void> _fetchUrlsIsolate(SendPort initialSendPort) async {
 
 Future<List<Map<String, String>>> fetchSubtitlesIsolate(
   List<Map<String, String>> urls,
-  ProxySetting? proxySettings,
+  HttpClientSettings? clientSettings,
 ) async {
   final receivePort = ReceivePort();
   await Isolate.spawn(_fetchUrlsIsolate, receivePort.sendPort);
@@ -408,7 +409,7 @@ Future<List<Map<String, String>>> fetchSubtitlesIsolate(
   receivePort.listen((message) {
     if (message is SendPort) {
       isolateSendPort = message;
-      isolateSendPort.send(proxySettings);
+      isolateSendPort.send(clientSettings);
       isolateSendPort.send(urls);
     } else if (message is List<Map<String, String>>) {
       completer.complete(message);

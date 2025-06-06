@@ -75,13 +75,13 @@ List<int> calculateByteStartAndByteEnd(
 
 Future<List<FileInfo>?> requestFileInfoBatch(
   List<DownloadItem> downloadItems, {
-  ProxySetting? proxySetting = null,
+  HttpClientSettings? clientSettings = null,
 }) async {
   List<FileInfo> fileInfos = [];
   for (final item in downloadItems) {
     final fileInfo = await requestFileInfo(
       item,
-      proxySetting,
+      clientSettings,
       ignoreException: true,
     ).onError((error, stackTrace) => null);
     if (fileInfo == null) continue;
@@ -93,7 +93,7 @@ Future<List<FileInfo>?> requestFileInfoBatch(
 
 Future<FileInfo?> requestFileInfo(
   DownloadItem downloadItem,
-  ProxySetting? proxySetting, {
+  HttpClientSettings? clientSettings, {
   ignoreException = false,
 }) async {
   return await sendFileInfoRequest(
@@ -103,7 +103,7 @@ Future<FileInfo?> requestFileInfo(
     final fileInfo = await sendFileInfoRequest(
       downloadItem,
       ignoreException: ignoreException,
-      proxySetting: proxySetting,
+      clientSettings: clientSettings,
       useGet: true,
     );
     return fileInfo;
@@ -112,10 +112,10 @@ Future<FileInfo?> requestFileInfo(
 
 Future<String> fetchStringContent(
   String url, {
-  ProxySetting? proxySetting,
+  HttpClientSettings? clientSettings,
   Map<String, String>? headers,
 }) async {
-  final client = HttpClientBuilder.buildClient(proxySetting);
+  final client = await HttpClientBuilder.buildClient(clientSettings);
   final request = http.Request('GET', Uri.parse(url));
   request.headers.addAll(userAgentHeader);
   request.headers.addAll(headers ?? {});
@@ -133,7 +133,7 @@ Future<String> fetchStringContent(
 /// TODO handle status codes other than 200
 Future<FileInfo?> sendFileInfoRequest(
   DownloadItem downloadItem, {
-  ProxySetting? proxySetting = null,
+  HttpClientSettings? clientSettings = null,
   bool ignoreException = false,
   bool useGet = false,
 }) async {
@@ -143,7 +143,7 @@ Future<FileInfo?> sendFileInfoRequest(
     Uri.parse(downloadItem.downloadUrl),
   );
   request.headers.addAll(userAgentHeader);
-  final client = HttpClientBuilder.buildClient(proxySetting);
+  final client = await HttpClientBuilder.buildClient(clientSettings);
   try {
     client
         .send(request)

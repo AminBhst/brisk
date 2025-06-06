@@ -95,9 +95,12 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
 
   void _onAddPressed(BuildContext context) {
     final url = txtController.text;
-    DownloadAdditionUiUtil.handleDownloadAddition(context, url,
-        updateDialog: widget.updateDialog,
-        downloadId: widget.downloadId,
-        additionalPop: true);
+    DownloadAdditionUiUtil.handleDownloadAddition(
+      context,
+      url,
+      updateDialog: widget.updateDialog,
+      downloadId: widget.downloadId,
+      additionalPop: true,
+    );
   }
 }

@@ -67,7 +67,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get duration => 'Durata';
 
   @override
-  String get subtitles => 'Subtitles';
+  String get subtitles => 'Sottotitoli';
 
   @override
   String get progress => 'Progresso';
@@ -769,64 +769,81 @@ class AppLocalizationsIt extends AppLocalizations {
   String get tray_exitApp => 'Esci dall\'app';
 
   @override
-  String get settings_ffmpegPath => 'FFmpeg Path';
+  String get settings_ffmpegPath => 'Percorso FFmpeg';
 
   @override
   String get settings_testFFmpeg => 'Test FFmpeg';
 
   @override
   String get settings_ffmpeg_tooltip =>
-      'FFmpeg path should point to a directory that contains the ffmpeg binary (ffmpeg.exe on windows)\nIf ffmpeg is available in the system path, setting the value as \'ffmpeg\' is enough.';
+      'Il percorso FFmpeg deve puntare ad una cartella che contiene il file eseguibile ffmpeg (ffmpeg.exe in Windows)\nSe ffmpeg è disponibile nel percorso  di sistema sistema, è sufficiente l\'impostazione del valore \'ffmpeg\'.';
 
   @override
   String get settings_ffmpeg_installAutomatically =>
-      'Install FFmpeg Automatically';
+      'Installa automaticamente FFFmpeg';
 
   @override
-  String get ffmpeg_alreadyInstalled => 'FFmpeg is already installed';
+  String get ffmpeg_alreadyInstalled => 'FFmpeg è già installato';
 
   @override
-  String get ffmpeg_notFound_title => 'FFmpeg Not Found!';
+  String get ffmpeg_notFound_title => 'FFmpeg non trovato!';
 
   @override
   String get ffmpeg_notFound_description =>
-      'Subtitles were found for this video stream, however, FFmpeg was not found on your system.\nFFmpeg is required to add the detected subtitles to the video file.\n';
+      'Sono stati trovati sottotitoli per questo flusso video, tuttavia non è stato trovato FFmpeg nel sistema.\nFFmpeg è necessario per aggiungere i sottotitoli rilevati nel file video.\n';
 
   @override
   String get ffmpeg_notFound_descriptionHint =>
-      'You can:\n\t• Let Brisk handle the installation for you\n\t• Install FFmpeg via a package manager (choco, brew, pacman, etc.)\n\t• Download the binaries and add FFmpeg to your system’s PATH.\n\nYou can always set the FFmpeg\'s path in Settings -> General -> FFmpeg';
+      'Puoi:\n\t• Lascia che brisk gestisca l\'installazione per te\n\t• Installa FFmpeg tramite gestore pacchetti (choco, brew, pacman, ecc.)\n\t• Scarica FFmpeg ed aggiungi la cartella relativa al percorso di sistema.\n\nPuoi impostare il percorso di FFmpeg in Impostazioni -> Generali -> FFmpeg';
 
   @override
-  String get ffmpeg_integrationSuccess => 'FFmpeg integrated successfully';
+  String get ffmpeg_integrationSuccess => 'Integrazione FFmpeg completata';
 
   @override
-  String get ffmpeg_testFailed_title => 'FFmpeg Test Failed!';
+  String get ffmpeg_testFailed_title => 'Test FFmpeg fallito!';
 
   @override
-  String get ffmpeg_testFailed_description => 'Failed to run FFmpeg commands!';
+  String get ffmpeg_testFailed_description =>
+      'Impossibile eseguire i comandi FFmpeg!';
 
   @override
   String get ffmpeg_testFailed_descriptionHint =>
-      'Make sure the selected path contains the FFmpeg binary (usually the bin directory)';
+      'Assicurati che il percorso selezionato contenga i file FFmpeg (tipicamente nella cartella bin)';
 
   @override
-  String get ffmpegInstalled => 'FFmpeg was successfully installed';
+  String get ffmpegInstalled => 'Installazione FFmpeg completata';
 
   @override
   String get ffmpeg_installationNotSupported_title =>
-      'Automatic Installation not supported';
+      'Installazione automatica non supportata';
 
   @override
   String get ffmpeg_installationNotSupported_description =>
-      'Automatic installation is not supported for macOS.';
+      'L\'installazione automatica non è supportata in macOS.';
 
   @override
   String get ffmpeg_installationNotSupported_descriptionHint =>
-      'Please install FFmpeg using Homebrew or any other package manager that offers it.';
+      'Installa FFmpeg usando Homebrew o qualsiasi altro gestore pacchetti disponibile.';
 
   @override
-  String get btn_installLater => 'I\'ll Install Later';
+  String get btn_installLater => 'Lo installerò più avanti';
 
   @override
-  String get btn_installAutomatically => 'Install Automatically';
+  String get btn_installAutomatically => 'Installa automaticamente';
+
+  @override
+  String get settings_engine => 'Download Engine';
+
+  @override
+  String get settings_engine_clientType => 'HTTP Client Type';
+
+  @override
+  String get settings_engine_clientType_tooltip =>
+      'The client type used for downloads:\n\nStandard – Balanced and stable\nPerformance – Faster but uses more CPU';
+
+  @override
+  String get settings_engine_clientType_standard => 'Standard';
+
+  @override
+  String get settings_engine_clientType_performance => 'Performance';
 }

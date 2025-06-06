@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
+import 'package:brisk_download_engine/src/download_engine/client/custom_base_client.dart';
+import 'package:brisk_download_engine/src/download_engine/client/rhttp_client_proxy.dart';
 import 'package:brisk_download_engine/src/download_engine/engine/http_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/message/connection_segment_message.dart';
 import 'package:brisk_download_engine/src/download_engine/message/engine_panic_message.dart';
@@ -14,6 +16,7 @@ import 'package:brisk_download_engine/src/download_engine/util/types.dart';
 import 'package:dartx/dartx.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
+import 'package:rhttp/rhttp.dart';
 
 import '../log/logger.dart';
 
@@ -81,7 +84,7 @@ class HttpDownloadConnection {
   static const int _transferRateCalculationWindowMillis = 700;
 
   /// The client used to make http requests
-  late http.Client client;
+  CustomBaseClient? client;
 
   StreamSubscription<List<int>>? downloadSub;
 
@@ -155,7 +158,7 @@ class HttpDownloadConnection {
     DownloadProgressCallback progressCallback, {
     bool connectionReset = false,
     bool reuseConnection = false,
-  }) {
+  }) async {
     startLogFlushTimer();
     initTempFilesCache();
     logger?.info(
@@ -182,7 +185,7 @@ class HttpDownloadConnection {
       return;
     }
     logger?.info("Download is incomplete. starting a new download request...");
-    init(connectionReset, progressCallback, reuseConnection);
+    await init(connectionReset, progressCallback, reuseConnection);
     notifyProgress();
     final request = buildDownloadRequest(reuseConnection);
     sendDownloadRequest(request);
@@ -198,18 +201,16 @@ class HttpDownloadConnection {
     previousBufferEndByte = 0;
   }
 
-  void init(
+  init(
     bool connectionReset,
     DownloadProgressCallback progressCallback,
     bool reuseConnection,
-  ) {
+  ) async {
     connectionStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
     overallStatus = connectionStatus;
     this.progressCallback = progressCallback;
-    // if (!reuseConnection) {
-    _initClient();
-    // }
+    await initClient(connectionReset);
     paused = false;
     reset = false;
     terminatedOnCompletion = false;
@@ -225,25 +226,20 @@ class HttpDownloadConnection {
 
   void sendDownloadRequest(http.Request request, {Duration? timeout}) {
     try {
-      final response =
-          timeout != null
-              ? client.send(request).timeout(timeout)
-              : client.send(request);
-      response
-          .asStream()
-          .cast<http.StreamedResponse>()
-          .listen((response) {
-            if (!response.statusCode.toString().startsWith("2")) {
-              logger?.error("Received bad status code ${response.statusCode}");
-              throw Error();
-            }
-            downloadSub = response.stream.listen(
-              _processChunk,
-              onDone: onDownloadComplete,
-              onError: onError,
-            );
-          })
-          .onError(onError);
+      final response = timeout != null
+          ? client?.send(request).timeout(timeout)
+          : client?.send(request);
+      response?.asStream().cast<http.StreamedResponse>().listen((response) {
+        if (!response.statusCode.toString().startsWith("2")) {
+          logger?.error("Received bad status code ${response.statusCode}");
+          throw Error();
+        }
+        downloadSub = response.stream.listen(
+          _processChunk,
+          onDone: onDownloadComplete,
+          onError: onError,
+        );
+      }).onError(onError);
     } catch (e) {
       onError(e);
       notifyProgress();
@@ -270,10 +266,10 @@ class HttpDownloadConnection {
     }
   }
 
-  void resetConnection() {
+  Future<void> resetConnection() async {
     logger?.info("Resetting connection....");
     reset = true;
-    terminateConnection();
+    await terminateConnection();
     totalConnectionReceivedBytes =
         totalConnectionReceivedBytes - tempReceivedBytes;
     totalRequestReceivedBytes = totalRequestReceivedBytes - tempReceivedBytes;
@@ -282,8 +278,8 @@ class HttpDownloadConnection {
     start(progressCallback!, connectionReset: true);
   }
 
-  void cancel({bool failure = false}) {
-    terminateConnection();
+  Future<void> cancel({bool failure = false}) async {
+    await terminateConnection();
     cancelLogFlushTimer();
     clearBuffer();
     final status = failure ? DownloadStatus.failed : DownloadStatus.canceled;
@@ -446,9 +442,9 @@ class HttpDownloadConnection {
     notifyProgress(completionSignal: true);
   }
 
-  void _onByteExceeded() {
+  void _onByteExceeded() async {
     logger?.info("Received bytes exceeded endByte");
-    terminateConnection();
+    await terminateConnection();
     flushBuffer();
     _fixTempFiles();
     _setDownloadComplete();
@@ -657,10 +653,9 @@ class HttpDownloadConnection {
 
   void calculateDynamicFlushThreshold() {
     const double eightMegaBytes = 8388608;
-    dynamicFlushThreshold =
-        bytesTransferRate * 2 < eightMegaBytes
-            ? bytesTransferRate * 2
-            : eightMegaBytes;
+    dynamicFlushThreshold = bytesTransferRate * 2 < eightMegaBytes
+        ? bytesTransferRate * 2
+        : eightMegaBytes;
     if (dynamicFlushThreshold <= 8192) {
       dynamicFlushThreshold = 64000;
     }
@@ -680,7 +675,7 @@ class HttpDownloadConnection {
     print("Setting pause for connection $connectionNumber");
     updateStatus(DownloadStatus.paused);
     connectionStatus = DownloadStatus.paused;
-    terminateConnection();
+    await terminateConnection();
     pauseButtonEnabled = false;
     notifyProgress();
   }
@@ -772,7 +767,7 @@ class HttpDownloadConnection {
   Future<void> terminateConnection() async {
     try {
       logger?.info("Terminating connection...");
-      client.close();
+      await client?.cancelRequest();
       await downloadSub?.cancel();
       logger?.info("Connection Terminated");
     } catch (_) {}
@@ -808,7 +803,7 @@ class HttpDownloadConnection {
   /// only when a download is actually completed.
   void onError(dynamic error, [dynamic s]) async {
     clearBuffer();
-    terminateConnection();
+    await terminateConnection();
     notifyProgress();
     if (!(error is http.ClientException &&
         (paused || terminatedOnCompletion))) {
@@ -852,8 +847,7 @@ class HttpDownloadConnection {
     if (connectionReuse) {
       return false;
     }
-    final isAllowed =
-        (paused && isWritingTempFile) ||
+    final isAllowed = (paused && isWritingTempFile) ||
         (!paused && downloadProgress > 0) ||
         downloadItem.status == DownloadStatus.connectionComplete ||
         overallStatus == DownloadStatus.connectionComplete ||
@@ -874,13 +868,11 @@ class HttpDownloadConnection {
 
     var fileNames = connectionFiles.map((f) => basename(f.path));
     if (thisByteRangeOnly) {
-      fileNames =
-          fileNames
-              .where(
-                (fileName) =>
-                    fileNameToSegment(fileName).isInRangeOfOther(segment),
-              )
-              .toList();
+      fileNames = fileNames
+          .where(
+            (fileName) => fileNameToSegment(fileName).isInRangeOfOther(segment),
+          )
+          .toList();
     }
 
     if (fileNames.isEmpty) {
@@ -924,12 +916,17 @@ class HttpDownloadConnection {
 
   /// The abstract buildClient method used for implementations of download connections.
   /// namely, [HttpDownloadConnection] and [MockHttpDownloadConnection]
-  http.Client buildClient() {
-    return HttpClientBuilder.buildClient(settings.proxySetting);
+  Future<CustomBaseClient> buildClient() async {
+    return HttpClientBuilder.buildClient(settings.clientSettings);
   }
 
-  void _initClient() {
-    client = buildClient();
+  Future<void> initClient(bool connectionReset) async {
+    final clientType =
+        settings.clientSettings?.clientType ?? ClientType.dartHttp;
+    if (!connectionReset && clientType == ClientType.rHttp && client != null) {
+      return;
+    }
+    client = await buildClient();
   }
 
   int get _nowMillis => DateTime.now().millisecondsSinceEpoch;

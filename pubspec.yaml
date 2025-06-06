@@ -44,6 +44,7 @@ dependencies:
   windows_single_instance: ^1.0.1
   xdg_desktop_portal: ^0.1.13
   archive: ^3.6.1
+  rhttp: ^0.12.0
 
   cupertino_icons: ^1.0.6
   form_field_validator: ^1.1.0

@@ -27,6 +27,7 @@ enum SettingOptions {
   m3u8ConnectionsNumber,
   connectionRetryCount,
   connectionRetryTimeout,
+  httpClientType,
   proxyEnabled,
   proxyPort,
   proxyAddress,

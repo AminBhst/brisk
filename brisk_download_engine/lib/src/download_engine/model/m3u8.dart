@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/client/http_client_builder.dart';
 import 'package:brisk_download_engine/src/download_engine/segment/segment_status.dart';
 import 'package:brisk_download_engine/src/download_engine/setting/proxy_setting.dart';
 import 'package:brisk_download_engine/src/download_engine/util/file_util.dart';
 import 'package:brisk_download_engine/src/download_engine/util/m3u8_util.dart';
+import 'package:rhttp/rhttp.dart';
 
 class M3U8 {
   final String url;
@@ -33,12 +35,12 @@ class M3U8 {
 
   static Future<M3U8?> fromUrl(
     String url, {
-    ProxySetting? proxySetting,
+    HttpClientSettings? clientSettings,
     bool isSubPlaylist = false,
     String? refererHeader,
     String? suggestedFileName,
   }) async {
-    final client = HttpClientBuilder.buildClient(proxySetting);
+    final client = await HttpClientBuilder.buildClient();
     try {
       final headers = {
         "User-Agent":
@@ -51,11 +53,11 @@ class M3U8 {
       if (response.statusCode == 200) {
         final body = response.body;
         return await M3U8.fromString(
-            body,
-            url,
-            isSubPlaylist: isSubPlaylist,
-            suggestedFileName: suggestedFileName,
-          )
+          body,
+          url,
+          isSubPlaylist: isSubPlaylist,
+          suggestedFileName: suggestedFileName,
+        )
           ?..refererHeader = refererHeader;
       } else {
         print("Failed to fetch m3u8... status code ${response.statusCode}");
@@ -70,7 +72,7 @@ class M3U8 {
   static Future<M3U8?> fromString(
     String content,
     String url, {
-    ProxySetting? proxySetting,
+    HttpClientSettings? clientSettings,
     bool fetchKeys = true,
     bool isSubPlaylist = false,
     String? refererHeader,
@@ -91,24 +93,24 @@ class M3U8 {
         modifierStringContent.writeln(line);
         currStreamInfNum++;
         final urlLine = lines[i + 1];
-        streamInfos[currStreamInfNum] =
-            (streamInfos[currStreamInfNum] ?? StreamInf())
-              ..url = urlLine.trim();
+        streamInfos[currStreamInfNum] = (streamInfos[currStreamInfNum] ??
+            StreamInf())
+          ..url = urlLine.trim();
         final resolutionPattern = RegExp(r'RESOLUTION=(\d+x\d+)');
         final matchRes = resolutionPattern.firstMatch(line);
         if (matchRes != null) {
           final resolution = matchRes.group(1);
-          streamInfos[currStreamInfNum] =
-              (streamInfos[currStreamInfNum] ?? StreamInf())
-                ..resolution = resolution;
+          streamInfos[currStreamInfNum] = (streamInfos[currStreamInfNum] ??
+              StreamInf())
+            ..resolution = resolution;
         }
         final frameRatePattern = RegExp(r'FRAME-RATE=([\d.]+)');
         final matchFrameRate = frameRatePattern.firstMatch(line);
         if (matchFrameRate != null) {
           final frameRate = matchFrameRate.group(1);
-          streamInfos[currStreamInfNum] =
-              (streamInfos[currStreamInfNum] ?? StreamInf())
-                ..frameRate = frameRate;
+          streamInfos[currStreamInfNum] = (streamInfos[currStreamInfNum] ??
+              StreamInf())
+            ..frameRate = frameRate;
         }
       } else if (line.startsWith("#EXT-X-MEDIA-SEQUENCE:")) {
         modifierStringContent.writeln(line);
@@ -124,9 +126,8 @@ class M3U8 {
           iv: attrs["IV"],
         );
         if (reachedSegments) {
-          segments[currSegmentNum] =
-              (segments[currSegmentNum] ?? M3U8Segment())
-                ..encryptionDetails = currEncryptionDetails;
+          segments[currSegmentNum] = (segments[currSegmentNum] ?? M3U8Segment())
+            ..encryptionDetails = currEncryptionDetails;
         } else {
           encryptionDetails = currEncryptionDetails;
         }
@@ -135,31 +136,29 @@ class M3U8 {
         currSegmentNum++;
         final extInfValue = line.substring(8, line.length - 2);
         reachedSegments = true;
-        segments[currSegmentNum] =
-            (segments[currSegmentNum] ?? M3U8Segment())
-              ..extInf = extInfValue
-              ..sequenceNumber = currSegmentNum;
+        segments[currSegmentNum] = (segments[currSegmentNum] ?? M3U8Segment())
+          ..extInf = extInfValue
+          ..sequenceNumber = currSegmentNum;
       } else if (line.startsWith("http")) {
         modifierStringContent.writeln(line);
-        segments[currSegmentNum] =
-            (segments[currSegmentNum] ?? M3U8Segment())..url = line;
+        segments[currSegmentNum] = (segments[currSegmentNum] ?? M3U8Segment())
+          ..url = line;
       } else if (!line.startsWith("http") &&
           (isSubPlaylist || line.endsWith(".ts")) &&
           FileUtil.isFileName(line)) {
         final completeUrl =
             "${url.substring(0, url.lastIndexOf("/"))}/${line.trim()}";
-        segments[currSegmentNum] =
-            (segments[currSegmentNum] ?? M3U8Segment())..url = completeUrl;
+        segments[currSegmentNum] = (segments[currSegmentNum] ?? M3U8Segment())
+          ..url = completeUrl;
         modifierStringContent.writeln(completeUrl);
       }
     }
-    final totalDuration =
-        segments.isEmpty
-            ? 0
-            : segments.values
-                .map((m) => double.tryParse(m.extInf) ?? 0)
-                .reduce((sum, duration) => sum + duration)
-                .toInt();
+    final totalDuration = segments.isEmpty
+        ? 0
+        : segments.values
+            .map((m) => double.tryParse(m.extInf) ?? 0)
+            .reduce((sum, duration) => sum + duration)
+            .toInt();
     final m3u8 = M3U8(
       segments: segments.values.toList(),
       mediaSequence: mediaSequence,
@@ -168,8 +167,7 @@ class M3U8 {
       totalDuration: totalDuration,
       stringContent: content,
       url: url,
-      fileName:
-          suggestedFileName ??
+      fileName: suggestedFileName ??
           (url.contains('/') ? url.substring(url.lastIndexOf('/') + 1) : url),
     );
     if (m3u8.isMasterPlaylist) {
@@ -178,13 +176,11 @@ class M3U8 {
         if (streamUrl == null) continue;
         if (!streamUrl.contains("http")) {
           streamUrl = "${url.substring(0, url.lastIndexOf("/"))}/$streamUrl";
-          streamInf.m3u8 = await M3U8.fromUrl(
-            streamUrl,
-            isSubPlaylist: true,
-            proxySetting: proxySetting,
-            refererHeader: refererHeader,
-            suggestedFileName: suggestedFileName
-          );
+          streamInf.m3u8 = await M3U8.fromUrl(streamUrl,
+              isSubPlaylist: true,
+              clientSettings: clientSettings,
+              refererHeader: refererHeader,
+              suggestedFileName: suggestedFileName);
         }
       }
     }
@@ -195,7 +191,7 @@ class M3U8 {
         M3U8EncryptionMethod.aes128) {
       m3u8.encryptionDetails.keyBytes = await fetchDecryptionKey(
         m3u8.encryptionDetails.encryptionKeyUrl!,
-        proxySetting: proxySetting,
+        clientSettings: clientSettings,
       );
     }
     for (var segment in m3u8.segments) {
@@ -206,7 +202,7 @@ class M3U8 {
       }
       segment.encryptionDetails!.keyBytes = await fetchDecryptionKey(
         segment.encryptionDetails!.encryptionKeyUrl!,
-        proxySetting: proxySetting,
+        clientSettings: clientSettings,
       );
     }
 
@@ -257,10 +253,9 @@ class M3U8Segment {
   /// Encryption details for m3u8 files with key rotation
   M3U8EncryptionDetails? encryptionDetails;
 
-  M3U8EncryptionMethod get encryptionMethod =>
-      encryptionDetails != null
-          ? encryptionDetails!.encryptionMethod
-          : M3U8EncryptionMethod.none;
+  M3U8EncryptionMethod get encryptionMethod => encryptionDetails != null
+      ? encryptionDetails!.encryptionMethod
+      : M3U8EncryptionMethod.none;
 
   M3U8Segment({
     this.url = "",

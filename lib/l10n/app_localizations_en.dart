@@ -402,11 +402,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_downloadConnections_regularConnNum =>
-      'Number of Regular Download Connections';
+      'Number of regular download connections';
 
   @override
   String get settings_downloadConnections_videoStreamConnNum =>
-      'Number of Video Stream Download Connections';
+      'Number of video stream download connections';
 
   @override
   String get settings_browserExtension => 'Browser Extension';
@@ -820,4 +820,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get btn_installAutomatically => 'Install Automatically';
+
+  @override
+  String get settings_engine => 'Download Engine';
+
+  @override
+  String get settings_engine_clientType => 'HTTP Client Type';
+
+  @override
+  String get settings_engine_clientType_tooltip =>
+      'The client type used for downloads:\n\nStandard – Balanced and stable\nPerformance – Faster but uses more CPU';
+
+  @override
+  String get settings_engine_clientType_standard => 'Standard';
+
+  @override
+  String get settings_engine_clientType_performance => 'Performance';
 }

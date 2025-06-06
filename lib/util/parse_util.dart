@@ -5,6 +5,7 @@ import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/constants/setting_type.dart';
 import 'package:brisk/setting/rule/file_save_path_rule.dart';
 import 'package:brisk/setting/rule/file_rule.dart';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:csv/csv.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +31,10 @@ FileDuplicationBehaviour parseFileDuplicationBehaviour(String val) {
 
 AppClosureBehaviour parseAppCloseBehaviour(String val) {
   return AppClosureBehaviour.values.where((type) => type.name == val).first;
+}
+
+ClientType resolveClientType(String clientType) {
+  return ClientType.values.where((type) => type.name == clientType).first;
 }
 
 SettingOptions parseSettingOptions(String val) {

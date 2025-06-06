@@ -821,4 +821,20 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get btn_installAutomatically => 'Install Automatically';
+
+  @override
+  String get settings_engine => 'Download Engine';
+
+  @override
+  String get settings_engine_clientType => 'HTTP Client Type';
+
+  @override
+  String get settings_engine_clientType_tooltip =>
+      'The client type used for downloads:\n\nStandard – Balanced and stable\nPerformance – Faster but uses more CPU';
+
+  @override
+  String get settings_engine_clientType_standard => 'Standard';
+
+  @override
+  String get settings_engine_clientType_performance => 'Performance';
 }

@@ -9,6 +9,7 @@ class DropDownSetting extends StatelessWidget {
   final double? textWidth;
   final double? dropDownWidth;
   final double? dropDownItemTextWidth;
+  final String? tooltipMessage;
   final Function(String? value) onChanged;
 
   const DropDownSetting({
@@ -20,6 +21,7 @@ class DropDownSetting extends StatelessWidget {
     this.textWidth,
     this.dropDownWidth,
     this.dropDownItemTextWidth,
+    this.tooltipMessage,
   });
 
   @override
@@ -39,6 +41,20 @@ class DropDownSetting extends StatelessWidget {
             ),
           ),
         ),
+        tooltipMessage != null
+            ? Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Tooltip(
+                  child: Icon(Icons.info, color: Colors.grey),
+                  message: tooltipMessage,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(33, 33, 33, 1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  textStyle: TextStyle(color: Colors.white),
+                ),
+              )
+            : Container(),
         const Spacer(),
         SizedBox(
           width: dropDownWidth,

@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:brisk_download_engine/src/download_engine/client/http_client_builder.dart';
 import 'package:path/path.dart';
 
 import 'package:encrypt/encrypt.dart';
-
-import '../setting/proxy_setting.dart';
+import 'package:rhttp/rhttp.dart';
 
 /// Decrypts an AES-128 encrypted file.
 /// If chunked mode is enabled, it decrypts the file in chunks to reduce memory usage.
@@ -70,13 +70,13 @@ IV deriveExplicitIV(String ivString) {
 
 Future<String> fetchBodyString(
   String url, {
-  ProxySetting? proxySetting,
+  HttpClientSettings? clientSettings,
   Map<String, String> headers = const {},
 }) async {
-  final client = HttpClientBuilder.buildClient(proxySetting);
+  final client = await HttpClientBuilder.buildClient(clientSettings);
   try {
     var requestHeaders = headers;
-    requestHeaders[HttpHeaders.userAgentHeader] =
+    requestHeaders["User-Agent"] =
         "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;";
     final response = await client.get(
       Uri.parse(url),
@@ -97,9 +97,9 @@ Future<String> fetchBodyString(
 /// Fetches the decryption key from the url specified in m3u8
 Future<Uint8List> fetchDecryptionKey(
   String keyUrl, {
-  ProxySetting? proxySetting,
+  HttpClientSettings? clientSettings,
 }) async {
-  final client = HttpClientBuilder.buildClient(proxySetting);
+  final client = await HttpClientBuilder.buildClient(clientSettings);
   try {
     final response = await client.get(
       Uri.parse(keyUrl),

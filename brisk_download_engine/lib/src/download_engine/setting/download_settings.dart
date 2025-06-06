@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:brisk_download_engine/src/download_engine/client/http_client_settings.dart';
 import 'package:brisk_download_engine/src/download_engine/setting/proxy_setting.dart';
+import 'package:rhttp/rhttp.dart';
 
 class DownloadSettings extends ConnectionSettings {
   final Directory baseSaveDir;
@@ -15,7 +17,7 @@ class DownloadSettings extends ConnectionSettings {
     required super.baseTempDir,
     required super.connectionRetryTimeoutMillis,
     required super.maxConnectionRetryCount,
-    super.proxySetting,
+    super.clientSettings,
   });
 }
 
@@ -24,13 +26,13 @@ class ConnectionSettings {
   final int connectionRetryTimeoutMillis;
   final int maxConnectionRetryCount;
   final bool loggerEnabled;
-  final ProxySetting? proxySetting;
+  final HttpClientSettings? clientSettings;
 
   ConnectionSettings({
     required this.baseTempDir,
     required this.connectionRetryTimeoutMillis,
     required this.maxConnectionRetryCount,
     required this.loggerEnabled,
-    this.proxySetting,
+    this.clientSettings,
   });
 }

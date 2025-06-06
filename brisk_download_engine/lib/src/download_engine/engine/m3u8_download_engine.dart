@@ -65,7 +65,7 @@ class M3U8DownloadEngine {
         m3u8 = await M3U8.fromString(
             downloadItem.m3u8Content!,
             downloadItem.downloadUrl,
-            proxySetting: downloadSettings.proxySetting,
+            clientSettings: downloadSettings.clientSettings,
           )
           ?..refererHeader = downloadItem.refererHeader;
         _m3u8Map[uid] = m3u8!;

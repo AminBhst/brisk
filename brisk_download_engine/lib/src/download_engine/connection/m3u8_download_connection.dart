@@ -66,27 +66,25 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
   }
 
   @override
-  void resetConnection() {
+  Future<void> resetConnection() async {
     logger?.info("Resetting connection....");
     reset = true;
     clearBuffer();
-    terminateConnection();
+    await terminateConnection();
     dynamicFlushThreshold = double.infinity;
     clientInitialized = false;
     start(progressCallback!, connectionReset: true);
   }
 
   @override
-  void init(connectionReset, progressCallback, _) {
-    terminateConnection();
+  void init(connectionReset, progressCallback, _) async {
+    await terminateConnection();
     connectionStatus =
         connectionReset ? DownloadStatus.resetting : DownloadStatus.connecting;
     overallStatus = connectionStatus;
     this.progressCallback = progressCallback;
-    // if (!clientInitialized) {
-    client = buildClient();
+    await initClient(connectionReset);
     clientInitialized = true;
-    // }
     paused = false;
     reset = false;
     terminatedOnCompletion = false;
@@ -205,8 +203,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
     print("Setting pause for connection $connectionNumber");
     updateStatus(DownloadStatus.paused);
     connectionStatus = DownloadStatus.paused;
-    client.close();
-    await downloadSub?.cancel();
+    await terminateConnection();
     pauseButtonEnabled = false;
     notifyProgress();
   }
