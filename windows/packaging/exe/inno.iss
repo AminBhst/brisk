@@ -51,6 +51,7 @@ Source: "BASE_DIR\build\windows\x64\runner\Release\brisk.exe"; DestDir: "{app}";
 Source: "BASE_DIR\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "BASE_DIR\build\windows\x64\runner\Release\hotkey_manager_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "BASE_DIR\build\windows\x64\runner\Release\tray_manager_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "BASE_DIR\build\windows\x64\runner\Release\rhttp.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "BASE_DIR\build\windows\x64\runner\Release\screen_retriever_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "BASE_DIR\build\windows\x64\runner\Release\url_launcher_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "BASE_DIR\build\windows\x64\runner\Release\windows_single_instance_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
