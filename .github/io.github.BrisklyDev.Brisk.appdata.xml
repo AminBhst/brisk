@@ -57,12 +57,6 @@
       <p><em>🔧 Bug Fixes and Improvements</em></p>
       <ul>
         <li>Fixed a Github dialog reappearing issue</li>
-        <li>Fixed an issue where Brisk’s window opened even if the download was skipped due to extension capture rules</li>
-        <li>Fixed downloading video streams not working on some websites for Chrome</li>
-      </ul>
-      <p><em>🌏 Internationalization</em></p>
-      <ul>
-        <li>Added Turkish translations by Holi</li>
       </ul>
     </description>
     </release>
