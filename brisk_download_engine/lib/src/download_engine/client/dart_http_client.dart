@@ -5,7 +5,7 @@ import 'package:brisk_download_engine/src/download_engine/client/custom_base_cli
 import 'package:http/http.dart';
 
 class DartHttpClient extends CustomBaseClient {
-  late Client client;
+  Client client;
 
   DartHttpClient(this.client);
 
