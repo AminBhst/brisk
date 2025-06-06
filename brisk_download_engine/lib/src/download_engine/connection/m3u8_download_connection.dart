@@ -109,7 +109,7 @@ class M3U8DownloadConnection extends HttpDownloadConnection {
   }
 
   @override
-  void doProcessChunk(List<int> chunk) {
+  Future<void> doProcessChunk(List<int> chunk) async {
     if (chunk.isEmpty) return;
     buffer.add(chunk);
     tempReceivedBytes += chunk.length;

@@ -382,7 +382,7 @@ class HttpDownloadConnection {
 
   void _processChunk(List<int> chunk) async {
     try {
-      doProcessChunk(chunk);
+      await doProcessChunk(chunk);
     } catch (e) {
       if (e is http.ClientException && paused) return;
       logger?.error("process chunk error! $e");
@@ -395,7 +395,7 @@ class HttpDownloadConnection {
   /// Once the [tempReceivedBytes] hits the [dynamicFlushThreshold], the buffer is
   /// flushed to the disk. This process continues until the download has been
   /// finished. The buffer will be emptied after each flush
-  void doProcessChunk(List<int> chunk) async {
+  Future<void> doProcessChunk(List<int> chunk) async {
     if (chunk.isEmpty) return;
     updateStatus(DownloadStatus.downloading);
     lastResponseTimeMillis = _nowMillis;
