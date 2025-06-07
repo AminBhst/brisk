@@ -33,7 +33,7 @@ jobs:
           echo "Setting version to ${{ needs.version.outputs.version }}"
           sed -i "s/^version: .*/version: ${{ needs.version.outputs.version }}/" snapcraft.yaml
 
-      - uses: snapcore/action-build@v1
+      - uses: snapcore/action-build@v1.3.0
         id: build
 
       - name: Upload artifact 

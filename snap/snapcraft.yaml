@@ -44,6 +44,19 @@ parts:
       - ninja-build
       - unzip
       - pkg-config
+      - rustc
+      - cargo
+
+    override-build: |
+      set -eux
+      if ! command -v rustup >/dev/null 2>&1; then
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        source $HOME/.cargo/env
+      fi
+      rustup --version
+      rustc --version
+      cargo --version
+      snapcraftctl build
 
     stage-packages:
       - libgtk-3-0
