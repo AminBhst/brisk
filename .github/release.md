@@ -13,5 +13,5 @@ Because this feature is still new, it remains opt-in and is not enabled by defau
 
 ## :hammer_and_wrench: Bug Fixes and Improvements
 - Fixed a Github dialog reappearing issue
-- Fixed downloading video streams issues from some websites
+- Fixed downloading video stream issues from some websites
 - Fixed app crashing on macOS
