@@ -184,6 +184,7 @@ class M3U8 {
         }
       }
     }
+    m3u8.refererHeader = refererHeader;
     if (!fetchKeys) {
       return m3u8;
     }
