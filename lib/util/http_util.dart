@@ -98,6 +98,7 @@ Future<FileInfo?> requestFileInfo(
 }) async {
   return await sendFileInfoRequest(
     downloadItem,
+    clientSettings: clientSettings,
     ignoreException: ignoreException,
   ).catchError((e) async {
     final fileInfo = await sendFileInfoRequest(
