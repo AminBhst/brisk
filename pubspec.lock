@@ -1061,22 +1061,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
-  system_theme:
-    dependency: "direct main"
-    description:
-      name: system_theme
-      sha256: "5f93485401689601d4636a695f99f7c70a30873ee68c1d95025d908a3386be7e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.2"
-  system_theme_web:
-    dependency: transitive
-    description:
-      name: system_theme_web
-      sha256: "900c92c5c050ce58048f241ef9a17e5cd8629808325a05b473dc62a6e99bae77"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.3"
   term_glyph:
     dependency: transitive
     description:
@@ -1120,11 +1104,12 @@ packages:
   tray_manager:
     dependency: "direct main"
     description:
-      name: tray_manager
-      sha256: c2da0f0f1ddb455e721cf68d05d1281fec75cf5df0a1d3cb67b6ca0bdfd5709d
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.0"
+      path: "packages/tray_manager"
+      ref: a2d89f9ab335066b078637a20a369c7275e2f5a4
+      resolved-ref: a2d89f9ab335066b078637a20a369c7275e2f5a4
+      url: "https://github.com/jovica-me/tray_manager.git"
+    source: git
+    version: "0.5.0"
   typed_data:
     dependency: transitive
     description:

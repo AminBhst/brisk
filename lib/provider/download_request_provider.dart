@@ -17,7 +17,6 @@ import 'package:brisk/util/download_engine_util.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/util/settings_cache.dart';
-import 'package:system_theme/system_theme.dart';
 
 class DownloadRequestProvider with ChangeNotifier {
   Map<int, DownloadProgressMessage> downloads = {};
@@ -88,6 +87,11 @@ class DownloadRequestProvider with ChangeNotifier {
   void _handleDownloadProgressMessage(DownloadProgressMessage progress) async {
     final id = progress.downloadItem.id!;
     downloads[id] = progress;
+    if (progress.status == DownloadStatus.downloading) {
+      TrayHandler.setTrayDownloading();
+    } else {
+      TrayHandler.setTrayInactive();
+    }
     _handleNotification(progress);
     final downloadItem = progress.downloadItem;
     final dl = HiveUtil.instance.downloadItemsBox.get(downloadItem.id);
@@ -98,9 +102,6 @@ class DownloadRequestProvider with ChangeNotifier {
     if (progress.assembleProgress == 1) {
       HiveUtil.instance.removeDownloadFromQueues(dl.key);
       PlutoGridUtil.removeCachedRow(id);
-      TrayHandler.setTrayInactive();
-    } else {
-      TrayHandler.setTrayDownloading();
     }
     _updateDownloadRequest(progress, dl);
     if (progress.status == DownloadStatus.assembleComplete) {

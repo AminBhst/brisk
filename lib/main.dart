@@ -230,6 +230,8 @@ class _MyHomePageState extends State<MyHomePage>
         });
         launchedAtStartup = false;
       }
+      WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
+          TrayHandler.handleSystemThemeChange;
     });
     super.didChangeDependencies();
   }
