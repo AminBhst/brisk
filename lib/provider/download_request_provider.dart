@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/util/tray_handler.dart';
 import 'package:path/path.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
@@ -16,6 +17,7 @@ import 'package:brisk/util/download_engine_util.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:brisk/util/readability_util.dart';
 import 'package:brisk/util/settings_cache.dart';
+import 'package:system_theme/system_theme.dart';
 
 class DownloadRequestProvider with ChangeNotifier {
   Map<int, DownloadProgressMessage> downloads = {};
@@ -96,6 +98,9 @@ class DownloadRequestProvider with ChangeNotifier {
     if (progress.assembleProgress == 1) {
       HiveUtil.instance.removeDownloadFromQueues(dl.key);
       PlutoGridUtil.removeCachedRow(id);
+      TrayHandler.setTrayInactive();
+    } else {
+      TrayHandler.setTrayDownloading();
     }
     _updateDownloadRequest(progress, dl);
     if (progress.status == DownloadStatus.assembleComplete) {
@@ -121,7 +126,6 @@ class DownloadRequestProvider with ChangeNotifier {
     downloads[dl.key] = progress;
     notifyAllListeners(progress);
   }
-
 
   void _handleNotification(DownloadProgressMessage progress) {
     if (progress.assembleProgress == 1 &&

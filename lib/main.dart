@@ -21,7 +21,7 @@ import 'package:brisk/util/hot_key_util.dart';
 import 'package:brisk/util/launch_at_startup_util.dart';
 import 'package:brisk/util/notification_manager.dart';
 import 'package:brisk/util/single_instance_handler.dart';
-import 'package:brisk/util/tray_util.dart';
+import 'package:brisk/util/tray_handler.dart';
 import 'package:brisk/widget/base/app_exit_dialog.dart';
 import 'package:brisk/widget/base/global_context.dart';
 import 'package:brisk/widget/download/download_grid.dart';
@@ -160,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage>
         showAppClosureDialog();
         break;
       case AppClosureBehaviour.minimizeToTray:
-        initTray(context);
+        TrayHandler.setTray(context);
         windowManager.hide();
         if (Platform.isMacOS) {
           windowManager.setSkipTaskbar(true);
@@ -187,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage>
           if (rememberChecked) {
             saveNewAppClosureBehaviour(AppClosureBehaviour.minimizeToTray);
           }
-          initTray(context);
+          TrayHandler.setTray(context);
           windowManager.hide();
           if (Platform.isMacOS) {
             windowManager.setSkipTaskbar(true);
@@ -225,7 +225,7 @@ class _MyHomePageState extends State<MyHomePage>
         Future.delayed(const Duration(milliseconds: 200), () {
           windowManager.waitUntilReadyToShow(null, () {
             windowManager.hide();
-            initTray(context);
+            TrayHandler.setTray(context);
           });
         });
         launchedAtStartup = false;
