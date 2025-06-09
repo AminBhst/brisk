@@ -1104,11 +1104,9 @@ packages:
   tray_manager:
     dependency: "direct main"
     description:
-      path: "packages/tray_manager"
-      ref: a2d89f9ab335066b078637a20a369c7275e2f5a4
-      resolved-ref: a2d89f9ab335066b078637a20a369c7275e2f5a4
-      url: "https://github.com/jovica-me/tray_manager.git"
-    source: git
+      path: "tray_manager/packages/tray_manager"
+      relative: true
+    source: path
     version: "0.5.0"
   typed_data:
     dependency: transitive

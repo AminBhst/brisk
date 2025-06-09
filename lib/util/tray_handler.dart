@@ -37,7 +37,7 @@ class TrayHandler {
 
   static String get trayDownloadingIcon {
     if (isFlatpak) {
-      return "io.github.BrisklyDev.Brisk.trayActive";
+      return "app/share/io.github.BrisklyDev.Brisk.trayActive";
     }
     if (isSnap) {
       final snapEnv = Platform.environment['SNAP'];
@@ -52,8 +52,8 @@ class TrayHandler {
   static String get trayInactiveIcon {
     if (isFlatpak) {
       return isDarkMode
-          ? "io.github.BrisklyDev.Brisk.trayInactiveDark"
-          : "io.github.BrisklyDev.Brisk.trayInactiveLight";
+          ? "app/share/io.github.BrisklyDev.Brisk.trayInactiveDark"
+          : "app/share/io.github.BrisklyDev.Brisk.trayInactiveLight";
     }
     if (isSnap) {
       final snapEnv = Platform.environment['SNAP'];
@@ -79,8 +79,8 @@ class TrayHandler {
     String icon;
     if (isFlatpak) {
       icon = isDarkMode
-          ? "io.github.BrisklyDev.Brisk.trayInactiveDark"
-          : "io.github.BrisklyDev.Brisk.trayInactiveLight";
+          ? "app/share/io.github.BrisklyDev.Brisk.trayInactiveDark"
+          : "app/share/io.github.BrisklyDev.Brisk.trayInactiveLight";
     } else if (isSnap) {
       final snapEnv = Platform.environment['SNAP'];
       icon = isDarkMode
