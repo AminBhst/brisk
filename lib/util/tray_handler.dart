@@ -18,7 +18,9 @@ class TrayHandler {
         MenuItem(key: 'exit_app', label: loc.tray_exitApp),
       ],
     );
-    await trayManager.setIcon(trayInactiveIcon);
+    await trayManager.setIcon(
+      _isTrayInDownloadingMode ? trayDownloadingIcon : trayInactiveIcon,
+    );
     await trayManager.setContextMenu(menu);
     isInTrayEnabled = true;
   }
