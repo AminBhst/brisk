@@ -214,7 +214,7 @@ packages:
     source: hosted
     version: "1.19.1"
   convert:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: convert
       sha256: b30acd5944035672bc15c6b7a8b47d773e41e2f17de064350988c5d02adb1c68
@@ -321,10 +321,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: "36a1652d99cb6bf8ccc8b9f43aded1fd60b234d23ce78af422c07f950a436ef7"
+      sha256: "77f8e81d22d2a07d0dee2c62e1dda71dc1da73bf43bb2d45af09727406167964"
       url: "https://pub.dev"
     source: hosted
-    version: "10.0.0"
+    version: "10.1.9"
   fixnum:
     dependency: transitive
     description:
@@ -1104,11 +1104,12 @@ packages:
   tray_manager:
     dependency: "direct main"
     description:
-      name: tray_manager
-      sha256: c2da0f0f1ddb455e721cf68d05d1281fec75cf5df0a1d3cb67b6ca0bdfd5709d
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.0"
+      path: "packages/tray_manager"
+      ref: a2d89f9ab335066b078637a20a369c7275e2f5a4
+      resolved-ref: a2d89f9ab335066b078637a20a369c7275e2f5a4
+      url: "https://github.com/jovica-me/tray_manager.git"
+    source: git
+    version: "0.5.0"
   typed_data:
     dependency: transitive
     description:

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/util/settings_cache.dart';
-import 'package:brisk/util/tray_util.dart';
+import 'package:brisk/util/tray_handler.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -45,7 +45,7 @@ class HotKeyUtil {
     );
     await hotKeyManager.register(
       hideToTrayHotkey,
-      keyDownHandler: (_) => initTray(context).then((_) async {
+      keyDownHandler: (_) => TrayHandler.setTray(context).then((_) async {
         await windowManager.hide();
         windowManager.setSkipTaskbar(true);
       }),

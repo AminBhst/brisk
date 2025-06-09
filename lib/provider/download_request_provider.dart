@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:brisk/db/hive_util.dart';
+import 'package:brisk/util/tray_handler.dart';
 import 'package:path/path.dart';
 import 'package:brisk/model/download_item.dart';
 import 'package:brisk/provider/pluto_grid_check_row_provider.dart';
@@ -86,6 +87,11 @@ class DownloadRequestProvider with ChangeNotifier {
   void _handleDownloadProgressMessage(DownloadProgressMessage progress) async {
     final id = progress.downloadItem.id!;
     downloads[id] = progress;
+    if (progress.status == DownloadStatus.downloading) {
+      TrayHandler.setTrayDownloading();
+    } else {
+      TrayHandler.setTrayInactive();
+    }
     _handleNotification(progress);
     final downloadItem = progress.downloadItem;
     final dl = HiveUtil.instance.downloadItemsBox.get(downloadItem.id);
@@ -121,7 +127,6 @@ class DownloadRequestProvider with ChangeNotifier {
     downloads[dl.key] = progress;
     notifyAllListeners(progress);
   }
-
 
   void _handleNotification(DownloadProgressMessage progress) {
     if (progress.assembleProgress == 1 &&
