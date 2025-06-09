@@ -97,3 +97,4 @@ class TrayHandler {
     }
     await trayManager.setIcon(icon);
   }
+}
