@@ -87,7 +87,9 @@ class DownloadRequestProvider with ChangeNotifier {
   void _handleDownloadProgressMessage(DownloadProgressMessage progress) async {
     final id = progress.downloadItem.id!;
     downloads[id] = progress;
-    if (progress.status == DownloadStatus.downloading) {
+    if (progress.status == DownloadStatus.downloading ||
+        progress.status == DownloadStatus.validatingFiles ||
+        progress.status == DownloadStatus.assembling) {
       TrayHandler.setTrayDownloading();
     } else {
       TrayHandler.setTrayInactive();
