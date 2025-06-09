@@ -68,13 +68,6 @@ dependency_overrides:
       path: packages/window_manager
       ref: af74247d3c1616968ec281435f7410bcc7f9355c
 
-  # This is to solve memory leak on windows when tray icon is set consecutively
-  tray_manager:
-    git:
-      url: https://github.com/jovica-me/tray_manager.git
-      path: packages/tray_manager
-      ref: a2d89f9ab335066b078637a20a369c7275e2f5a4
-
 flutter_launcher_icons:
   windows:
     generate: true
