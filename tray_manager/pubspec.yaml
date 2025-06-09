@@ -1,0 +1,9 @@
+name: tray_manager_workspace
+homepage: https://github.com/leanflutter/tray_manager
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dev_dependencies:
+  melos: ^3.1.0
