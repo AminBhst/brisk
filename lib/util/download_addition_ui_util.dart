@@ -32,6 +32,8 @@ import 'file_util.dart';
 import 'http_util.dart';
 
 class DownloadAdditionUiUtil {
+  static Map<TextEditingController, TextEditingController>
+      savedHeaderControllers = {};
   static Isolate? fileInfoExtractorIsolate;
 
   static void cancelRequest(BuildContext context) {
@@ -55,8 +57,14 @@ class DownloadAdditionUiUtil {
     return completer.future;
   }
 
-  static void handleDownloadAddition(BuildContext context, String url,
-      {bool updateDialog = false, int? downloadId, additionalPop = false}) {
+  static void handleDownloadAddition(
+    BuildContext context,
+    String url, {
+    bool updateDialog = false,
+    int? downloadId,
+    additionalPop = false,
+    Map<String, String> headers = const {},
+  }) {
     final loc = AppLocalizations.of(context)!;
     windowManager.show().then((value) => WindowToFront.activate());
     if (!isUrlValid(url)) {
@@ -74,6 +82,7 @@ class DownloadAdditionUiUtil {
       return;
     }
     final item = DownloadItem.fromUrl(url);
+    item.requestHeaders = headers;
     _spawnFileInfoRetrieverIsolate(item).then((rPort) {
       context.loaderOverlay.show();
       retrieveFileInfo(rPort).then((fileInfo) {

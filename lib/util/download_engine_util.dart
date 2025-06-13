@@ -35,5 +35,6 @@ DownloadItemModel buildFromDownloadItem(DownloadItem item) {
     m3u8Content: item.extraInfo["m3u8Content"],
     duration: item.extraInfo["duration"],
     refererHeader: item.extraInfo["refererHeader"],
+    requestHeaders: item.requestHeaders,
   );
 }

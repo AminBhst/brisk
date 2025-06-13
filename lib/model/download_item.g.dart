@@ -36,13 +36,15 @@ class DownloadItemAdapter extends TypeAdapter<DownloadItem> {
           : (fields[15] as List)
               .map((dynamic e) => (e as Map).cast<String, String>())
               .toList(),
+      requestHeaders:
+          fields[16] == null ? {} : (fields[16] as Map).cast<String, String>(),
     )..referer = fields[14] as String?;
   }
 
   @override
   void write(BinaryWriter writer, DownloadItem obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(1)
       ..write(obj.uid)
       ..writeByte(2)
@@ -72,7 +74,9 @@ class DownloadItemAdapter extends TypeAdapter<DownloadItem> {
       ..writeByte(14)
       ..write(obj.referer)
       ..writeByte(15)
-      ..write(obj.subtitles);
+      ..write(obj.subtitles)
+      ..writeByte(16)
+      ..write(obj.requestHeaders);
   }
 
   @override

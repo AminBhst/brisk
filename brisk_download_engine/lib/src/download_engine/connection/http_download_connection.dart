@@ -11,6 +11,7 @@ import 'package:brisk_download_engine/src/download_engine/message/internal_messa
 import 'package:brisk_download_engine/src/download_engine/message/log_message.dart';
 import 'package:brisk_download_engine/src/download_engine/segment/segment.dart';
 import 'package:brisk_download_engine/src/download_engine/util/file_util.dart';
+import 'package:brisk_download_engine/src/download_engine/util/lang_utils.dart';
 import 'package:brisk_download_engine/src/download_engine/util/temp_file_util.dart';
 import 'package:brisk_download_engine/src/download_engine/util/types.dart';
 import 'package:dartx/dartx.dart';
@@ -321,9 +322,16 @@ class HttpDownloadConnection {
       "Range": "bytes=$reqStartByte-${this.endByte}",
       // "Keep-Alive": "timeout=5, max=1",
       // TODO handle request time-out response (We should reinitialize client)
-      "User-Agent":
-          "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;",
     });
+    if (!downloadItem.requestHeaders.containsKeyIgnoreCase("User-Agent")) {
+      request.headers.addAll({
+        "User-Agent":
+            "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko;"
+      });
+    }
+    if (downloadItem.requestHeaders.isNotEmpty) {
+      request.headers.addAll(downloadItem.requestHeaders);
+    }
     logger?.info("Request headers: ${request.headers}");
     totalRequestWriteProgress = downloadProgress;
     logger?.info("=========== Total connection temp files ===========");

@@ -283,6 +283,7 @@
   "settings_engine_clientType": "HTTP Client Type",
   "settings_engine_clientType_tooltip": "The client type used for downloads:\n\nStandard – Balanced and stable\nPerformance – Faster but uses more CPU",
   "settings_engine_clientType_standard": "Standard",
-  "settings_engine_clientType_performance": "Performance (Beta)"
-
+  "settings_engine_clientType_performance": "Performance (Beta)",
+  "btn_showAdvancedOptions": "Show Advanced Options",
+  "btn_hideAdvancedOptions": "Hide Advanced Options"
 }

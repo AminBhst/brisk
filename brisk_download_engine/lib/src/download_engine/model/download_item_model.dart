@@ -32,6 +32,8 @@ class DownloadItemModel {
   /// Only used for m3u8
   int? duration;
 
+  Map<String, String> requestHeaders;
+
   DownloadItemModel({
     this.id,
     this.uid = "",
@@ -48,6 +50,7 @@ class DownloadItemModel {
     this.m3u8Content,
     this.duration,
     this.refererHeader,
+    this.requestHeaders = const {},
   });
 
   DownloadType get downloadType =>

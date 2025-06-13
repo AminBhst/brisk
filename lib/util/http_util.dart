@@ -3,8 +3,10 @@ import 'dart:convert';
 
 import 'package:brisk/constants/setting_options.dart';
 import 'package:brisk/model/download_item.dart';
+import 'package:brisk/util/lang_utils.dart';
 import 'package:brisk_download_engine/brisk_download_engine.dart';
 import 'package:dartx/dartx.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -100,11 +102,13 @@ Future<FileInfo?> requestFileInfo(
     downloadItem,
     clientSettings: clientSettings,
     ignoreException: ignoreException,
+    headers: downloadItem.requestHeaders,
   ).catchError((e) async {
     final fileInfo = await sendFileInfoRequest(
       downloadItem,
       ignoreException: ignoreException,
       clientSettings: clientSettings,
+      headers: downloadItem.requestHeaders,
       useGet: true,
     );
     return fileInfo;
@@ -137,13 +141,19 @@ Future<FileInfo?> sendFileInfoRequest(
   HttpClientSettings? clientSettings = null,
   bool ignoreException = false,
   bool useGet = false,
+  Map<String, String> headers = const {},
 }) async {
   Completer<FileInfo?> completer = Completer();
   final request = http.Request(
     useGet ? "GET" : "HEAD",
     Uri.parse(downloadItem.downloadUrl),
   );
-  request.headers.addAll(userAgentHeader);
+  if (!headers.containsKeyIgnoreCase("User-Agent")) {
+    request.headers.addAll(userAgentHeader);
+  }
+  if (headers.isNotEmpty) {
+    request.headers.addAll(headers);
+  }
   final client = await HttpClientBuilder.buildClient(clientSettings);
   try {
     client
@@ -189,7 +199,6 @@ Future<FileInfo?> sendFileInfoRequest(
   } catch (e) {
     completer.completeError(e);
   }
-
   return completer.future;
 }
 

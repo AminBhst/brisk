@@ -126,12 +126,12 @@ Menu menu = Menu(
   items: [
     MenuItem(
       key: 'show_window',
-      label: 'Show Window',
+      label: 'Open Brisk',
     ),
     MenuItem.separator(),
     MenuItem(
       key: 'exit_app',
-      label: 'Exit App',
+      label: 'Exit Brisk',
     ),
   ],
 );

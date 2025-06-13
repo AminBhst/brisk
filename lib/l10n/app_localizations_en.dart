@@ -836,4 +836,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_engine_clientType_performance => 'Performance (Beta)';
+
+  @override
+  String get btn_showAdvancedOptions => 'Show Advanced Options';
+
+  @override
+  String get btn_hideAdvancedOptions => 'Hide Advanced Options';
 }

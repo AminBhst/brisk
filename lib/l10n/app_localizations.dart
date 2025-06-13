@@ -1629,6 +1629,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Performance (Beta)'**
   String get settings_engine_clientType_performance;
+
+  /// No description provided for @btn_showAdvancedOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Advanced Options'**
+  String get btn_showAdvancedOptions;
+
+  /// No description provided for @btn_hideAdvancedOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Advanced Options'**
+  String get btn_hideAdvancedOptions;
 }
 
 class _AppLocalizationsDelegate

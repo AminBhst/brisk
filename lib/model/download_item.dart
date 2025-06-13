@@ -54,6 +54,9 @@ class DownloadItem extends HiveObject {
   @HiveField(15, defaultValue: [])
   List<Map<String, String>> subtitles;
 
+  @HiveField(16, defaultValue: {})
+  Map<String, String> requestHeaders;
+
   DownloadItem({
     required this.uid,
     required this.fileName,
@@ -69,10 +72,17 @@ class DownloadItem extends HiveObject {
     this.extraInfo = const {},
     this.downloadType = "HTTP",
     this.subtitles = const [],
+    this.requestHeaders = const {},
   });
 
-  void setM3u8Content(String m3u8Content) {
-    extraInfo["m3u8Content"] = m3u8Content;
+  factory DownloadItem.fromFileInfo(FileInfo fileInfo) {
+    final item = DownloadItem.fromUrl(fileInfo.url);
+    item.fileName = fileInfo.fileName;
+    item.fileType = FileUtil.detectFileType(item.fileName).name;
+    item.contentLength = fileInfo.contentLength;
+    item.supportsPause = fileInfo.supportsPause;
+    item.filePath = FileUtil.getFilePath(item.fileName);
+    return item;
   }
 
   factory DownloadItem.fromUrl(String url) {
@@ -88,13 +98,7 @@ class DownloadItem extends HiveObject {
     );
   }
 
-  factory DownloadItem.fromFileInfo(FileInfo fileInfo) {
-    final item = DownloadItem.fromUrl(fileInfo.url);
-    item.fileName = fileInfo.fileName;
-    item.fileType = FileUtil.detectFileType(item.fileName).name;
-    item.contentLength = fileInfo.contentLength;
-    item.supportsPause = fileInfo.supportsPause;
-    item.filePath = FileUtil.getFilePath(item.fileName);
-    return item;
+  void setM3u8Content(String m3u8Content) {
+    extraInfo["m3u8Content"] = m3u8Content;
   }
 }
