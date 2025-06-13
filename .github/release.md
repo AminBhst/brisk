@@ -6,4 +6,4 @@
 - **Added Automatic file save path categorization to settings:**
   When this option is disabled, Brisk will no longer use categorized directories based on file types (Compressed, Videos, Music, etc.) for save paths.
 - **New Dynamic Tray Icons**:
-  The system tray icon has been changed and now reflects the status of the app; if there is a file being downloaded, the tray icon will reflect this by changing its color to green. When there is no file being downloadded, the tray icon will be the default tray icon (app logo in white for dark mode and in dark blue for light mode)
+The system tray icon has been changed and now reflects the status of the app; if there is a file being downloaded, the tray icon will reflect this by changing its color to green. When there is no file being downloaded, the tray icon will be the remain the default (app logo in white for dark mode and in dark blue for light mode)
