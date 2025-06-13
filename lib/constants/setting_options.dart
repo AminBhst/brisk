@@ -14,6 +14,7 @@ enum SettingOptions {
   extensionPort,
   temporaryPath,
   savePath,
+  automaticFileSavePathCategorization,
   fileSavePathRules,
   videoFormats,
   musicFormats,

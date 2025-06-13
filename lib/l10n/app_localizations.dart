@@ -1641,6 +1641,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide Advanced Options'**
   String get btn_hideAdvancedOptions;
+
+  /// No description provided for @settings_automaticFileSavePathCategorization.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic file save path categorization'**
+  String get settings_automaticFileSavePathCategorization;
 }
 
 class _AppLocalizationsDelegate

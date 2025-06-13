@@ -41,6 +41,7 @@ class SettingsCache {
   /// File
   static late Directory temporaryDir;
   static late Directory saveDir;
+  static late bool automaticFileSavePathCategorization;
   static late List<String> videoFormats;
   static late List<String> musicFormats;
   static late List<String> documentFormats;
@@ -118,6 +119,10 @@ class SettingsCache {
     SettingOptions.savePath.name: [
       SettingType.file.name,
       FileUtil.defaultSaveDir.path,
+    ],
+    SettingOptions.automaticFileSavePathCategorization.name: [
+      SettingType.file.name,
+      "true",
     ],
     SettingOptions.fileSavePathRules.name: [
       SettingType.file.name,
@@ -253,6 +258,9 @@ class SettingsCache {
         case SettingOptions.savePath:
           saveDir = Directory(value);
           break;
+        case SettingOptions.automaticFileSavePathCategorization:
+          automaticFileSavePathCategorization = parseBool(value);
+          break;
         case SettingOptions.fileSavePathRules:
           fileSavePathRules = parseCsvToFileSavePathRuleList(value);
           break;
@@ -374,6 +382,10 @@ class SettingsCache {
           break;
         case SettingOptions.savePath:
           setting.value = SettingsCache.saveDir.path;
+          break;
+        case SettingOptions.automaticFileSavePathCategorization:
+          setting.value =
+              parseBoolStr(SettingsCache.automaticFileSavePathCategorization);
           break;
         case SettingOptions.fileSavePathRules:
           setting.value =

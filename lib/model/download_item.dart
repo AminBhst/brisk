@@ -2,6 +2,7 @@ import 'package:brisk/constants/download_type.dart';
 import 'package:brisk/model/file_metadata.dart';
 import 'package:brisk/util/file_util.dart';
 import 'package:brisk/util/http_util.dart';
+import 'package:brisk/util/settings_cache.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
@@ -81,7 +82,10 @@ class DownloadItem extends HiveObject {
     item.fileType = FileUtil.detectFileType(item.fileName).name;
     item.contentLength = fileInfo.contentLength;
     item.supportsPause = fileInfo.supportsPause;
-    item.filePath = FileUtil.getFilePath(item.fileName);
+    item.filePath = FileUtil.getFilePath(
+      item.fileName,
+      useTypeBasedSubDirs: SettingsCache.automaticFileSavePathCategorization,
+    );
     return item;
   }
 

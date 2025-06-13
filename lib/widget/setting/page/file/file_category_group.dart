@@ -1,14 +1,20 @@
 import 'package:brisk/l10n/app_localizations.dart';
 import 'package:brisk/util/parse_util.dart';
 import 'package:brisk/widget/setting/base/settings_group.dart';
+import 'package:brisk/widget/setting/base/switch_setting.dart';
 import 'package:brisk/widget/setting/base/text_field_setting.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../util/settings_cache.dart';
 
-class FileCategoryGroup extends StatelessWidget {
+class FileCategoryGroup extends StatefulWidget {
   const FileCategoryGroup({super.key});
 
+  @override
+  State<FileCategoryGroup> createState() => _FileCategoryGroupState();
+}
+
+class _FileCategoryGroupState extends State<FileCategoryGroup> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -16,11 +22,20 @@ class FileCategoryGroup extends StatelessWidget {
     return SettingsGroup(
       title: loc.settings_fileCategory,
       children: [
+        SwitchSetting(
+          text: loc.settings_automaticFileSavePathCategorization,
+          switchValue: SettingsCache.automaticFileSavePathCategorization,
+          onChanged: (value) => setState(
+            () => SettingsCache.automaticFileSavePathCategorization = value,
+          ),
+        ),
+        marginSizedBox,
         TextFieldSetting(
           text: loc.settings_fileCategory_video,
           width: resolveTextFieldWidth(size),
           textWidth: resolveTextWidth(size),
-          txtController: TextEditingController(text: parseListToCsv(SettingsCache.videoFormats)),
+          txtController: TextEditingController(
+              text: parseListToCsv(SettingsCache.videoFormats)),
           onChanged: (val) => setCachedFormats(
             val,
             (formats) => SettingsCache.videoFormats = formats,
@@ -31,7 +46,8 @@ class FileCategoryGroup extends StatelessWidget {
           text: loc.settings_fileCategory_music,
           width: resolveTextFieldWidth(size),
           textWidth: resolveTextWidth(size),
-          txtController: TextEditingController(text: parseListToCsv(SettingsCache.musicFormats)),
+          txtController: TextEditingController(
+              text: parseListToCsv(SettingsCache.musicFormats)),
           onChanged: (val) => setCachedFormats(
             val,
             (formats) => SettingsCache.musicFormats = formats,
@@ -42,7 +58,8 @@ class FileCategoryGroup extends StatelessWidget {
           text: loc.settings_fileCategory_archive,
           width: resolveTextFieldWidth(size),
           textWidth: resolveTextWidth(size),
-          txtController: TextEditingController(text: parseListToCsv(SettingsCache.compressedFormats)),
+          txtController: TextEditingController(
+              text: parseListToCsv(SettingsCache.compressedFormats)),
           onChanged: (val) => setCachedFormats(
             val,
             (formats) => SettingsCache.compressedFormats = formats,
@@ -53,7 +70,8 @@ class FileCategoryGroup extends StatelessWidget {
           text: loc.settings_fileCategory_program,
           width: resolveTextFieldWidth(size),
           textWidth: resolveTextWidth(size),
-          txtController: TextEditingController(text: parseListToCsv(SettingsCache.programFormats)),
+          txtController: TextEditingController(
+              text: parseListToCsv(SettingsCache.programFormats)),
           onChanged: (val) => setCachedFormats(
             val,
             (formats) => SettingsCache.programFormats = formats,
@@ -64,7 +82,8 @@ class FileCategoryGroup extends StatelessWidget {
           text: loc.settings_fileCategory_document,
           width: resolveTextFieldWidth(size),
           textWidth: resolveTextWidth(size),
-          txtController: TextEditingController(text: parseListToCsv(SettingsCache.documentFormats)),
+          txtController: TextEditingController(
+              text: parseListToCsv(SettingsCache.documentFormats)),
           onChanged: (val) => setCachedFormats(
             val,
             (formats) => SettingsCache.documentFormats = formats,
@@ -73,7 +92,6 @@ class FileCategoryGroup extends StatelessWidget {
       ],
     );
   }
-
 
   double resolveTextFieldWidth(Size size) {
     double width = 400;

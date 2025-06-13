@@ -843,4 +843,8 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get btn_hideAdvancedOptions => 'Hide Advanced Options';
+
+  @override
+  String get settings_automaticFileSavePathCategorization =>
+      'Automatic file save path categorization';
 }

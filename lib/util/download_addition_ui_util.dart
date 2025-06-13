@@ -140,7 +140,10 @@ class DownloadAdditionUiUtil {
       startDate: DateTime.now(),
       progress: 0,
       contentLength: -1,
-      filePath: FileUtil.getFilePath(fileName),
+      filePath: FileUtil.getFilePath(
+        fileName,
+        useTypeBasedSubDirs: SettingsCache.automaticFileSavePathCategorization,
+      ),
       downloadType: DownloadType.M3U8.name,
       fileType: DLFileType.video.name,
       supportsPause: true,
@@ -338,7 +341,11 @@ class DownloadAdditionUiUtil {
       (rule) => rule.isSatisfiedByDownloadItem(item),
     );
     item.filePath = rule == null
-        ? FileUtil.getFilePath(item.fileName)
+        ? FileUtil.getFilePath(
+            item.fileName,
+            useTypeBasedSubDirs:
+                SettingsCache.automaticFileSavePathCategorization,
+          )
         : FileUtil.getFilePath(
             item.fileName,
             baseSaveDir: Directory(rule.savePath),

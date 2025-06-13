@@ -285,5 +285,6 @@
   "settings_engine_clientType_standard": "Standard",
   "settings_engine_clientType_performance": "Performance (Beta)",
   "btn_showAdvancedOptions": "Show Advanced Options",
-  "btn_hideAdvancedOptions": "Hide Advanced Options"
+  "btn_hideAdvancedOptions": "Hide Advanced Options",
+  "settings_automaticFileSavePathCategorization": "Automatic file save path categorization"
 }

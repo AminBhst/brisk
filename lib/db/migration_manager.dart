@@ -15,6 +15,7 @@ class MigrationManager {
     Migration(5, "Add FFmpeg path"),
     Migration(6, "Add FFmpeg warning ignore"),
     Migration(7, "Add http client type"),
+    Migration(8, "Add automaticFileSavePathCategorization"),
   ];
 
   static runMigrations() async {
@@ -53,6 +54,9 @@ class MigrationManager {
         break;
       case 7:
         await runMigrationV7();
+        break;
+      case 8:
+        await runMigrationV8();
         break;
       default:
         break;
@@ -186,10 +190,22 @@ class MigrationManager {
   static Future<void> runMigrationV7() async {
     final httpClientType = Setting(
       name: SettingOptions.httpClientType.name,
-      value: SettingsCache.defaultSettings[SettingOptions.httpClientType.name]![1],
+      value:
+          SettingsCache.defaultSettings[SettingOptions.httpClientType.name]![1],
       settingType:
-      SettingsCache.defaultSettings[SettingOptions.httpClientType.name]![0],
+          SettingsCache.defaultSettings[SettingOptions.httpClientType.name]![0],
     );
     await HiveUtil.instance.settingBox.add(httpClientType);
+  }
+
+  static Future<void> runMigrationV8() async {
+    final savePathCategorization = Setting(
+      name: SettingOptions.automaticFileSavePathCategorization.name,
+      value: SettingsCache.defaultSettings[
+          SettingOptions.automaticFileSavePathCategorization.name]![1],
+      settingType: SettingsCache.defaultSettings[
+          SettingOptions.automaticFileSavePathCategorization.name]![0],
+    );
+    await HiveUtil.instance.settingBox.add(savePathCategorization);
   }
 }
