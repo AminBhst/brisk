@@ -48,13 +48,10 @@
       <p><em>🔧 Bug Fixes and Improvements</em></p>
       <ul>
         <li>Download Engine Optimizations</li>
-      </ul>
-      <ul>
-        <li>Added Automatic file save path categorization to settings</li>
-      </ul>
-       <ul>
+        <li>Added Automatic file save path categorization to settings</li>\
         <li>New Dynamic Tray Icons</li>
       </ul>
+      <ul>
     </description>
     </release>
   </releases>
