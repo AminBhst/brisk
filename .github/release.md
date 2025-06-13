@@ -2,7 +2,7 @@
 
 ## :hammer_and_wrench: New Features and Improvements
 - **Download Engine Optimization:**
-  The temp file validation process has been optimized and is now significantly faster and more efficient, especially for larger files
+  The file integrity validation process has been optimized and is now significantly faster and more efficient, especially for larger files
 - **Added Automatic file save path categorization to settings:**
   When this option is disabled, Brisk will no longer use categorized directories based on file types (Compressed, Videos, Music, etc.) for save paths.
 - **New Dynamic Tray Icons**:
