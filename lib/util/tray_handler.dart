@@ -86,8 +86,8 @@ class TrayHandler {
     } else if (isSnap) {
       final snapEnv = Platform.environment['SNAP'];
       icon = isDarkMode
-          ? "$snapEnv/meta/gui/tray-inactive-light.png"
-          : "$snapEnv/meta/gui/tray-inactive-dark.png";
+          ? "$snapEnv/meta/gui/tray-inactive-dark.png"
+          : "$snapEnv/meta/gui/tray-inactive-light.png";
     } else if (isWindows) {
       icon = isDarkMode
           ? "assets/icons/tray-inactive-dark.ico"
