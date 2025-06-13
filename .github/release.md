@@ -1,17 +1,9 @@
 # Changelog
 
-## :rocket: New Rust-based Http Client
-A new option is now available: rhttp, a Rust-based HTTP client to boost download performance compared to the default Dart HTTP client.
-
-Since rhttp uses FFI, it requires additional system resources, as it spawns extra threads to allow for communication between the Rust layer and the Dart app.
-
-You can enable this client via:
-
-`Settings → Connection → Download Engine → HTTP Client Type → Performance (Experimental).`
-
-Because this feature is still new, it remains opt-in and is not enabled by default. The default client remains the Dart-based HTTP client due to its proven stability and compatibility with the download engine.
-
-## :hammer_and_wrench: Bug Fixes and Improvements
-- Fixed a Github dialog reappearing issue
-- Fixed downloading video stream issues from some websites
-- Fixed app crashing on macOS
+## :hammer_and_wrench: New Features and Improvements
+- **Download Engine Optimization:**
+  The temp file validation process has been optimized and is now significantly faster and more efficient, especially for larger files
+- **Added Automatic file save path categorization to settings:**
+  When this option is disabled, Brisk will no longer use categorized directories based on file types (Compressed, Videos, Music, etc.) for save paths.
+- **New Dynamic Tray Icons**:
+  The system tray icon has been changed and now reflects the status of the app; if there is a file being downloaded, the tray icon will reflect this by changing its color to green. When there is no file being downloadded, the tray icon will be the default tray icon (app logo in white for dark mode and in dark blue for light mode)
