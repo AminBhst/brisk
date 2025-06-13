@@ -43,19 +43,17 @@
   </screenshots>
 
   <releases>
-    <release version="2.3.1" date="2025-06-25">
+    <release version="2.3.2" date="2025-06-13">
     <description>
-      <p><em>🚀 New Rust-based Http Client</em></p>
-      <p>
-        A new option is now available: rhttp, a Rust-based HTTP client to boost download performance compared to the default Dart HTTP client.
-        Since rhttp uses FFI, it requires additional system resources, as it spawns extra threads to allow for communication between the Rust layer and the Dart app.
-        You can enable this client via:
-        Settings → Connection → Download Engine → HTTP Client Type → Performance (Experimental)
-        Because this feature is still new, it remains opt-in and is not enabled by default. The default client remains the Dart-based HTTP client due to its proven stability and compatibility with the download engine.
-      </p>
       <p><em>🔧 Bug Fixes and Improvements</em></p>
       <ul>
-        <li>Fixed a Github dialog reappearing issue</li>
+        <li>Download Engine Optimizations</li>
+      </ul>
+      <ul>
+        <li>Added Automatic file save path categorization to settings</li>
+      </ul>
+       <ul>
+        <li>New Dynamic Tray Icons</li>
       </ul>
     </description>
     </release>
