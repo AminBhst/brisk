@@ -6,8 +6,8 @@ import 'package:brisk/widget/base/rounded_outlined_button.dart';
 import 'package:brisk/widget/base/scrollable_dialog.dart';
 import 'package:brisk/widget/loader/file_info_loader.dart';
 import 'package:clipboard/clipboard.dart';
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
@@ -271,6 +271,7 @@ class _AddUrlDialogState extends State<AddUrlDialog> {
         valueController.text,
       ),
     );
+    headers.removeWhere((key, value) => key.isBlank || value.isBlank);
     if (saveHeadersForFutureRequests) {
       DownloadAdditionUiUtil.savedHeaderControllers = headerControllers;
     }
